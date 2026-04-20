@@ -29,7 +29,7 @@
 
   async function checkAdminLogin() {
     const e = getCookie("admin_e"), p = getCookie("admin_p");
-    if (!e || !p) return (location.href = "../../public/admin-login.html");
+    if (!e || !p) return (location.href = "../../../../public/admin-login.html");
 
     if (typeof window.krudList !== "function") {
        console.warn("krudList is not defined. Authentication skipped or delayed.");
@@ -47,7 +47,7 @@
       });
 
       const rows = extractRows(res);
-      if (!rows.length) return (location.href = "../../public/admin-login.html");
+      if (!rows.length) return (location.href = "../../../../public/admin-login.html");
       renderAdminLoginInfo(rows[0]);
     } catch (err) {
       console.error("Auth check failed:", err);
@@ -57,7 +57,7 @@
   function adminLogout() {
     document.cookie = "admin_e=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     document.cookie = "admin_p=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-    location.href = "../../public/admin-login.html";
+    location.href = "../../../../public/admin-login.html";
   }
 
   // Export to global scope

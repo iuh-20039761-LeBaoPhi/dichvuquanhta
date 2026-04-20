@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sửa Xe Lưu Động - Admin - Quản lý phí khảo sát</title>
+    <title>Sửa Xe Lưu Động - Admin - Quản lý dòng xe</title>
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../public/asset/js/sweetalert-utils.js"></script>
+    <script src="../../../../public/asset/js/sweetalert-utils.js"></script>
     <style>
       .pagination {
         border-radius: 8px;
@@ -46,7 +46,7 @@
         id="asideMount"
         data-aside-src="partials/aside.html"
         data-logo-src="../public/asset/image/logo-sua-xe-luu-dong.png"
-        data-logout-href="../../public/admin-login.html"
+        data-logout-href="../../../../public/admin-login.html"
       ></div>
       <main class="content-shell">
         <header class="topbar">
@@ -59,7 +59,7 @@
             >
               <i class="fas fa-bars"></i>
             </button>
-            <h2>Quản lý phí khảo sát</h2>
+            <h2>Quản lý dòng xe</h2>
           </div>
           <div class="topbar-actions">
             <div class="admin-chip">
@@ -77,23 +77,44 @@
                   <li class="breadcrumb-item">
                     <a href="index.html">Trang quản trị</a>
                   </li>
-                  <li class="breadcrumb-item active">Phí khảo sát</li>
+                  <li class="breadcrumb-item active">Danh sách dòng xe</li>
                 </ol>
               </nav>
-              <h1 class="page-title">Quản lý phí khảo sát</h1>
+              <h1 class="page-title">Quản lý dòng xe</h1>
             </div>
-            <button class="btn btn-primary shadow-sm px-3" onclick="openFeeModal()">
-              <i class="fas fa-plus me-1"></i> Thêm cấu hình
-            </button>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <select
+                id="filterLoaiXe"
+                class="form-select form-select-sm"
+                style="width: 140px; height: 36px;"
+                onchange="loadData(1)"
+              >
+                <option value="">Tất cả loại xe</option>
+              </select>
+              <select
+                id="filterThuongHieu"
+                class="form-select form-select-sm"
+                style="width: 130px; height: 36px;"
+                onchange="loadData(1)"
+              >
+                <option value="">Tất cả hiệu</option>
+              </select>
+              <button
+                class="btn btn-primary shadow-sm px-3"
+                style="height: 36px;"
+                onclick="openModelModal()"
+              >
+                <i class="fas fa-plus me-1"></i> Thêm mới
+              </button>
+            </div>
           </div>
 
           <article class="panel-card mt-3">
             <div class="panel-head">
               <h3>
-                <i class="fas fa-hand-holding-usd"></i> Danh sách phí theo loại
-                xe
+                <i class="fas fa-car-side"></i> Danh sách dòng xe
               </h3>
-              <span class="record-count" id="itemCount">0 loại xe</span>
+              <span class="record-count" id="itemCount">0 dòng xe</span>
             </div>
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0 service-table">
@@ -101,11 +122,12 @@
                   <tr>
                     <th>STT</th>
                     <th>Loại xe</th>
-                    <th>Phí khảo sát (VNĐ)</th>
+                    <th>Thương hiệu</th>
+                    <th>Mẫu xe</th>
                     <th class="text-end">Thao tác</th>
                   </tr>
                 </thead>
-                <tbody id="feeTableBody"></tbody>
+                <tbody id="modelTableBody"></tbody>
               </table>
             </div>
             <div
@@ -121,13 +143,13 @@
       </main>
     </div>
 
-    <!-- Modal Phí tham khảo -->
-    <div class="modal fade" id="feeModal" tabindex="-1" aria-hidden="true">
+    <!-- Modal Dòng xe -->
+    <div class="modal fade" id="modelModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-        <form id="feeForm" class="modal-content">
+        <form id="modelForm" class="modal-content">
           <div class="modal-header border-0 pb-0">
             <h5 class="modal-title fw-bold" id="modalTitle">
-              Thêm cấu hình phí
+              Thêm dòng xe mới
             </h5>
             <button
               type="button"
@@ -137,22 +159,33 @@
           </div>
           <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label small fw-bold">Loại xe</label>
+              <label class="form-label small fw-bold">Thuộc loại xe</label>
+              <select
+                name="id_loaixe"
+                id="loaixeSelect"
+                class="form-select"
+                required
+              >
+                <option value="">Chọn loại xe...</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Thương hiệu</label>
               <input
                 type="text"
-                name="loaixe"
+                name="thuonghieu"
                 class="form-control"
-                placeholder="Ví dụ: Xe máy, Ô tô..."
+                placeholder="Ví dụ: Honda, Yamaha, Toyota..."
                 required
               />
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold">Phí khảo sát (VNĐ)</label>
+              <label class="form-label small fw-bold">Mẫu xe</label>
               <input
-                type="number"
-                name="phikhaosat"
+                type="text"
+                name="mauxe"
                 class="form-control"
-                placeholder="0"
+                placeholder="Ví dụ: Wave Alpha, Air Blade, Vios..."
                 required
               />
             </div>
@@ -183,48 +216,97 @@
     <script src="../../public/asset/js/order-shared-utils.js"></script>
     <script src="../public/asset/js/shared-order-utils.js"></script>
     <script>
-      const limit = 10;
+      const limit = 6;
       let currentPage = 1,
         currentData = [],
         editingId = null;
-      const modal = new bootstrap.Modal(document.getElementById("feeModal"));
+      let loaixeData = [];
+      const modal = new bootstrap.Modal(document.getElementById("modelModal"));
+
+      async function loadLoaiXe() {
+        try {
+          const res = await window.krudList({ table: "loaixe", limit: 100 });
+          loaixeData = (res && res.data) || (Array.isArray(res) ? res : []);
+          const select = document.getElementById("loaixeSelect");
+          const filter = document.getElementById("filterLoaiXe");
+          const options = loaixeData
+            .map((l) => `<option value="${l.id}">${l.loaixe}</option>`)
+            .join("");
+          select.innerHTML =
+            '<option value="">Chọn loại xe...</option>' + options;
+          filter.innerHTML =
+            '<option value="">Tất cả loại xe</option>' + options;
+
+          const brands = await window.krudList({
+            table: "dongxe",
+            limit: 1000,
+          });
+          const uniqueBrands = [
+            ...new Set(extractRows(brands).map((b) => b.thuonghieu)),
+          ]
+            .filter(Boolean)
+            .sort();
+          document.getElementById("filterThuongHieu").innerHTML =
+            '<option value="">Tất cả hiệu</option>' +
+            uniqueBrands
+              .map((b) => `<option value="${b}">${b}</option>`)
+              .join("");
+        } catch (err) {
+          console.error("Lỗi load loaixe:", err);
+        }
+      }
 
       async function loadData(page = 1) {
         if (page < 1) return;
         currentPage = page;
-        const tbody = document.getElementById("feeTableBody");
+        const tbody = document.getElementById("modelTableBody");
         tbody.innerHTML =
-          '<tr><td colspan="4" class="text-center py-4">Đang tải...</td></tr>';
+          '<tr><td colspan="5" class="text-center py-4">Đang tải...</td></tr>';
+
+        const fLoai = document.getElementById("filterLoaiXe").value;
+        const fHieu = document.getElementById("filterThuongHieu").value;
+        const where = [];
+        if (fLoai)
+          where.push({ field: "id_loaixe", operator: "=", value: fLoai });
+        if (fHieu)
+          where.push({ field: "thuonghieu", operator: "=", value: fHieu });
 
         try {
-          const res = await window.krudList({ table: "loaixe", page, limit });
+          const res = await window.krudList({
+            table: "dongxe",
+            page,
+            limit,
+            where,
+          });
           currentData = (res && res.data) || (Array.isArray(res) ? res : []);
           const total = (res && res.total) || currentData.length;
           const totalPages = Math.ceil(total / limit);
 
-          document.getElementById("itemCount").textContent = `${total} loại xe`;
+          document.getElementById("itemCount").textContent = `${total} dòng xe`;
           document.getElementById("pageInfo").textContent =
             `Trang ${page}/${totalPages || 1}`;
 
           tbody.innerHTML = currentData
-            .map(
-              (s, i) => `
+            .map((s, i) => {
+              const loai = loaixeData.find((l) => l.id == s.id_loaixe);
+              return `
             <tr>
               <td data-label="STT">${(page - 1) * limit + i + 1}</td>
-              <td data-label="Loại xe"><strong>${s.loaixe}</strong></td>
-              <td data-label="Phí khảo sát">${Number(s.phikhaosat).toLocaleString("vi-VN")} đ</td>
+              <td data-label="Loại xe"><span class="badge bg-light text-dark border">${loai ? loai.loaixe : "ID: " + s.id_loaixe}</span></td>
+              <td data-label="Thương hiệu"><strong>${s.thuonghieu}</strong></td>
+              <td data-label="Mẫu xe">${s.mauxe}</td>
               <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="openFeeModal(${s.id})"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteFee(${s.id})"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="openModelModal(${s.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteModel(${s.id})"><i class="fas fa-trash"></i></button>
               </td>
-            </tr>`,
-            )
+            </tr>`;
+            })
             .join("");
           renderPagination(totalPages);
         } catch (err) {
           tbody.innerHTML =
-            '<tr><td colspan="4" class="text-center py-4 text-danger">Lỗi tải dữ liệu. Bảng "loaixe" có thể chưa tồn tại.</td></tr>';
-          showError("Không thể tải danh sách phí khảo sát.");
+            '<tr><td colspan="5" class="text-center py-4 text-danger">Lỗi tải dữ liệu bảng "dongxe".</td></tr>';
+          showError("Không thể tải danh sách dòng xe.");
         }
       }
 
@@ -237,29 +319,33 @@
         pagin.innerHTML = html;
       }
 
-      function openFeeModal(id = null) {
+      async function openModelModal(id = null) {
         editingId = id;
-        const form = document.getElementById("feeForm");
+        const form = document.getElementById("modelForm");
         form.reset();
         document.getElementById("modalTitle").textContent = id
-          ? "Chỉnh sửa phí"
-          : "Thêm cấu hình phí";
+          ? "Chỉnh sửa dòng xe"
+          : "Thêm dòng xe mới";
+
+        if (loaixeData.length === 0) await loadLoaiXe();
+
         if (id) {
           const s = currentData.find((x) => x.id == id);
           if (s) {
-            form.loaixe.value = s.loaixe;
-            form.phikhaosat.value = s.phikhaosat;
+            form.id_loaixe.value = s.id_loaixe;
+            form.thuonghieu.value = s.thuonghieu;
+            form.mauxe.value = s.mauxe;
           }
         }
         modal.show();
       }
 
-      function deleteFee(id) {
-        showConfirm("Bạn có chắc chắn muốn thực hiện hành động 'Xóa cấu hình phí'?", async function () {
+      function deleteModel(id) {
+        showConfirm("Bạn có chắc chắn muốn thực hiện hành động 'Xóa dòng xe'?", async function () {
           try {
-            const res = await window.krud("delete", "loaixe", null, id);
+            const res = await window.krud("delete", "dongxe", null, id);
             if (res && res.success !== false) {
-              showSuccess("Đã xóa cấu hình phí thành công!");
+              showSuccess("Đã xóa dòng xe thành công!");
               loadData(currentPage);
             } else {
               throw new Error(res.message || "Lỗi xóa dữ liệu.");
@@ -271,7 +357,7 @@
       }
 
       document
-        .getElementById("feeForm")
+        .getElementById("modelForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
           const btn = document.getElementById("btnSave");
@@ -283,19 +369,20 @@
 
           try {
             const payload = {
-              loaixe: fd.get("loaixe"),
-              phikhaosat: fd.get("phikhaosat"),
+              id_loaixe: fd.get("id_loaixe"),
+              thuonghieu: fd.get("thuonghieu"),
+              mauxe: fd.get("mauxe"),
             };
 
             const res = await window.krud(
               editingId ? "update" : "insert",
-              "loaixe",
+              "dongxe",
               payload,
               editingId,
             );
             if (res && res.success !== false) {
               modal.hide();
-              showSuccess(editingId ? "Cập nhật phí thành công!" : "Thêm cấu hình phí thành công!");
+              showSuccess(editingId ? "Cập nhật dòng xe thành công!" : "Thêm dòng xe thành công!");
               loadData(currentPage);
             } else {
               throw new Error("Lỗi lưu dữ liệu cơ sở dữ liệu");
@@ -308,7 +395,10 @@
           }
         });
 
-      document.addEventListener("DOMContentLoaded", () => loadData(1));
+      document.addEventListener("DOMContentLoaded", async () => {
+        await loadLoaiXe();
+        loadData(1);
+      });
     </script>
     <script src="../public/asset/js/plugin/webfont/webfont.min.js"></script>
     <script>

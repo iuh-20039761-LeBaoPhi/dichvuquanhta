@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sửa Xe Lưu Động - Khách hàng - Chi tiết đơn hàng</title>
+    <title>Sửa Xe Lưu Động - Admin - Chi tiết đơn hàng</title>
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
   </head>
-  <body data-role="customer" data-page="detail">
+  <body data-role="admin" data-page="detail">
     <div class="admin-shell">
       <div
         id="asideMount"
         data-aside-src="partials/aside.html"
         data-logo-src="../public/asset/image/logo-sua-xe-luu-dong.png"
-        data-logout-href="../index.html"
+        data-logout-href="../../../../public/admin-login.html"
       ></div>
 
       <main class="content-shell">
@@ -35,8 +35,8 @@
 
           <div class="topbar-actions">
             <div class="admin-chip">
-              <span class="admin-avatar">K</span>
-              <span class="admin-email">khachhang@suaxeludong.vn</span>
+              <span class="admin-avatar">A</span>
+              <span class="admin-email">admin@suaxeluudong.vn</span>
             </div>
           </div>
         </header>
@@ -49,7 +49,7 @@
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb panel-breadcrumb">
                   <li class="breadcrumb-item">
-                    <a href="../index.html">Trang chủ</a>
+                    <a href="index.html">Trang quản trị</a>
                   </li>
                   <li class="breadcrumb-item">
                     <a href="danh-sach-don-hang.html">Danh sách đơn hàng</a>
@@ -79,6 +79,9 @@
           >
             <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
             <h3>Không tìm thấy đơn hàng</h3>
+            <p>
+              Mã đơn <strong id="missingOrderId">(không hợp lệ)</strong> không
+              tồn tại hoặc bạn không có quyền truy cập.
             </p>
           </article>
 
@@ -101,12 +104,14 @@
 
                 <div class="hero-header-center">
                   <span class="hero-total-label">TỔNG TIỀN</span>
-                  <div class="hero-total-amount" id="heroTotalAmount">0 VND</div>
+                  <div class="hero-total-amount" id="heroTotalAmount">
+                    0 VND
+                  </div>
                   <!-- <span class="hero-total-sub">Phí di chuyển + Giá dịch vụ</span> -->
                 </div>
 
                 <div class="hero-header-right">
-                  <div id="detailActionBar" class="d-none me-lg-3"></div>
+                  <div id="detailActionBar" class="d-none me-2 me-lg-3"></div>
                   <div class="hero-progress-ring" id="heroProgressRing">
                     <div class="hero-progress-content">
                       <strong id="heroProgressPercent">0%</strong>
@@ -160,11 +165,17 @@
                 </div>
                 <div class="invoice-panel-body">
                   <div class="vehicle-info-grid mb-3">
-                    <p class="mb-1">Loại xe: <strong id="detailVehicleType">---</strong></p>
-                    <p class="mb-1">Hãng xe: <strong id="detailVehicleBrand">---</strong></p>
-                    <p class="mb-1">Mẫu xe: <strong id="detailVehicleModel">---</strong></p>
+                    <p class="mb-1">
+                      Loại xe: <strong id="detailVehicleType">---</strong>
+                    </p>
+                    <p class="mb-1">
+                      Hãng xe: <strong id="detailVehicleBrand">---</strong>
+                    </p>
+                    <p class="mb-1">
+                      Mẫu xe: <strong id="detailVehicleModel">---</strong>
+                    </p>
                   </div>
-                  <hr>
+                  <hr />
                   <div class="task-note-grid">
                     <article class="task-note-box w-100 mb-2">
                       <p class="task-note-label">Mô tả chi tiết vấn đề</p>
@@ -202,20 +213,20 @@
 
                   <div class="status-dates-grid mt-3 pt-3 border-top">
                     <div class="status-line mb-2">
-                        <span>Ngày đặt lịch:</span>
-                        <b id="heroBookingDate">---</b>
+                      <span>Ngày đặt lịch:</span>
+                      <b id="heroBookingDate">---</b>
                     </div>
                     <div class="status-line mb-2">
-                        <span>Ngày nhận:</span>
-                        <b id="heroReceivedDate">---</b>
+                      <span>Ngày nhận:</span>
+                      <b id="heroReceivedDate">---</b>
                     </div>
                     <div class="status-line mb-2">
-                        <span>Ngày bắt đầu:</span>
-                        <b id="heroStartedDate">---</b>
+                      <span>Ngày bắt đầu:</span>
+                      <b id="heroStartedDate">---</b>
                     </div>
                     <div class="status-line mb-0">
-                        <span>Ngày hoàn thành:</span>
-                        <b id="heroCompletedDate">---</b>
+                      <span>Ngày hoàn thành:</span>
+                      <b id="heroCompletedDate">---</b>
                     </div>
                   </div>
                 </div>
@@ -294,29 +305,6 @@
               </article>
             </div>
 
-            <article class="invoice-panel d-none" id="detailMediaSection">
-              <div class="invoice-panel-head">
-                <h3 class="invoice-panel-title">Hình ảnh & Video hiện trường</h3>
-                <span class="panel-chip">Dữ liệu gốc</span>
-              </div>
-              <div class="invoice-panel-body">
-                <div class="row">
-                  <div class="col-md-7 border-end">
-                    <p class="review-label">Hình ảnh hiện trường</p>
-                    <div id="detailMediaImages" class="mb-3">
-                      <p class="text-muted small">Đang tải ảnh...</p>
-                    </div>
-                  </div>
-                  <div class="col-md-5">
-                    <p class="review-label">Video hiện trường</p>
-                    <div id="detailMediaVideos">
-                      <p class="text-muted small">Đang tải video...</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
-
             <article class="invoice-panel">
               <div class="invoice-panel-head">
                 <h3 class="invoice-panel-title">Ảnh và đánh giá</h3>
@@ -327,7 +315,9 @@
                   <article class="review-card">
                     <div class="review-card-head">
                       <h4>Đánh giá khách hàng</h4>
-                      <span class="panel-chip warn" id="reviewCustomerChip">Chưa có</span>
+                      <span class="panel-chip warn" id="reviewCustomerChip"
+                        >Chưa có</span
+                      >
                     </div>
                     <div class="review-card-body">
                       <p class="review-label">Nội dung đánh giá</p>
@@ -340,40 +330,15 @@
                       <div class="review-file" id="reviewCustomerFile">
                         Chưa có tệp
                       </div>
-                      <div class="review-editor d-none" id="reviewCustomerEditor">
-                        <textarea
-                          class="form-control form-control-sm"
-                          id="reviewCustomerInput"
-                          rows="3"
-                          placeholder="Nhập đánh giá của khách hàng..."
-                        ></textarea>
-                        <input
-                          class="form-control form-control-sm"
-                          id="reviewCustomerUpload"
-                          type="file"
-                          accept="image/*,video/*"
-                          multiple
-                        />
-                        <div class="review-editor-actions">
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-primary"
-                            id="reviewCustomerSubmit"
-                          >
-                            Gửi đánh giá
-                          </button>
-                          <span class="review-editor-note" id="reviewCustomerHint"
-                            >Chi gui 1 lan. Toi da 30MB moi tep.</span
-                          >
-                        </div>
-                      </div>
                     </div>
                   </article>
 
                   <article class="review-card">
                     <div class="review-card-head">
                       <h4>Đánh giá nhà cung cấp</h4>
-                      <span class="panel-chip warn" id="reviewProviderChip">Chưa có</span>
+                      <span class="panel-chip warn" id="reviewProviderChip"
+                        >Chưa có</span
+                      >
                     </div>
                     <div class="review-card-body">
                       <p class="review-label">Nội dung đánh giá</p>
@@ -386,65 +351,8 @@
                       <div class="review-file" id="reviewProviderFile">
                         Chưa có tệp
                       </div>
-                      <div class="review-editor d-none" id="reviewProviderEditor">
-                        <textarea
-                          class="form-control form-control-sm"
-                          id="reviewProviderInput"
-                          rows="3"
-                          placeholder="Nhập đánh giá của nhà cung cấp..."
-                        ></textarea>
-                        <input
-                          class="form-control form-control-sm"
-                          id="reviewProviderUpload"
-                          type="file"
-                          accept="image/*,video/*"
-                          multiple
-                        />
-                        <div class="review-editor-actions">
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-primary"
-                            id="reviewProviderSubmit"
-                          >
-                            Gửi đánh giá
-                          </button>
-                          <span class="review-editor-note" id="reviewProviderHint"
-                            >Chi gui 1 lan. Toi da 30MB moi tep.</span
-                          >
-                        </div>
-                      </div>
                     </div>
                   </article>
-                </div>
-              </div>
-            </article>
-
-            <article class="invoice-panel d-none" id="paymentPanel">
-              <div class="invoice-panel-head">
-                <h3 class="invoice-panel-title">Thanh toán đơn hàng</h3>
-                <span class="panel-chip highlight">Ưu đãi 5%</span>
-              </div>
-              <div class="invoice-panel-body">
-                <div class="payment-action-box">
-                  <p class="payment-hint mb-3">
-                    Vui lòng nhập số tiền báo giá từ thợ sửa xe. Hệ thống sẽ tự động áp dụng <b>giảm giá 5%</b> cho bạn.
-                  </p>
-                  <div class="row g-3 align-items-end">
-                    <div class="col-sm-6 col-md-4">
-                      <label for="paymentInput" class="form-label">Số tiền báo giá (VND)</label>
-                      <input type="number" class="form-control" id="paymentInput" placeholder="VD: 500000">
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                      <button type="button" class="btn btn-primary w-100" id="paymentSubmitBtn">
-                        Xác nhận & Thanh toán
-                      </button>
-                    </div>
-                  </div>
-                  <div id="paymentResult" class="mt-3 d-none">
-                    <div class="alert alert-success">
-                      Số tiền thực tế sau khi giảm 5%: <strong id="paymentFinalAmount">0 VND</strong>
-                    </div>
-                  </div>
                 </div>
               </div>
             </article>
@@ -452,12 +360,14 @@
         </section>
       </main>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../public/asset/js/bootstrap.bundle.min.js"></script>
     <script src="../public/asset/js/admin-layout.js"></script>
     <script src="https://api.dvqt.vn/js/krud.js"></script>
-    <script src="../../public/asset/js/order-shared-utils.js"></script>
-    <script src="../../public/asset/js/sweetalert-utils.js"></script>
+    <script src="../../../../public/asset/js/order-shared-utils.js"></script>
+    <script src="../public/asset/js/shared-order-utils.js"></script>
+    <script src="../../../../public/asset/js/sweetalert-utils.js"></script>
     <script src="../public/asset/js/order-panel-pages.js"></script>
     <script src="../public/asset/js/plugin/webfont/webfont.min.js"></script>
     <script>

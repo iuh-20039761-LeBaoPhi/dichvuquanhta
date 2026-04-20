@@ -16,7 +16,7 @@
         }
       } else {
         window.location.href =
-          config.logoutHref || "../../public/admin-login.html";
+          config.logoutHref || "../../../../public/admin-login.html";
       }
     });
   }
@@ -43,7 +43,7 @@
         (config && config.logoutHref) ||
         (document.querySelector("[data-logout]") &&
           document.querySelector("[data-logout]").getAttribute("href")) ||
-        "../../public/admin-login.html";
+        "../../../../public/admin-login.html";
       window.location.href = href;
     };
   }

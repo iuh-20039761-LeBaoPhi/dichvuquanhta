@@ -79,7 +79,7 @@ async function login() {
                 'donvesinh': root + '/dich-vu-don-ve-sinh/index.html',
                 'vuonnha': root + '/cham-soc-vuon-nha/index.html',
                 'giaohangnhanh': root + '/giao-hang-nhanh/index.html',
-                'suaxe': root + '/sua-xe-luu-dong/index.html',
+                'suaxe': root + '/dich-vu/sua-chua/sua-xe-luu-dong/index.html',
                 'chuyendon': root + '/dich-vu-chuyen-don/index.html',
                 'laixeho': root + '/dich-vu-lai-xe-ho/index.html'
             };
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     'donvesinh': root + '/dich-vu-don-ve-sinh/index.html',
                     'vuonnha': root + '/cham-soc-vuon-nha/index.html',
                     'giaohangnhanh': root + '/giao-hang-nhanh/index.html',
-                    'suaxe': root + '/sua-xe-luu-dong/index.html',
+                    'suaxe': root + '/dich-vu/sua-chua/sua-xe-luu-dong/index.html',
                     'chuyendon': root + '/dich-vu-chuyen-don/index.html',
                     'laixeho': root + '/dich-vu-lai-xe-ho/index.html'
                 };
