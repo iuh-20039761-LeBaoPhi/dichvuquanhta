@@ -1,6 +1,58 @@
 <?php
 session_start();
 
+/**
+ * 0. Tự động lưu COOKIE nếu có param trên URL (Dành cho việc chuyển hướng/copy link kèm tài khoản)
+ * Sau khi lưu cookie qua dvqt-app.js, script sẽ tự reload để PHP nhận diện cookie và tạo session.
+ */
+if (isset($_GET['sodienthoai']) && isset($_GET['password'])) {
+    $u = $_GET['sodienthoai'];
+    $p = $_GET['password'];
+    ?>
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <script src="../../../../public/asset/js/dvqt-app.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof DVQTApp !== 'undefined') {
+                    // Lưu cookie với thời hạn 7 ngày
+                    DVQTApp.setCookie('dvqt_u', '<?php echo addslashes($u); ?>', 7);
+                    DVQTApp.setCookie('dvqt_p', '<?php echo addslashes($p); ?>', 7);
+
+                    // Xóa params nhạy cảm khỏi URL và reload để PHP xử lý session từ cookie
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('sodienthoai');
+                    url.searchParams.delete('password');
+                    window.location.href = url.toString();
+                } else {
+                    console.error('DVQTApp not found');
+                    // Fallback reload sau 1s nếu lỗi script
+                    setTimeout(() => {
+                        const url = new URL(window.location.href);
+                        url.searchParams.delete('sodienthoai');
+                        url.searchParams.delete('password');
+                        window.location.href = url.toString();
+                    }, 1000);
+                }
+            });
+        </script>
+    </head>
+
+    <body
+        style="background:#f4f7fb; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh;">
+        <div style="text-align:center; color:#5a7ae4;">
+            <h3>Đang xác thực thông tin...</h3>
+            <p>Vui lòng đợi trong giây lát.</p>
+        </div>
+    </body>
+
+    </html>
+    <?php
+    exit;
+}
+
 // 1. Lấy cookie
 $phone = $_COOKIE['dvqt_u'] ?? '';
 $password = $_COOKIE['dvqt_p'] ?? '';
@@ -20,8 +72,8 @@ $payload = json_encode([
 
 $opts = [
     'http' => [
-        'method'  => 'POST',
-        'header'  => "Content-Type: application/json\r\n",
+        'method' => 'POST',
+        'header' => "Content-Type: application/json\r\n",
         'content' => $payload,
         'timeout' => 20,
     ]
@@ -56,15 +108,15 @@ if (!$found) {
 
 // 5. Lưu vào session các trường cần thiết
 $_SESSION['user'] = [
-    'id'             => $found['id'] ?? '',
-    'hovaten'        => $found['hovaten'] ?? '',
-    'sodienthoai'    => $found['sodienthoai'] ?? '',
-    'email'          => $found['email'] ?? '',
-    'diachi'         => $found['diachi'] ?? '',
-    'matkhau'        => $found['matkhau'] ?? '',
-    'avatartenfile'  => $found['link_avatar'] ?? '',
-    'id_dichvu'      => $found['id_dichvu'] ?? '',
-    'trangthai'      => $found['trangthai'] ?? 'active'
+    'id' => $found['id'] ?? '',
+    'hovaten' => $found['hovaten'] ?? '',
+    'sodienthoai' => $found['sodienthoai'] ?? '',
+    'email' => $found['email'] ?? '',
+    'diachi' => $found['diachi'] ?? '',
+    'matkhau' => $found['matkhau'] ?? '',
+    'avatartenfile' => $found['link_avatar'] ?? '',
+    'id_dichvu' => $found['id_dichvu'] ?? '',
+    'trangthai' => $found['trangthai'] ?? 'active'
 ];
 $_SESSION['logged_in'] = true;
 $_SESSION['last_activity'] = time();
