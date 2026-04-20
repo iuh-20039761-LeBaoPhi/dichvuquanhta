@@ -214,47 +214,8 @@
             opacity: 1;
         }
 
-        /* === TABLET: Sidebar thu gọn icon-only === */
+        /* === TABLET & MOBILE: Sidebar ẩn hoàn toàn, có hamburger === */
         @media (max-width: 1100px) {
-            .sidebar {
-                width: 72px;
-            }
-
-            .sidebar.mobile-open .brand-name, 
-            .sidebar.mobile-open .brand-tag, 
-            .sidebar.mobile-open .nav-label { display: block; }
-            .sidebar.mobile-open .nav-link span { display: inline-block; }
-
-            .sidebar .brand-name,
-            .sidebar .nav-label,
-            .sidebar .nav-link span {
-                display: none;
-            }
-
-            .sidebar .nav-link {
-                justify-content: flex-start;
-                margin: 2px 8px;
-                padding: 12px 16px;
-            }
-            .sidebar .brand-box {
-                justify-content: flex-start;
-            }
-
-            .sidebar-header {
-                padding: 24px 12px;
-            }
-
-            .main-wrapper {
-                margin-left: 72px;
-            }
-
-            .content-area {
-                padding: 24px;
-            }
-        }
-
-        /* === MOBILE: Sidebar ẩn hoàn toàn, có hamburger === */
-        @media (max-width: 768px) {
             .sidebar {
                 width: 280px;
                 transform: translateX(-100%);

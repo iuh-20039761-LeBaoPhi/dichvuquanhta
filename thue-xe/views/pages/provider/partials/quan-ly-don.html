@@ -33,12 +33,12 @@
             <table class="table align-middle mb-0">
                 <thead class="bg-light text-muted small uppercase">
                     <tr>
-                        <th class="ps-4">Mã đơn / Xe</th>
-                        <th>Khách hàng</th>
-                        <th>Thời gian thuê</th>
-                        <th>Tổng tiền</th>
-                        <th>Trạng thái</th>
-                        <th class="pe-4">Hành động</th>
+                        <th class="ps-4" style="width: 25%;">Mã đơn / Xe</th>
+                        <th style="width: 15%;">Khách hàng</th>
+                        <th style="width: 25%;">Thời gian thuê</th>
+                        <th style="width: 15%;">Tổng tiền</th>
+                        <th style="width: 10%;">Trạng thái</th>
+                        <th class="pe-4 text-end text-nowrap" style="width: 1%;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody id="providerOrderBody">
@@ -62,14 +62,23 @@
         'use strict';
         const TABLE_ORDERS = 'datlich_thuexe';
         const TABLE_CARS = 'xethue';
+        
+        const calcDays = (sStr, eStr) => {
+            if (!sStr || !eStr) return '?';
+            try {
+                const s = new Date(sStr);
+                const e = new Date(eStr);
+                const diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24));
+                return diff > 0 ? diff : 1;
+            } catch(e) { return '?'; }
+        };
 
         const getStatusInfo = (o) => {
-            if (o.ngayhuy) return { label: 'Đã hủy', class: 'bg-danger', code: 'cancelled' };
-            if (o.ngayhoanthanhthucte) return { label: 'Hoàn thành', class: 'bg-success', code: 'completed' };
-            if (o.ngaybatdauthucte) return { label: 'Đang thuê', class: 'bg-primary', code: 'doing' };
-            if (o.ngaynhan) return { label: 'Đã nhận đơn', class: 'bg-info text-dark', code: 'accepted' };
-            if (o.ngaydat) return { label: 'Chờ xác nhận', class: 'bg-warning text-dark', code: 'pending' };
-            return { label: 'Mới', class: 'bg-secondary', code: 'new' };
+            if (o.ngayhuy) return { label: 'Đã hủy', class: 'bg-danger text-danger', code: 'cancelled' };
+            if (o.ngayhoanthanhthucte) return { label: 'Hoàn thành', class: 'bg-success text-success', code: 'completed' };
+            if (o.ngaybatdauthucte) return { label: 'Đang thuê', class: 'bg-primary text-primary', code: 'doing' };
+            if (o.ngaynhan) return { label: 'Đã xác nhận', class: 'bg-info text-info', code: 'accepted' };
+            return { label: 'Chờ duyệt', class: 'bg-warning text-warning', code: 'pending' };
         };
 
         window.updateOrderStatus = async function (id, action, carId) {
@@ -179,10 +188,13 @@
                             <div class="fw-bold text-dark small">${o.tenkhachhang || '---'}</div>
                             <div class="small text-muted">${o.sdtkhachhang || '---'}</div>
                         </td>
-                        <td><div class="small fw-600 text-dark">${o.ngay_nhan_yeu_cau} → ${o.ngay_tra_yeu_cau}</div></td>
+                        <td>
+                            <div class="fw-bold text-dark mb-0">${calcDays(o.ngay_nhan_yeu_cau, o.ngay_tra_yeu_cau)} ngày</div>
+                            <div class="text-muted" style="font-size:11px;">${o.ngay_nhan_yeu_cau}</div>
+                        </td>
                         <td class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</td>
-                        <td><span class="badge bg-warning bg-opacity-10 text-dark">Mới</span></td>
-                        <td class="pe-4 text-end">
+                        <td><span class="badge bg-warning text-warning bg-opacity-10 px-3 py-2 rounded-pill">Chờ duyệt</span></td>
+                        <td class="pe-4 text-end text-nowrap">
                             <button class="btn btn-sm btn-light me-1" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye text-primary"></i></button>
                             <button class="btn btn-sm btn-primary px-3 rounded-pill me-1" onclick="updateOrderStatus(${o.id}, 'accept', ${o.id_xe || 0})">Nhận</button>
                             <button class="btn btn-sm btn-outline-danger px-3 rounded-pill" onclick="updateOrderStatus(${o.id}, 'cancel', ${o.id_xe || 0})">Hủy</button>
@@ -194,12 +206,12 @@
                     <table class="table align-middle mb-0">
                         <thead class="bg-light text-muted small uppercase">
                             <tr>
-                                <th class="ps-4">Mã đơn / Xe</th>
-                                <th>Khách hàng</th>
-                                <th>Thời gian thuê</th>
-                                <th>Tổng tiền</th>
-                                <th>Trạng thái</th>
-                                <th class="pe-4 text-end">Hành động</th>
+                                <th class="ps-4" style="width: 25%;">Mã đơn / Xe</th>
+                                <th style="width: 15%;">Khách hàng</th>
+                                <th style="width: 25%;">Thời gian thuê</th>
+                                <th style="width: 15%;">Tổng tiền</th>
+                                <th style="width: 10%;">Trạng thái</th>
+                                <th class="pe-4 text-end text-nowrap" style="width: 1%;">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>${pendingRows}</tbody>
@@ -213,12 +225,12 @@
                             <div class="card-body p-3">
                                 <div class="d-flex justify-content-between mb-2">
                                     <div class="fw-bold text-primary small">#${String(o.id).padStart(7, '0')}</div>
-                                    <span class="badge bg-warning bg-opacity-10 text-dark" style="font-size:10px;">ĐƠN MỚI</span>
+                                    <span class="badge bg-warning text-warning bg-opacity-10 px-2 py-1 rounded-pill" style="font-size:10px;">CHỜ DUYỆT</span>
                                 </div>
                                 <h6 class="fw-bold mb-1" style="font-size:14px;">${o.ten_xe}</h6>
                                 <div class="small mb-2 pt-2 border-top">
                                     <div class="d-flex justify-content-between"><span>Khách:</span> <strong class="text-dark">${o.tenkhachhang || '---'}</strong></div>
-                                    <div class="d-flex justify-content-between"><span>Thuê:</span> <strong>${o.ngay_nhan_yeu_cau} → ${o.ngay_tra_yeu_cau}</strong></div>
+                                    <div class="d-flex justify-content-between"><span>Thời gian:</span> <strong>${calcDays(o.ngay_nhan_yeu_cau, o.ngay_tra_yeu_cau)} ngày (${o.ngay_nhan_yeu_cau})</strong></div>
                                     <div class="d-flex justify-content-between text-primary"><span>Giá:</span> <strong>${Number(o.tong_tien || 0).toLocaleString()}đ</strong></div>
                                 </div>
                                 <div class="d-flex gap-2">
@@ -254,10 +266,13 @@
                             <div class="fw-bold text-dark">${o.tenkhachhang || o.ho_ten || '---'}</div>
                             <div class="small text-muted">${o.sdtkhachhang || o.dien_thoai || '---'}</div>
                         </td>
-                        <td><div class="small fw-600 text-dark">${o.ngay_nhan_yeu_cau} → ${o.ngay_tra_yeu_cau}</div></td>
+                        <td>
+                            <div class="fw-bold text-dark mb-0">${calcDays(o.ngay_nhan_yeu_cau, o.ngay_tra_yeu_cau)} ngày</div>
+                            <div class="text-muted" style="font-size:11px;">${o.ngay_nhan_yeu_cau}</div>
+                        </td>
                         <td class="fw-bold text-dark">${Number(o.tong_tien).toLocaleString()}đ</td>
-                        <td><span class="badge ${st.class} bg-opacity-10">${st.label}</span></td>
-                        <td class="pe-4 text-nowrap">
+                        <td><span class="badge ${st.class} bg-opacity-10 px-3 py-2 rounded-pill">${st.label}</span></td>
+                        <td class="pe-4 text-nowrap text-end" style="width: 1%;">
                             <button class="btn btn-sm btn-light" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye"></i></button>
                             ${actionsHtml}
                         </td>
@@ -275,12 +290,12 @@
                             <div class="card-body p-3">
                                 <div class="d-flex justify-content-between mb-2">
                                     <div class="fw-bold text-primary small">#${String(o.id).padStart(7, '0')}</div>
-                                    <span class="badge ${st.class} bg-opacity-10" style="font-size:10px;">${st.label}</span>
+                                    <span class="badge ${st.class} bg-opacity-10 px-2 py-1 rounded-pill" style="font-size:10px;">${st.label}</span>
                                 </div>
                                 <h6 class="fw-bold mb-1" style="font-size:14px;">${o.ten_xe || 'N/A'}</h6>
                                 <div class="small mb-2 pt-2 border-top">
                                     <div class="d-flex justify-content-between"><span>KH:</span> <strong class="text-dark">${o.tenkhachhang || '---'}</strong></div>
-                                    <div class="d-flex justify-content-between"><span>Thuê:</span> <strong>${o.ngay_nhan_yeu_cau} → ${o.ngay_tra_yeu_cau}</strong></div>
+                                    <div class="d-flex justify-content-between"><span>Thời gian:</span> <strong>${calcDays(o.ngay_nhan_yeu_cau, o.ngay_tra_yeu_cau)} ngày (${o.ngay_nhan_yeu_cau})</strong></div>
                                     <div class="d-flex justify-content-between text-primary"><span>Tổng:</span> <strong>${Number(o.tong_tien || 0).toLocaleString()}đ</strong></div>
                                 </div>
                                 <div class="d-flex gap-2">

@@ -27,10 +27,62 @@
           --admin-dark: #0f172a; /* Deep Navy Sidebar */
           --admin-dark-2: #1e293b;
       }
-      .admin-shell { display: flex; width: 100%; min-height: 100vh; background: var(--admin-bg); }
-      .sidebar-shell { width: 280px !important; flex-shrink: 0; }
-      .content-shell { flex: 1; min-width: 0; }
+      .admin-shell { display: block; width: 100%; min-height: 100vh; background: var(--admin-bg); position: relative; }
+      .sidebar-shell { 
+          width: 280px !important; 
+          height: 100vh !important;
+          position: fixed !important;
+          top: 0;
+          left: 0;
+          z-index: 1050;
+          transition: transform 0.3s ease, visibility 0.3s ease;
+      }
+      .content-shell { 
+          margin-left: 280px;
+          min-width: 0;
+          min-height: 100vh;
+          transition: margin 0.3s ease;
+          display: flex;
+          flex-direction: column;
+      }
       .nav-item { cursor: pointer; }
+
+      /* Responsive Sidebar (Breakpoint synchronized at 1100px) */
+      @media (max-width: 1100px) {
+          .sidebar-shell {
+              visibility: hidden;
+              transform: translateX(-100%);
+          }
+          .sidebar-shell.show {
+              visibility: visible;
+              transform: translateX(0);
+              box-shadow: 10px 0 50px rgba(0,0,0,0.3);
+          }
+          .content-shell {
+              margin-left: 0;
+          }
+          .sidebar-toggler {
+              display: block !important;
+          }
+      }
+      @media (min-width: 1101px) {
+          .sidebar-shell {
+              visibility: visible !important;
+              transform: none !important;
+          }
+          .sidebar-toggler {
+              display: none !important;
+          }
+      }
+
+      /* Responsive Table to Card (Breakpoint synchronized at 1200px) */
+      @media (max-width: 1200px) {
+          .desktop-table-wrap { display: none !important; }
+          .mobile-list { display: block !important; }
+      }
+      @media (min-width: 1201px) {
+          .mobile-list { display: none !important; }
+      }
     </style>
   </head>
   <body>
@@ -41,7 +93,7 @@
       <main class="content-shell">
         <header class="topbar">
           <div class="topbar-left">
-            <button class="btn btn-sm sidebar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
+            <button class="btn btn-sm sidebar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
               <i class="fas fa-bars"></i>
             </button>
             <h2 id="pageTitleDisplay">Đối tác Thợ Nhà</h2>

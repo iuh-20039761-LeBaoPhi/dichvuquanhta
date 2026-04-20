@@ -1,48 +1,53 @@
 <!-- Stat Summary -->
-<div class="row g-4 mb-4">
-    <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm p-3 p-md-4 h-100" style="border-radius: 20px;">
             <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3"><i
-                        class="fas fa-file-invoice fa-lg"></i></div>
-                <div>
+                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 flex-shrink-0" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-file-invoice fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
                     <div class="h4 fw-800 mb-0" id="stat-total">0</div>
-                    <div class="text-muted small fw-600">Tổng chuyến</div>
+                    <div class="text-muted small fw-600 text-nowrap">Tổng chuyến</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm p-3 p-md-4 h-100" style="border-radius: 20px;">
             <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3"><i class="fas fa-spinner fa-lg"></i>
+                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 flex-shrink-0" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-spinner fa-lg"></i>
                 </div>
-                <div>
+                <div class="overflow-hidden">
                     <div class="h4 fw-800 mb-0" id="stat-pending">0</div>
-                    <div class="text-muted small fw-600">Chờ duyệt</div>
+                    <div class="text-muted small fw-600 text-nowrap">Chờ duyệt</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm p-3 p-md-4 h-100" style="border-radius: 20px;">
             <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-success bg-opacity-10 text-success rounded-3"><i
-                        class="fas fa-check-double fa-lg"></i></div>
-                <div>
+                <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 flex-shrink-0" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-check-double fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
                     <div class="h4 fw-800 mb-0" id="stat-success">0</div>
-                    <div class="text-muted small fw-600">Thành công</div>
+                    <div class="text-muted small fw-600 text-nowrap">Thành công</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm p-3 p-md-4 h-100" style="border-radius: 20px;">
             <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-3"><i class="fas fa-ban fa-lg"></i></div>
-                <div>
+                <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-3 flex-shrink-0" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-ban fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
                     <div class="h4 fw-800 mb-0" id="stat-fail">0</div>
-                    <div class="text-muted small fw-600">Đã hủy</div>
+                    <div class="text-muted small fw-600 text-nowrap">Đã hủy</div>
                 </div>
             </div>
         </div>
@@ -65,11 +70,11 @@
             <table class="table align-middle mb-0">
                 <thead class="bg-light text-muted small uppercase">
                     <tr>
-                        <th class="ps-4">Mã đơn / Phương tiện</th>
-                        <th>Thời gian thuê</th>
-                        <th>Tổng chi phí</th>
-                        <th>Trạng thái</th>
-                        <th class="pe-4 text-end">Hành động</th>
+                        <th class="ps-4" style="width: 25%;">Mã đơn / Phương tiện</th>
+                        <th style="width: 25%;">Thời gian thuê</th>
+                        <th style="width: 20%;">Tổng chi phí</th>
+                        <th style="width: 20%;">Trạng thái</th>
+                        <th class="pe-4 text-end" style="width: 10%;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody id="customerTxBody">
@@ -151,6 +156,16 @@
 <script>
     (function () {
         'use strict';
+        
+        const calcDays = (sStr, eStr) => {
+            if (!sStr || !eStr) return '?';
+            try {
+                const s = new Date(sStr);
+                const e = new Date(eStr);
+                const diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24));
+                return diff > 0 ? diff : 1;
+            } catch(e) { return '?'; }
+        };
 
         window.loadCustomerTransactions = async function () {
             const tbody = document.getElementById('customerTxBody');
@@ -191,8 +206,9 @@
                         </div>
                     </td>
                     <td>
-                        <div class="fw-bold text-dark small">${o.ngay_nhan_yeu_cau} → ${o.ngay_tra_yeu_cau}</div>
-                        <div class="text-muted small mt-1"><i class="far fa-clock me-1"></i>${o.gio_nhan_yeu_cau}</div>
+                        <div class="fw-bold text-dark small">${calcDays(o.ngay_nhan_yeu_cau, o.ngay_tra_yeu_cau)} ngày</div>
+                        <div class="text-muted" style="font-size:11px;">${o.ngay_nhan_yeu_cau}</div>
+                        <div class="text-muted small mt-0"><i class="far fa-clock me-1" style="font-size:10px;"></i>${o.gio_nhan_yeu_cau}</div>
                     </td>
                     <td class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</td>
                     <td>${badge}</td>

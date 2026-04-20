@@ -88,7 +88,7 @@
                     <td class="ps-4"><strong>${c.tenxe}</strong></td>
                     <td><code class="text-dark">${c.bienso}</code></td>
                     <td class="text-primary fw-bold">${Number(c.giathue).toLocaleString('vi-VN')}đ</td>
-                    <td><span class="badge ${isValid ? 'bg-success' : 'bg-warning'}">${isValid ? 'Hoạt động' : 'Chờ duyệt'}</span></td>
+                    <td><span class="badge ${isValid ? 'bg-success text-success' : 'bg-warning text-warning'} bg-opacity-10 px-3 py-2 rounded-pill">${isValid ? 'Hoạt động' : 'Chờ duyệt'}</span></td>
                 </tr>
                 `;
             }).join('');

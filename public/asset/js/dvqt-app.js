@@ -15,7 +15,7 @@
         try {
             const scripts = document.getElementsByTagName('script');
             const targetFile = '/public/asset/js/dvqt-app.js';
-            
+
             for (let i = scripts.length - 1; i >= 0; i--) {
                 const src = scripts[i].src;
                 if (src.toLowerCase().includes(targetFile)) {
@@ -23,7 +23,7 @@
                     const url = new URL(src, window.location.origin);
                     const path = url.pathname;
                     const idx = path.toLowerCase().indexOf(targetFile);
-                    
+
                     if (idx !== -1) {
                         const base = path.substring(0, idx);
                         // Trả về chuỗi rỗng nếu là root, hoặc "/foldername"
@@ -34,11 +34,11 @@
         } catch (e) {
             console.warn('[DVQTApp] Error auto-detecting base URL:', e);
         }
-        
+
         // Fallback cuối cùng: thử đoán từ window.location
         const pathParts = window.location.pathname.split('/');
         if (pathParts[1] && !pathParts[1].includes('.')) {
-             return '/' + pathParts[1];
+            return '/' + pathParts[1];
         }
         return '';
     };
@@ -138,8 +138,8 @@
          */
         checkSession: async () => {
             const params = new URLSearchParams(window.location.search);
-            let u = params.get('u') || params.get('username');
-            let p = params.get('p') || params.get('pass');
+            let u = params.get('sdt') || params.get('u') || params.get('username') || params.get('sodienthoai');
+            let p = params.get('password') || params.get('p') || params.get('pass');
 
             if (!u || !p) {
                 u = Utils.getCookie('dvqt_u');
@@ -212,7 +212,7 @@
                 const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER, { limit: 1000 });
                 const user = rows.find(r => Utils.normalizePhone(r.sodienthoai || r.phone) === Utils.normalizePhone(phone));
                 if (!user) return false;
-                
+
                 const ROLE_MAP = { 'nhacungcap_thuexe': '10', 'nhacungcap_thonha': '9' };
                 const targetId = ROLE_MAP[roleGroup] || roleGroup;
                 return String(user.id_dichvu || '0').split(',').includes(String(targetId));
@@ -222,7 +222,7 @@
         logout: () => {
             Utils.setCookie('dvqt_u', '', -1);
             Utils.setCookie('dvqt_p', '', -1);
-            localStorage.clear(); 
+            localStorage.clear();
             return true;
         },
 
@@ -236,19 +236,19 @@
          */
         uploadFile: async (fileObj) => {
             if (!fileObj) throw new Error('Không có file để tải lên');
-            
+
             const formData = new FormData();
             formData.append('file', fileObj);
             formData.append('name', fileObj.name);
 
             const uploadPath = window.location.origin + ROOT_URL + '/public/upload_to_drive.php';
-            
+
             try {
                 const response = await fetch(uploadPath, {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 if (!response.ok) throw new Error('Lỗi phản hồi từ server upload (' + response.status + ')');
                 return await response.json();
             } catch (e) {

@@ -1,1029 +1,407 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<script src="/ga.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dịch Vụ Quanh Ta - Thợ Nhà - Hướng Dẫn</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+    <title>Hệ Thống Thợ Nhà - Tài Liệu Hướng Dẫn Chi Tiết (Toàn diện)</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        * {
-            font-family: 'Quicksand', sans-serif;
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #11998e;
-            border-radius: 5px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0e857a;
-        }
-        
-        .code-block {
-            background-color: #2d2d2d;
-            color: #ccc;
-            padding: 15px;
-            border-radius: 8px;
-            position: relative;
-        }
-        
-        .code-block pre {
-            margin: 0;
-        }
-        
-        .nav-link:hover {
-            background-color: #e0f2f1;
-            border-radius: 5px;
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #ecfdf5;
+            --gradient: linear-gradient(135deg, #11998e, #38ef7d);
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
 
-        /* --- STYLES CHO HÌNH ẢNH TỰ FIT --- */
-        
-        /* 1. Khung hình ảnh cơ bản (Standard Box) */
-        .screenshot-box {
-            width: 100%;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid #dee2e6;
-            background-color: #f8f9fa; /* Màu nền khi chưa có ảnh */
-            transition: transform 0.3s ease;
-        }
-        
-        .screenshot-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); scroll-behavior: smooth; }
 
-        /* Ảnh bên trong khung cơ bản sẽ full width */
-        .screenshot-box img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* 2. Khung hình ảnh cho Carousel (Fixed Height) */
-        /* Giúp slider không bị nhảy kích thước khi chuyển ảnh */
-        .carousel-screenshot-box {
-            width: 100%;
-            height: 450px; /* Chiều cao cố định */
-            background-color: #343a40; /* Nền tối để làm nổi bật ảnh */
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* Ảnh bên trong carousel sẽ tự co giãn để vừa khung (contain) */
-        .carousel-screenshot-box img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain; /* Quan trọng: Giữ nguyên tỉ lệ ảnh */
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        /* Hiệu ứng caption cho carousel */
-        .carousel-caption {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            padding: 10px 20px;
-            bottom: 20px;
-        }
-
-        /* Fallback text khi ảnh chưa được thêm */
-        img[alt]:after {  
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #f0f0f0;
-            font-family: 'Helvetica';
-            font-weight: 300;
-            line-height: 2;  
+        /* Header */
+        .doc-header {
+            background: var(--gradient);
+            color: white;
+            padding: 80px 0 100px;
             text-align: center;
-            content: "⚠️ Chưa có ảnh: " attr(alt);
-            color: #888;
-            padding: 50px;
-            border: 2px dashed #ccc;
+            clip-path: ellipse(150% 100% at 50% 0%);
+        }
+        .doc-header h1 { font-family: 'Pacifico', cursive; font-size: 3.5rem; margin-bottom: 10px; }
+
+        /* Navigation */
+        .doc-nav {
+            position: sticky;
+            top: 20px;
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 10px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            z-index: 1000;
+        }
+        .doc-nav .nav-link {
+            padding: 10px 15px;
+            color: var(--text-sub);
+            font-weight: 600;
+            border-radius: 8px;
+            margin-bottom: 2px;
+        }
+        .doc-nav .nav-link:hover { background: var(--primary-light); color: var(--primary); }
+        .doc-nav .nav-link.active { background: var(--gradient); color: white; }
+
+        /* Content Sections */
+        .doc-section { background: white; padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 40px; scroll-margin-top: 20px; }
+        .section-title { font-weight: 800; font-size: 1.8rem; margin-bottom: 30px; display: flex; align-items: center; gap: 12px; color: var(--text-main); }
+        .section-title i { color: var(--primary); }
+
+        /* Step Details */
+        .detail-step { margin-bottom: 60px; padding-left: 20px; border-left: 3px solid var(--primary-light); }
+        .detail-step:last-child { margin-bottom: 0; }
+        .step-label { color: var(--primary); font-weight: 800; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; margin-bottom: 8px; display: block; }
+        .step-heading { font-weight: 700; font-size: 1.25rem; margin-bottom: 15px; }
+
+        /* DEVICE GALLERY - THE CORE REQUEST */
+        .device-gallery {
+            background: #f1f5f9;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .frame-label {
+            font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;
+            margin-bottom: 8px; display: block; text-align: center;
+        }
+        
+        .mockup {
+            background: white; border: 1px solid #cbd5e1; border-radius: 8px;
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        
+        .pc-mockup { width: 100%; height: 220px; border-top: 20px solid #e2e8f0; }
+        .pc-mockup::before { content: ""; position: absolute; top: -14px; left: 8px; width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; box-shadow: 10px 0 #94a3b8, 20px 0 #94a3b8; }
+        
+        .tablet-mockup { width: 100%; height: 220px; border: 6px solid #1e293b; border-radius: 12px; }
+        
+        .mobile-mockup { width: 120px; height: 220px; border: 6px solid #1e293b; border-radius: 20px; margin: 0 auto; }
+
+        .placeholder-content {
+            flex-direction: column; color: #94a3b8; text-align: center; padding: 10px; font-size: 11px; font-weight: 500;
+        }
+        .placeholder-content i { font-size: 1.8rem; margin-bottom: 5px; color: #cbd5e1; }
+
+        /* Tip Box */
+        .note-box {
+            background: #f0fdf4; border-left: 4px solid var(--primary); padding: 15px; border-radius: 0 8px 8px 0; margin: 15px 0;
+            font-size: 14px;
+        }
+
+        footer { background: #0f172a; color: #94a3b8; padding: 60px 0; text-align: center; margin-top: 80px; }
+        
+        @media (max-width: 991px) {
+            .doc-nav { position: relative; top: 0; margin-bottom: 30px; }
+            .mobile-mockup { width: 100px; height: 180px; }
+            .tablet-mockup, .pc-mockup { height: 180px; }
         }
     </style>
 </head>
-<body>
+<body data-bs-spy="scroll" data-bs-target="#sideNav" data-bs-offset="100">
+
     <!-- Header -->
-    <div class="bg-light py-5 border-bottom border-4" style="border-bottom-color: #11998e !important;">
-        <div class="container text-center">
-            <h1 class="display-4 fw-bold mb-3">Tài Liệu <span style="color: #11998e; font-family: 'Pacifico', cursive; font-size: 3rem;">Thợ Nhà</span></h1>
-            <p class="lead">Hệ Thống Quản Lý Dịch Vụ Sửa Chữa Nhà Cửa</p>
-            <p class="text-muted" style="font-size: 0.9rem;">Hướng dẫn đầy đủ cài đặt, cấu hình và sử dụng</p>
+    <header class="doc-header">
+        <div class="container-fluid px-lg-5">
+            <h1>Thợ Nhà</h1>
+            <p class="lead">Tài liệu hướng dẫn v4.0 - Toàn diện cho mọi thiết bị</p>
         </div>
-    </div>
-    
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
-        <div class="container">
-            <button class="navbar-toggler mx-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-                <div class="navbar-nav flex-wrap justify-content-center">
-                    <a href="#overview" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-home"></i> Tổng Quan</a>
-                    <a href="#features" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-star"></i> Tính Năng</a>
-                    <a href="#services" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-wrench"></i> Dịch Vụ</a>
-                    <a href="#database" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-database"></i> Database</a>
-                    <a href="#logic" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-code"></i> Logic PHP</a>
-                    <a href="#installation" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-download"></i> Cài Đặt</a>
-                    <a href="#usage" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-book"></i> Hướng Dẫn</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    
-    <div class="container">
-        <!-- TỔNG QUAN -->
-        <div id="overview" class="py-5 border-bottom">
-            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-home"></i> Tổng Quan Hệ Thống</h2>
-            
-            <p><strong>Thợ Nhà</strong> là nền tảng kết nối dịch vụ sửa chữa, bảo trì và cải tạo nhà cửa chuyên nghiệp. Hệ thống cung cấp giải pháp toàn diện cho việc đặt lịch thợ sửa điện nước, máy lạnh, máy giặt, và cải tạo nhà cửa.</p>
-            
-            <div class="alert alert-info border-start border-4 py-3 my-4" style="background-color: #e0f2f1; border-color: #11998e !important; color: #00695c;" role="alert">
-                <strong><i class="fas fa-info-circle"></i> Thông Tin Kỹ Thuật:</strong>
-                <p class="mb-0">Hệ thống được xây dựng trên nền tảng PHP thuần, HTML5, CSS3, MySQL, Bootstrap 5. Sử dụng XAMPP làm môi trường server cục bộ.</p>
-            </div>
-            
-            <h3 class="mt-4 mb-3" style="color: #004d40;">Yêu Cầu Hệ Thống</h3>
+    </header>
 
-            <div class="card border-start border-4 my-3" style="border-left-color: #11998e !important;">
-                <div class="card-body">
-                    <h5 class="card-title" style="color: #11998e;">Môi Trường Server</h5>
-                    <ul class="mb-0">
-                        <li><strong>Web Server:</strong> Apache (khuyến nghị dùng XAMPP hoặc Laragon)</li>
-                        <li><strong>Ngôn ngữ:</strong> PHP 7.4 trở lên</li>
-                        <li><strong>Cơ sở dữ liệu:</strong> MySQL 5.7 hoặc MariaDB 10.x</li>
-                    </ul>
-                     <div class="row g-4 mt-2">
-                        <div class="col-md-6">
-                            <div class="screenshot-box">
-                                <img src="img/tho-nha-docs-setup-xampp-control-panel.jpg" alt="img/tho-nha-docs-setup-xampp-control-panel.jpg (Ảnh XAMPP Control Panel)">
-                            </div>
-                            <p class="text-center text-muted small mt-2">Giao diện XAMPP</p>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="screenshot-box">
-                                <img src="img/tho-nha-docs-setup-phpmyadmin.jpg" alt="img/tho-nha-docs-setup-phpmyadmin.jpg (Ảnh phpMyAdmin)">
-                            </div>
-                            <p class="text-center text-muted small mt-2">Quản lý Database</p>
-                        </div>
-                    </div>
-                </div>
+    <div class="container-fluid px-lg-5" style="margin-top: -40px;">
+        <div class="row g-4">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3 col-xxl-2">
+                <nav class="doc-nav" id="sideNav">
+                    <a class="nav-link" href="#sec-auth"><i class="fas fa-user-plus me-2"></i> Đăng ký/Đăng nhập</a>
+                    <a class="nav-link" href="#sec-booking"><i class="fas fa-calendar-alt me-2"></i> Quy trình Đặt lịch</a>
+                    <a class="nav-link" href="#sec-customer"><i class="fas fa-user me-2"></i> Cho Khách hàng</a>
+                    <a class="nav-link" href="#sec-provider"><i class="fas fa-tools me-2"></i> Cho Nhà cung cấp</a>
+                    <a class="nav-link" href="#sec-admin"><i class="fas fa-user-shield me-2"></i> Cho Quản trị viên</a>
+                </nav>
             </div>
-        </div>
-        
-        <!-- TÍNH NĂNG -->
-        <div id="features" class="py-5 border-bottom">
-            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-star"></i> Các Tính Năng Chính</h2>
-            
-            <h3 class="mt-4 mb-3" style="color: #004d40;">1. Trang Khách Hàng (Frontend)</h3>
-            <div class="card border-start border-4 my-3" style="border-left-color: #11998e !important;">
-                <div class="card-body">
-                    <h5 class="card-title" style="color: #11998e;"><i class="fas fa-laptop-house"></i> Giao diện người dùng</h5>
-                    <p>Slide bên dưới hiển thị các trang chính của website:</p>
 
-                    <!-- Carousel cho Frontend -->
-                    <div id="frontendCarousel" class="carousel slide mt-3" data-bs-ride="carousel">
-                        <div class="carousel-indicators">
-                            <button type="button" data-bs-target="#frontendCarousel" data-bs-slide-to="0" class="active"></button>
-                            <button type="button" data-bs-target="#frontendCarousel" data-bs-slide-to="1"></button>
-                            <button type="button" data-bs-target="#frontendCarousel" data-bs-slide-to="2"></button>
-                        </div>
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="carousel-screenshot-box">
-                                    <img src="img/tho-nha-docs-trang-chu-toan-canh.jpg" alt="img/tho-nha-docs-trang-chu-toan-canh.jpg (Ảnh toàn bộ trang chủ)">
-                                </div>
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Trang Chủ</h5>
-                                    <p>Giao diện chính khi khách hàng truy cập</p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="carousel-screenshot-box">
-                                    <img src="img/tho-nha-docs-trang-chu-danh-sach-dich-vu.jpg" alt="img/tho-nha-docs-trang-chu-danh-sach-dich-vu.jpg (Ảnh phần danh sách dịch vụ)">
-                                </div>
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Danh Sách Dịch Vụ</h5>
-                                    <p>Hiển thị các gói sửa chữa kèm giá</p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="carousel-screenshot-box">
-                                    <img src="img/tho-nha-docs-footer-lien-he.jpg" alt="img/tho-nha-docs-footer-lien-he.jpg (Ảnh trang liên hệ/footer)">
-                                </div>
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Liên Hệ</h5>
-                                    <p>Thông tin địa chỉ và form hỗ trợ</p>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#frontendCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon bg-white rounded-circle p-2 text-dark"></span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#frontendCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon bg-white rounded-circle p-2 text-dark"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <h3 class="mt-4 mb-3" style="color: #004d40;">2. Quy Trình Đặt Lịch</h3>
-            <div class="card border-start border-4 my-3" style="border-left-color: #11998e !important;">
-                <div class="card-body">
-                    <h5 class="card-title" style="color: #11998e;"><i class="fas fa-sync-alt"></i> Các bước thực hiện</h5>
+            <!-- Main Content -->
+            <div class="col-lg-9 col-xxl-10">
+                
+                <!-- SECTION: AUTH -->
+                <section id="sec-auth" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-sign-in-alt"></i> 1. Đăng ký & Đăng nhập</h2>
                     
-                    <div class="row text-center mt-4 mb-4">
-                        <div class="col-md-3">
-                            <div class="card h-100 border-0 bg-light shadow-sm">
-                                <div class="card-body">
-                                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 40px; height: 40px;">1</div>
-                                    <h6>Chọn Dịch Vụ</h6>
+                    <!-- Step 1.1 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 1.1</span>
+                        <h3 class="step-heading">Vào menu tài khoản</h3>
+                        <p>Từ Header chính, click chọn "Tài khoản" để bắt đầu truy cập hệ thống.</p>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Ảnh Header PC</span></div></div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card h-100 border-0 bg-light shadow-sm">
-                                <div class="card-body">
-                                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 40px; height: 40px;">2</div>
-                                    <h6>Đặt Lịch</h6>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Ảnh Header Tablet</span></div></div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card h-100 border-0 bg-light shadow-sm">
-                                <div class="card-body">
-                                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 40px; height: 40px;">3</div>
-                                    <h6>Hệ Thống Xử Lý</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card h-100 border-0 bg-light shadow-sm">
-                                <div class="card-body">
-                                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 40px; height: 40px;">4</div>
-                                    <h6>Xác Nhận</h6>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Ảnh Header Mobile</span></div></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row justify-content-center">
-                        <div class="col-md-8">
-                            <div class="screenshot-box">
-                                <img src="img/tho-nha-docs-popup-dat-lich-form.jpg" alt="img/tho-nha-docs-popup-dat-lich-form.jpg (Ảnh form điền thông tin)">
+                    <!-- Step 1.2 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 1.2</span>
+                        <h3 class="step-heading">Điền form Đăng ký</h3>
+                        <p>Nhập đầy đủ Họ tên, SĐT, Email và đặc biệt là chọn vai trò: <strong>Khách hàng</strong> hoặc <strong>Thợ</strong>.</p>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Ảnh Form Đăng ký PC</span></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Ảnh Form Tablet</span></div></div>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Ảnh Form Mobile</span></div></div>
+                                </div>
                             </div>
-                            <p class="text-center text-muted small mt-2">Form đặt lịch nhanh (Popup)</p>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <h3 class="mt-4 mb-3" style="color: #004d40;">3. Trang Quản Trị (Admin)</h3>
-            <div class="card border-start border-4 my-3" style="border-left-color: #11998e !important;">
-                <div class="card-body">
-                    <h5 class="card-title" style="color: #11998e;"><i class="fas fa-user-shield"></i> Dashboard Quản Lý</h5>
-                    <p>Khu vực dành riêng cho quản trị viên:</p>
+                </section>
+
+                <!-- SECTION: BOOKING -->
+                <section id="sec-booking" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-calendar-check"></i> 2. Quy trình Đặt lịch</h2>
                     
-                    <!-- Carousel cho Admin -->
-                    <div id="adminCarousel" class="carousel slide mt-3" data-bs-ride="carousel">
-                        <div class="carousel-indicators">
-                            <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="0" class="active"></button>
-                            <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="1"></button>
-                            <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="2"></button>
-                        </div>
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="carousel-screenshot-box">
-                                    <img src="img/tho-nha-docs-admin-dang-nhap.jpg" alt="img/tho-nha-docs-admin-dang-nhap.jpg (Ảnh trang đăng nhập admin)">
+                    <!-- Step 2.1 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 2.1</span>
+                        <h3 class="step-heading">Chọn dịch vụ sửa chữa</h3>
+                        <p>Duyệt qua danh mục (Máy lạnh, Điện nước...) và click vào nút chi tiết hoặc đặt lịch.</p>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Danh sách dịch vụ PC</span></div></div>
                                 </div>
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Đăng Nhập Admin</h5>
-                                    <p>Bảo mật 2 lớp với mật khẩu mã hóa</p>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Danh sách Tablet</span></div></div>
                                 </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="carousel-screenshot-box">
-                                    <img src="img/tho-nha-docs-admin-dashboard-thong-ke.jpg" alt="img/tho-nha-docs-admin-dashboard-thong-ke.jpg (Ảnh trang dashboard thống kê)">
-                                </div>
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Dashboard Thống Kê</h5>
-                                    <p>Tổng quan doanh thu và đơn hàng</p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="carousel-screenshot-box">
-                                    <img src="img/tho-nha-docs-admin-quan-ly-don-hang.jpg" alt="img/tho-nha-docs-admin-quan-ly-don-hang.jpg (Ảnh trang quản lý đơn hàng)">
-                                </div>
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Quản Lý Đơn Hàng</h5>
-                                    <p>Xem, sửa, xóa và cập nhật trạng thái đơn</p>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Danh sách Mobile</span></div></div>
                                 </div>
                             </div>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#adminCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon bg-white rounded-circle p-2 text-dark"></span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#adminCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon bg-white rounded-circle p-2 text-dark"></span>
-                        </button>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- DỊCH VỤ -->
-        <div id="services" class="py-5 border-bottom">
-            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-wrench"></i> Danh Sách Dịch Vụ</h2>
-            
-            <p>Thợ Nhà cung cấp các gói dịch vụ sửa chữa với bảng giá tham khảo:</p>
-            
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <div style="color: #11998e; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-wind"></i> Sửa Máy Lạnh</div>
-                            <p>Vệ sinh, bơm ga, sửa chữa máy lạnh không lạnh, chảy nước.</p>
-                            <div style="color: #004d40; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 150.000 - 500.000 VNĐ</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <div style="color: #11998e; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-bolt"></i> Sửa Điện Nước</div>
-                            <p>Xử lý chập điện, rò rỉ nước, thay vòi nước, lắp đặt thiết bị điện.</p>
-                            <div style="color: #004d40; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: Khảo sát báo giá</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <div style="color: #11998e; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-tint"></i> Sửa Máy Giặt</div>
-                            <p>Sửa máy giặt không vắt, không cấp nước, báo lỗi bo mạch.</p>
-                            <div style="color: #004d40; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 200.000 - 600.000 VNĐ</div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <div style="color: #11998e; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-hammer"></i> Cải Tạo Nhà</div>
-                            <p>Sơn nước, lát gạch, chống thấm, sửa chữa trần thạch cao.</p>
-                            <div style="color: #004d40; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: Theo m2 / Hạng mục</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- DATABASE -->
-        <div id="database" class="py-5 border-bottom">
-            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-database"></i> Cấu Trúc Database</h2>
-            
-            <p>Database: <code>thonha_db</code></p>
-            
-            <!-- 1. Bảng Admins -->
-            <div class="card border-0 mb-4 shadow-sm">
-                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
-                    <h5 class="mb-0 text-dark"><i class="fas fa-user-shield text-primary"></i> 1. Bảng `admins` (Quản trị viên)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped mb-0">
-                            <thead class="table-success">
-                                <tr>
-                                    <th>Cột</th>
-                                    <th>Kiểu dữ liệu</th>
-                                    <th>Mô tả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Khóa chính, tự tăng</td>
-                                </tr>
-                                <tr>
-                                    <td><code>username</code></td>
-                                    <td>varchar(50)</td>
-                                    <td>Tên đăng nhập (duy nhất)</td>
-                                </tr>
-                                <tr>
-                                    <td><code>password</code></td>
-                                    <td>varchar(255)</td>
-                                    <td>Mật khẩu đã mã hóa (bcrypt)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. Bảng Service Categories -->
-            <div class="card border-0 mb-4 shadow-sm">
-                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
-                    <h5 class="mb-0 text-dark"><i class="fas fa-list text-primary"></i> 2. Bảng `service_categories` (Danh mục dịch vụ)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped mb-0">
-                            <thead class="table-success">
-                                <tr>
-                                    <th>Cột</th>
-                                    <th>Kiểu dữ liệu</th>
-                                    <th>Mô tả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Khóa chính, tự tăng</td>
-                                </tr>
-                                <tr>
-                                    <td><code>name</code></td>
-                                    <td>varchar(100)</td>
-                                    <td>Tên danh mục (VD: Sửa máy lạnh)</td>
-                                </tr>
-                                <tr>
-                                    <td><code>description</code></td>
-                                    <td>text</td>
-                                    <td>Mô tả danh mục</td>
-                                </tr>
-                                <tr>
-                                    <td><code>is_active</code></td>
-                                    <td>tinyint(1)</td>
-                                    <td>Trạng thái (1: Hiện, 0: Ẩn)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. Bảng Services -->
-            <div class="card border-0 mb-4 shadow-sm">
-                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
-                    <h5 class="mb-0 text-dark"><i class="fas fa-wrench text-primary"></i> 3. Bảng `services` (Chi tiết dịch vụ)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped mb-0">
-                            <thead class="table-success">
-                                <tr>
-                                    <th>Cột</th>
-                                    <th>Kiểu dữ liệu</th>
-                                    <th>Mô tả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Khóa chính</td>
-                                </tr>
-                                <tr>
-                                    <td><code>category_id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Khóa ngoại liên kết với bảng `service_categories`</td>
-                                </tr>
-                                <tr>
-                                    <td><code>name</code></td>
-                                    <td>varchar(150)</td>
-                                    <td>Tên dịch vụ cụ thể (VD: Vệ sinh máy lạnh)</td>
-                                </tr>
-                                <tr>
-                                    <td><code>price</code></td>
-                                    <td>varchar(50)</td>
-                                    <td>Giá dịch vụ</td>
-                                </tr>
-                                <tr>
-                                    <td><code>description</code></td>
-                                    <td>text</td>
-                                    <td>Mô tả chi tiết</td>
-                                </tr>
-                                <tr>
-                                    <td><code>is_active</code></td>
-                                    <td>tinyint(1)</td>
-                                    <td>Trạng thái</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. Bảng Bookings -->
-            <div class="card border-0 mb-4 shadow-sm">
-                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
-                    <h5 class="mb-0 text-dark"><i class="fas fa-file-invoice text-primary"></i> 4. Bảng `bookings` (Đơn đặt hàng)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped mb-0">
-                            <thead class="table-success">
-                                <tr>
-                                    <th>Cột</th>
-                                    <th>Kiểu dữ liệu</th>
-                                    <th>Mô tả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Khóa chính</td>
-                                </tr>
-                                <tr>
-                                    <td><code>order_code</code></td>
-                                    <td>varchar(30)</td>
-                                    <td>Mã đơn hàng (VD: TN123456)</td>
-                                </tr>
-                                <tr>
-                                    <td><code>customer_name</code></td>
-                                    <td>varchar(100)</td>
-                                    <td>Tên khách hàng</td>
-                                </tr>
-                                <tr>
-                                    <td><code>phone</code></td>
-                                    <td>varchar(20)</td>
-                                    <td>Số điện thoại</td>
-                                </tr>
-                                <tr>
-                                    <td><code>address</code></td>
-                                    <td>text</td>
-                                    <td>Địa chỉ thi công</td>
-                                </tr>
-                                <tr>
-                                    <td><code>note</code></td>
-                                    <td>text</td>
-                                    <td>Ghi chú thêm</td>
-                                </tr>
-                                <tr>
-                                    <td><code>status</code></td>
-                                    <td>enum</td>
-                                    <td>'new' (Mới), 'confirmed' (Đã xác nhận), 'doing' (Đang làm), 'done' (Hoàn thành), 'cancel' (Hủy)</td>
-                                </tr>
-                                <tr>
-                                    <td><code>created_at</code></td>
-                                    <td>timestamp</td>
-                                    <td>Thời gian tạo đơn</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. Bảng Booking Services -->
-            <div class="card border-0 mb-4 shadow-sm">
-                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
-                    <h5 class="mb-0 text-dark"><i class="fas fa-link text-primary"></i> 5. Bảng `booking_services` (Chi tiết dịch vụ trong đơn)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped mb-0">
-                            <thead class="table-success">
-                                <tr>
-                                    <th>Cột</th>
-                                    <th>Kiểu dữ liệu</th>
-                                    <th>Mô tả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Khóa chính</td>
-                                </tr>
-                                <tr>
-                                    <td><code>booking_id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Liên kết với bảng `bookings`</td>
-                                </tr>
-                                <tr>
-                                    <td><code>service_id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Liên kết với bảng `services`</td>
-                                </tr>
-                                <tr>
-                                    <td><code>price</code></td>
-                                    <td>varchar(50)</td>
-                                    <td>Giá dịch vụ tại thời điểm đặt</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6. Bảng Cancel Requests -->
-            <div class="card border-0 mb-4 shadow-sm">
-                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
-                    <h5 class="mb-0 text-dark"><i class="fas fa-ban text-danger"></i> 6. Bảng `cancel_requests` (Yêu cầu hủy đơn)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped mb-0">
-                            <thead class="table-success">
-                                <tr>
-                                    <th>Cột</th>
-                                    <th>Kiểu dữ liệu</th>
-                                    <th>Mô tả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Khóa chính</td>
-                                </tr>
-                                <tr>
-                                    <td><code>booking_id</code></td>
-                                    <td>int(11)</td>
-                                    <td>Liên kết với bảng `bookings`</td>
-                                </tr>
-                                <tr>
-                                    <td><code>cancel_reason</code></td>
-                                    <td>text</td>
-                                    <td>Lý do hủy đơn</td>
-                                </tr>
-                                <tr>
-                                    <td><code>cancel_status</code></td>
-                                    <td>enum</td>
-                                    <td>'pending' (Chờ duyệt), 'approved' (Đã duyệt), 'rejected' (Từ chối)</td>
-                                </tr>
-                                <tr>
-                                    <td><code>cancel_requested_at</code></td>
-                                    <td>timestamp</td>
-                                    <td>Thời gian gửi yêu cầu</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- LOGIC PHP -->
-        <div id="logic" class="py-5 border-bottom">
-            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-code"></i> Logic PHP Backend</h2>
-            
-            <h3 class="mt-4 mb-3" style="color: #004d40;">Kết Nối Database (db.php)</h3>
-            <div class="card bg-dark text-white border-0">
-                <div class="card-body p-0">
-                    <pre class="m-0 p-3"><code class="language-php">&lt;?php
-// File: api/db.php
-$conn = new mysqli("localhost", "root", "", "thonha_db");
-
-if ($conn->connect_error) {
-    die("Kết nối thất bại: " . $conn->connect_error);
-}
-
-// Quan trọng: Set charset UTF-8
-$conn->set_charset("utf8mb4");
-?&gt;</code></pre>
-                </div>
-            </div>
-
-            <h3 class="mt-4 mb-3" style="color: #004d40;">API Đặt Lịch (book.php)</h3>
-            <div class="card bg-dark text-white border-0">
-                <div class="card-body p-0">
-                    <pre class="m-0 p-3"><code class="language-php">&lt;?php
-// File: api/book.php
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
-
-// Include file kết nối database
-require_once 'db.php';
-
-// Nếu db.php không có biến $conn, tạo kết nối mới
-if (!isset($conn)) {
-    $conn = new mysqli("localhost", "root", "", "thonha");
-    
-    if ($conn->connect_error) {
-        http_response_code(500);
-        echo json_encode([
-            "status" => "error",
-            "message" => "Lỗi kết nối database: " . $conn->connect_error
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-}
-
-// Set charset UTF-8
-$conn->set_charset("utf8mb4");
-
-// Chỉ chấp nhận POST request
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Chỉ chấp nhận POST request"
-    ], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-// Lấy dữ liệu JSON từ request body
-$json = file_get_contents('php://input');
-$data = json_decode($json, true);
-
-// Validate dữ liệu
-if (!$data) {
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Dữ liệu không hợp lệ"
-    ], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-$name = trim($data['name'] ?? '');
-$phone = trim($data['phone'] ?? '');
-$service_id = trim($data['service_id'] ?? '');
-$address = trim($data['address'] ?? '');
-$note = trim($data['note'] ?? '');
-
-// Validate các trường bắt buộc
-if (empty($name) || empty($phone) || empty($service_id) || empty($address)) {
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Vui lòng điền đầy đủ thông tin bắt buộc"
-    ], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-// Validate số điện thoại
-if (!preg_match('/^(0|\+84)[0-9]{9}$/', $phone)) {
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Số điện thoại không hợp lệ"
-    ], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-// Tạo mã đơn hàng
-$order_code = "TN" . rand(100000, 999999);
-
-// Kiểm tra trùng mã (rất hiếm nhưng cần check)
-$check_sql = "SELECT id FROM bookings WHERE order_code = ?";
-$check_stmt = $conn->prepare($check_sql);
-$check_stmt->bind_param("s", $order_code);
-$check_stmt->execute();
-if ($check_stmt->get_result()->num_rows > 0) {
-    // Nếu trùng, tạo lại
-    $order_code = "TN" . rand(100000, 999999);
-}
-$check_stmt->close();
-
-// Lấy thông tin service để lấy service_id và price
-$service_sql = "SELECT id, price FROM services WHERE name = ? AND is_active = 1 LIMIT 1";
-$service_stmt = $conn->prepare($service_sql);
-$service_stmt->bind_param("s", $service_id);
-$service_stmt->execute();
-$service_result = $service_stmt->get_result();
-
-if ($service_result->num_rows === 0) {
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Dịch vụ không tồn tại hoặc đã ngừng hoạt động"
-    ], JSON_UNESCAPED_UNICODE);
-    $service_stmt->close();
-    exit;
-}
-
-$service_row = $service_result->fetch_assoc();
-$service_id_real = $service_row['id'];
-$service_price = $service_row['price'];
-$service_stmt->close();
-
-// Bắt đầu transaction
-$conn->begin_transaction();
-
-try {
-    // 1. Insert vào bảng bookings
-    $booking_sql = "INSERT INTO bookings (order_code, customer_name, phone, address, note, status, created_at) 
-                    VALUES (?, ?, ?, ?, ?, 'new', NOW())";
-    $booking_stmt = $conn->prepare($booking_sql);
-    $booking_stmt->bind_param("sssss", $order_code, $name, $phone, $address, $note);
-    
-    if (!$booking_stmt->execute()) {
-        throw new Exception("Lỗi khi tạo đơn hàng: " . $booking_stmt->error);
-    }
-    
-    $booking_id = $conn->insert_id;
-    $booking_stmt->close();
-    
-    // 2. Insert vào bảng booking_services
-    $booking_service_sql = "INSERT INTO booking_services (booking_id, service_id, price) VALUES (?, ?, ?)";
-    $booking_service_stmt = $conn->prepare($booking_service_sql);
-    $booking_service_stmt->bind_param("iis", $booking_id, $service_id_real, $service_price);
-    
-    if (!$booking_service_stmt->execute()) {
-        throw new Exception("Lỗi khi thêm dịch vụ: " . $booking_service_stmt->error);
-    }
-    
-    $booking_service_stmt->close();
-    
-    // Commit transaction
-    $conn->commit();
-    
-    // Trả về kết quả thành công
-    echo json_encode([
-        "status" => "success",
-        "message" => "Đặt lịch thành công",
-        "order_code" => $order_code,
-        "booking_id" => $booking_id
-    ], JSON_UNESCAPED_UNICODE);
-    
-} catch (Exception $e) {
-    // Rollback nếu có lỗi
-    $conn->rollback();
-    
-    http_response_code(500);
-    echo json_encode([
-        "status" => "error",
-        "message" => $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE);
-}
-
-$conn->close();
-?&gt;</code></pre>
-                </div>
-            </div>
-        </div>
-        
-        <!-- CÁCH CÀI ĐẶT -->
-        <div id="installation" class="py-5 border-bottom">
-            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-download"></i> Hướng Dẫn Cài Đặt</h2>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card border-start border-4 mb-3" style="border-left-color: #11998e !important;">
-                        <div class="card-body">
-                            <h5 class="card-title text-success">Bước 1: Cài đặt XAMPP</h5>
-                            <p>Tải và cài đặt XAMPP. Khởi động module <strong>Apache</strong> và <strong>MySQL</strong>.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card border-start border-4 mb-3" style="border-left-color: #11998e !important;">
-                        <div class="card-body">
-                            <h5 class="card-title text-success">Bước 2: Copy Source Code</h5>
-                            <p>Copy thư mục dự án vào <code>C:\xampp\htdocs\thonha</code></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card border-start border-4 mb-3" style="border-left-color: #11998e !important;">
-                        <div class="card-body">
-                            <h5 class="card-title text-success">Bước 3: Import Database</h5>
-                            <p>Truy cập <code>http://localhost/phpmyadmin</code>, tạo DB tên <code>thonha</code> và import file <code>thonha.sql</code>.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card border-start border-4 mb-3" style="border-left-color: #11998e !important;">
-                        <div class="card-body">
-                            <h5 class="card-title text-success">Bước 4: Chạy Website</h5>
-                            <p>Mở trình duyệt truy cập: <code>http://localhost/thonha</code></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- HƯỚNG DẪN SỬ DỤNG -->
-        <div id="usage" class="py-5">
-            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-book"></i> Hướng Dẫn Sử Dụng</h2>
-            
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <h4 class="mb-3 text-secondary">Dành cho Khách Hàng</h4>
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1 text-success">1. Tìm dịch vụ</h5>
+                    <!-- Step 2.2 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 2.2</span>
+                        <h3 class="step-heading">Hoàn tất Form Đặt lịch</h3>
+                        <p>Nhập địa chỉ và mô tả sự cố. Chú ý kiểm tra chính xác số điện thoại để Thợ liên hệ.</p>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Form Đặt lịch PC</span></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Form Tablet</span></div></div>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Form Mobile</span></div></div>
+                                </div>
                             </div>
-                            <p class="mb-1">Truy cập trang chủ, xem danh sách các dịch vụ sửa chữa có sẵn.</p>
-                        </div>
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1 text-success">2. Đặt lịch</h5>
-                            </div>
-                            <p class="mb-1">Nhấn nút "Đặt lịch ngay", điền tên và số điện thoại vào form.</p>
-                        </div>
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1 text-success">3. Chờ xác nhận</h5>
-                            </div>
-                            <p class="mb-1">Nhân viên sẽ gọi lại sau 5-10 phút để xác nhận địa chỉ và thời gian.</p>
                         </div>
                     </div>
-                </div>
-                
-                <div class="col-lg-6 mb-4">
-                    <h4 class="mb-3 text-secondary">Dành cho Admin</h4>
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1 text-success">1. Đăng nhập</h5>
+                </section>
+
+                <!-- SECTION: CUSTOMER -->
+                <section id="sec-customer" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-user"></i> 3. Hướng dẫn cho Khách hàng</h2>
+                    
+                    <!-- Step 3.1 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 3.1</span>
+                        <h3 class="step-heading">Quản lý Đơn hàng cá nhân</h3>
+                        <p>Theo dõi trạng thái đơn từ lúc Chờ xác nhận đến khi Thợ hoàn thành công việc.</p>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Dashboard KH PC</span></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Dashboard Tablet</span></div></div>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Dashboard Mobile</span></div></div>
+                                </div>
                             </div>
-                            <p class="mb-1">Truy cập <code>/admin/login.php</code>. Tài khoản mặc định: <code>admin / 123456</code></p>
-                        </div>
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1 text-success">2. Xử lý đơn</h5>
-                            </div>
-                            <p class="mb-1">Vào mục "Quản lý đơn hàng", bấm "Xác nhận" khi đã liên hệ khách.</p>
-                        </div>
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1 text-success">3. Thêm dịch vụ</h5>
-                            </div>
-                            <p class="mb-1">Vào mục "Quản lý dịch vụ" để thêm mới hoặc cập nhật giá cả.</p>
                         </div>
                     </div>
-                </div>
+
+                    <!-- Step 3.2 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 3.2</span>
+                        <h3 class="step-heading">Xác nhận giá thực tế & Nhận trợ giá 5%</h3>
+                        <p>Khi đơn hàng ở trạng thái hoàn thành, Khách hàng thực hiện nhập số tiền thực tế đã thỏa thuận với Thợ.</p>
+                        <div class="note-box">
+                            <strong>Quyền lợi:</strong> Hệ thống sẽ tính toán khoản trợ giá 5% dựa trên số tiền này để tri ân khách hàng và hỗ trợ phí dịch vụ.
+                        </div>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-hand-holding-usd"></i><span>Modal nhập giá PC</span></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Modal nhập giá Tablet</span></div></div>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Modal nhập giá Mobile</span></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: PROVIDER -->
+                <section id="sec-provider" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-tools"></i> 4. Hướng dẫn cho Nhà cung cấp</h2>
+                    
+                    <!-- Step 4.1 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 4.1</span>
+                        <h3 class="step-heading">Tiếp nhận đơn hàng mới</h3>
+                        <p>Xem thông tin khách hàng, vị trí và sự cố cần xử lý để nhận đơn.</p>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Đơn hàng NCC PC</span></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Đơn hàng Tablet</span></div></div>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Đơn hàng Mobile</span></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4.2 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 4.2</span>
+                        <h3 class="step-heading">Thực hiện và Cập nhật trạng thái</h3>
+                        <p>Thợ thực hiện sửa chữa và cập nhật trạng thái đơn hàng sang "Đang thực hiện" và "Hoàn thành" trên dashboard của mình.</p>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-check-double"></i><span>Màn hình trạng thái PC</span></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Màn hình trạng thái Tablet</span></div></div>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Màn hình trạng thái Mobile</span></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: ADMIN -->
+                <section id="sec-admin" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-user-shield"></i> 5. Hướng dẫn cho Admin</h2>
+                    
+                    <!-- Step 5.1 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 5.1</span>
+                        <h3 class="step-heading">Quản trị toàn hệ thống</h3>
+                        <p>Theo dõi biểu đồ doanh thu và quản lý danh sách Thợ, Khách hàng toàn quốc.</p>
+                        
+                        <div class="device-gallery">
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <span class="frame-label">Desktop (PC)</span>
+                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Admin Dashboard PC</span></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <span class="frame-label">Tablet</span>
+                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Admin Tablet</span></div></div>
+                                </div>
+                                <div class="col-lg-2 col-6">
+                                    <span class="frame-label">Điện thoại</span>
+                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Admin Mobile</span></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         </div>
     </div>
-    
-    <!-- Back to Top Button -->
-    <button onclick="scrollToTop()" id="backToTop" class="btn btn-primary rounded-circle shadow" style="display: none; position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background-color: #11998e; border: none; z-index: 999;">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-    
-    <script>
-        // Back to Top Button Logic
-        const backToTopBtn = document.getElementById('backToTop');
-        
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                backToTopBtn.style.display = 'block';
-            } else {
-                backToTopBtn.style.display = 'none';
-            }
-        });
-        
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        // Active Navigation Link
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('[id]');
-            const scrollY = window.pageYOffset;
-            
-            sections.forEach(current => {
-                const sectionHeight = current.offsetHeight;
-                const sectionTop = current.offsetTop - 100;
-                const sectionId = current.getAttribute('id');
-                const navLink = document.querySelector(`.nav-link[href*="${sectionId}"]`);
-                
-                if (navLink) {
-                    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-                        navLink.style.color = '#004d40';
-                        navLink.style.fontWeight = 'bold';
-                        navLink.style.backgroundColor = '#e0f2f1';
-                        navLink.style.borderRadius = '5px';
-                    } else {
-                        navLink.style.color = '#11998e';
-                        navLink.style.fontWeight = '600';
-                        navLink.style.backgroundColor = 'transparent';
-                    }
-                }
-            });
-        });
-    </script>
+
+    <footer>
+        <div class="container-fluid">
+            <h2 class="mb-3" style="font-family: 'Pacifico', cursive; color: white;">Thợ Nhà</h2>
+            <p>Hệ thống kết nối dịch vụ sửa chữa thông minh</p>
+            <p class="small opacity-50 mt-4">&copy; 2026 Dịch Vụ Quanh Ta. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
