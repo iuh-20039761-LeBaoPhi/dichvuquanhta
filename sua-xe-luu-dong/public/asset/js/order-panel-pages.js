@@ -13,7 +13,6 @@
     return window.SharedOrderUtils || {};
   };
   var shared = getShared();
-  var REVIEW_UPLOAD_ENDPOINT = "../public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
     customer: {
       text: ["danhgia_khachhang"],

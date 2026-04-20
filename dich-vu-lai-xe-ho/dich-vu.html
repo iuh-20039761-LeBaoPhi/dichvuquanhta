@@ -139,8 +139,10 @@
       <script>
         // Format tiền tệ
         function formatMoney(price) {
-          if (price === "Liên hệ") return price;
-          return price.toLocaleString('vi-VN') + ' đ';
+          if (price === "Liên hệ" || price === "Tính theo km" || price === "Theo thỏa thuận") return price;
+          if (typeof price === 'string' && isNaN(parseFloat(price))) return price;
+          var num = parseFloat(price);
+          return num.toLocaleString('vi-VN') + ' đ';
         }
 
         // Render danh sách dịch vụ từ JSON
