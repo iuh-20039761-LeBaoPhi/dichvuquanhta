@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         '5': { icon: 'fa-broom', color: '#0284c7', bg: '#e0f2fe', link: '../dich-vu-don-ve-sinh/admin_donvesinh/index.php', desc: 'Giúp việc nhà và vệ sinh công nghiệp' },
         '6': { icon: 'fa-id-card', color: '#4b5563', bg: '#f3f4f6', link: '#', desc: 'Dịch vụ tìm tài xế lái xe an toàn' },
         '7': { icon: 'fa-motorcycle', color: '#ca8a04', bg: '#fefce8', link: '#', desc: 'Dịch vụ gọi shipper nhận và chuyển đồ hỏa tốc' },
-        '8': { icon: 'fa-wrench', color: '#dc2626', bg: '#fef2f2', link: '../sua-xe-luu-dong/admin/index.html', desc: 'Cứu hộ, vá săm lốp và sửa xe tận nơi' },
+        '8': { icon: 'fa-wrench', color: '#dc2626', bg: '#fef2f2', link: '../dich-vu/sua-chua/sua-xe-luu-dong/admin/index.html', desc: 'Cứu hộ, vá săm lốp và sửa xe tận nơi' },
         '9': { icon: 'fa-tools', color: '#10b981', bg: '#ecfdf5', link: '../tho-nha/pages/admin/quan-tri.html', desc: 'Dịch vụ gọi thợ sửa chữa, bảo trì tại gia' },
         '10': { icon: 'fa-car-side', color: '#3b82f6', bg: '#eff6ff', link: '../thue-xe/views/pages/admin/quan-tri.html', desc: 'Hệ thống cho thuê xe du lịch, tự lái' },
         '11': { icon: 'fa-tshirt', color: '#4f46e5', bg: '#e0e7ff', link: '../dich-vu/giat-ui/giat-ui-nhanh/admin/index.html', desc: 'Đội ngũ đến nhận giặt sấy đồ cấp tốc tận nhà' }
