@@ -29,7 +29,9 @@
         u.searchParams.set("username", username);
         u.searchParams.set("password", password);
         routes[key] = u.toString();
-      } catch (e) { /* skip */ }
+      } catch (e) {
+        /* skip */
+      }
     });
   })();
 
@@ -128,7 +130,9 @@
   }
 
   function normalizeText(value) {
-    return String(value ?? "").replace(/\s+/g, " ").trim();
+    return String(value ?? "")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   function normalizePhone(value) {
@@ -156,7 +160,9 @@
         const userUsername = normalizeText(
           user.username || user.phone || user.so_dien_thoai || "",
         ).toLowerCase();
-        const userPhone = normalizePhone(user.phone || user.so_dien_thoai || "");
+        const userPhone = normalizePhone(
+          user.phone || user.so_dien_thoai || "",
+        );
         const userEmail = normalizeText(user.email || "").toLowerCase();
 
         return (
@@ -187,10 +193,7 @@
         "",
     );
     const password = String(
-      session.password ||
-        storedUser?.password ||
-        storedUser?.mat_khau ||
-        "",
+      session.password || storedUser?.password || storedUser?.mat_khau || "",
     );
 
     if (!username || !password) return null;
@@ -358,14 +361,13 @@
         ? order.service_meta
         : {};
     const pickupDate = normalizeText(
-      order.ngay_lay_hang ||
-        order.pickup_date ||
-        serviceMeta.pickup_date ||
-        "",
+      order.ngay_lay_hang || order.pickup_date || serviceMeta.pickup_date || "",
     );
     const explicitDeadline = buildLocalDateTimeMs(
       pickupDate,
-      normalizeText(order.gio_ket_thuc_lay_hang || serviceMeta.pickup_slot_end || ""),
+      normalizeText(
+        order.gio_ket_thuc_lay_hang || serviceMeta.pickup_slot_end || "",
+      ),
     );
     if (explicitDeadline) return explicitDeadline;
 
@@ -406,14 +408,14 @@
           order?.acceptedAt ||
           "",
       ) ||
-        normalizeText(
-          order?.shipper_id ||
-            order?.ncc_id ||
-            order?.provider_id ||
-            order?.shipper_name ||
-            order?.nha_cung_cap_ho_ten ||
-            "",
-        ),
+      normalizeText(
+        order?.shipper_id ||
+          order?.ncc_id ||
+          order?.provider_id ||
+          order?.shipper_name ||
+          order?.nha_cung_cap_ho_ten ||
+          "",
+      ),
     );
   }
 
@@ -438,14 +440,20 @@
   function shouldAutoCancelPendingOrder(order, nowMs = Date.now()) {
     if (!order || typeof order !== "object") return false;
     if (normalizeText(order.ngayhuy || order.cancelled_at || "")) return false;
-    if (normalizeText(order.ngaybatdauthucte || order.started_at || "")) return false;
-    if (normalizeText(order.ngayhoanthanhthucte || order.completed_at || "")) return false;
+    if (normalizeText(order.ngaybatdauthucte || order.started_at || ""))
+      return false;
+    if (normalizeText(order.ngayhoanthanhthucte || order.completed_at || ""))
+      return false;
     if (hasAcceptedOrAssignedOrder(order)) return false;
 
     const normalizedStatus = String(order.status || order.trang_thai || "")
       .trim()
       .toLowerCase();
-    if (["cancelled", "canceled", "completed", "delivered", "success"].includes(normalizedStatus)) {
+    if (
+      ["cancelled", "canceled", "completed", "delivered", "success"].includes(
+        normalizedStatus,
+      )
+    ) {
       return false;
     }
 
@@ -478,7 +486,9 @@
               trang_thai: "cancelled",
               status: "cancelled",
               ngayhuy: cancelledAt,
-              ly_do_huy: normalizeText(rawRow.ly_do_huy || rawRow.cancel_reason || "") || AUTO_CANCEL_REASON,
+              ly_do_huy:
+                normalizeText(rawRow.ly_do_huy || rawRow.cancel_reason || "") ||
+                AUTO_CANCEL_REASON,
               updated_at: cancelledAt,
             },
             rawRow.id,
@@ -558,9 +568,7 @@
       throw new Error("Không tìm thấy helper upload Google Drive.");
     }
 
-    return normalizeMediaItems(
-      await core.uploadFilesToDrive(list),
-    );
+    return normalizeMediaItems(await core.uploadFilesToDrive(list));
   }
   const escapeHtml =
     typeof core.escapeHtml === "function"
@@ -626,7 +634,8 @@
     typeof core.getPaymentStatusLabel === "function"
       ? (paymentStatus, fallback = "Chưa hoàn tất") =>
           core.getPaymentStatusLabel(paymentStatus, fallback)
-      : (paymentStatus, fallback = "Chưa hoàn tất") => paymentStatus || fallback;
+      : (paymentStatus, fallback = "Chưa hoàn tất") =>
+          paymentStatus || fallback;
   const getFeePayerLabel =
     typeof core.getFeePayerLabel === "function"
       ? (feePayer) => core.getFeePayerLabel(feePayer)
@@ -690,9 +699,7 @@
           breakdown.insuranceFee ??
           0,
       ),
-      service_fee: Number(
-        breakdown.service_fee ?? breakdown.serviceFee ?? 0,
-      ),
+      service_fee: Number(breakdown.service_fee ?? breakdown.serviceFee ?? 0),
       total_fee: Number(
         breakdown.total_fee ??
           breakdown.tong_cuoc ??
@@ -735,18 +742,19 @@
   function normalizeLocalOrderDetail(detail) {
     const nextDetail = cloneDetail(detail);
     const nextOrder = nextDetail.order || {};
-    nextOrder.id = nextOrder.id || nextOrder.krud_id || nextOrder.order_code || "";
+    nextOrder.id =
+      nextOrder.id || nextOrder.krud_id || nextOrder.order_code || "";
     nextOrder.krud_id = nextOrder.krud_id || "";
     const explicitOrderCode = normalizeText(nextOrder.order_code || "");
     nextOrder.order_code = isSystemOrderCode(explicitOrderCode)
       ? explicitOrderCode.toUpperCase()
       : formatSystemOrderCode(
-            nextOrder.krud_id || nextOrder.id,
-            nextOrder.created_at || new Date(),
-          ) ||
-          explicitOrderCode ||
-          nextOrder.id ||
-          "";
+          nextOrder.krud_id || nextOrder.id,
+          nextOrder.created_at || new Date(),
+        ) ||
+        explicitOrderCode ||
+        nextOrder.id ||
+        "";
     nextOrder.status = String(nextOrder.status || "pending").toLowerCase();
     nextOrder.status_label =
       nextOrder.status_label || getStatusLabel(nextOrder.status);
@@ -778,7 +786,9 @@
     );
     nextOrder.cancel_reason =
       nextOrder.cancel_reason || nextOrder.ly_do_huy || "";
-    nextOrder.rating = Number(nextOrder.rating || nextOrder.danh_gia_so_sao || 0);
+    nextOrder.rating = Number(
+      nextOrder.rating || nextOrder.danh_gia_so_sao || 0,
+    );
     nextOrder.feedback = nextOrder.feedback || nextOrder.phan_hoi || "";
     nextOrder.shipper_note =
       nextOrder.shipper_note || nextOrder.ghi_chu_shipper || "";
@@ -849,14 +859,18 @@
         });
         const rows = await autoCancelPendingKrudRows(extractRows(response));
         const sessionId = normalizeText(session.id || "");
-        const sessionUsername = normalizeText(session.username || "").toLowerCase();
+        const sessionUsername = normalizeText(
+          session.username || "",
+        ).toLowerCase();
         const sessionPhone = normalizePhone(
           session.phone || session.so_dien_thoai || "",
         );
         const sessionEmail = normalizeText(session.email || "").toLowerCase();
         const localMap = new Map(
           localDetails.map((detail) => [
-            normalizeText(detail?.order?.order_code || detail?.order?.id || "").toUpperCase(),
+            normalizeText(
+              detail?.order?.order_code || detail?.order?.id || "",
+            ).toUpperCase(),
             detail,
           ]),
         );
@@ -985,7 +999,8 @@
                 pod_image:
                   record.pod_image || record.anh_xac_nhan_giao_hang || "",
                 ngayhuy: record.ngayhuy || "",
-                thoidiemnhandon: record.thoidiemnhandon || record.ngaynhan || "",
+                thoidiemnhandon:
+                  record.thoidiemnhandon || record.ngaynhan || "",
                 ngaynhan: record.ngaynhan || record.thoidiemnhandon || "",
                 ngaybatdauthucte: record.ngaybatdauthucte || "",
                 ngayhoanthanhthucte: record.ngayhoanthanhthucte || "",
@@ -1009,7 +1024,8 @@
                   record.ncc_dia_chi ||
                   record.dia_chi_nha_cung_cap ||
                   "",
-                vehicle_type: record.shipper_vehicle || record.vehicle_type || "",
+                vehicle_type:
+                  record.shipper_vehicle || record.vehicle_type || "",
                 shipper_vehicle:
                   record.shipper_vehicle || record.vehicle_type || "",
                 bien_so: record.bien_so || "",
@@ -1021,9 +1037,7 @@
                 ),
                 shipper_reports: normalizeMediaItems(
                   parseJsonSafe(
-                    record.shipper_reports_json ||
-                      record.shipper_reports ||
-                      [],
+                    record.shipper_reports_json || record.shipper_reports || [],
                     [],
                   ),
                 ),
@@ -1061,8 +1075,9 @@
                   old_status_label: "Khởi tạo",
                   new_status_label: "Đơn hàng",
                   note:
-                    normalizeText(record.ghi_chu_quan_tri || record.admin_note) ||
-                    "Đơn hàng được tải trực tiếp từ dữ liệu hệ thống.",
+                    normalizeText(
+                      record.ghi_chu_quan_tri || record.admin_note,
+                    ) || "Đơn hàng được tải trực tiếp từ dữ liệu hệ thống.",
                 },
               ],
             });
@@ -1077,18 +1092,15 @@
               ...detail,
               provider: {
                 ...(detail.provider || {}),
-                attachments:
-                  detail.provider?.attachments?.length
-                    ? detail.provider.attachments
-                    : localDetail.provider?.attachments,
-                shipper_reports:
-                  detail.provider?.shipper_reports?.length
-                    ? detail.provider.shipper_reports
-                    : localDetail.provider?.shipper_reports,
-                feedback_media:
-                  detail.provider?.feedback_media?.length
-                    ? detail.provider.feedback_media
-                    : localDetail.provider?.feedback_media,
+                attachments: detail.provider?.attachments?.length
+                  ? detail.provider.attachments
+                  : localDetail.provider?.attachments,
+                shipper_reports: detail.provider?.shipper_reports?.length
+                  ? detail.provider.shipper_reports
+                  : localDetail.provider?.shipper_reports,
+                feedback_media: detail.provider?.feedback_media?.length
+                  ? detail.provider.feedback_media
+                  : localDetail.provider?.feedback_media,
               },
               logs:
                 Array.isArray(localDetail.logs) && localDetail.logs.length
@@ -1104,7 +1116,10 @@
           return rightTime - leftTime;
         });
       } catch (error) {
-        console.warn("Cannot load customer orders from KRUD, fallback local:", error);
+        console.warn(
+          "Cannot load customer orders from KRUD, fallback local:",
+          error,
+        );
       }
     }
 
@@ -1266,7 +1281,9 @@
     if (localAuth && typeof localAuth.listAllKrudUsers === "function") {
       const users = await localAuth.listAllKrudUsers().catch(() => []);
       const sessionId = normalizeText(session.id || "");
-      const sessionUsername = normalizeText(session.username || "").toLowerCase();
+      const sessionUsername = normalizeText(
+        session.username || "",
+      ).toLowerCase();
       const sessionPhone = normalizePhone(
         session.phone || session.so_dien_thoai || "",
       );
@@ -1347,11 +1364,15 @@
       profile?.trangthai || profile?.trang_thai || "",
     ).toLowerCase();
 
-    if (isLocked || ["locked", "inactive", "blocked", "disabled"].includes(status)) {
+    if (
+      isLocked ||
+      ["locked", "inactive", "blocked", "disabled"].includes(status)
+    ) {
       return {
         label: "Đang khóa",
         className: "is-locked",
-        note: normalizeText(profile?.ly_do_khoa || profile?.lock_reason || "") ||
+        note:
+          normalizeText(profile?.ly_do_khoa || profile?.lock_reason || "") ||
           "Tài khoản đang bị khóa trên hệ thống.",
       };
     }
@@ -1372,7 +1393,11 @@
   }
 
   function getProfileInitial(name) {
-    return normalizeText(name || "").charAt(0).toUpperCase() || "K";
+    return (
+      normalizeText(name || "")
+        .charAt(0)
+        .toUpperCase() || "K"
+    );
   }
 
   function isDriveFileId(value) {
@@ -1614,8 +1639,7 @@
       nextDetail.order.status = "cancelled";
       nextDetail.order.status_label = "Đã hủy";
       nextDetail.order.ngayhuy = cancelledAt;
-      nextDetail.order.cancel_reason =
-        reason || "Khách hàng chủ động hủy đơn.";
+      nextDetail.order.cancel_reason = reason || "Khách hàng chủ động hủy đơn.";
       nextDetail.logs = [
         {
           old_status_label:
@@ -1634,7 +1658,9 @@
         ly_do_huy: nextDetail.order.cancel_reason,
       });
       if (!updatedOnKrud) {
-        console.warn("KRUD update unavailable for cancel-order, saved locally.");
+        console.warn(
+          "KRUD update unavailable for cancel-order, saved locally.",
+        );
       }
       persistOrderDetail(nextDetail);
       return { status: "success" };
@@ -1653,8 +1679,7 @@
       }
       const mediaFiles = formData?.getAll("media_files[]") || [];
       const nextDetail = normalizeLocalOrderDetail(currentDetail);
-      const orderRef =
-        nextDetail.order.order_code || nextDetail.order.id || "";
+      const orderRef = nextDetail.order.order_code || nextDetail.order.id || "";
       const existingFeedbackMedia = normalizeMediaItems(
         nextDetail.provider.feedback_media,
       );
@@ -1684,23 +1709,35 @@
     }
 
     if (action === "profile") {
-      const remoteProfile = await fetchCurrentKrudCustomer(session).catch(() => null);
+      const remoteProfile = await fetchCurrentKrudCustomer(session).catch(
+        () => null,
+      );
       if (remoteProfile) {
         updateAuthStorage((currentUser) => ({
           ...currentUser,
           fullname: normalizeText(
-            remoteProfile.fullname || remoteProfile.ho_ten || currentUser.fullname,
+            remoteProfile.fullname ||
+              remoteProfile.ho_ten ||
+              currentUser.fullname,
           ),
           ho_ten: normalizeText(
-            remoteProfile.ho_ten || remoteProfile.fullname || currentUser.ho_ten,
+            remoteProfile.ho_ten ||
+              remoteProfile.fullname ||
+              currentUser.ho_ten,
           ),
           phone: normalizeText(
-            remoteProfile.phone || remoteProfile.so_dien_thoai || currentUser.phone,
+            remoteProfile.phone ||
+              remoteProfile.so_dien_thoai ||
+              currentUser.phone,
           ),
           so_dien_thoai: normalizeText(
-            remoteProfile.so_dien_thoai || remoteProfile.phone || currentUser.so_dien_thoai,
+            remoteProfile.so_dien_thoai ||
+              remoteProfile.phone ||
+              currentUser.so_dien_thoai,
           ),
-          email: normalizeText(remoteProfile.email || currentUser.email).toLowerCase(),
+          email: normalizeText(
+            remoteProfile.email || currentUser.email,
+          ).toLowerCase(),
           address: normalizeText(
             remoteProfile.address ||
               remoteProfile.dia_chi ||
@@ -1792,10 +1829,7 @@
             latestSession.phone ||
             latestSession.so_dien_thoai ||
             "",
-          email:
-            remoteProfile?.email ||
-            latestSession.email ||
-            "",
+          email: remoteProfile?.email || latestSession.email || "",
           dia_chi:
             remoteProfile?.dia_chi ||
             remoteProfile?.diachi ||
@@ -1868,7 +1902,9 @@
         if (typeof core.uploadFileToDrive !== "function") {
           throw new Error("Hệ thống upload hồ sơ chưa sẵn sàng.");
         }
-        const uploaded = await core.uploadFileToDrive(file, { name: file.name });
+        const uploaded = await core.uploadFileToDrive(file, {
+          name: file.name,
+        });
         return normalizeText(uploaded?.fileId || uploaded?.id || "");
       };
 
@@ -1894,20 +1930,12 @@
             session.so_dien_thoai ||
             "",
         ).trim(),
-        email: String(
-          formData?.get("email") || session.email || "",
-        ).trim(),
+        email: String(formData?.get("email") || session.email || "").trim(),
         address: String(
-          formData?.get("dia_chi") ||
-            session.address ||
-            session.dia_chi ||
-            "",
+          formData?.get("dia_chi") || session.address || session.dia_chi || "",
         ).trim(),
         dia_chi: String(
-          formData?.get("dia_chi") ||
-            session.address ||
-            session.dia_chi ||
-            "",
+          formData?.get("dia_chi") || session.address || session.dia_chi || "",
         ).trim(),
         company_name: String(
           formData?.get("ten_cong_ty") || session.company_name || "",
@@ -1922,9 +1950,6 @@
           formData?.get("ma_so_thue") || session.tax_code || "",
         ).trim(),
         company_address: String(
-          formData?.get("dia_chi_cong_ty") || session.company_address || "",
-        ).trim(),
-        dia_chi: String(
           formData?.get("dia_chi_cong_ty") || session.company_address || "",
         ).trim(),
         dia_chi_cong_ty: String(
@@ -1965,15 +1990,17 @@
       const formData = options.body;
       const currentPassword = String(formData?.get("mat_khau_hien_tai") || "");
       const newPassword = String(formData?.get("mat_khau_moi") || "");
-      const remoteProfile = await fetchCurrentKrudCustomer(session).catch(() => null);
+      const remoteProfile = await fetchCurrentKrudCustomer(session).catch(
+        () => null,
+      );
       const localUsersKey = localAuth?.storageKeys?.users;
       const localUsers = localUsersKey ? readJson(localUsersKey, []) : [];
       const storedPassword = String(
         remoteProfile?.password ||
           remoteProfile?.mat_khau ||
-          localUsers
-            ?.find((item) => String(item.id || "") === String(session.id || ""))
-            ?.password ||
+          localUsers?.find(
+            (item) => String(item.id || "") === String(session.id || ""),
+          )?.password ||
           "",
       );
 
@@ -2363,14 +2390,14 @@
     }
 
     return rows
-        .map(
-          (item) => `
+      .map(
+        (item) => `
         <div class="rv-row">
           <span class="rv-label">${escapeHtml(item.label)}</span>
           <span class="rv-val">${formatCurrency(item.value)}</span>
         </div>`,
-        )
-        .join("");
+      )
+      .join("");
   }
 
   function isImageExtension(extension) {
@@ -3104,25 +3131,20 @@
     });
 
     const feedbackForm = document.getElementById("customer-feedback-form");
-
     if (feedbackForm) {
       const captureImage = document.getElementById("feedback-capture-image");
       const captureVideo = document.getElementById("feedback-capture-video");
       const uploadInput = document.getElementById("feedback-upload");
-      const selectedFilesHost = document.getElementById(
-        "customer-selected-files",
-      );
+      const selectedFilesHost = document.getElementById("customer-selected-files");
 
       function refreshSelectedFiles() {
         if (!selectedFilesHost) return;
-
         const files = [];
         [captureImage, captureVideo, uploadInput].forEach((input) => {
           if (input && input.files) {
             Array.from(input.files).forEach((file) => files.push(file.name));
           }
         });
-
         selectedFilesHost.textContent = files.length
           ? `Đã chọn: ${files.join(", ")}`
           : "Chưa chọn ảnh hoặc video phản hồi.";
@@ -3137,18 +3159,13 @@
         const formData = new FormData(feedbackForm);
         [captureImage, captureVideo, uploadInput].forEach((input) => {
           if (input && input.files) {
-            Array.from(input.files).forEach((file) =>
-              formData.append("media_files[]", file),
-            );
+            Array.from(input.files).forEach((file) => formData.append("media_files[]", file));
           }
         });
 
         try {
-          await apiRequest("submit-feedback", {
-            method: "POST",
-            body: formData,
-          });
-          showToast("Đã gửi phản hồi và media thành công.", "success");
+          await apiRequest("submit-feedback", { method: "POST", body: formData });
+          showToast("Đã gửi phản hồi thành công.", "success");
           window.location.reload();
         } catch (error) {
           showToast(error.message, "error");
@@ -3168,293 +3185,278 @@
 
     const name = profile.ho_ten || profile.fullname || "Khách hàng";
     const phone = profile.so_dien_thoai || profile.phone || "Chưa cập nhật";
-    const email = profile.email || "Chưa cập nhật email";
     const initial = getProfileInitial(name);
     const statusMeta = getProfileStatusMeta(profile);
-    const createdAtLabel = profile.created_at
-      ? formatDateTime(profile.created_at)
-      : "Chưa có dữ liệu";
-    const avatarSrc = resolveProfileMediaSource(
-      profile.link_avatar || profile.avatar_name || profile.avatartenfile,
-    );
-    const cccdFrontSrc = resolveProfileMediaSource(
-      profile.link_cccd_truoc ||
-        profile.cccd_front_name ||
-        profile.cccdmattruoctenfile,
-    );
-    const cccdBackSrc = resolveProfileMediaSource(
-      profile.link_cccd_sau ||
-        profile.cccd_back_name ||
-        profile.cccdmatsautenfile,
-    );
+    const createdAtLabel = profile.created_at ? formatDateTime(profile.created_at) : "Chưa có dữ liệu";
+    const avatarSrc = resolveProfileMediaSource(profile.link_avatar || profile.avatar_name || profile.avatartenfile);
+    const cccdFrontSrc = resolveProfileMediaSource(profile.link_cccd_truoc || profile.cccdmattruoctenfile);
+    const cccdBackSrc = resolveProfileMediaSource(profile.link_cccd_sau || profile.cccdmatsautenfile);
 
     content.innerHTML = `
       <section class="customer-portal-profile customer-portal-profile-rich">
+        <!-- HEADER HERO -->
         <div class="customer-profile-hero customer-profile-hero-rich">
           <div class="customer-profile-hero-main">
             <div class="customer-profile-avatar-wrapper customer-profile-avatar-wrapper-rich">
-              ${
-                avatarSrc
-                  ? `<img class="customer-profile-avatar-image" src="${escapeHtml(avatarSrc)}" alt="${escapeHtml(name)}" />`
-                  : `<div class="customer-profile-avatar-large">${initial}</div>`
-              }
+              ${avatarSrc ? `<img class="customer-profile-avatar-image" src="${escapeHtml(avatarSrc)}" alt="${escapeHtml(name)}" />` : `<div class="customer-profile-avatar-large">${initial}</div>`}
             </div>
             <div class="customer-profile-hero-info">
-              <p class="customer-profile-eyebrow">Hồ sơ khách hàng giao hàng</p>
+              <p class="customer-profile-eyebrow">Thành viên Giao Hàng Nhanh</p>
               <h2>${escapeHtml(name)}</h2>
-              <p><i class="fas fa-id-badge"></i> ${escapeHtml(profile.username || "Tài khoản khách")}</p>
               <div class="customer-profile-meta-list">
-                <span><i class="fas fa-phone"></i> ${escapeHtml(phone)}</span>
-                <span><i class="fas fa-envelope"></i> ${escapeHtml(email)}</span>
+                <span><i class="fas fa-id-badge"></i> ${escapeHtml(profile.username || "Tài khoản khách")}</span>
+                <span><i class="fas fa-clock"></i> Tham gia: ${escapeHtml(createdAtLabel)}</span>
               </div>
             </div>
           </div>
           <div class="customer-profile-hero-side">
             <span class="customer-profile-status-badge ${escapeHtml(statusMeta.className)}">${escapeHtml(statusMeta.label)}</span>
             <p class="customer-profile-hero-note">${escapeHtml(statusMeta.note)}</p>
-            <small><i class="fas fa-clock"></i> Đồng bộ lần gần nhất: ${escapeHtml(createdAtLabel)}</small>
           </div>
         </div>
 
+        <!-- 2. QUICK STATS SUMMARY -->
         <div class="customer-profile-summary">
-          <article><span>Tổng đơn</span><strong>${formatNumber(stats.total || 0)}</strong></article>
-          <article><span>Đang giao</span><strong>${formatNumber(stats.shipping || 0)}</strong></article>
-          <article><span>Hoàn tất</span><strong>${formatNumber(stats.completed || 0)}</strong></article>
+          <article>
+            <span>Tổng đơn hàng</span>
+            <strong>${formatNumber(stats.total || 0)}</strong>
+          </article>
+          <article>
+            <span>Đã hoàn tất</span>
+            <strong>${formatNumber(stats.completed || 0)}</strong>
+          </article>
+          <article>
+            <span>Tỷ lệ thành công</span>
+            <strong>${stats.success_rate || (stats.total ? Math.round((stats.completed / stats.total) * 100) : 0)}%</strong>
+          </article>
         </div>
 
-        <div class="customer-profile-sections">
-          <form id="customer-profile-form" class="customer-profile-edit-layout" enctype="multipart/form-data">
-            <div class="customer-profile-edit-main">
+        <div class="customer-profile-grid-container">
+          <!-- LEFT COLUMN: MAIN CONTENT (Identity, Business, Media) -->
+          <div class="customer-profile-col-main">
+            <form id="customer-profile-form" enctype="multipart/form-data">
+              <!-- 1. IDENTITY & CONTACT CARD -->
               <div class="customer-profile-card">
-                <div class="customer-profile-card-head">
-                  <i class="fas fa-user-gear"></i>
-                  <h3>Thông tin cá nhân</h3>
+                <div class="customer-profile-section-title">
+                  <i class="fas fa-address-card"></i>
+                  <h3>Thông tin định danh & Liên hệ</h3>
                 </div>
-                <div class="customer-form-row">
+                
+                <div class="customer-profile-form-grid" style="margin-top: 24px;">
                   <div class="customer-form-group">
-                    <span>Họ và tên</span>
+                    <span>Họ và tên khách hàng</span>
                     <div class="customer-form-field">
                       <i class="fas fa-user"></i>
                       <input name="ho_ten" value="${escapeHtml(name)}" required />
                     </div>
                   </div>
                   <div class="customer-form-group">
-                    <span>Số điện thoại tài khoản</span>
+                    <span>Số điện thoại (Định danh)</span>
                     <div class="customer-form-field">
-                      <i class="fas fa-phone"></i>
-                      <input name="so_dien_thoai" value="${escapeHtml(phone)}" readonly disabled aria-readonly="true" />
+                      <i class="fas fa-phone-lock"></i>
+                      <input name="so_dien_thoai" value="${escapeHtml(phone)}" readonly disabled />
                     </div>
                   </div>
-                </div>
-                <div class="customer-form-row">
                   <div class="customer-form-group">
-                    <span>Email</span>
+                    <span>Địa chỉ Email</span>
                     <div class="customer-form-field">
                       <i class="fas fa-envelope"></i>
-                      <input name="email" type="email" value="${escapeHtml(profile.email || "")}" placeholder="you@example.com" />
+                      <input name="email" type="email" value="${escapeHtml(profile.email || "")}" placeholder="name@example.com" />
                     </div>
                   </div>
                   <div class="customer-form-group">
                     <span>Địa chỉ liên hệ</span>
                     <div class="customer-form-field">
-                      <i class="fas fa-location-dot"></i>
-                      <input name="dia_chi" value="${escapeHtml(profile.dia_chi || profile.address || "")}" placeholder="Số nhà, đường, phường/xã..." />
+                      <i class="fas fa-map-location"></i>
+                      <input name="dia_chi" value="${escapeHtml(profile.dia_chi || profile.address || "")}" placeholder="Số nhà, tên đường..." />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="customer-profile-card">
-                <div class="customer-profile-card-head">
-                  <i class="fas fa-file-invoice"></i>
-                  <h3>Thông tin doanh nghiệp và xuất hóa đơn</h3>
-                </div>
-                <div class="customer-form-row">
-                  <div class="customer-form-group">
-                    <span>Tên công ty</span>
-                    <div class="customer-form-field">
-                      <i class="fas fa-building"></i>
-                      <input name="ten_cong_ty" value="${escapeHtml(profile.ten_cong_ty || profile.company_name || "")}" placeholder="Tên công ty / hộ kinh doanh" />
+              <!-- 2. BUSINESS INFO (COLLAPSIBLE) -->
+              <div class="customer-profile-card customer-profile-accordion-item ${profile.ten_cong_ty ? "is-active" : ""}">
+                <button type="button" class="customer-profile-accordion-header js-accordion-toggle">
+                    <div class="customer-profile-section-title">
+                        <i class="fas fa-building"></i>
+                        <h3>Thông tin doanh nghiệp (Tùy chọn)</h3>
                     </div>
-                  </div>
-                  <div class="customer-form-group">
-                    <span>Mã số thuế</span>
-                    <div class="customer-form-field">
-                      <i class="fas fa-receipt"></i>
-                      <input name="ma_so_thue" value="${escapeHtml(profile.ma_so_thue || profile.tax_code || "")}" placeholder="Nhập mã số thuế" />
-                    </div>
-                  </div>
-                </div>
-                <div class="customer-form-group">
-                  <span>Địa chỉ công ty</span>
-                  <div class="customer-form-field">
-                    <i class="fas fa-map-location-dot"></i>
-                    <input name="dia_chi_cong_ty" value="${escapeHtml(profile.dia_chi_cong_ty || profile.company_address || "")}" placeholder="Địa chỉ xuất hóa đơn / công ty" />
-                  </div>
-                </div>
-                <p class="customer-form-helper customer-form-helper-compact">
-                  <i class="fas fa-circle-info"></i> Số điện thoại là định danh tài khoản giao hàng, hiện không thể chỉnh sửa tại đây.
-                </p>
-              </div>
-            </div>
-
-            <div class="customer-profile-edit-side">
-              <div class="customer-profile-card customer-profile-card-compact">
-                <div class="customer-profile-card-head">
-                  <i class="fas fa-clipboard-check"></i>
-                  <h3>Tóm tắt hồ sơ</h3>
-                </div>
-                <div class="customer-profile-fact-list">
-                  <div><span>Trạng thái</span><strong>${escapeHtml(statusMeta.label)}</strong></div>
-                  <div><span>Tài khoản</span><strong>${escapeHtml(profile.username || "Tài khoản khách")}</strong></div>
-                  <div><span>Địa chỉ</span><strong>${escapeHtml(profile.dia_chi || profile.address || "Chưa cập nhật")}</strong></div>
-                </div>
-              </div>
-
-              <div class="customer-profile-card">
-                <div class="customer-profile-card-head">
-                  <i class="fas fa-images"></i>
-                  <h3>Ảnh đại diện và CCCD</h3>
-                </div>
-                <div class="customer-profile-media-grid">
-                  <article class="customer-profile-media-card">
-                    <div class="customer-profile-media-head">
-                      <strong>Ảnh đại diện</strong>
-                      <span>Tùy chọn</span>
-                    </div>
-                    <div class="customer-profile-media-preview">
-                      <img id="customer-avatar-preview" src="${escapeHtml(avatarSrc || "")}" alt="Ảnh đại diện" ${avatarSrc ? "" : "hidden"} />
-                      <div id="customer-avatar-empty" class="customer-profile-media-empty" ${avatarSrc ? "hidden" : ""}>Chưa có ảnh đại diện</div>
-                    </div>
-                    <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
-                      <input id="customer-avatar-file" name="avatar_file" type="file" accept="image/*" hidden />
-                      <i class="fas fa-camera"></i> Chọn ảnh
-                    </label>
-                  </article>
-
-                  <article class="customer-profile-media-card">
-                    <div class="customer-profile-media-head">
-                      <strong>CCCD mặt trước</strong>
-                      <span>Xác minh</span>
-                    </div>
-                    <div class="customer-profile-media-preview">
-                      <img id="customer-cccd-front-preview" src="${escapeHtml(cccdFrontSrc || "")}" alt="CCCD mặt trước" ${cccdFrontSrc ? "" : "hidden"} />
-                      <div id="customer-cccd-front-empty" class="customer-profile-media-empty" ${cccdFrontSrc ? "hidden" : ""}>Chưa có CCCD mặt trước</div>
-                    </div>
-                    <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
-                      <input id="customer-cccd-front-file" name="cccd_front_file" type="file" accept="image/*" hidden />
-                      <i class="fas fa-id-card"></i> Chọn ảnh
-                    </label>
-                  </article>
-
-                  <article class="customer-profile-media-card">
-                    <div class="customer-profile-media-head">
-                      <strong>CCCD mặt sau</strong>
-                      <span>Xác minh</span>
-                    </div>
-                    <div class="customer-profile-media-preview">
-                      <img id="customer-cccd-back-preview" src="${escapeHtml(cccdBackSrc || "")}" alt="CCCD mặt sau" ${cccdBackSrc ? "" : "hidden"} />
-                      <div id="customer-cccd-back-empty" class="customer-profile-media-empty" ${cccdBackSrc ? "hidden" : ""}>Chưa có CCCD mặt sau</div>
-                    </div>
-                    <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
-                      <input id="customer-cccd-back-file" name="cccd_back_file" type="file" accept="image/*" hidden />
-                      <i class="fas fa-id-card-clip"></i> Chọn ảnh
-                    </label>
-                  </article>
-                </div>
-              </div>
-
-              <div class="customer-profile-card customer-profile-save-card">
-                <div class="customer-profile-card-head">
-                  <i class="fas fa-floppy-disk"></i>
-                  <h3>Lưu hồ sơ</h3>
-                </div>
-                <p class="customer-profile-save-copy">Cập nhật ngay thông tin liên hệ, hóa đơn và ảnh xác minh để tiện xử lý đơn nhanh hơn.</p>
-                <button class="customer-btn customer-btn-primary" type="submit" id="customer-profile-submit-btn">
-                  <i class="fas fa-floppy-disk"></i> Lưu thay đổi
+                    <i class="fas fa-chevron-down customer-profile-accordion-icon"></i>
                 </button>
+                
+                <div class="customer-profile-accordion-body">
+                    <div class="customer-profile-form-grid">
+                      <div class="customer-form-group">
+                        <span>Tên đơn vị / Công ty</span>
+                        <div class="customer-form-field">
+                          <i class="fas fa-building"></i>
+                          <input name="ten_cong_ty" value="${escapeHtml(profile.ten_cong_ty || profile.company_name || "")}" placeholder="Dành cho xuất hóa đơn" />
+                        </div>
+                      </div>
+                      <div class="customer-form-group">
+                        <span>Mã số thuế</span>
+                        <div class="customer-form-field">
+                          <i class="fas fa-fingerprint"></i>
+                          <input name="ma_so_thue" value="${escapeHtml(profile.ma_so_thue || profile.tax_code || "")}" placeholder="GST / Tax ID" />
+                        </div>
+                      </div>
+                      <div class="customer-form-group" style="grid-column: span 2;">
+                        <span>Địa chỉ xuất hóa đơn</span>
+                        <div class="customer-form-field">
+                          <i class="fas fa-receipt"></i>
+                          <input name="dia_chi_cong_ty" value="${escapeHtml(profile.dia_chi_cong_ty || profile.company_address || "")}" placeholder="Địa chỉ chính thức của doanh nghiệp" />
+                        </div>
+                      </div>
+                    </div>
+                </div>
               </div>
-            </div>
-          </form>
 
-          <div class="customer-profile-card customer-password-card">
-            <div class="customer-profile-card-head">
-              <i class="fas fa-shield-halved"></i>
-              <h3>Bảo mật tài khoản</h3>
-            </div>
-            <form id="customer-password-form" class="customer-form-stack">
-              <div class="customer-form-group">
-                <span>Mật khẩu hiện tại</span>
-                <div class="customer-form-field">
-                  <i class="fas fa-key"></i>
-                  <input name="mat_khau_hien_tai" type="password" autocomplete="current-password" required placeholder="••••••••" />
+              <!-- 3. VERIFICATION & MEDIA (COLLAPSIBLE) -->
+              <div class="customer-profile-card customer-profile-accordion-item">
+                <button type="button" class="customer-profile-accordion-header js-accordion-toggle">
+                    <div class="customer-profile-section-title">
+                        <i class="fas fa-shield-halved"></i>
+                        <h3>Xác thực hồ sơ & Media</h3>
+                    </div>
+                    <i class="fas fa-chevron-down customer-profile-accordion-icon"></i>
+                </button>
+                
+                <div class="customer-profile-accordion-body">
+                    <div class="customer-profile-media-grid">
+                       <article class="customer-profile-media-card">
+                            <div class="customer-profile-media-head">
+                              <strong>Avatar</strong>
+                              <span>Định dạng: JPG, PNG</span>
+                            </div>
+                            <div class="customer-profile-media-preview">
+                              <img id="customer-avatar-preview" src="${escapeHtml(avatarSrc || "")}" alt="Avatar" ${avatarSrc ? "" : "hidden"} />
+                              <div id="customer-avatar-empty" class="customer-profile-media-empty" ${avatarSrc ? "hidden" : ""}>Chưa có ảnh đại diện</div>
+                            </div>
+                            <label class="customer-btn customer-btn-ghost customer-profile-upload-btn customer-btn-sm">
+                              <input id="customer-avatar-file" name="avatar_file" type="file" accept="image/*" hidden />
+                              Thay đổi
+                            </label>
+                      </article>
+
+                      <div class="customer-profile-form-grid" style="grid-template-columns: 1fr 1fr; gap: 16px;">
+                          <article class="customer-profile-media-card">
+                                <div class="customer-profile-media-head">
+                                  <strong>CCCD Mặt trước</strong>
+                                </div>
+                                <div class="customer-profile-media-preview" style="min-height: 120px;">
+                                  <img id="customer-cccd-front-preview" src="${escapeHtml(cccdFrontSrc || "")}" alt="CCCD Front" ${cccdFrontSrc ? "" : "hidden"} />
+                                  <div id="customer-cccd-front-empty" class="customer-profile-media-empty" ${cccdFrontSrc ? "hidden" : ""}>Chưa tải lên</div>
+                                </div>
+                                <label class="customer-btn customer-btn-ghost customer-profile-upload-btn customer-btn-sm">
+                                  <input id="customer-cccd-front-file" name="cccd_front_file" type="file" accept="image/*" hidden />
+                                  Tải lên
+                                </label>
+                          </article>
+
+                          <article class="customer-profile-media-card">
+                                <div class="customer-profile-media-head">
+                                  <strong>CCCD Mặt sau</strong>
+                                </div>
+                                <div class="customer-profile-media-preview" style="min-height: 120px;">
+                                  <img id="customer-cccd-back-preview" src="${escapeHtml(cccdBackSrc || "")}" alt="CCCD Back" ${cccdBackSrc ? "" : "hidden"} />
+                                  <div id="customer-cccd-back-empty" class="customer-profile-media-empty" ${cccdBackSrc ? "hidden" : ""}>Chưa tải lên</div>
+                                </div>
+                                <label class="customer-btn customer-btn-ghost customer-profile-upload-btn customer-btn-sm">
+                                  <input id="customer-cccd-back-file" name="cccd_back_file" type="file" accept="image/*" hidden />
+                                  Tải lên
+                                </label>
+                          </article>
+                      </div>
+                    </div>
                 </div>
               </div>
-              <div class="customer-form-row">
-                <div class="customer-form-group">
-                  <span>Mật khẩu mới</span>
-                  <div class="customer-form-field">
-                    <i class="fas fa-lock"></i>
-                    <input name="mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required placeholder="Nhập mật khẩu mới" />
+
+              <!-- SAVE ACTION CARD -->
+              <div class="customer-profile-card">
+                  <div style="margin-bottom: 20px;">
+                      <h4 style="margin:0; color:#0c1e4b; font-size: 16px;">Cập nhật hồ sơ</h4>
+                      <p style="margin:6px 0 0; font-size:13px; color: #64748b;">Đảm bảo mọi thông tin khách hàng là chính xác trước khi lưu.</p>
                   </div>
-                </div>
-                <div class="customer-form-group">
-                  <span>Xác nhận mật khẩu</span>
-                  <div class="customer-form-field">
-                    <i class="fas fa-lock-open"></i>
-                    <input name="xac_nhan_mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required placeholder="Cùng mật khẩu mới" />
-                  </div>
-                </div>
+                  <button class="customer-btn customer-btn-primary" type="submit" id="customer-profile-submit-btn" style="width: auto; padding: 12px 32px;">
+                    <i class="fas fa-cloud-arrow-up"></i> Lưu thay đổi
+                  </button>
               </div>
-              <p class="customer-form-helper" style="margin: 0 0 16px;"><i class="fas fa-circle-info"></i> Mật khẩu mới cần ít nhất 8 ký tự.</p>
-              <button class="customer-btn customer-btn-ghost" type="submit">
-                Cập nhật mật khẩu
-              </button>
             </form>
+          </div>
+
+          <!-- RIGHT COLUMN: SIDEBAR (Security & Activity) -->
+          <div class="customer-profile-col-side">
+            <!-- 5. SECURITY CARD -->
+            <div class="customer-profile-card">
+                <div class="customer-profile-section-title">
+                  <i class="fas fa-lock"></i>
+                  <h3>Bảo mật & Mật khẩu</h3>
+                </div>
+                <form id="customer-password-form" class="customer-form-stack" style="margin-top: 24px;">
+                  <div class="customer-form-group">
+                    <span>Mật khẩu hiện tại</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-key"></i>
+                      <input name="mat_khau_hien_tai" type="password" required placeholder="••••••••" />
+                    </div>
+                  </div>
+                  <div class="customer-form-group">
+                    <span>Mật khẩu mới</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-lock"></i>
+                      <input name="mat_khau_moi" type="password" minlength="8" required placeholder="Ít nhất 8 ký tự" />
+                    </div>
+                  </div>
+                  <div class="customer-form-group">
+                    <span>Xác nhận mật khẩu</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-check-double"></i>
+                      <input name="xac_nhan_mat_khau_moi" type="password" minlength="8" required placeholder="Nhập lại mật khẩu mới" />
+                    </div>
+                  </div>
+                  <button class="customer-btn customer-btn-ghost" type="submit" style="width: 100%; margin-top: 8px;">
+                    Đổi mật khẩu
+                  </button>
+                </form>
+            </div>
+
           </div>
         </div>
       </section>
     `;
 
+    // Accordion Logic
+    const accordionToggles = content.querySelectorAll(".js-accordion-toggle");
+    accordionToggles.forEach(toggle => {
+      toggle.addEventListener("click", () => {
+        const item = toggle.closest(".customer-profile-accordion-item");
+        item.classList.toggle("is-active");
+      });
+    });
+
     const profileForm = document.getElementById("customer-profile-form");
     if (profileForm) {
-      bindProfileMediaPreview(
-        "customer-avatar-file",
-        "customer-avatar-preview",
-        "customer-avatar-empty",
-      );
-      bindProfileMediaPreview(
-        "customer-cccd-front-file",
-        "customer-cccd-front-preview",
-        "customer-cccd-front-empty",
-      );
-      bindProfileMediaPreview(
-        "customer-cccd-back-file",
-        "customer-cccd-back-preview",
-        "customer-cccd-back-empty",
-      );
+      bindProfileMediaPreview("customer-avatar-file", "customer-avatar-preview", "customer-avatar-empty");
+      bindProfileMediaPreview("customer-cccd-front-file", "customer-cccd-front-preview", "customer-cccd-front-empty");
+      bindProfileMediaPreview("customer-cccd-back-file", "customer-cccd-back-preview", "customer-cccd-back-empty");
+
       profileForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const submitButton = document.getElementById("customer-profile-submit-btn");
         try {
           if (submitButton) {
             submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu hồ sơ';
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
           }
-          await apiRequest("update-profile", {
-            method: "POST",
-            body: new FormData(profileForm),
-          });
-          showToast("Đã cập nhật hồ sơ cá nhân.", "success");
-          window.setTimeout(() => {
-            window.location.reload();
-          }, 600);
+          await apiRequest("update-profile", { method: "POST", body: new FormData(profileForm) });
+          showToast("Đã cập nhật hồ sơ cá nhân thành công.", "success");
+          window.setTimeout(() => window.location.reload(), 600);
         } catch (error) {
           showToast(error.message, "error");
         } finally {
           if (submitButton) {
             submitButton.disabled = false;
-            submitButton.innerHTML = '<i class="fas fa-floppy-disk"></i> Lưu thay đổi';
+            submitButton.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> Lưu thay đổi';
           }
         }
       });
@@ -3465,21 +3467,12 @@
       passwordForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(passwordForm);
-        const newPassword = String(formData.get("mat_khau_moi") || "");
-        const confirmPassword = String(
-          formData.get("xac_nhan_mat_khau_moi") || "",
-        );
-
-        if (newPassword !== confirmPassword) {
-          showToast("Xác nhận mật khẩu mới không khớp.", "error");
+        if (formData.get("mat_khau_moi") !== formData.get("xac_nhan_mat_khau_moi")) {
+          showToast("Mật khẩu xác nhận không khớp.", "error");
           return;
         }
-
         try {
-          await apiRequest("change-password", {
-            method: "POST",
-            body: formData,
-          });
+          await apiRequest("change-password", { method: "POST", body: formData });
           showToast("Đã đổi mật khẩu thành công.", "success");
           passwordForm.reset();
         } catch (error) {
@@ -3495,9 +3488,7 @@
 
     if (page === "detail") {
       const session = await ensureUrlAccessSession();
-      if (session && redirectNonCustomer(session, page)) {
-        return;
-      }
+      if (session && redirectNonCustomer(session, page)) return;
       syncPublicHeader(session || {});
       renderShell(session || {}, page);
       await initOrderDetail(session || null);
@@ -3505,34 +3496,21 @@
     }
 
     const sessionData = await getSessionData();
-    if (redirectNonCustomer(sessionData.user, page)) {
-      return;
-    }
+    if (redirectNonCustomer(sessionData.user, page)) return;
     syncPublicHeader(sessionData.user || {});
     renderShell(sessionData.user || {}, page);
 
     switch (page) {
-      case "dashboard":
-        await initDashboard();
-        break;
-      case "orders":
-        await initOrders();
-        break;
-      case "detail":
-        await initOrderDetail();
-        break;
-      case "profile":
-        await initProfile();
-        break;
-      default:
-        throw new Error("Trang khách hàng không hợp lệ.");
+      case "dashboard": await initDashboard(); break;
+      case "orders": await initOrders(); break;
+      case "detail": await initOrderDetail(); break;
+      case "profile": await initProfile(); break;
+      default: throw new Error("Trang không hợp lệ.");
     }
   }
 
   window.CustomerPortal = { init };
   document.addEventListener("DOMContentLoaded", () => {
-    init().catch((error) => {
-      renderError(error);
-    });
+    init().catch(renderError);
   });
 })(window);
