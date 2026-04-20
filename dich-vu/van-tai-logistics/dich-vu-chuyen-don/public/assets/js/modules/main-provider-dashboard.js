@@ -51,9 +51,9 @@ const providerDashboardModule = (function (window, document) {
 
   function getOrderDetailUrl(orderIdentifier) {
     return typeof core.buildOrderDetailUrl === "function"
-      ? core.buildOrderDetailUrl("nha-cung-cap/chi-tiet-don-hang.html", orderIdentifier)
+      ? core.buildOrderDetailUrl("nha-cung-cap/chi-tiet-don-hang-chuyendon.html", orderIdentifier)
       : getProjectUrl(
-          `nha-cung-cap/chi-tiet-don-hang.html?madonhang=${encodeURIComponent(
+          `nha-cung-cap/chi-tiet-don-hang-chuyendon.html?madonhang=${encodeURIComponent(
             orderIdentifier || "",
           )}`,
         );
@@ -274,7 +274,7 @@ const providerDashboardModule = (function (window, document) {
             </div>
             <div class="customer-inline-actions customer-inline-actions-dashboard">
               <form action="${escapeHtml(
-                getProjectUrl("nha-cung-cap/danh-sach-don-hang.html"),
+                getProjectUrl("nha-cung-cap/danh-sach-don-hang-chuyendon.html"),
               )}" method="GET" class="customer-quick-search">
                 <input type="text" name="search" placeholder="Mã đơn, dịch vụ, khách..." required />
                 <button type="submit" class="customer-btn customer-btn-primary customer-btn-sm">
@@ -282,7 +282,7 @@ const providerDashboardModule = (function (window, document) {
                 </button>
               </form>
               <a class="customer-btn customer-btn-ghost customer-btn-sm" href="${escapeHtml(
-                getProjectUrl("nha-cung-cap/danh-sach-don-hang.html"),
+                getProjectUrl("nha-cung-cap/danh-sach-don-hang-chuyendon.html"),
               )}">
                 Xem tất cả
               </a>

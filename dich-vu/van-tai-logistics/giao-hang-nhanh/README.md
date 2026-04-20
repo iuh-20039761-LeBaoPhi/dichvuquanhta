@@ -59,8 +59,8 @@ Entry HTML:
 - `index.html`
 - `dich-vu-giao-hang.html`
 - `huong-dan-su-dung-dich-vu-giao-hang-nhanh.html`
-- `tra-cuu-gia.html`
-- `tra-don-hang.html`
+- `tra-cuu-gia-giaohang.html`
+- `tra-don-hang-giaohang.html`
 
 JS bootstrap:
 
@@ -108,7 +108,7 @@ Các file con của form đặt lịch:
 
 Entry HTML:
 
-- `tra-don-hang.html`
+- `tra-don-hang-giaohang.html`
 
 Logic chính:
 
@@ -123,16 +123,16 @@ Dùng cho:
 
 Entry HTML thật:
 
-- `chi-tiet-don-hang.html`
+- `chi-tiet-don-hang-giaohang.html`
 
 Hai file dưới đây chỉ redirect về trang trên:
 
-- `public/khach-hang/chi-tiet-don-hang.html`
-- `public/nha-cung-cap/chi-tiet-don-hang.html`
+- `public/khach-hang/chi-tiet-don-hang-giaohang.html`
+- `public/nha-cung-cap/chi-tiet-don-hang-giaohang.html`
 
 Nghĩa là:
 
-- sửa trang chi tiết đơn hàng thì sửa ở `chi-tiet-don-hang.html` và các module của nó
+- sửa trang chi tiết đơn hàng thì sửa ở `chi-tiet-don-hang-giaohang.html` và các module của nó
 - không cần vá riêng ở `public/khach-hang/...` hay `public/nha-cung-cap/...`
 
 Module chính của trang chi tiết:
@@ -150,9 +150,9 @@ Module chính của trang chi tiết:
 
 Entry HTML:
 
-- `public/khach-hang/dashboard.html`
-- `public/khach-hang/lich-su-don-hang.html`
-- `public/khach-hang/ho-so.html`
+- `public/khach-hang/dashboard-giaohang.html`
+- `public/khach-hang/lich-su-don-hang-giaohang.html`
+- `public/khach-hang/ho-so-giaohang.html`
 
 Logic chính:
 
@@ -162,9 +162,9 @@ Logic chính:
 
 Entry HTML:
 
-- `public/nha-cung-cap/dashboard.html`
-- `public/nha-cung-cap/don-hang.html`
-- `public/nha-cung-cap/ho-so.html`
+- `public/nha-cung-cap/dashboard-giaohang.html`
+- `public/nha-cung-cap/don-hang-giaohang.html`
+- `public/nha-cung-cap/ho-so-giaohang.html`
 
 Logic chính:
 
@@ -317,7 +317,7 @@ Lưu ý:
 
 Đúng:
 
-- `giao-hang-nhanh/chi-tiet-don-hang.html`
+- `giao-hang-nhanh/chi-tiet-don-hang-giaohang.html`
 - `giao-hang-nhanh/public/assets/js/modules/main-order-detail.js`
 - `giao-hang-nhanh/public/assets/js/modules/order-detail-render.js`
 
@@ -389,7 +389,7 @@ Nếu mới vào dự án, nên đọc theo thứ tự này:
 3. `public/assets/js/dat-lich/core.js`
 4. `public/assets/js/dat-lich/pricing.js`
 5. `public/assets/js/dat-lich/flow-submit.js`
-6. `chi-tiet-don-hang.html`
+6. `chi-tiet-don-hang-giaohang.html`
 7. `public/assets/js/modules/main-order-detail.js`
 8. `public/assets/js/modules/order-detail-render.js`
 9. `public/assets/js/modules/main-tracking.js`
@@ -413,7 +413,7 @@ Nếu lỗi ở chi tiết đơn:
 
 Nếu lỗi ở khách hàng / shipper không đồng bộ:
 
-- check file đó có phải redirect về `chi-tiet-don-hang.html` hay không
+- check file đó có phải redirect về `chi-tiet-don-hang-giaohang.html` hay không
 - nếu là portal page thật thì vào `customer-portal.js` hoặc `shipper-portal.js`
 
 ---

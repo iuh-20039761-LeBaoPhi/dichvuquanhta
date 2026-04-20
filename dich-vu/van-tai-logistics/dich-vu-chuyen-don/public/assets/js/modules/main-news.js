@@ -14,8 +14,8 @@ import core from "./core/app-core.js";
       ? currentPath.slice(0, projectMarkerIndex + projectMarker.length)
       : "./");
   const publicBase = core.publicBase || `${projectBase}public/`;
-  const articleListUrl = `${projectBase}cam-nang.html`;
-  const articleDetailBaseUrl = `${publicBase}trang/noi-dung/cam-nang-chi-tiet.html`;
+  const articleListUrl = `${projectBase}cam-nang-chuyendon.html`;
+  const articleDetailBaseUrl = `${publicBase}trang/noi-dung/cam-nang-chi-tiet-chuyendon.html`;
   const movingHouseUrl = `${projectBase}dich-vu-chuyen-don.html#chuyen-nha`;
   const movingOfficeUrl = `${projectBase}dich-vu-chuyen-don.html#chuyen-van-phong`;
   const movingWarehouseUrl = `${projectBase}dich-vu-chuyen-don.html#chuyen-kho-bai`;

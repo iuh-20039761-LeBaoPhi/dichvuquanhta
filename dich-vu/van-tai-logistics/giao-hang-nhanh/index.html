@@ -463,6 +463,7 @@
         function buildSharedAuthUrl(pageName) {
           const url = new URL(toPublicUrl(pageName), window.location.href);
           url.searchParams.set("service", sharedAuthService);
+          url.searchParams.set("redirect", new URL("index.html", window.location.href).pathname);
           return url.toString();
         }
 
@@ -470,8 +471,8 @@
           if (localAuth && typeof localAuth.getDashboardPath === "function") {
             return localAuth.getDashboardPath(role);
           }
-          if (role === "shipper") return "public/nha-cung-cap/dashboard.html";
-          return "public/khach-hang/dashboard.html";
+          if (role === "shipper") return "public/nha-cung-cap/dashboard-giaohang.html";
+          return "public/khach-hang/dashboard-giaohang.html";
         }
 
         function bindLogoutActions() {

@@ -34,9 +34,9 @@ const customerDashboardModule = (function (window, document) {
 
   function getOrderDetailUrl(orderIdentifier) {
     return typeof core.buildOrderDetailUrl === "function"
-      ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", orderIdentifier)
+      ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don-chuyendon.html", orderIdentifier)
       : getProjectUrl(
-          `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(
+          `khach-hang/chi-tiet-hoa-don-chuyendon.html?madonhang=${encodeURIComponent(
             orderIdentifier || "",
           )}`,
         );
@@ -151,7 +151,7 @@ const customerDashboardModule = (function (window, document) {
             </div>
             <div class="customer-inline-actions">
               <span class="customer-panel-note">${activeRequests ? "Cần theo dõi" : "Ổn định"}</span>
-              <a class="customer-btn customer-btn-primary" href="${escapeHtml(getProjectUrl("dat-lich.html"))}">
+              <a class="customer-btn customer-btn-primary" href="${escapeHtml(getProjectUrl("dat-lich-chuyendon.html"))}">
                 <i class="fas fa-plus"></i> Tạo yêu cầu mới
               </a>
             </div>
@@ -179,11 +179,11 @@ const customerDashboardModule = (function (window, document) {
               <p class="customer-panel-subtext">Giữ lại danh sách ngắn để bạn nhìn ra ngay đơn mới hoặc đơn vừa đổi trạng thái.</p>
             </div>
             <div class="customer-inline-actions customer-inline-actions-dashboard">
-              <form action="${escapeHtml(getProjectUrl("khach-hang/danh-sach-don-hang.html"))}" method="GET" class="customer-quick-search">
+              <form action="${escapeHtml(getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html"))}" method="GET" class="customer-quick-search">
                 <input type="text" name="search" placeholder="Nhập mã đơn, dịch vụ..." required />
                 <button type="submit" class="customer-btn customer-btn-primary customer-btn-sm"><i class="fas fa-search"></i></button>
               </form>
-              <a class="customer-btn customer-btn-ghost customer-btn-sm" href="${escapeHtml(getProjectUrl("khach-hang/danh-sach-don-hang.html"))}">
+              <a class="customer-btn customer-btn-ghost customer-btn-sm" href="${escapeHtml(getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html"))}">
                 Xem tất cả
               </a>
             </div>
@@ -220,7 +220,7 @@ const customerDashboardModule = (function (window, document) {
                                         getOrderDetailUrl(request.remote_id || request.code || ""),
                                       )}">Xem chi tiết</a>`
                                     : `<a class="customer-btn customer-btn-primary customer-btn-sm" href="${escapeHtml(
-                                        getProjectUrl("khach-hang/danh-sach-don-hang.html"),
+                                        getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html"),
                                       )}">Mở đơn hàng</a>`
                                 }
                               </div>
@@ -240,7 +240,7 @@ const customerDashboardModule = (function (window, document) {
                     <i class="fas fa-inbox"></i>
                     <p>Chưa có yêu cầu nào trong tài khoản này. Bạn có thể bắt đầu trực tiếp từ form đặt lịch.</p>
                     <a class="customer-btn customer-btn-primary" href="${escapeHtml(
-                      getProjectUrl("dat-lich.html"),
+                      getProjectUrl("dat-lich-chuyendon.html"),
                     )}">Tạo yêu cầu đầu tiên</a>
                   </div>
                 `

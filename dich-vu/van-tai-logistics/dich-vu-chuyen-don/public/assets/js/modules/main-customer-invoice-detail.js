@@ -1055,7 +1055,7 @@ const customerInvoiceDetailModule = (function (window, document) {
           )}</p>
           <div class="standalone-order-inline-actions" style="justify-content:center; margin-top:18px;">
             <a class="customer-btn customer-btn-primary" href="${escapeHtml(
-              getProjectUrl("khach-hang/danh-sach-don-hang.html"),
+              getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html"),
             )}">Quay lại danh sách đơn hàng</a>
           </div>
         </div>
@@ -1170,7 +1170,7 @@ const customerInvoiceDetailModule = (function (window, document) {
                         : ""
                     }
                     <a class="customer-btn customer-btn-ghost" href="${escapeHtml(
-                      getProjectUrl("khach-hang/danh-sach-don-hang.html"),
+                      getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html"),
                     )}">Về lịch sử đơn</a>
                   </div>
                   ${renderCancelConfirmBlock(invoice)}

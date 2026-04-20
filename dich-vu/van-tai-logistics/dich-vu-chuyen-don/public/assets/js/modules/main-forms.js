@@ -24,7 +24,7 @@ if (!core) {
 }
 
 const partialPaths = {
-  "dat-lich": core.toPublicUrl("assets/partials/bieu-mau/form-dat-lich.html"),
+  "dat-lich": core.toPublicUrl("assets/partials/bieu-mau/form-dat-lich-chuyendon.html"),
 };
 
   const SERVICE_ALIAS_MAP = {
@@ -1266,11 +1266,11 @@ const partialPaths = {
       String(bookingResult?.remoteId || "").trim() || requestCode;
     const statusMessage = String(options.statusMessage || "").trim();
     const isLoggedIn = !!(customerPortalStore?.getSavedRole?.() === "khach-hang");
-    const historyUrl = getProjectUrl("khach-hang/danh-sach-don-hang.html");
+    const historyUrl = getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html");
     const secondaryActionHref = isLoggedIn
       ? (typeof core.buildOrderDetailUrl === "function"
-          ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", orderDetailIdentifier)
-          : `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(orderDetailIdentifier)}`)
+          ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don-chuyendon.html", orderDetailIdentifier)
+          : `khach-hang/chi-tiet-hoa-don-chuyendon.html?madonhang=${encodeURIComponent(orderDetailIdentifier)}`)
       : core.getSharedLoginUrl({
           redirect: core.getCurrentRelativeUrl(),
         });
@@ -1316,7 +1316,7 @@ const partialPaths = {
         </div>
         ${redirectNotice}
         <div class="trang-thai-thanh-cong-dat-lich__hanh-dong">
-          <a class="nut-chinh" href="${escapeHtml(getProjectUrl("dat-lich.html"))}">Tạo yêu cầu mới</a>
+          <a class="nut-chinh" href="${escapeHtml(getProjectUrl("dat-lich-chuyendon.html"))}">Tạo yêu cầu mới</a>
           <a class="nut-phu" href="${escapeHtml(getProjectUrl(secondaryActionHref))}">${secondaryActionLabel}</a>
           ${tertiaryAction}
         </div>

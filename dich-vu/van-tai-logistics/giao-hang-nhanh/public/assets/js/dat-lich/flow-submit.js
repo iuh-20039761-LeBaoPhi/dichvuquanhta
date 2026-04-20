@@ -359,7 +359,7 @@ function clearBookingSuccessRedirectTimer() {
 }
 
 function buildBookingSuccessRedirectUrl() {
-  return resolveProjectHtmlUrl("public/khach-hang/lich-su-don-hang.html");
+  return resolveProjectHtmlUrl("public/khach-hang/lich-su-don-hang-giaohang.html");
 }
 
 function renderSubmitSuccessState(orderCode, messageHtml) {
@@ -376,7 +376,7 @@ function renderSubmitSuccessState(orderCode, messageHtml) {
     `
     : `
       <a
-        href="${resolveProjectHtmlUrl("tra-don-hang.html")}"
+        href="${resolveProjectHtmlUrl("tra-don-hang-giaohang.html")}"
         class="btn-secondary"
         style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
       >Tra cứu đơn hàng</a>

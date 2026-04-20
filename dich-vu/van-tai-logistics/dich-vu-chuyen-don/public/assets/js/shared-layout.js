@@ -31,13 +31,12 @@
     "chuyen-nha.html": "services",
     "chuyen-kho-bai.html": "services",
     "chuyen-van-phong.html": "services",
-    "cam-nang.html": "news",
-    "cam-nang-chi-tiet.html": "news",
-    "khao-sat.html": "booking",
-    "dat-lich.html": "booking",
-    "dashboard.html": "account",
-    "danh-sach-don-hang.html": "account",
-    "ho-so.html": "account",
+    "cam-nang-chuyendon.html": "news",
+    "cam-nang-chi-tiet-chuyendon.html": "news",
+    "dat-lich-chuyendon.html": "booking",
+    "dashboard-chuyendon.html": "account",
+    "danh-sach-don-hang-chuyendon.html": "account",
+    "ho-so-chuyendon.html": "account",
   };
 
   function safeParse(raw, fallback) {
@@ -113,6 +112,7 @@
   function buildSharedAuthUrl(pageName, params = {}) {
     const url = new URL(`${parentBase}public/${pageName}`, window.location.href);
     url.searchParams.set("service", sharedAuthService);
+    url.searchParams.set("redirect", `${projectBase}index.html`);
 
     Object.entries(params || {}).forEach(([key, value]) => {
       const normalizedValue = String(value ?? "").trim();
@@ -147,8 +147,8 @@
       pricing: `${projectBase}bang-gia-chuyen-don.html`,
       guide: `${projectBase}huong-dan-su-dung-dich-vu-chuyen-don.html`,
       contact: `${projectBase}index.html#contact`,
-      survey: `${projectBase}dat-lich.html`,
-      booking: `${projectBase}dat-lich.html`,
+      survey: `${projectBase}dat-lich-chuyendon.html`,
+      booking: `${projectBase}dat-lich-chuyendon.html`,
       account: buildSharedAuthUrl("dang-nhap.html"),
       login: buildSharedAuthUrl("dang-nhap.html"),
       register: buildSharedAuthUrl("dang-ky.html"),
@@ -156,23 +156,23 @@
       "register-customer": buildSharedAuthUrl("dang-ky.html"),
       "login-provider": buildSharedAuthUrl("dang-nhap.html"),
       "register-provider": buildSharedAuthUrl("dang-ky.html"),
-      policy: `${projectBase}chinh-sach-va-dieu-khoan.html`,
+      policy: `${projectBase}chinh-sach-va-dieu-khoan-chuyendon.html`,
       "moving-house": `${servicesLink}#chuyen-nha`,
       "moving-warehouse": `${servicesLink}#chuyen-kho-bai`,
       "moving-office": `${servicesLink}#chuyen-van-phong`,
-      news: `${projectBase}cam-nang.html`,
+      news: `${projectBase}cam-nang-chuyendon.html`,
       brandLogo: `${publicBase}assets/images/favicon.png`,
 
       "svc-giao-hang-nhanh": `${parentBase}dich-vu/van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html`,
       "svc-dich-vu-chuyen-don": `${projectBase}dich-vu-chuyen-don.html`,
-      "svc-lau-don-ve-sinh": `${parentBase}dich-vu-don-ve-sinh/demo/services.html`,
-      "svc-cham-soc-me-be": `${parentBase}cham-soc-me-va-be/dich-vu-cham-soc-me-be.html`,
+      "svc-lau-don-ve-sinh": `${parentBase}dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html`,
+      "svc-cham-soc-me-be": `${parentBase}dich-vu/cham-soc/me-va-be/dich-vu.html`,
       "svc-cham-soc-vuon": `${parentBase}cham-soc-vuon-nha/dichvu.html`,
-      "svc-giat-ui": `${parentBase}giat-ui-nhanh/dich-vu.html`,
-      "svc-tho-nha": `${parentBase}tho-nha/pages/public/dich-vu.html`,
-      "svc-cham-soc-nguoi-gia": `${parentBase}cham-soc-nguoi-gia/dich-vu-cham-soc-nguoi-gia.html`,
-      "svc-cham-soc-nguoi-benh": `${parentBase}cham-soc-nguoi-benh/dich-vu-cham-soc-nguoi-benh.html`,
-      "svc-thue-xe": `${parentBase}thue-xe/views/pages/public/dich-vu.html`,
+      "svc-giat-ui": `${parentBase}dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html`,
+      "svc-tho-nha": `${parentBase}dich-vu/sua-chua/tho-nha/pages/public/dich-vu.html`,
+      "svc-cham-soc-nguoi-gia": `${parentBase}dich-vu/cham-soc/nguoi-gia/dich-vu.html`,
+      "svc-cham-soc-nguoi-benh": `${parentBase}dich-vu/cham-soc/nguoi-benh/dich-vu.html`,
+      "svc-thue-xe": `${parentBase}dich-vu/van-tai-logistics/thue-xe/views/pages/public/dich-vu.html`,
       "svc-lai-xe-ho": `${parentBase}dich-vu-lai-xe-ho/index.html`,
       "svc-sua-xe": `${parentBase}sua-xe-luu-dong/dich-vu.html`,
     };
@@ -208,16 +208,16 @@
 
     if (role === "nha-cung-cap") {
       return {
-        dashboard: withAuthParams(`${projectBase}nha-cung-cap/dashboard.html`),
-        orders: withAuthParams(`${projectBase}nha-cung-cap/danh-sach-don-hang.html`),
-        profile: withAuthParams(`${projectBase}nha-cung-cap/ho-so.html`),
+        dashboard: withAuthParams(`${projectBase}nha-cung-cap/dashboard-chuyendon.html`),
+        orders: withAuthParams(`${projectBase}nha-cung-cap/danh-sach-don-hang-chuyendon.html`),
+        profile: withAuthParams(`${projectBase}nha-cung-cap/ho-so-chuyendon.html`),
       };
     }
 
     return {
-      dashboard: withAuthParams(`${projectBase}khach-hang/dashboard.html`),
-      orders: withAuthParams(`${projectBase}khach-hang/danh-sach-don-hang.html`),
-      profile: withAuthParams(`${projectBase}khach-hang/ho-so.html`),
+      dashboard: withAuthParams(`${projectBase}khach-hang/dashboard-chuyendon.html`),
+      orders: withAuthParams(`${projectBase}khach-hang/danh-sach-don-hang-chuyendon.html`),
+      profile: withAuthParams(`${projectBase}khach-hang/ho-so-chuyendon.html`),
     };
   }
 

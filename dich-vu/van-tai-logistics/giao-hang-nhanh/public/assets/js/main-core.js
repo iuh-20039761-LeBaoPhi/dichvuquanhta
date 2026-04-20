@@ -582,6 +582,7 @@
     const normalizedPage = String(pageName || "dang-nhap.html").replace(/^\.?\//, "");
     const target = new URL(`${parentBasePath}public/${normalizedPage}`, window.location.origin);
     target.searchParams.set("service", "giaohangnhanh");
+    target.searchParams.set("redirect", `${projectBasePath}index.html`);
     if (options.redirect) {
       target.searchParams.set("redirect", String(options.redirect));
     }

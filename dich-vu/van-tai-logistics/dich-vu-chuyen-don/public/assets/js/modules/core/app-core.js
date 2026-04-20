@@ -266,6 +266,7 @@ function syncOrderDetailUrl({ orderCode, path, username, password } = {}) {
 function buildSharedAuthUrl(path, params = {}) {
   const url = new URL(toParentPublicUrl(path), window.location.href);
   url.searchParams.set("service", sharedAuthService);
+  url.searchParams.set("redirect", toProjectUrl("index.html"));
 
   Object.entries(params || {}).forEach(([key, value]) => {
     const normalizedValue = String(value ?? "").trim();

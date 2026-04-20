@@ -8,19 +8,35 @@
       name="description"
       content="Giao Hàng Nhanh dùng chung trang đăng ký của Dịch Vụ Quanh Ta."
     />
-    <meta http-equiv="refresh" content="0;url=../public/dang-ky.html?service=giaohangnhanh" />
+    <meta
+      http-equiv="refresh"
+      content="0;url=../../../public/dang-ky.html?service=giaohangnhanh&amp;redirect=..%2Fdich-vu%2Fvan-tai-logistics%2Fgiao-hang-nhanh%2Findex.html"
+    />
     <script src="/ga.js"></script>
   </head>
   <body>
     <script>
       (function () {
         const current = new URL(window.location.href);
-        const target = new URL("../public/dang-ky.html", current);
+        const currentPath = String(current.pathname || "").replace(/\\/g, "/");
+        const projectMarker = "/giao-hang-nhanh/";
+        const projectMarkerIndex = currentPath.toLowerCase().lastIndexOf(projectMarker);
+        const projectBase =
+          projectMarkerIndex !== -1
+            ? currentPath.slice(0, projectMarkerIndex + projectMarker.length)
+            : new URL(".", current).pathname;
+        const parentBase = projectBase.replace(
+          /(?:dich-vu\/van-tai-logistics\/)?giao-hang-nhanh\/?$/i,
+          "",
+        );
+        const target = new URL(`${parentBase}public/dang-ky.html`, current.origin);
         target.searchParams.set("service", "giaohangnhanh");
 
         const redirect = current.searchParams.get("redirect");
         if (redirect) {
           target.searchParams.set("redirect", redirect);
+        } else {
+          target.searchParams.set("redirect", `${projectBase}index.html`);
         }
 
         window.location.replace(target.toString());
@@ -28,7 +44,7 @@
     </script>
     <p>
       Đang chuyển sang trang đăng ký dùng chung.
-      <a href="../public/dang-ky.html?service=giaohangnhanh">Tiếp tục</a>
+      <a href="../../../public/dang-ky.html?service=giaohangnhanh&amp;redirect=..%2Fdich-vu%2Fvan-tai-logistics%2Fgiao-hang-nhanh%2Findex.html">Tiếp tục</a>
     </p>
   </body>
 </html>

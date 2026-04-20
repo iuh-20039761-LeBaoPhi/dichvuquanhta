@@ -566,7 +566,7 @@ const providerOrderDetailModule = (function (window, document) {
     }
 
     buttons.push(
-      `<a href="${escapeHtml(getProjectUrl("nha-cung-cap/danh-sach-don-hang.html"))}" class="customer-btn customer-btn-ghost">Về danh sách đơn hàng</a>`,
+      `<a href="${escapeHtml(getProjectUrl("nha-cung-cap/danh-sach-don-hang-chuyendon.html"))}" class="customer-btn customer-btn-ghost">Về danh sách đơn hàng</a>`,
     );
 
     return buttons.join("");

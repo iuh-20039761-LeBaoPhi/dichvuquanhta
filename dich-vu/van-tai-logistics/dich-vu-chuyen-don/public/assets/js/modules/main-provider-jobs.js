@@ -52,9 +52,9 @@ const providerJobsModule = (function (window, document) {
 
   function getOrderDetailUrl(orderIdentifier) {
     return typeof core.buildOrderDetailUrl === "function"
-      ? core.buildOrderDetailUrl("nha-cung-cap/chi-tiet-don-hang.html", orderIdentifier)
+      ? core.buildOrderDetailUrl("nha-cung-cap/chi-tiet-don-hang-chuyendon.html", orderIdentifier)
       : getProjectUrl(
-          `nha-cung-cap/chi-tiet-don-hang.html?madonhang=${encodeURIComponent(
+          `nha-cung-cap/chi-tiet-don-hang-chuyendon.html?madonhang=${encodeURIComponent(
             orderIdentifier || "",
           )}`,
         );

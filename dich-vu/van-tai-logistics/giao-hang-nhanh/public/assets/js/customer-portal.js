@@ -2109,11 +2109,11 @@
 
     if (role === "shipper") {
       const targetByPage = {
-        dashboard: "../nha-cung-cap/dashboard.html",
-        orders: "../nha-cung-cap/don-hang.html",
-        profile: "../nha-cung-cap/ho-so.html",
+        dashboard: "../nha-cung-cap/dashboard-giaohang.html",
+        orders: "../nha-cung-cap/don-hang-giaohang.html",
+        profile: "../nha-cung-cap/ho-so-giaohang.html",
       };
-      const target = targetByPage[page] || "../nha-cung-cap/dashboard.html";
+      const target = targetByPage[page] || "../nha-cung-cap/dashboard-giaohang.html";
       window.location.replace(target);
       return true;
     }

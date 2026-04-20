@@ -23,6 +23,7 @@
   function buildSharedAuthUrl(pageName, options = {}) {
     const target = new URL(`${parentBase}public/${pageName}`, window.location.origin);
     target.searchParams.set("service", "giaohangnhanh");
+    target.searchParams.set("redirect", `${projectBase}index.html`);
     if (options.redirect) {
       target.searchParams.set("redirect", String(options.redirect));
     }
@@ -79,14 +80,14 @@
 
       "svc-giao-hang-nhanh": `${projectBase}dich-vu-giao-hang.html`,
       "svc-dich-vu-chuyen-don": `${parentBase}dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html`,
-      "svc-lau-don-ve-sinh": `${parentBase}dich-vu-don-ve-sinh/demo/services.html`,
-      "svc-cham-soc-me-be": `${parentBase}cham-soc-me-va-be/dich-vu-cham-soc-me-be.html`,
+      "svc-lau-don-ve-sinh": `${parentBase}dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html`,
+      "svc-cham-soc-me-be": `${parentBase}dich-vu/cham-soc/me-va-be/dich-vu.html`,
       "svc-cham-soc-vuon": `${parentBase}cham-soc-vuon-nha/dichvu.html`,
-      "svc-giat-ui": `${parentBase}giat-ui-nhanh/dich-vu.html`,
-      "svc-tho-nha": `${parentBase}tho-nha/pages/public/dich-vu.html`,
-      "svc-cham-soc-nguoi-gia": `${parentBase}cham-soc-nguoi-gia/dich-vu-cham-soc-nguoi-gia.html`,
-      "svc-cham-soc-nguoi-benh": `${parentBase}cham-soc-nguoi-benh/dich-vu-cham-soc-nguoi-benh.html`,
-      "svc-thue-xe": `${parentBase}thue-xe/views/pages/public/dich-vu.html`,
+      "svc-giat-ui": `${parentBase}dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html`,
+      "svc-tho-nha": `${parentBase}dich-vu/sua-chua/tho-nha/pages/public/dich-vu.html`,
+      "svc-cham-soc-nguoi-gia": `${parentBase}dich-vu/cham-soc/nguoi-gia/dich-vu.html`,
+      "svc-cham-soc-nguoi-benh": `${parentBase}dich-vu/cham-soc/nguoi-benh/dich-vu.html`,
+      "svc-thue-xe": `${parentBase}dich-vu/van-tai-logistics/thue-xe/views/pages/public/dich-vu.html`,
       "svc-lai-xe-ho": `${parentBase}dich-vu-lai-xe-ho/index.html`,
       "svc-sua-xe": `${parentBase}sua-xe-luu-dong/dich-vu.html`,
     };

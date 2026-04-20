@@ -34,9 +34,9 @@ const customerHistoryModule = (function (window, document) {
 
   function getOrderDetailUrl(orderIdentifier) {
     return typeof core.buildOrderDetailUrl === "function"
-      ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", orderIdentifier)
+      ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don-chuyendon.html", orderIdentifier)
       : getProjectUrl(
-          `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(
+          `khach-hang/chi-tiet-hoa-don-chuyendon.html?madonhang=${encodeURIComponent(
             orderIdentifier || "",
           )}`,
         );
@@ -350,7 +350,7 @@ const customerHistoryModule = (function (window, document) {
                             getOrderDetailUrl(item.remote_id || item.code || ""),
                           )}">Xem chi tiết</a>`
                         : `<a class="customer-btn customer-btn-primary" href="${escapeHtml(
-                            getProjectUrl("khach-hang/danh-sach-don-hang.html"),
+                            getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html"),
                           )}">Mở đơn hàng</a>`
                     }
                   </div>

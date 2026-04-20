@@ -17,7 +17,6 @@ Project hiện đã đi qua giai đoạn landing/form cơ bản và đang có th
 - Cụm cẩm nang và trang chi tiết bài viết
 - Trang chính sách
 - Trang đặt lịch riêng
-- URL khảo sát cũ giữ lại để chuyển hướng mềm về trang đặt lịch
 - Portal khách hàng sau đăng nhập
 - Portal nhà cung cấp sau đăng nhập
 - Cụm admin riêng cho chuyển dọn theo hướng PHP session + JSON local
@@ -38,20 +37,19 @@ dich-vu-chuyen-don/
 ├── index.html
 ├── dich-vu-chuyen-don.html
 ├── bang-gia-chuyen-don.html
-├── cam-nang.html
-├── dat-lich.html
-├── khao-sat.html
-├── chinh-sach-va-dieu-khoan.html
+├── cam-nang-chuyendon.html
+├── dat-lich-chuyendon.html
+├── chinh-sach-va-dieu-khoan-chuyendon.html
 ├── khach-hang/
-│   ├── dashboard.html
-│   ├── danh-sach-don-hang.html
-│   ├── chi-tiet-hoa-don.html
-│   └── ho-so.html
+│   ├── dashboard-chuyendon.html
+│   ├── danh-sach-don-hang-chuyendon.html
+│   ├── chi-tiet-hoa-don-chuyendon.html
+│   └── ho-so-chuyendon.html
 ├── nha-cung-cap/
-│   ├── dashboard.html
+│   ├── dashboard-chuyendon.html
 │   ├── cong-viec.html
 │   ├── chi-tiet-don.html
-│   └── ho-so.html
+│   └── ho-so-chuyendon.html
 ├── includes/
 │   ├── header.html
 │   └── footer.html
@@ -62,7 +60,7 @@ dich-vu-chuyen-don/
     │   │   ├── chuyen-van-phong.html
     │   │   └── chuyen-kho-bai.html
     │   └── noi-dung/
-    │       └── cam-nang-chi-tiet.html
+    │       └── cam-nang-chi-tiet-chuyendon.html
     └── assets/
         ├── css/
         │   ├── styles.css
@@ -94,7 +92,7 @@ dich-vu-chuyen-don/
         │       └── main-auth.js
         ├── partials/
         │   └── bieu-mau/
-        │       └── form-dat-lich.html
+        │       └── form-dat-lich-chuyendon.html
         └── images/
 ```
 
@@ -105,32 +103,30 @@ dich-vu-chuyen-don/
 | `index.html`                                   | Landing page của dịch vụ chuyển dọn                             |
 | `dich-vu-chuyen-don.html`                      | Trang dịch vụ tổng hợp cho 3 nhóm nhu cầu chuyển dọn            |
 | `bang-gia-chuyen-don.html`                     | Trang bảng giá tham khảo và minh bạch thông tin                 |
-| `dat-lich.html`                                | Trang đặt lịch riêng                                            |
-| `khao-sat.html`                                | URL cũ, chuyển hướng về `dat-lich.html`                         |
+| `dat-lich-chuyendon.html`                                | Trang đặt lịch riêng                                            |
 | `admin-chuyendon/public/login.php`             | Đăng nhập admin chuyển dọn                                      |
 | `admin-chuyendon/public/users_manage.php`      | Quản lý người dùng                                              |
 | `admin-chuyendon/public/orders_manage.php`     | Quản lý đơn hàng                                                |
 | `admin-chuyendon/public/admin_pricing.php`     | Quản lý bảng giá                                                |
-| `khach-hang/dashboard.html`                    | Dashboard khách hàng sau đăng nhập                              |
-| `khach-hang/danh-sach-don-hang.html`           | Danh sách đơn hàng của khách hàng                               |
-| `khach-hang/chi-tiet-hoa-don.html`             | Chi tiết một đơn đặt lịch của khách hàng                        |
-| `khach-hang/ho-so.html`                        | Hồ sơ và đổi mật khẩu của khách hàng                            |
-| `nha-cung-cap/dashboard.html`                  | Dashboard nhà cung cấp                                          |
+| `khach-hang/dashboard-chuyendon.html`                    | Dashboard khách hàng sau đăng nhập                              |
+| `khach-hang/danh-sach-don-hang-chuyendon.html`           | Danh sách đơn hàng của khách hàng                               |
+| `khach-hang/chi-tiet-hoa-don-chuyendon.html`             | Chi tiết một đơn đặt lịch của khách hàng                        |
+| `khach-hang/ho-so-chuyendon.html`                        | Hồ sơ và đổi mật khẩu của khách hàng                            |
+| `nha-cung-cap/dashboard-chuyendon.html`                  | Dashboard nhà cung cấp                                          |
 | `nha-cung-cap/cong-viec.html`                  | Danh sách việc chuyển dọn cho nhà cung cấp                      |
 | `nha-cung-cap/chi-tiet-don.html`               | Chi tiết đơn và thao tác nhận/triển khai của nhà cung cấp       |
-| `nha-cung-cap/ho-so.html`                      | Hồ sơ và đổi mật khẩu của nhà cung cấp                          |
-| `cam-nang.html`                                | Danh sách cẩm nang                                              |
-| `chinh-sach-va-dieu-khoan.html`                | Trang chính sách và điều khoản                                  |
+| `nha-cung-cap/ho-so-chuyendon.html`                      | Hồ sơ và đổi mật khẩu của nhà cung cấp                          |
+| `cam-nang-chuyendon.html`                                | Danh sách cẩm nang                                              |
+| `chinh-sach-va-dieu-khoan-chuyendon.html`                | Trang chính sách và điều khoản                                  |
 | `public/trang/dich-vu/chuyen-nha.html`         | URL cũ, chuyển hướng về tab chuyển nhà trên trang dịch vụ       |
 | `public/trang/dich-vu/chuyen-van-phong.html`   | URL cũ, chuyển hướng về tab chuyển văn phòng trên trang dịch vụ |
 | `public/trang/dich-vu/chuyen-kho-bai.html`     | URL cũ, chuyển hướng về tab chuyển kho bãi trên trang dịch vụ   |
-| `public/trang/noi-dung/cam-nang-chi-tiet.html` | Trang chi tiết bài viết                                         |
+| `public/trang/noi-dung/cam-nang-chi-tiet-chuyendon.html` | Trang chi tiết bài viết                                         |
 
 ## Luồng khảo sát
 
 - Không còn form khảo sát riêng trong runtime.
-- Nhu cầu khảo sát được gộp vào [form-dat-lich.html](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\partials\bieu-mau\form-dat-lich.html) bằng checkbox `Cần nhà cung cấp khảo sát trước (+150.000)`.
-- `khao-sat.html` chỉ còn vai trò URL cũ để chuyển hướng về `dat-lich.html`.
+- Nhu cầu khảo sát được gộp vào [form-dat-lich-chuyendon.html](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\partials\bieu-mau\form-dat-lich-chuyendon.html) bằng checkbox `Cần nhà cung cấp khảo sát trước (+150.000)`.
 
 ## Admin chuyển dọn
 
@@ -150,7 +146,7 @@ dich-vu-chuyen-don/
 
 ## Form đặt lịch
 
-`dat-lich.html` dùng partial [form-dat-lich.html](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\partials\bieu-mau\form-dat-lich.html), module UI [main-forms.js](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\js\modules\main-forms.js) và lớp API [main-booking-api.js](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\js\modules\main-booking-api.js).
+`dat-lich-chuyendon.html` dùng partial [form-dat-lich-chuyendon.html](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\partials\bieu-mau\form-dat-lich-chuyendon.html), module UI [main-forms.js](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\js\modules\main-forms.js) và lớp API [main-booking-api.js](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\js\modules\main-booking-api.js).
 
 Hiện đã có:
 

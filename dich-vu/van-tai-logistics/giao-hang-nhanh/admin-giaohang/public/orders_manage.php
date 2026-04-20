@@ -366,7 +366,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     <script>
         (function () {
             const ordersTable = "giaohangnhanh_dat_lich";
-            const standaloneDetailBaseUrl = "../../chi-tiet-don-hang.html?viewer=admin&madonhang=";
+            const standaloneDetailBaseUrl = "../../chi-tiet-don-hang-giaohang.html?viewer=admin&madonhang=";
             const tbody = document.getElementById("orders-table-body");
             const summary = document.getElementById("orders-summary");
             const pagination = document.getElementById("orders-pagination");

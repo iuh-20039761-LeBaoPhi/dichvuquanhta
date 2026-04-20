@@ -287,8 +287,8 @@
 
   function getDashboardPath(role) {
     return normalizeLowerText(role) === "shipper"
-      ? "public/nha-cung-cap/dashboard.html"
-      : "public/khach-hang/dashboard.html";
+      ? "public/nha-cung-cap/dashboard-giaohang.html"
+      : "public/khach-hang/dashboard-giaohang.html";
   }
 
   function ensureKrudReady() {

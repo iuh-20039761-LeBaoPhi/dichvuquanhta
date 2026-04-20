@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="public/assets/images/favicon.ico"
+    />
+    <meta charset="UTF-8" />
+    <title>Đặt lịch chuyển dọn | Dịch vụ Chuyển Dọn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Điền thông tin đặt lịch chuyển dọn cho chuyển nhà, chuyển văn phòng công ty hoặc chuyển kho bãi. Đội ngũ sẽ dựa trên lộ trình, thời gian và yêu cầu thực tế để chuẩn bị phương án phù hợp."
+    />
+    <link rel="canonical" href="dat-lich-chuyendon.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="dat-lich-chuyendon.html" />
+    <meta
+      property="og:title"
+      content="Đặt lịch chuyển dọn | Dịch vụ Chuyển Dọn"
+    />
+    <meta
+      property="og:description"
+      content="Tạo yêu cầu đặt lịch chuyển dọn với thông tin lộ trình, loại dịch vụ, khung giờ và ghi chú thực tế."
+    />
+    <meta
+      property="og:image"
+      content="public/assets/images/chuyendon-tron-goi.png"
+    />
+    <meta property="og:site_name" content="Dịch vụ Chuyển Dọn" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="public/assets/css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="/ga.js"></script>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="trang-bieu-mau">
+      <section class="hero-bieu-mau hero-bieu-mau-dat-lich">
+        <div class="container hero-bieu-mau-noi-dung">
+          <div class="hero-bieu-mau-van-ban">
+            <span class="nhan-phu">Đặt lịch chuyển dọn</span>
+            <h1>
+              Gửi yêu cầu đặt lịch để chuẩn bị kế hoạch chuyển dọn phù hợp
+            </h1>
+            <p>
+              Điền trước lộ trình, thời gian thực hiện và các yêu cầu cần lưu ý
+              để đội ngũ chủ động sắp xếp nhân sự, phương tiện và phương án
+              triển khai sát với nhu cầu thực tế.
+            </p>
+            <div class="hero-bieu-mau-hanh-dong">
+              <a class="nut-hanh-dong nut-sang" href="dich-vu-chuyen-don.html"
+                >Xem các dịch vụ</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="khu-bieu-mau">
+        <div class="container luoi-bieu-mau">
+          <div
+            id="booking-form-host"
+            class="cot-bieu-mau"
+            data-bieu-mau-trang="dat-lich"
+          ></div>
+
+          <aside class="cot-thong-tin">
+            <div class="the-thong-tin">
+              <span class="the-thong-tin-nhan">Gợi ý</span>
+              <h2>Nên chuẩn bị trước những gì?</h2>
+              <ul class="danh-sach-buoc">
+                <li>Địa chỉ điểm đi, điểm đến và điều kiện tiếp cận xe tải.</li>
+                <li>
+                  Loại mặt bằng, số tầng, thang máy và khối lượng đồ đạc dự
+                  kiến.
+                </li>
+                <li>
+                  Khung giờ mong muốn cùng các yêu cầu cần lưu ý khi triển khai.
+                </li>
+              </ul>
+            </div>
+
+            <div class="the-thong-tin">
+              <span class="the-thong-tin-nhan">Phạm vi</span>
+              <h2>Phù hợp với các nhu cầu</h2>
+              <ul class="danh-sach-buoc">
+                <li>
+                  Chuyển nhà trọn gói cho căn hộ, phòng trọ, nhà phố hoặc chung
+                  cư.
+                </li>
+                <li>
+                  Chuyển văn phòng công ty cần kiểm soát hồ sơ, thiết bị và thời
+                  gian di dời.
+                </li>
+                <li>
+                  Chuyển kho bãi cần nhân sự bốc xếp, xe tải hoặc phương tiện hỗ
+                  trợ chuyên dụng.
+                </li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="public/assets/js/driveUtil.js"></script>
+    <script src="public/assets/js/shared-layout.js"></script>
+    <script type="module" src="public/assets/js/main.js"></script>
+  </body>
+</html>

@@ -5,7 +5,7 @@ $projectPos = stripos($scriptName, $projectMarker);
 $projectBase = $projectPos !== false
     ? substr($scriptName, 0, $projectPos + strlen($projectMarker))
     : '/giao-hang-nhanh/';
-$parentBase = preg_replace('#giao-hang-nhanh/?$#i', '', $projectBase);
+$parentBase = preg_replace('#(?:dich-vu/van-tai-logistics/)?giao-hang-nhanh/?$#i', '', $projectBase);
 
 $footerLinks = [
     'about' => $projectBase . 'index.html',
@@ -14,15 +14,15 @@ $footerLinks = [
     'terms' => $projectBase . 'dieu-khoan-su-dung.html',
     'privacy' => $projectBase . 'chinh-sach-bao-mat.html',
     'shipping_policy' => $projectBase . 'chinh-sach-van-chuyen.html',
-    'svc_lau_don_ve_sinh' => $parentBase . 'dich-vu-don-ve-sinh/demo/',
-    'svc_cham_soc_me_be' => $parentBase . 'cham-soc-me-va-be/',
-    'svc_cham_soc_vuon' => $parentBase . 'cham-soc-vuon-nha/',
-    'svc_giat_ui' => $parentBase . 'giat-ui-nhanh/',
-    'svc_tho_nha' => $parentBase . 'tho-nha/',
-    'svc_cham_soc_nguoi_gia' => $parentBase . 'cham-soc-nguoi-gia/',
-    'svc_cham_soc_nguoi_benh' => $parentBase . 'cham-soc-nguoi-benh/',
-    'svc_dich_vu_chuyen_don' => $parentBase . 'dich-vu-chuyen-don/',
-    'svc_giao_hang_nhanh' => $projectBase,
+    'svc_lau_don_ve_sinh' => $parentBase . 'dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html',
+    'svc_cham_soc_me_be' => $parentBase . 'dich-vu/cham-soc/me-va-be/dich-vu.html',
+    'svc_cham_soc_vuon' => $parentBase . 'cham-soc-vuon-nha/dichvu.html',
+    'svc_giat_ui' => $parentBase . 'dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html',
+    'svc_tho_nha' => $parentBase . 'dich-vu/sua-chua/tho-nha/pages/public/dich-vu.html',
+    'svc_cham_soc_nguoi_gia' => $parentBase . 'dich-vu/cham-soc/nguoi-gia/dich-vu.html',
+    'svc_cham_soc_nguoi_benh' => $parentBase . 'dich-vu/cham-soc/nguoi-benh/dich-vu.html',
+    'svc_dich_vu_chuyen_don' => $parentBase . 'dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html',
+    'svc_giao_hang_nhanh' => $projectBase . 'dich-vu-giao-hang.html',
 ];
 ?>
 <footer>
