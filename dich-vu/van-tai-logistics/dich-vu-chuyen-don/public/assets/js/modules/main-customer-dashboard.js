@@ -2,8 +2,7 @@ import core from "./core/app-core.js";
 import store from "./main-customer-portal-store.js";
 
 const customerDashboardModule = (function (window, document) {
-  if (window.__fastGoCustomerDashboardLoaded)
-    return window.__fastGoCustomerDashboardModule || null;
+  if (window.__fastGoCustomerDashboardLoaded) return window.__fastGoCustomerDashboardModule || null;
   window.__fastGoCustomerDashboardLoaded = true;
 
   const body = document.body;
@@ -29,19 +28,13 @@ const customerDashboardModule = (function (window, document) {
   }
 
   function getProjectUrl(path) {
-    const url =
-      typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
-    return typeof core.appendAuthParamsToUrl === "function"
-      ? core.appendAuthParamsToUrl(url)
-      : url;
+    const url = typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
+    return typeof core.appendAuthParamsToUrl === "function" ? core.appendAuthParamsToUrl(url) : url;
   }
 
   function getOrderDetailUrl(orderIdentifier) {
     return typeof core.buildOrderDetailUrl === "function"
-      ? core.buildOrderDetailUrl(
-          "khach-hang/chi-tiet-hoa-don.html",
-          orderIdentifier,
-        )
+      ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", orderIdentifier)
       : getProjectUrl(
           `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(
             orderIdentifier || "",
@@ -72,12 +65,10 @@ const customerDashboardModule = (function (window, document) {
   }
 
   function getStatusMeta(item) {
-    return (
-      store.getBookingDisplayStatus?.(item) || {
-        status_text: item?.status_text || "Mới tiếp nhận",
-        badge_class: "pending",
-      }
-    );
+    return store.getBookingDisplayStatus?.(item) || {
+      status_text: item?.status_text || "Mới tiếp nhận",
+      badge_class: "pending",
+    };
   }
 
   function getRouteSummary(request) {
@@ -86,11 +77,7 @@ const customerDashboardModule = (function (window, document) {
     if (fromAddress || toAddress) {
       return `Từ ${fromAddress || "--"} đến ${toAddress || "--"}`;
     }
-    return String(
-      request?.summary ||
-        request?.meta ||
-        "Đang chờ cập nhật thêm từ hệ thống.",
-    ).trim();
+    return String(request?.summary || request?.meta || "Đang chờ cập nhật thêm từ hệ thống.").trim();
   }
 
   function renderDashboard(data) {
@@ -142,17 +129,13 @@ const customerDashboardModule = (function (window, document) {
       {
         label: "Đang theo dõi",
         value: String(activeRequests),
-        hint: activeRequests
-          ? "Chờ nhận, đã nhận hoặc đang triển khai"
-          : "Không có đơn cần theo dõi",
+        hint: activeRequests ? "Chờ nhận, đã nhận hoặc đang triển khai" : "Không có đơn cần theo dõi",
         className: "customer-kpi-card-pending",
       },
       {
         label: "Đã hoàn thành",
         value: String(completedRequests),
-        hint: completedRequests
-          ? "Đơn đã hoàn tất xử lý"
-          : "Chưa có đơn hoàn thành",
+        hint: completedRequests ? "Đơn đã hoàn tất xử lý" : "Chưa có đơn hoàn thành",
         className: "customer-kpi-card-completed",
       },
     ];
@@ -209,9 +192,10 @@ const customerDashboardModule = (function (window, document) {
             ${
               previewRequests.length
                 ? previewRequests
-                    .map((request) => {
-                      const statusMeta = getStatusMeta(request);
-                      return `
+                    .map(
+                      (request) => {
+                        const statusMeta = getStatusMeta(request);
+                        return `
                         <article class="customer-order-card customer-order-card-compact">
                           <div class="customer-order-topline">
                             <div class="customer-order-heading">
@@ -233,16 +217,10 @@ const customerDashboardModule = (function (window, document) {
                                 ${
                                   request.type === "dat-lich"
                                     ? `<a class="customer-btn customer-btn-primary customer-btn-sm" href="${escapeHtml(
-                                        getOrderDetailUrl(
-                                          request.remote_id ||
-                                            request.code ||
-                                            "",
-                                        ),
+                                        getOrderDetailUrl(request.remote_id || request.code || ""),
                                       )}">Xem chi tiết</a>`
                                     : `<a class="customer-btn customer-btn-primary customer-btn-sm" href="${escapeHtml(
-                                        getProjectUrl(
-                                          "khach-hang/danh-sach-don-hang.html",
-                                        ),
+                                        getProjectUrl("khach-hang/danh-sach-don-hang.html"),
                                       )}">Mở đơn hàng</a>`
                                 }
                               </div>
@@ -254,7 +232,8 @@ const customerDashboardModule = (function (window, document) {
                           </div>
                         </article>
                       `;
-                    })
+                      },
+                    )
                     .join("")
                 : `
                   <div class="customer-empty-state">
