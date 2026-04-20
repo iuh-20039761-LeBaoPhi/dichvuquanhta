@@ -23,6 +23,7 @@
   function buildSharedAuthUrl(pageName, options = {}) {
     const target = new URL(`${parentBase}public/${pageName}`, window.location.origin);
     target.searchParams.set("service", "giaohangnhanh");
+    target.searchParams.set("redirect", `${projectBase}index.html`);
     if (options.redirect) {
       target.searchParams.set("redirect", String(options.redirect));
     }

@@ -463,6 +463,7 @@
         function buildSharedAuthUrl(pageName) {
           const url = new URL(toPublicUrl(pageName), window.location.href);
           url.searchParams.set("service", sharedAuthService);
+          url.searchParams.set("redirect", new URL("index.html", window.location.href).pathname);
           return url.toString();
         }
 

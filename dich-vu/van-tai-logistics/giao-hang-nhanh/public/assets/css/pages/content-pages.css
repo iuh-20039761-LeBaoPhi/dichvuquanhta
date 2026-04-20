@@ -817,6 +817,113 @@ body.guide-page .s-badge.instant {
   color: #166534;
 }
 
+body.guide-page .guide-screenshot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+body.guide-page .guide-screenshot {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+body.guide-page .guide-screenshot img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  cursor: zoom-in;
+  object-fit: contain;
+  background: #f8fafc;
+}
+
+body.guide-page .guide-screenshot img:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.5);
+  outline-offset: -3px;
+}
+
+body.guide-page .guide-screenshot figcaption {
+  padding: 10px 12px;
+  color: #1e3a8a;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+body.guide-lightbox-open {
+  overflow: hidden;
+}
+
+body.guide-page .guide-image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(15, 23, 42, 0.86);
+}
+
+body.guide-page .guide-image-lightbox[hidden] {
+  display: none;
+}
+
+body.guide-page .guide-lightbox-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+body.guide-page .guide-lightbox-close:hover,
+body.guide-page .guide-lightbox-close:focus-visible {
+  background: rgba(255, 255, 255, 0.22);
+  outline: none;
+}
+
+body.guide-page .guide-lightbox-frame {
+  display: grid;
+  gap: 12px;
+  width: min(1180px, 100%);
+  max-height: calc(100vh - 56px);
+  margin: 0;
+}
+
+body.guide-page .guide-lightbox-frame img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 112px);
+  justify-self: center;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+body.guide-page .guide-lightbox-frame figcaption {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
 body.pricing-page .pricing-table-wrapper--compact {
   max-width: 1000px;
   margin-left: auto;
@@ -1143,6 +1250,7 @@ body.pricing-page .pricing-clarity-card p {
   }
 
   body.guide-page .logic-grid,
+  body.guide-page .guide-screenshot-grid,
   body.guide-page .service-badge-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
@@ -1154,6 +1262,22 @@ body.pricing-page .pricing-clarity-card p {
 
   body.guide-page .logic-item {
     padding: 15px 14px;
+  }
+
+  body.guide-page .guide-screenshot img {
+    aspect-ratio: 16 / 10;
+  }
+
+  body.guide-page .guide-image-lightbox {
+    padding: 16px;
+  }
+
+  body.guide-page .guide-lightbox-frame {
+    max-height: calc(100vh - 32px);
+  }
+
+  body.guide-page .guide-lightbox-frame img {
+    max-height: calc(100vh - 92px);
   }
 
   body.pricing-page .pricing-card-grid--examples {
@@ -1237,6 +1361,7 @@ body.pricing-page .pricing-clarity-card p {
   }
 
   body.guide-page .logic-grid,
+  body.guide-page .guide-screenshot-grid,
   body.guide-page .service-badge-grid {
     grid-template-columns: 1fr;
     gap: 12px;

@@ -112,6 +112,7 @@
   function buildSharedAuthUrl(pageName, params = {}) {
     const url = new URL(`${parentBase}public/${pageName}`, window.location.href);
     url.searchParams.set("service", sharedAuthService);
+    url.searchParams.set("redirect", `${projectBase}index.html`);
 
     Object.entries(params || {}).forEach(([key, value]) => {
       const normalizedValue = String(value ?? "").trim();
