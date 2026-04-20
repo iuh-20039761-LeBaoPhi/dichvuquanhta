@@ -19,7 +19,7 @@
    */
   const authUrl = (action) => {
     const query = action ? ('?action=' + encodeURIComponent(action)) : '';
-    return new URL('session_auth.php' + query, projectBase).href;
+    return new URL('session_user.php' + query, projectBase).href;
   };
 
   const assetUrl = (path) => {
