@@ -7,7 +7,8 @@ require_once __DIR__ . '/xu-ly-huy.php';
 require_once __DIR__ . '/header-shared.php';
 require_once __DIR__ . '/xu-ly-phan-trang.php';
 
-$sessionUser = session_user_require_customer('../login.html', 'khach_hang/danh-sach-don-hang.php');
+
+$sessionUser = session_user_require_customer('../login.html', 'khach hang/danh-sach-don-hang.php');
 $sessionPhone = (string)($sessionUser['sodienthoai'] ?? '');
 $sessionAvatar = trim((string)($sessionUser['anh_dai_dien'] ?? $sessionUser['avatar'] ?? ''));
 

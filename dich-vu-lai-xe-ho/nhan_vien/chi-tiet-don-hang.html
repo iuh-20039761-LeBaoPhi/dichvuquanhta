@@ -1586,19 +1586,32 @@
 			app.$nguoidung = await listTableRows(TABLE_USER);
 		}
 
-		function findAuthUser() {
-			const { sodienthoai, password } = app.params;
-			const matched = app.$nguoidung.find(r => String(r.sodienthoai || '') === sodienthoai && String(r.matkhau || r.mat_khau || r.password || '') === password);
-			if (!matched || !app.$datlich_taixe) return null;
+		// Hàm tìm và xác định quyền của người dùng đã sửa lỗi
+function findAuthUser() {
+    const { sodienthoai, password } = app.params;
+    // Tìm user khớp SĐT và mật khẩu trong danh sách đã tải
+    const matched = app.$nguoidung.find(r => String(r.sodienthoai || '') === sodienthoai && String(r.matkhau || r.mat_khau || r.password || '') === password);
+    
+    // Nếu không tìm thấy user hoặc chưa có dữ liệu đơn hàng thì trả về null (không có quyền)
+    if (!matched || !app.$datlich_taixe) return null;
 
-			const ord = app.$datlich_taixe;
-			const isProvider = String(matched.id_dichvu || '').split(',').map(s => s.trim()).includes('1');
-			const sdt_url = sodienthoai, sdt_kh = String(ord.sdtkhachhang || ''), sdt_tx = String(ord.sdt_taixe || '');
+    const ord = app.$datlich_taixe;
+    // Kiểm tra xem có phải là nhà cung cấp (tài xế) không? ID '1' là của nhà cung cấp.
+    const isProvider = String(matched.id_dichvu || '').split(',').map(s => s.trim()).includes('1');
+    
+    const sdt_kh = String(ord.sdtkhachhang || ''); // SĐT khách hàng trong đơn
+    const sdt_tx = String(ord.sdt_taixe || '');   // SĐT tài xế được phân công (nếu có)
 
-			if (sdt_url === sdt_kh) return { role: 'customer', $user: matched };
-			if (sdt_url !== sdt_kh && isProvider && (sdt_url === sdt_tx || !sdt_tx)) return { role: 'driver', $user: matched };
-			return null;
-		}
+    // 1. Nếu SĐT đăng nhập trùng với SĐT khách hàng -> là 'customer'
+    if (sodienthoai === sdt_kh) return { role: 'customer', $user: matched };
+
+    // 2. Nếu SĐT đăng nhập là tài xế và (trùng với SĐT tài xế trong đơn HOẶC đơn chưa có tài xế nào nhận)
+    //    -> là 'driver'
+    if (isProvider && (sodienthoai === sdt_tx || !sdt_tx)) return { role: 'driver', $user: matched };
+    
+    // Các trường hợp còn lại: không có quyền
+    return null;
+}
 
 		async function applyAutoOrderStatusRules($datlich_taixe) {
 			const status = String($datlich_taixe.trangthai || '').toLowerCase();

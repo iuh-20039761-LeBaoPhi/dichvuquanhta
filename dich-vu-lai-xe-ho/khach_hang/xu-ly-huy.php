@@ -125,125 +125,12 @@ function taixe_update_status(int $invoiceId, string $status): array
     ]);
 }
 
-function taixe_refresh_invoice_row(array $invoice): array
-{
-    $invoiceId = (int)($invoice['id'] ?? 0);
-    if ($invoiceId <= 0) {
-        return $invoice;
-    }
-
-    $status = trim((string)($invoice['trangthai'] ?? ''));
-    if (taixe_status_is_cancelled($status)) {
-        return $invoice;
-    }
-
-    $hasDriver = taixe_has_driver($invoice);
-    $now = taixe_now();
-
-    $startPlan = taixe_parse_plan_datetime(
-        (string)($invoice['ngay_bat_dau_kehoach'] ?? ''),
-        (string)($invoice['gio_bat_dau_kehoach'] ?? '')
-    );
-
-    $endPlan = taixe_parse_plan_datetime(
-        (string)($invoice['ngay_ket_thuc_kehoach'] ?? ''),
-        (string)($invoice['gio_ket_thuc_kehoach'] ?? '')
-    );
-
-    // Nếu chưa có tài xế và đã quá giờ bắt đầu -> quá hạn
-    if (!$hasDriver && $startPlan instanceof DateTimeImmutable && $now > $startPlan && !taixe_status_is_overdue($status) && !taixe_status_is_completed($status)) {
-        $updated = taixe_update_status($invoiceId, 'quá hạn');
-        if (($updated['success'] ?? false) === true) {
-            $invoice['trangthai'] = 'quá hạn';
-        }
-        return $invoice;
-    }
-
-    // Nếu có tài xế và đã quá giờ kết thúc -> hoàn thành
-    if ($hasDriver && $endPlan instanceof DateTimeImmutable && $now > $endPlan && !taixe_status_is_completed($status) && !taixe_status_is_overdue($status)) {
-        $updated = taixe_update_status($invoiceId, 'hoàn thành');
-        if (($updated['success'] ?? false) === true) {
-            $invoice['trangthai'] = 'hoàn thành';
-        }
-    }
-
-    return $invoice;
-}
-
-function taixe_refresh_invoice_rows(array $rows): array
-{
-    $result = [];
-    foreach ($rows as $item) {
-        if (!is_array($item)) {
-            continue;
-        }
-        $result[] = taixe_refresh_invoice_row($item);
-    }
-    return $result;
-}
-
-function taixe_can_cancel_invoice(array $invoice): array
-{
-    $status = trim((string)($invoice['trangthai'] ?? ''));
-    
-    if (taixe_status_is_cancelled($status)) {
-        return ['ok' => false, 'message' => 'Đơn đã ở trạng thái đã hủy.'];
-    }
-
-    if (taixe_status_is_overdue($status)) {
-        return ['ok' => false, 'message' => 'Đơn đã ở trạng thái quá hạn, không thể hủy.'];
-    }
-
-    if (taixe_status_is_completed($status)) {
-        return ['ok' => false, 'message' => 'Đơn đã hoàn thành, không thể hủy.'];
-    }
-
-    if (trim((string)($invoice['thoigian_batdau_thucte'] ?? '')) !== '') {
-        return ['ok' => false, 'message' => 'Đơn đã bắt đầu thực tế, không thể hủy.'];
-    }
-
-    if (trim((string)($invoice['thoigian_ketthuc_thucte'] ?? '')) !== '') {
-        return ['ok' => false, 'message' => 'Đơn đã kết thúc thực tế, không thể hủy.'];
-    }
-
-    $hasDriver = taixe_has_driver($invoice);
-    $startPlan = taixe_parse_plan_datetime(
-        (string)($invoice['ngay_bat_dau_kehoach'] ?? ''),
-        (string)($invoice['gio_bat_dau_kehoach'] ?? '')
-    );
-
-    if ($startPlan instanceof DateTimeImmutable && taixe_now() >= $startPlan) {
-        if (!$hasDriver) {
-            return ['ok' => false, 'message' => 'Đơn đã qua giờ bắt đầu, hệ thống đã chuyển quá hạn.'];
-        }
-        return ['ok' => false, 'message' => 'Đơn đã qua giờ bắt đầu kế hoạch, không thể hủy.'];
-    }
-
-    if ($hasDriver) {
-        return ['ok' => false, 'message' => 'Đơn đã có tài xế nhận việc, không thể hủy.'];
-    }
-
-    return ['ok' => true, 'message' => ''];
-}
-
-function taixe_can_customer_review(array $invoice): array
-{
-    $status = trim((string)($invoice['trangthai'] ?? ''));
-    
-    if (!taixe_status_is_completed($status)) {
-        return ['ok' => false, 'message' => 'Chỉ được đánh giá khi đơn ở trạng thái hoàn thành.'];
-    }
-
-    if (taixe_status_is_cancelled($status) || taixe_status_is_overdue($status)) {
-        return ['ok' => false, 'message' => 'Đơn đang ở trạng thái bị khóa đánh giá.'];
-    }
-
-    if (!taixe_has_driver($invoice)) {
-        return ['ok' => false, 'message' => 'Đơn không có tài xế nhận, không thể đánh giá.'];
-    }
-
-    return ['ok' => true, 'message' => ''];
-}
+// ===== CÁC HÀM NÀY ĐÃ BỊ XÓA VÌ TRÙNG VỚI get-donhangsdt.php =====
+// taixe_refresh_invoice_row() - ĐÃ XÓA
+// taixe_refresh_invoice_rows() - ĐÃ XÓA
+// taixe_can_cancel_invoice() - ĐÃ XÓA
+// taixe_can_customer_review() - ĐÃ XÓA
+// =================================================================
 
 function taixe_normalize_upload_items(array $files): array
 {
@@ -377,6 +264,7 @@ function taixe_cancel_invoice(int $invoiceId, string $sessionPhone): array
         return ['success' => false, 'message' => 'Không tìm thấy đơn hàng hoặc bạn không có quyền hủy.'];
     }
 
+    // Gọi hàm từ get-donhangsdt.php (đã được require ở trên)
     $invoice = taixe_refresh_invoice_row($invoice);
     $canCancel = taixe_can_cancel_invoice($invoice);
     if (($canCancel['ok'] ?? false) !== true) {
@@ -414,6 +302,7 @@ function taixe_save_customer_review(int $invoiceId, string $sessionPhone, string
         return ['success' => false, 'message' => 'Không tìm thấy đơn hàng hoặc bạn không có quyền đánh giá.'];
     }
 
+    // Gọi hàm từ get-donhangsdt.php (đã được require ở trên)
     $invoice = taixe_refresh_invoice_row($invoice);
     $canReview = taixe_can_customer_review($invoice);
     if (($canReview['ok'] ?? false) !== true) {
@@ -478,9 +367,9 @@ function taixe_redirect_result(string $returnTo, array $result): void
 
 function taixe_handle_post_request(): void
 {
-    $user = session_user_require_customer('../login.html', 'khach_hang/danh-sach-don-hang.php');
+    $user = session_user_require_customer('../login.html', '../danh-sach-don-hang.php');
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('Location: danh-sach-don-hang.php');
+        header('Location: ../danh-sach-don-hang.php');
         exit;
     }
 
@@ -496,14 +385,15 @@ function taixe_handle_post_request(): void
             is_array($_FILES['review_media'] ?? null) ? $_FILES['review_media'] : []
         );
 
-        $defaultReturn = $invoiceId > 0 ? ('chi-tiet-don-hang.php?id=' . $invoiceId) : 'danh-sach-don-hang.php';
+        $defaultReturn = $invoiceId > 0 ? ('../chi-tiet-don-hang.php?id=' . $invoiceId) : '../danh-sach-don-hang.php';
         $returnTo = taixe_sanitize_return_to((string)($_POST['return_to'] ?? ''), $defaultReturn);
         taixe_redirect_result($returnTo, $result);
+        return;
     }
 
     // Mặc định: hủy đơn
     $result = taixe_cancel_invoice($invoiceId, $sessionPhone);
-    $returnTo = taixe_sanitize_return_to((string)($_POST['return_to'] ?? ''), 'danh-sach-don-hang.php');
+    $returnTo = taixe_sanitize_return_to((string)($_POST['return_to'] ?? ''), '../danh-sach-don-hang.php');
     taixe_redirect_result($returnTo, $result);
 }
 

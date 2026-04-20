@@ -198,26 +198,52 @@ function getDonHangBySessionSdt(string $sessionPhone, ?int $invoiceId = null): a
     ];
 }
 
-/**
- * Làm mới dữ liệu đơn hàng (thêm thông tin bổ sung nếu cần)
- */
-function taixe_refresh_invoice_row(array $invoice): array
-{
-    // Có thể thêm các logic xử lý bổ sung ở đây nếu cần
-    // Ví dụ: format số điện thoại, thêm thông tin tài xế, v.v.
-    
-    if (!empty($invoice['tong_tien'])) {
-        $invoice['tong_tien_display'] = number_format((float)$invoice['tong_tien'], 0, ',', '.') . ' đ';
+if (!function_exists('taixe_refresh_invoice_row')) {
+    function taixe_refresh_invoice_row(array $row): array
+    {
+        return $row;
     }
-    
-    return $invoice;
 }
 
-/**
- * Làm mới danh sách đơn hàng
- */
-function taixe_refresh_invoice_rows(array $invoices): array
-{
-    return array_map('taixe_refresh_invoice_row', $invoices);
+if (!function_exists('taixe_refresh_invoice_rows')) {
+    function taixe_refresh_invoice_rows(array $rows): array
+    {
+        return array_map('taixe_refresh_invoice_row', $rows);
+    }
+}
+
+if (!function_exists('taixe_can_cancel_invoice')) {
+    function taixe_can_cancel_invoice(array $invoice): array
+    {
+        $status = strtolower(trim((string)($invoice['trangthai'] ?? '')));
+        $hasDriver = !empty($invoice['id_taixe']) || !empty($invoice['ten_taixe']);
+        
+        if ($hasDriver) {
+            return ['ok' => false, 'message' => 'Đơn hàng đã có tài xế nhận, không thể hủy'];
+        }
+        
+        if (strpos($status, 'hủy') !== false || strpos($status, 'hoàn thành') !== false) {
+            return ['ok' => false, 'message' => 'Đơn hàng đã hủy hoặc hoàn thành'];
+        }
+        
+        return ['ok' => true, 'message' => ''];
+    }
+}
+
+if (!function_exists('taixe_can_customer_review')) {
+    function taixe_can_customer_review(array $invoice): array
+    {
+        $status = strtolower(trim((string)($invoice['trangthai'] ?? '')));
+        
+        if (strpos($status, 'hoàn thành') === false) {
+            return ['ok' => false, 'message' => 'Chỉ có thể đánh giá sau khi đơn hàng hoàn thành'];
+        }
+        
+        if (!empty($invoice['danhgia_khachhang'])) {
+            return ['ok' => false, 'message' => 'Bạn đã gửi đánh giá cho đơn hàng này'];
+        }
+        
+        return ['ok' => true, 'message' => ''];
+    }
 }
 ?>
