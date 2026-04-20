@@ -5,6 +5,12 @@ require_once __DIR__ . '/../session_user.php';
 require_once __DIR__ . '/get-don-hang.php';
 require_once __DIR__ . '/xu-ly-phan-trang.php';
 
+// Lấy dữ liệu đơn hàng
+$resHoaDon = get_filtered_invoices();
+$rows = $resHoaDon['data'] ?? [];
+$loadError = $resHoaDon['error'] ?? '';
+$isEmployeeApproved = true;
+
 $flashOk = isset($_GET['ok']) ? ((string) $_GET['ok'] === '1') : null;
 $flashMsg = trim((string) ($_GET['msg'] ?? ''));
 
@@ -579,7 +585,11 @@ include 'layout-header.php';
                                             <td><?= htmlspecialchars((string) ($item['dich_vu'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></td>
                                             <td><?= htmlspecialchars((string) ($item['diemden'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></td>
                                             <td><?= number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND' ?></td>
-                                            <td><?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?></td>
+                                            <td><?php 
+                                                $dateStr = (string) ($item['ngay_bat_dau_kehoach'] ?? '');
+                                                $timestamp = strtotime($dateStr);
+                                                echo $timestamp ? date('d/m/Y', $timestamp) : 'N/A';
+                                            ?></td>
                                             <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
                                             <td>
                                                 <div class="action-group">
@@ -615,7 +625,11 @@ include 'layout-header.php';
                                     onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="inv-id"><?= htmlspecialchars($displayItemId, ENT_QUOTES, 'UTF-8') ?></div>
-                                        <div class="inv-date"><?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?></div>
+                                        <div class="inv-date"><?php 
+                                            $dateStr = (string) ($item['ngay_bat_dau_kehoach'] ?? '');
+                                            $timestamp = strtotime($dateStr);
+                                            echo $timestamp ? date('d/m/Y', $timestamp) : 'N/A';
+                                        ?></div>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-1">
                                         <div class="inv-name"><?= htmlspecialchars((string) ($item['tenkhachhang'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></div>
