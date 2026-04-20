@@ -14,21 +14,26 @@
 	<script src="https://api.dvqt.vn/js/krud.js"></script>
 	<style>
 		:root {
-			--bg: #f4f7fb;
+			--bg: #fff6fb;
 			--surface: #ffffff;
-			--surface-soft: #f8fbff;
-			--text: #1b2a3a;
-			--muted: #6a7a8a;
-			--primary: #0f80f2;
-			--success: #19a56f;
-			--warning: #ed9f1a;
-			--danger: #d14242;
-			--border: #e5edf5;
-			--shadow: 0 20px 45px rgba(20, 50, 80, 0.12);
-			--radius-xl: 22px;
+			--surface-soft: #fff1f8;
+			--text: #3d2333;
+			--muted: #8b5f74;
+			--primary: #e45a97;
+			--success: #d94a8a;
+			--warning: #f08ab6;
+			--danger: #c93b78;
+			--border: #f0d4e3;
+			--shadow: 0 20px 45px rgba(196, 83, 138, 0.18);
+			--shadow-lg: 0 24px 48px rgba(196, 83, 138, 0.18), 0 6px 20px rgba(138, 170, 209, 0.12);
+			--radius-md: 10px;
 			--radius-lg: 16px;
-			--radius-md: 12px;
-			--anim: 260ms cubic-bezier(.2, .7, .2, 1);
+			--radius-xl: 24px;
+			--anim: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			--accent-peach: #ffd6b9;
+			--accent-lavender: #e5d8ff;
+			--accent-mint: #cff5e8;
+			--accent-rose: #f7a7c8;
 		}
 
 		* {
@@ -36,15 +41,40 @@
 		}
 
 		html,
+		body,
+		button,
+		input,
+		select,
+		textarea,
+		.h1,
+		.h2,
+		.h3,
+		.h4,
+		.h5,
+		.h6,
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			font-family: "Be Vietnam Pro", sans-serif !important;
+		}
+
+		html,
 		body {
 			margin: 0;
 			padding: 0;
 			min-height: 100%;
-			font-family: "Be Vietnam Pro", sans-serif;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			text-rendering: optimizeLegibility;
 			color: var(--text);
 			background:
-				radial-gradient(circle at 20% -10%, #e3f0ff 0, transparent 42%),
-				radial-gradient(circle at 95% 120%, #e5fff4 0, transparent 38%),
+				radial-gradient(circle at 20% -10%, #ffdceb 0, transparent 42%),
+				radial-gradient(circle at 95% 120%, #ffe8f5 0, transparent 38%),
+				radial-gradient(circle at 85% 15%, rgb(248, 248, 248) 0, transparent 35%),
+				radial-gradient(circle at 8% 88%, rgb(255, 255, 255) 0, transparent 30%),
 				var(--bg);
 		}
 
@@ -58,9 +88,9 @@
 		.modal-card {
 			width: min(1240px, 100%);
 			border-radius: var(--radius-xl);
-			background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-			box-shadow: var(--shadow);
-			border: 1px solid rgba(16, 66, 113, 0.08);
+			background: linear-gradient(180deg, #ffffff 0%, #fff8fc 62%, #fff3f9 100%);
+			box-shadow: var(--shadow-lg);
+			border: 1px solid rgba(200, 88, 143, 0.2);
 			overflow: visible;
 			transform: translateY(8px);
 			opacity: 0;
@@ -74,18 +104,19 @@
 			}
 		}
 
+		/* --- Topbar --- */
 		.topbar {
 			display: grid;
 			grid-template-columns: auto minmax(0, 1fr) auto;
 			gap: 14px;
 			align-items: center;
 			padding: 20px 24px;
-			background: linear-gradient(100deg, #1170d8, #25b58b);
+			background: linear-gradient(102deg, #f369a7 0%, #ef86b4 58%, #ffa9d4 100%);
 			color: #fff;
 			position: sticky;
 			top: 0;
 			z-index: 50;
-			box-shadow: 0 10px 24px rgba(8, 48, 82, 0.25);
+			box-shadow: 0 10px 24px rgba(169, 63, 114, 0.3);
 		}
 
 		.topbar-logo {
@@ -96,17 +127,17 @@
 			height: 66px;
 			padding: 6px;
 			border-radius: 14px;
-			border: 1px solid rgba(255, 255, 255, 0.34);
-			background: rgba(255, 255, 255, 0.14);
-			box-shadow: 0 10px 22px rgba(9, 48, 88, 0.2);
+			border: 1px solid rgba(255, 255, 255, 0.42);
+			background: rgba(255, 255, 255, 0.2);
+			box-shadow: 0 10px 22px rgba(166, 58, 110, 0.24);
 			backdrop-filter: blur(4px);
 			transition: transform var(--anim), background var(--anim), border-color var(--anim);
 		}
 
 		.topbar-logo:hover {
 			transform: translateY(-2px);
-			background: rgba(255, 255, 255, 0.22);
-			border-color: rgba(255, 255, 255, 0.5);
+			background: rgba(255, 255, 255, 0.3);
+			border-color: rgba(255, 255, 255, 0.56);
 		}
 
 		.topbar-logo img {
@@ -119,19 +150,12 @@
 		.topbar-title {
 			margin: 0;
 			font-size: clamp(1.05rem, 1.5vw, 1.5rem);
-			font-weight: 800;
+			font-weight: 700;
 			letter-spacing: .2px;
 			text-align: center;
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
-		}
-
-		.topbar-meta {
-			display: flex;
-			align-items: center;
-			flex-wrap: wrap;
-			gap: 8px;
 		}
 
 		.chip {
@@ -140,23 +164,24 @@
 			gap: 6px;
 			padding: 7px 12px;
 			border-radius: 999px;
-			border: 1px solid rgba(255, 255, 255, 0.35);
+			border: 1px solid rgba(255, 255, 255, 0.45);
 			font-size: 12px;
 			font-weight: 700;
-			background: rgba(255, 255, 255, 0.15);
+			background: rgba(255, 255, 255, 0.24);
 			color: #fff;
 			backdrop-filter: blur(4px);
 		}
 
+		/* --- Content & State --- */
 		.content {
 			padding: 18px;
 		}
 
 		.state {
-			border-radius: var(--radius-md);
+			border-radius: 8px;
 			padding: 14px 16px;
 			margin: 0 0 16px;
-			font-weight: 600;
+			font-weight: 500;
 			border: 1px solid;
 			display: none;
 		}
@@ -177,6 +202,7 @@
 			color: #9a2525;
 		}
 
+		/* --- Grid & Panel --- */
 		.grid {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -184,10 +210,10 @@
 		}
 
 		.panel {
-			border: 1px solid var(--border);
+			border: 1px solid #f1d5e4;
 			border-radius: var(--radius-lg);
 			background: var(--surface);
-			box-shadow: 0 7px 20px rgba(14, 45, 80, 0.06);
+			box-shadow: 0 12px 26px rgba(226, 113, 168, 0.12), 0 2px 8px rgba(191, 200, 219, 0.1);
 			padding: 14px;
 			min-height: 205px;
 			display: flex;
@@ -209,36 +235,38 @@
 		.panel-title {
 			margin: 0;
 			font-size: 16px;
-			font-weight: 800;
-			color: #15314f;
+			font-weight: 700;
+			color: #6f2d52;
 		}
 
 		.badge {
 			padding: 5px 10px;
 			border-radius: 999px;
 			font-size: 11px;
-			font-weight: 800;
+			font-weight: 700;
 			letter-spacing: .2px;
-			background: #e8f3ff;
-			color: #0d4d96;
+			background: #ffe6f2;
+			color: #a83f72;
+			border: 1px solid #f7c8de;
 			white-space: nowrap;
 		}
 
 		.badge.success {
-			background: #e6fff4;
-			color: #0f7f55;
+			background: linear-gradient(135deg, #ffe3f1, #dff8ef);
+			color: #8a3462;
 		}
 
 		.badge.warning {
-			background: #fff8e8;
-			color: #9d6408;
+			background: linear-gradient(135deg, #ffe9f4, #ffe9d5);
+			color: #ad4f7e;
 		}
 
 		.badge.danger {
-			background: #ffecee;
-			color: #ad2121;
+			background: #ffd7e8;
+			color: #9e2f61;
 		}
 
+		/* --- Info Grid & Fields --- */
 		.info-grid {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -254,7 +282,7 @@
 
 		.field-label {
 			font-size: 11px;
-			font-weight: 700;
+			font-weight: 500;
 			color: var(--muted);
 			margin: 0 0 4px;
 			text-transform: uppercase;
@@ -264,10 +292,11 @@
 		.field-value {
 			margin: 0;
 			font-size: 14px;
-			font-weight: 600;
+			font-weight: 500;
 			word-break: break-word;
 		}
 
+		/* --- Invoice Specifics --- */
 		#panelInvoice {
 			padding: 0;
 			min-height: auto;
@@ -277,9 +306,10 @@
 		}
 
 		.invoice-hero {
-			border-radius: 16px 16px 16px 16px;
+			border-radius: 16px;
 			padding: 16px;
 			color: #000000;
+			background: linear-gradient(118deg, #f99bbd 0%, #f9c7dc 48%, #f9dbe7 72%, #ffe9d4 100%);
 		}
 
 		.invoice-main {
@@ -306,7 +336,7 @@
 		.invoice-order-title {
 			margin: 0;
 			font-size: clamp(1.1rem, 2vw, 1.7rem);
-			font-weight: 800;
+			font-weight: 700;
 		}
 
 		.invoice-status-badge {
@@ -315,7 +345,7 @@
 			padding: 5px 10px;
 			border-radius: 999px;
 			font-size: 11px;
-			font-weight: 800;
+			font-weight: 700;
 			background: rgba(255, 255, 255, 0.25);
 			border: 1px solid rgba(255, 255, 255, 0.35);
 			color: #020202;
@@ -336,21 +366,8 @@
 		.invoice-subtitle {
 			margin: 0;
 			font-size: 19px;
-			font-weight: 600;
+			font-weight: 500;
 			opacity: .95;
-		}
-
-
-
-		.invoice-chip-btn {
-			display: inline-flex;
-			align-items: center;
-			padding: 7px 11px;
-			border-radius: 999px;
-			font-size: 12px;
-			font-weight: 700;
-			background: rgba(255, 255, 255, 0.12);
-			border: 1px solid rgba(255, 255, 255, 0.28);
 		}
 
 		.invoice-progress-ring {
@@ -358,31 +375,40 @@
 			width: 122px;
 			height: 122px;
 			border-radius: 50%;
-			background: conic-gradient(#b4f3d2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.25) 0);
+			background: conic-gradient(from -90deg, #5eb4f2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.34) 0);
 			padding: 7px;
 			flex: 0 0 auto;
+			border: 2px solid rgb(0, 0, 0);
+			box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(122, 34, 82, 0.28);
 		}
 
 		.invoice-progress-core {
 			width: 100%;
 			height: 100%;
 			border-radius: 50%;
-			background: rgba(17, 72, 124, 0.44);
+			background:
+				radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0) 44%),
+				linear-gradient(150deg, rgba(245, 179, 179, 0.94) 0%, rgba(241, 138, 138, 0.93) 100%);
 			display: grid;
 			place-content: center;
 			text-align: center;
 			backdrop-filter: blur(4px);
+			border: 2px solid rgb(0, 0, 0);
+			box-shadow: inset 0 8px 14px rgba(255, 255, 255, 0.12);
+			color: #ffffff;
 		}
 
 		.invoice-progress-core strong {
 			font-size: 34px;
 			line-height: 1;
+			color: #383cb0;
+			font-weight: 700;
 		}
 
 		.invoice-progress-core small {
 			font-size: 12px;
 			font-weight: 700;
-			opacity: .9;
+			color: #f9f3ff;
 		}
 
 		.invoice-summary {
@@ -395,8 +421,8 @@
 			display: flex;
 			gap: 9px;
 			align-items: flex-start;
-			border: 1px solid rgba(214, 237, 255, 0.25);
-			background: rgba(27, 74, 130, 0.2);
+			border: 1px solid rgba(255, 227, 239, 0.6);
+			background: rgba(195, 19, 107, 0.22);
 			border-radius: 12px;
 			padding: 10px 12px;
 			min-height: 96px;
@@ -411,7 +437,7 @@
 			align-items: center;
 			justify-content: center;
 			font-size: 11px;
-			font-weight: 800;
+			font-weight: 700;
 			background: rgba(255, 255, 255, 0.576);
 			color: #060606;
 			flex: 0 0 27px;
@@ -427,21 +453,21 @@
 		.invoice-item-content p {
 			margin: 0;
 			font-size: 11px;
-			font-weight: 600;
+			font-weight: 500;
 			opacity: .85;
 		}
 
 		.invoice-item-content h4 {
 			margin: 0;
 			font-size: clamp(1.05rem, 1.6vw, 1.9rem);
-			font-weight: 800;
+			font-weight: 700;
 			line-height: 1.15;
 			word-break: break-word;
 		}
 
 		.invoice-item-content span {
 			font-size: 11px;
-			font-weight: 600;
+			font-weight: 500;
 			opacity: .9;
 		}
 
@@ -468,11 +494,12 @@
 			word-break: break-word;
 		}
 
+		/* --- Jobs --- */
 		#panelJobs {
 			padding: 0;
 			overflow: hidden;
 			gap: 0;
-			border-color: #d7e7dc;
+			border-color: #ec3d95;
 		}
 
 		.jobs-header {
@@ -481,83 +508,95 @@
 			justify-content: space-between;
 			gap: 10px;
 			padding: 12px 14px;
-			background: #f4f7fa;
-			border-bottom: 1px solid #deebf2;
+			background: linear-gradient(135deg, #ee7cb9 0%, #ffe9f5 65%, #ffd8fc 100%);
+			border-bottom: 1px solid #f2d7e5;
 		}
 
 		.jobs-title {
 			margin: 0;
 			font-size: 27px;
-			font-weight: 800;
-			color: #213d57;
-		}
-
-		.job-count {
-			display: inline-flex;
-			align-items: center;
-			padding: 6px 10px;
-			border-radius: 999px;
-			font-size: 11px;
-			font-weight: 800;
-			color: #138259;
-			background: #def8ea;
-			border: 1px solid #c0ead3;
-			white-space: nowrap;
+			font-weight: 700;
+			color: #6f2d52;
 		}
 
 		.jobs-body {
 			padding: 12px;
-			background: #ecf8f1;
+			background: linear-gradient(180deg, #fcfcfc 0%, #fff4fb 70%, #fceeff 100%);
 		}
 
-		#panelJobs #invoiceJob {
-			background: transparent;
-			padding: 0;
+		#invoiceJob {
+			list-style: none;
 			margin: 0;
-			gap: 10px;
+			padding: 8px;
+			border-radius: 10px;
+			background: linear-gradient(145deg, #fafafa 0%, #d8b4f1 100%);
+			display: grid;
+			gap: 8px;
+			counter-reset: job-item;
 		}
 
-		#panelJobs #invoiceJob li {
-			background: rgba(255, 255, 255, 0.35);
-			border: 1px solid #cfe9d9;
+		#invoiceJob li {
+			counter-increment: job-item;
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			font-size: 13px;
+			font-weight: 500;
+			line-height: 1.45;
+			color: #6d2f50;
+			background: #fff;
+			border: 1px solid #c21178;
 			border-radius: 10px;
 			padding: 10px;
 		}
 
+		#invoiceJob li::before {
+			content: counter(job-item);
+			flex: 0 0 22px;
+			height: 22px;
+			border-radius: 999px;
+			background: #de4f90;
+			color: #fff;
+			font-size: 12px;
+			font-weight: 700;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: 1px;
+		}
+
 		.jobs-meta {
 			padding: 10px;
-			border-top: 1px solid #deebf2;
+			border-top: 1px solid #ffffff;
 			background: #fff;
 		}
 
+		/* --- Media & Extras --- */
 		.invoice-extra {
-			border: 1px solid #c8d7ea;
+			border: 1px solid #f1d5e4;
 			border-top: 0;
 			border-radius: 0 0 14px 14px;
-			background: #fff;
+			background: linear-gradient(180deg, #ffffff 0%, #faf5fa 100%);
 			padding: 12px;
 			display: grid;
 			gap: 10px;
 		}
 
-		.invoice-extra-grid {
+		.invoice-extra-grid,
+		.invoice-media-grid {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 8px;
 		}
 
-
 		.invoice-media-grid {
-			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 8px;
 			margin: 4px;
 		}
 
 		.invoice-extra-item,
 		.invoice-media-item {
-			border: 1px solid #c8d7ea;
-			background: #dfe9f7;
+			border: 1px solid #e665a9;
+			background: #ffeef7;
 			border-radius: 8px;
 			padding: 8px 10px;
 			min-height: 72px;
@@ -567,29 +606,25 @@
 			grid-column: 1 / -1;
 		}
 
-		.invoice-media-row {
-			display: flex;
-			flex-direction: row;
-			gap: 8px;
-			margin-top: 8px;
-		}
-
 		.invoice-media-item {
-			border: 1px solid #c8d7ea;
-			background: #dfe9f7;
-			border-radius: 8px;
-			padding: 8px 10px;
 			display: flex;
 			flex-direction: column;
 			gap: 6px;
 			overflow: hidden;
 		}
 
+		.invoice-extra-item .field-label,
 		.invoice-media-item .field-label {
-			color: #3f5f7d;
+			color: #8c2f63;
 			font-size: 10px;
 			margin: 0;
-			font-weight: 600;
+			font-weight: 500;
+		}
+
+		.invoice-extra .field-value {
+			font-size: 13px;
+			font-weight: 700;
+			color: #531f2f;
 		}
 
 		.invoice-media-item img,
@@ -602,7 +637,7 @@
 			display: block;
 		}
 
-		.invoice-media-item .media-empty-label {
+		.media-empty-label {
 			color: #8d9fb3;
 			font-size: 11px;
 			text-align: center;
@@ -610,60 +645,13 @@
 			flex: 1;
 		}
 
-		.invoice-extra .field-label {
-			color: #3f5f7d;
-			font-size: 10px;
-		}
-
-		.invoice-extra .field-value {
-			font-size: 13px;
-			font-weight: 700;
-			color: #1f3853;
-		}
-
-		#invoiceJob {
-			list-style: none;
-			margin: 0;
-			padding: 8px;
-			border-radius: 10px;
-			background: #d8f0de;
-			display: grid;
-			gap: 8px;
-			counter-reset: job-item;
-		}
-
-		#invoiceJob li {
-			counter-increment: job-item;
-			display: flex;
-			align-items: flex-start;
-			gap: 8px;
-			font-size: 13px;
-			font-weight: 600;
-			line-height: 1.45;
-			color: #1f3853;
-		}
-
-		#invoiceJob li::before {
-			content: counter(job-item);
-			flex: 0 0 22px;
-			height: 22px;
-			border-radius: 999px;
-			background: #22a06b;
-			color: #fff;
-			font-size: 12px;
-			font-weight: 800;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			margin-top: 1px;
-		}
-
+		/* --- Profile --- */
 		#panelCustomer,
 		#panelStaff {
 			padding: 0;
 			overflow: hidden;
 			gap: 0;
-			border-color: #dce8f1;
+			border-color: #c75b94;
 		}
 
 		.profile-head {
@@ -672,22 +660,22 @@
 			align-items: center;
 			gap: 10px;
 			padding: 12px 14px;
-			border-bottom: 1px solid #e1edf6;
-			background: #f7fbff;
+			border-bottom: 1px solid #f2dbe7;
+			background: linear-gradient(135deg, #e496c1 0%, #fff1f8 55%, #f0b3d8 100%);
 		}
 
 		.profile-title {
 			margin: 0;
 			font-size: 18px;
-			font-weight: 800;
-			color: #213d57;
+			font-weight: 700;
+			color: #6f2d52;
 		}
 
 		.profile-status {
 			border-radius: 999px;
 			padding: 5px 10px;
 			font-size: 11px;
-			font-weight: 800;
+			font-weight: 700;
 		}
 
 		.profile-body {
@@ -703,8 +691,8 @@
 			height: 88px;
 			border-radius: 50%;
 			object-fit: cover;
-			border: 3px solid #e2f1ff;
-			background: #d9e7f7;
+			border: 3px solid #f6d6e6;
+			background: #fdeaf4;
 		}
 
 		.profile-main {
@@ -715,64 +703,50 @@
 		.profile-name {
 			margin: 0;
 			font-size: 22px;
-			font-weight: 800;
+			font-weight: 700;
 			line-height: 1.25;
-			color: #1d3650;
+			color: #633148;
 		}
 
-		.profile-rate {
+		.profile-contact,
+		.profile-row {
 			margin: 0;
 			font-size: 14px;
 			font-weight: 700;
-			color: #4d6175;
-		}
-
-		.profile-contact {
-			margin: 0;
-			font-size: 14px;
-			font-weight: 700;
-			color: #2f4961;
+			color: #633148;
 			display: flex;
 			align-items: center;
 			gap: 8px;
 			word-break: break-word;
 		}
 
-		.profile-contact span {
-			word-break: break-word;
-		}
-
-		.profile-rate .star {
-			color: #f2b019;
-			margin-right: 4px;
-		}
-
-		.profile-row {
-			margin: 0;
-			font-size: 15px;
-			font-weight: 700;
-			color: #2f4961;
-			display: flex;
-			align-items: flex-start;
-			gap: 8px;
-			word-break: break-word;
-		}
-
-		.profile-row i,
-		.profile-contact i {
+		.profile-row::before,
+		.profile-contact::before {
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
 			width: 18px;
 			height: 18px;
 			border-radius: 999px;
-			background: #eaf4ff;
-			color: #4d92df;
+			background: #ffe7f3;
+			color: #d24f8f;
 			font-size: 11px;
 			line-height: 1;
-			font-weight: 800;
+			font-weight: 700;
 			flex: 0 0 18px;
 			margin-top: 1px;
+		}
+
+		.contact-email::before {
+			content: '✉';
+		}
+
+		.contact-phone::before {
+			content: '✆';
+		}
+
+		.contact-address::before {
+			content: '⌂';
 		}
 
 		.profile-foot {
@@ -784,38 +758,53 @@
 			align-items: center;
 			padding: 8px 12px;
 			border-radius: 10px;
-			background: #eef2f6;
+			background: linear-gradient(135deg, #fff0f7 0%, #ffeef8 65%, #eaf8f3 100%);
 			font-size: 13px;
 			font-weight: 700;
-			color: #50657a;
+			color: #8e4467;
+			border: 1px solid #f0d0e0;
+		}
+
+		/* --- Progress & Time --- */
+		#panelTime {
+			border-color: #d45e9d;
+			background: linear-gradient(180deg, #f5cfe6 0%, #f0f0f0 58%, #fbf0f8 100%);
 		}
 
 		.progress-inner {
 			height: 100%;
 			width: 0;
 			transition: width 420ms ease, background 300ms ease;
-			background: linear-gradient(90deg, #19a56f, #26c385);
+			background: linear-gradient(90deg, #d94688 0%, #ea6fa5 55%, #e277b2 100%);
+			box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(165, 53, 113, 0.26);
 		}
 
 		.progress-inner.warn {
-			background: linear-gradient(90deg, #f0ba2c, #e28c17);
+			background: linear-gradient(90deg, #ec6aa2, #f4a9c9, #ffd9b1);
 		}
 
 		.progress-inner.danger {
-			background: linear-gradient(90deg, #df6a3e, #d14242);
+			background: linear-gradient(90deg, #cc3f79, #e06799);
 		}
 
-		#panelTime #badgeTimeState:not(.success):not(.warning):not(.danger) {
-			background: #ffdce8;
-			color: #a43b5b;
+		#progressText {
+			color: #8c2f63;
+			font-weight: 900;
+			letter-spacing: 0.2px;
+		}
+
+		#progressHint {
+			color: #7f3f60;
+			font-weight: 700;
 		}
 
 		.hint {
 			margin: 0;
-			color: #4b6076;
+			color: #7c4760;
 			font-size: 13px;
 		}
 
+		/* --- Reviews --- */
 		.review-split {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -823,10 +812,10 @@
 		}
 
 		.review-box {
-			border: 1px solid #d6e4f2;
+			border: 1px solid #efd1e1;
 			border-radius: 12px;
 			padding: 10px;
-			background: #f7fbff;
+			background: linear-gradient(180deg, #fff7fc 0%, #fff7fe 68%, #f6f1ff 100%);
 			display: grid;
 			gap: 10px;
 		}
@@ -841,8 +830,8 @@
 		.review-title {
 			margin: 0;
 			font-size: 14px;
-			font-weight: 800;
-			color: #15314f;
+			font-weight: 700;
+			color: #6f2d52;
 		}
 
 		.review-display {
@@ -850,7 +839,7 @@
 			gap: 6px;
 			padding: 8px;
 			border-radius: 10px;
-			border: 1px dashed #c9dced;
+			border: 1px dashed #f1d4e3;
 			background: #fff;
 		}
 
@@ -858,8 +847,8 @@
 		.review-time {
 			margin: 0;
 			font-size: 13px;
-			font-weight: 600;
-			color: #1f3853;
+			font-weight: 500;
+			color: #7c4760;
 			word-break: break-word;
 		}
 
@@ -883,276 +872,18 @@
 			grid-column: 1 / -1;
 			font-size: 12px;
 			font-weight: 700;
-			color: #5f7590;
-			background: #edf4fc;
-			border: 1px solid #d7e5f3;
+			color: #8d4d6b;
+			background: linear-gradient(135deg, #fff0f8 0%, #ecfbf5 100%);
+			border: 1px solid #f2d4e3;
 			padding: 8px 10px;
 			border-radius: 8px;
 		}
 
-		.hidden {
-			display: none !important;
-		}
-
-		:root {
-			--bg: #fff6fb;
-			--surface: #ffffff;
-			--surface-soft: #fff1f8;
-			--text: #3d2333;
-			--muted: #8b5f74;
-			--primary: #e45a97;
-			--success: #d94a8a;
-			--warning: #f08ab6;
-			--danger: #c93b78;
-			--border: #f0d4e3;
-			--shadow: 0 20px 45px rgba(196, 83, 138, 0.18);
-			--accent-peach: #ffd6b9;
-			--accent-lavender: #e5d8ff;
-			--accent-mint: #cff5e8;
-			--accent-rose: #f7a7c8;
-		}
-
-		html,
-		body {
-			background:
-				radial-gradient(circle at 20% -10%, #ffdceb 0, transparent 42%),
-				radial-gradient(circle at 95% 120%, #ffe8f5 0, transparent 38%),
-				radial-gradient(circle at 85% 15%, rgb(248, 248, 248) 0, transparent 35%),
-				radial-gradient(circle at 8% 88%, rgb(255, 255, 255) 0, transparent 30%),
-				var(--bg);
-		}
-
-		.modal-card {
-			background: linear-gradient(180deg, #ffffff 0%, #fff8fc 62%, #fff3f9 100%);
-			border: 1px solid rgba(200, 88, 143, 0.2);
-			box-shadow: 0 24px 48px rgba(196, 83, 138, 0.18), 0 6px 20px rgba(138, 170, 209, 0.12);
-		}
-
-		.topbar {
-			background: linear-gradient(102deg, #f369a7 0%, #ef86b4 58%, #ffa9d4 100%) !important;
-			box-shadow: 0 10px 24px rgba(169, 63, 114, 0.3);
-		}
-
-		.topbar-logo {
-			border-color: rgba(255, 255, 255, 0.42);
-			background: rgba(255, 255, 255, 0.2);
-			box-shadow: 0 10px 22px rgba(166, 58, 110, 0.24);
-		}
-
-		.topbar-logo:hover {
-			background: rgba(255, 255, 255, 0.3);
-			border-color: rgba(255, 255, 255, 0.56);
-		}
-
-		.chip {
-			background: rgba(255, 255, 255, 0.24);
-			border-color: rgba(255, 255, 255, 0.45);
-		}
-
-		.panel {
-			border-color: #f1d5e4;
-			box-shadow: 0 12px 26px rgba(226, 113, 168, 0.12), 0 2px 8px rgba(191, 200, 219, 0.1);
-		}
-
-		.panel-title,
-		.jobs-title,
-		.profile-title,
-		.review-title {
-			color: #6f2d52;
-		}
-
-		.badge {
-			background: #ffe6f2;
-			color: #a83f72;
-			border: 1px solid #f7c8de;
-		}
-
-		.badge.success {
-			background: linear-gradient(135deg, #ffe3f1, #dff8ef);
-			color: #8a3462;
-		}
-
-		.badge.warning {
-			background: linear-gradient(135deg, #ffe9f4, #ffe9d5);
-			color: #ad4f7e;
-		}
-
-		.badge.danger {
-			background: #ffd7e8;
-			color: #9e2f61;
-		}
-
-		.invoice-hero {
-			background: linear-gradient(118deg, #f99bbd 0%, #f9c7dc 48%, #f9dbe7 72%, #ffe9d4 100%);
-		}
-
-		.invoice-progress-ring {
-			background: conic-gradient(from -90deg, #5eb4f2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.34) 0);
-			border: 2px solid rgb(0, 0, 0);
-			box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(122, 34, 82, 0.28);
-		}
-
-		.invoice-progress-core {
-			background:
-				radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0) 44%),
-				linear-gradient(150deg, rgba(245, 179, 179, 0.94) 0%, rgba(241, 138, 138, 0.93) 100%);
-			border: 2px solid rgb(0, 0, 0);
-			box-shadow: inset 0 8px 14px rgba(255, 255, 255, 0.12);
-			color: #ffffff;
-		}
-
-		.invoice-progress-core strong {
-			color: #383cb0;
-			/* text-shadow: 0 2px 8px rgba(168, 39, 99, 0.979); */
-		}
-
-		.invoice-progress-core small {
-			color: #f9f3ff;
-		}
-
-		.invoice-item {
-			border-color: rgba(255, 227, 239, 0.6);
-			background: rgba(195, 19, 107, 0.22);
-		}
-
-		.invoice-extra {
-			border-color: #f1d5e4;
-			background: linear-gradient(180deg, #ffffff 0%, #faf5fa 100%);
-		}
-
-		.invoice-extra-item,
-		.invoice-media-item {
-			border-color: #e665a9;
-			background: #ffeef7;
-		}
-
-		.invoice-extra-item .field-label,
-		.invoice-media-item .field-label {
-			color: #8c2f63;
-		}
-
-		#panelJobs {
-			border-color: #ec3d95;
-		}
-
-		.jobs-header {
-			background: linear-gradient(135deg, #ee7cb9 0%, #ffe9f5 65%, #ffd8fc 100%);
-			border-bottom-color: #f2d7e5;
-		}
-
-		.jobs-body {
-			background: linear-gradient(180deg, #fcfcfc 0%, #fff4fb 70%, #fceeff 100%);
-		}
-
-		#panelJobs #invoiceJob li {
-			background: rgb(255, 255, 255);
-			border-color: #c21178;
-		}
-
-		.jobs-meta {
-			border-top-color: #ffffff;
-			background: #ffffff;
-		}
-
-		#invoiceJob {
-			background: linear-gradient(145deg, #fafafa 0%, #d8b4f1 100%);
-		}
-
-		#invoiceJob li {
-			color: #6d2f50;
-		}
-
-		#invoiceJob li::before {
-			background: #de4f90;
-		}
-
-		#panelCustomer,
-		#panelStaff {
-			border-color: #c75b94;
-		}
-
-		.profile-head {
-			border-bottom-color: #f2dbe7;
-			background: linear-gradient(135deg, #e496c1 0%, #fff1f8 55%, #f0b3d8 100%);
-		}
-
-		.profile-avatar {
-			border-color: #f6d6e6;
-			background: #fdeaf4;
-		}
-
-		.profile-name,
-		.profile-contact,
-		.profile-row {
-			color: #633148;
-		}
-
-		.profile-row i,
-		.profile-contact i {
-			background: #ffe7f3;
-			color: #d24f8f;
-		}
-
-		.profile-pill {
-			background: linear-gradient(135deg, #fff0f7 0%, #ffeef8 65%, #eaf8f3 100%);
-			color: #8e4467;
-			border: 1px solid #f0d0e0;
-		}
-
-		#panelTime {
-			background: linear-gradient(180deg, #f5cfe6 0%, #f0f0f0 58%, #fbf0f8 100%) !important;
-			border-color: #d45e9d !important;
-		}
-
-		.progress-inner {
-			background: linear-gradient(90deg, #d94688 0%, #ea6fa5 55%, #77e2c0 100%);
-			box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(165, 53, 113, 0.26);
-		}
-
-		.progress-inner.warn {
-			background: linear-gradient(90deg, #ec6aa2, #f4a9c9, #ffd9b1);
-		}
-
-		.progress-inner.danger {
-			background: linear-gradient(90deg, #cc3f79, #e06799);
-		}
-
-		#progressText {
-			color: #8c2f63;
-			font-weight: 900;
-			letter-spacing: 0.2px;
-		}
-
-		#progressHint {
-			color: #7f3f60;
+		/* --- Buttons --- */
+		.btn {
+			border-radius: 8px;
 			font-weight: 700;
-		}
-
-		#panelTime #badgeTimeState:not(.success):not(.warning):not(.danger) {
-			background: #ca87a7;
-			color: #000000;
-		}
-
-		.hint,
-		.review-text,
-		.review-time {
-			color: #7c4760;
-		}
-
-		.review-box {
-			border-color: #efd1e1;
-			background: linear-gradient(180deg, #fff7fc 0%, #fff7fe 68%, #f6f1ff 100%);
-		}
-
-		.review-display {
-			border-color: #f1d4e3;
-			background: #fff;
-		}
-
-		.media-empty {
-			background: linear-gradient(135deg, #fff0f8 0%, #ecfbf5 100%);
-			border-color: #f2d4e3;
-			color: #8d4d6b;
+			transition: filter 0.2s;
 		}
 
 		.btn.btn-primary,
@@ -1161,43 +892,131 @@
 		.btn.btn-danger {
 			border: 0;
 			box-shadow: 0 8px 18px rgba(193, 71, 130, 0.2);
+			color: #000 !important;
 		}
 
 		.btn.btn-primary {
 			border: 1px solid rgb(15, 15, 15);
-			color: #000000 !important;
 		}
 
 		.btn.btn-success {
 			border: 1px solid rgb(14, 14, 14);
-			color: #000000 !important;
 		}
 
 		.btn.btn-warning {
 			border: 1px solid red;
-			color: #000000 !important;
 		}
 
 		.btn.btn-danger {
 			background: linear-gradient(135deg, #c93b78, #e774a5) !important;
+			color: #fff !important;
 		}
 
-		.btn.btn-primary:hover,
-		.btn.btn-success:hover,
-		.btn.btn-warning:hover,
-		.btn.btn-danger:hover {
+		.btn:hover {
 			filter: brightness(0.96);
 		}
 
+		.hidden {
+			display: none !important;
+		}
+
+		/* --- Dialog --- */
+		#appDialogOverlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			display: none;
+			align-items: center;
+			justify-content: center;
+			z-index: 10000;
+			backdrop-filter: blur(4px);
+			padding: 20px;
+		}
+
+		#appDialogBox {
+			background: white;
+			border-radius: 12px;
+			padding: 24px;
+			max-width: 400px;
+			width: 100%;
+			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+			animation: dialogShow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+		}
+
+		@keyframes dialogShow {
+			from {
+				opacity: 0;
+				transform: scale(0.9) translateY(20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: scale(1) translateY(0);
+			}
+		}
+
+		#appDialogTitle {
+			font-size: 18px;
+			font-weight: 700;
+			margin-bottom: 12px;
+			color: #c21178;
+		}
+
+		#appDialogMessage {
+			font-size: 14px;
+			margin-bottom: 24px;
+			color: #4a5568;
+			line-height: 1.6;
+			font-weight: 500;
+		}
+
+		.appDialogButtons {
+			display: flex;
+			justify-content: flex-end;
+			gap: 12px;
+		}
+
+		.appDialogBtn {
+			padding: 10px 20px;
+			border-radius: 8px;
+			border: none;
+			font-weight: 700;
+			cursor: pointer;
+			transition: all 0.2s;
+			font-size: 13px;
+		}
+
+		.appDialogBtnPrimary {
+			background: linear-gradient(135deg, #e779c1, #c21178);
+			color: white;
+			box-shadow: 0 4px 12px rgba(194, 17, 120, 0.2);
+		}
+
+		.appDialogBtnPrimary:hover {
+			filter: brightness(1.05);
+			transform: translateY(-1px);
+		}
+
+		.appDialogBtnSecondary {
+			background: #f7fafc;
+			color: #4a5568;
+			border: 1px solid #e2e8f0;
+		}
+
+		.appDialogBtnSecondary:hover {
+			background: #edf2f7;
+		}
+
+		/* --- Responsive --- */
 		@media (max-width: 1060px) {
 
 			.grid,
 			.info-grid,
 			.review-split,
-			.review-media-grid {
-				grid-template-columns: 1fr;
-			}
-
+			.review-media-grid,
 			.invoice-extra-grid {
 				grid-template-columns: 1fr;
 			}
@@ -1289,13 +1108,9 @@
 				height: 36px;
 			}
 
-			#invoiceProgressRing {
-				margin-inline: auto;
-				width: 140px !important;
-				height: 140px !important;
-			}
-
+			#invoiceProgressRing,
 			.invoice-progress-ring {
+				margin-inline: auto;
 				width: 140px !important;
 				height: 140px !important;
 			}
@@ -1342,96 +1157,6 @@
 				grid-column: span 2 !important;
 			}
 		}
-
-		/* Custom Dialog Styles */
-		#appDialogOverlay {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(0, 0, 0, 0.5);
-			display: none;
-			align-items: center;
-			justify-content: center;
-			z-index: 10000;
-			backdrop-filter: blur(4px);
-			padding: 20px;
-		}
-
-		#appDialogBox {
-			background: white;
-			border-radius: 12px;
-			padding: 24px;
-			max-width: 400px;
-			width: 100%;
-			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-			animation: dialogShow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-		}
-
-		@keyframes dialogShow {
-			from {
-				opacity: 0;
-				transform: scale(0.9) translateY(20px);
-			}
-
-			to {
-				opacity: 1;
-				transform: scale(1) translateY(0);
-			}
-		}
-
-		#appDialogTitle {
-			font-size: 18px;
-			font-weight: 800;
-			margin-bottom: 12px;
-			color: #c21178;
-		}
-
-		#appDialogMessage {
-			font-size: 14px;
-			margin-bottom: 24px;
-			color: #4a5568;
-			line-height: 1.6;
-			font-weight: 500;
-		}
-
-		.appDialogButtons {
-			display: flex;
-			justify-content: flex-end;
-			gap: 12px;
-		}
-
-		.appDialogBtn {
-			padding: 10px 20px;
-			border-radius: 8px;
-			border: none;
-			font-weight: 700;
-			cursor: pointer;
-			transition: all 0.2s;
-			font-size: 13px;
-		}
-
-		.appDialogBtnPrimary {
-			background: linear-gradient(135deg, #e779c1, #c21178);
-			color: white;
-			box-shadow: 0 4px 12px rgba(194, 17, 120, 0.2);
-		}
-
-		.appDialogBtnPrimary:hover {
-			filter: brightness(1.05);
-			transform: translateY(-1px);
-		}
-
-		.appDialogBtnSecondary {
-			background: #f7fafc;
-			color: #4a5568;
-			border: 1px solid #e2e8f0;
-		}
-
-		.appDialogBtnSecondary:hover {
-			background: #edf2f7;
-		}
 	</style>
 </head>
 
@@ -1475,7 +1200,7 @@
 									<button id="btnHdrEnd" class="btn btn-warning btn-sm hidden" style="color:#fff;"
 										type="button">Hoàn thành dịch vụ</button>
 								</div>
-								<div id="invoiceProgressRing" class="invoice-progress-ring" style="--p:0;">
+								<div id="invoiceProgressRing" class="invoice-progress-ring">
 									<div class="invoice-progress-core">
 										<strong id="invoiceProgressHero">0%</strong>
 										<small>Hoàn thành</small>
@@ -1551,8 +1276,7 @@
 						</div>
 					</article>
 
-					<article class="panel" id="panelTime"
-						style="background:linear-gradient(180deg,#af5e8b 0%,#fdf2fd 100%);border-color:#d350b2;">
+					<article class="panel" id="panelTime">
 						<div class="panel-head" style="margin-bottom:2px;">
 							<h2 class="panel-title" style="font-size:15px;">Trạng thái, thời gian và tiến độ</h2>
 						</div>
@@ -1574,7 +1298,7 @@
 						<div
 							style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;margin-bottom:8px;">
 							<div
-								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:800;">
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:700;">
 								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày bắt đầu dự
 									kiến</span>
 								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày kết thúc dự
@@ -1592,7 +1316,7 @@
 						</div>
 
 						<div class="d-flex align-items-center flex-wrap" style="gap:8px;">
-							<span style="font-size:12px;font-weight:800;color:#000000;">Trạng thái:</span>
+							<span style="font-size:12px;font-weight:700;color:#000000;">Trạng thái:</span>
 							<span id="badgeTimeState" class="badge">---</span>
 							<span id="timeCurrentState" class="hidden">---</span>
 
@@ -1602,15 +1326,14 @@
 									type="button">Bắt đầu</button>
 								<span id="startButtonCountdown" class="hidden"
 									style="font-size:11px;font-weight:700;color:#23527a;background:#edf6ff;border:1px solid #c8e0f7;border-radius:999px;padding:4px 8px;white-space:nowrap;">--</span>
-								<button id="btnEnd" class="btn btn-warning btn-sm hidden"
-									style="color:#fff;min-height:32px;padding:4px 12px;font-size:12px;border-radius:8px;"
+								<button id="btnEnd" class="btn btn-warning btn-sm hidden" style="color:#fff;"
 									type="button">Kết thúc</button>
 							</div>
 						</div>
 
 						<div style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;">
 							<div
-								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:800;">
+								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:700;">
 								<span style="padding:7px 10px;">Thời gian dự kiến</span>
 								<span style="padding:7px 10px;">Thời gian thực tế</span>
 							</div>
@@ -1620,22 +1343,22 @@
 									<div class="d-flex justify-content-between align-items-center"
 										style="gap:8px;padding:7px 10px;font-size:12px;"><span
 											style="color:#000000;font-weight:700;">Bắt đầu</span><span
-											id="timeStartPlan" style="color:#1f3853;font-weight:800;">---</span></div>
+											id="timeStartPlan" style="color:#1f3853;font-weight:700;">---</span></div>
 									<div class="d-flex justify-content-between align-items-center"
 										style="gap:8px;padding:7px 10px;border-top:1px solid #e3ecf7;font-size:12px;">
 										<span style="color:#000000;font-weight:700;">Kết thúc</span><span
-											id="timeEndPlan" style="color:#1f3853;font-weight:800;">---</span>
+											id="timeEndPlan" style="color:#1f3853;font-weight:700;">---</span>
 									</div>
 								</div>
 								<div style="display: grid; grid-template-rows: repeat(2, 1fr);">
 									<div class="d-flex justify-content-between align-items-center"
 										style="gap:8px;padding:7px 10px;font-size:12px;"><span
 											style="color:#000000;font-weight:700;">Bắt đầu</span><span
-											id="timeStartReal" style="color:#1f3853;font-weight:800;">---</span></div>
+											id="timeStartReal" style="color:#1f3853;font-weight:700;">---</span></div>
 									<div class="d-flex justify-content-between align-items-center"
 										style="gap:8px;padding:7px 10px;border-top:1px solid #e3ecf7;font-size:12px;">
 										<span style="color:#000000;font-weight:700;">Kết thúc</span><span
-											id="timeEndReal" style="color:#1f3853;font-weight:800;">---</span>
+											id="timeEndReal" style="color:#1f3853;font-weight:700;">---</span>
 									</div>
 								</div>
 							</div>
@@ -1650,7 +1373,7 @@
 						</div>
 
 						<div id="workHistoryTable" style="margin-top:4px;">
-							<span style="font-size:12px;font-weight:800;color:#000000;">Lịch sử làm việc</span>
+							<span style="font-size:12px;font-weight:700;color:#000000;">Lịch sử làm việc</span>
 							<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px;" class="hidden">
 								<table style="width:100%;border-collapse:collapse;font-size:12px;">
 									<thead>
@@ -2499,7 +2222,7 @@
 					tr.style.borderBottom = '1px solid #f0d4e3';
 					const dayIdx = rows.length - rows.indexOf(r);
 					tr.innerHTML = `
-						<td style="padding:5px 8px;font-weight:800;color:#c21178;">Ngày ${dayIdx}</td>
+						<td style="padding:5px 8px;font-weight:700;color:#c21178;">Ngày ${dayIdx}</td>
 						<td style="padding:5px 8px;">${formatDateDisplay(r.ngay_lam)}</td>
 						<td style="padding:5px 8px;">${formatTimeDisplay(r.start)}</td>
 						<td style="padding:5px 8px;">${endCell}</td>
