@@ -2,26 +2,24 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/slidebar.php';
-require_once __DIR__ . '/get_donhang.php';
-require_once __DIR__ . '/get_taixe.php';
-require_once __DIR__ . '/get_dichvu.php';
+require_once __DIR__ . '/admin_api_common.php';;
 
 $admin = admin_require_login();
 
 // Lấy dữ liệu đơn hàng
-$donHangData = get_donhang_data();
-$donHangRows = $donHangData['rows'] ?? [];
-$donHangError = (string)($donHangData['error'] ?? '');
+$donHangResult = admin_api_list_table('datlich_taixe');
+$donHangRows = $donHangResult['rows'] ?? [];
+$donHangError = (string)($donHangResult['error'] ?? '');
 
 // Lấy dữ liệu tài xế
-$taiXeData = get_taixe_data();
-$taiXeRows = $taiXeData['rows'] ?? [];
-$taiXeError = (string)($taiXeData['error'] ?? '');
+$taiXeResult = admin_api_list_table('taixe');
+$taiXeRows = $taiXeResult['rows'] ?? [];
+$taiXeError = (string)($taiXeResult['error'] ?? '');
 
 // Lấy dữ liệu dịch vụ
-$dichVuData = get_dichvu_data();
-$dichVuRows = $dichVuData['rows'] ?? [];
-$dichVuError = (string)($dichVuData['error'] ?? '');
+$dichVuResult = admin_api_list_table('dichvu_taixe');
+$dichVuRows = $dichVuResult['rows'] ?? [];
+$dichVuError = (string)($dichVuResult['error'] ?? '');
 
 // Thống kê trạng thái đơn hàng
 $statusCounts = [
@@ -359,5 +357,28 @@ admin_render_layout_start('Tổng Quan', 'dashboard', $admin);
 		</div>
 	</div>
 </div>
+<?php
+function donhang_status_key(string $status): string {
+    $lower = strtolower(trim($status));
+    if (strpos($lower, 'hủy') !== false || strpos($lower, 'cancelled') !== false) return 'cancelled';
+    if (strpos($lower, 'hoàn thành') !== false || strpos($lower, 'completed') !== false) return 'completed';
+    if (strpos($lower, 'đang') !== false || strpos($lower, 'progress') !== false) return 'in_progress';
+    if (strpos($lower, 'xác nhận') !== false || strpos($lower, 'confirmed') !== false) return 'confirmed';
+    if (strpos($lower, 'chờ') !== false || strpos($lower, 'pending') !== false) return 'pending';
+    return 'other';
+}
 
+function donhang_status_meta(string $status): array {
+    $key = donhang_status_key($status);
+    $map = [
+        'pending' => ['text' => 'Chờ xác nhận', 'badge' => 'bg-secondary'],
+        'confirmed' => ['text' => 'Đã xác nhận', 'badge' => 'bg-info'],
+        'in_progress' => ['text' => 'Đang thực hiện', 'badge' => 'bg-warning'],
+        'completed' => ['text' => 'Hoàn thành', 'badge' => 'bg-success'],
+        'cancelled' => ['text' => 'Đã hủy', 'badge' => 'bg-danger'],
+        'other' => ['text' => $status ?: 'Khác', 'badge' => 'bg-light text-dark'],
+    ];
+    return $map[$key] ?? $map['other'];
+}
+?>
 <?php admin_render_layout_end(); ?>

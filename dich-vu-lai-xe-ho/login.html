@@ -3,175 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập - Dịch Vụ Thuê Tài Xế</title>
-    <meta name="description" content="Đăng nhập vào tài khoản để đặt lịch thuê tài xế lái xe hộ nhanh chóng và tiện lợi.">
-    <meta name="keywords" content="đăng nhập tài xế, tài khoản thuê tài xế, đăng nhập dịch vụ tài xế">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
+    <title>Đăng nhập - Dịch Vụ Thuê Tài Xế</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         body {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
             min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #fff3e0 100%);
-            font-family: 'Quicksand', 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
         }
-        .login-page { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
-        .login-card { width: min(460px, 100%); }
-        .login-shell {
-            border-radius: 18px;
+        .login-card {
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             overflow: hidden;
-            border: 2px solid #7db8e8;
-            box-shadow: 0 20px 48px rgba(0, 123, 255, 0.2);
-            background: white;
+            max-width: 450px;
+            margin: 0 auto;
         }
         .login-header {
-            background: linear-gradient(90deg, #007bff 0%, #00b4d8 100%);
-            padding: 18px 22px;
-        }
-        .login-title {
-            margin: 0;
-            color: white;
-            font-weight: 900;
+            background: linear-gradient(135deg, #0056b3, #007bff);
+            color: #fff;
+            padding: 30px;
             text-align: center;
-            font-size: 1.8rem;
         }
-        .login-body { padding: 24px; }
+        .login-header img {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+        .login-body {
+            padding: 30px;
+            background: #fff;
+        }
         .btn-login {
-            background: linear-gradient(90deg, #007bff 0%, #00b4d8 100%);
-            border: 0;
-            color: white;
-            border-radius: 999px;
-            min-height: 48px;
-            font-weight: 800;
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            color: #fff;
+            border-radius: 10px;
         }
-        .btn-login:hover { filter: brightness(1.04); color: white; }
-        .link-warning { color: #e68a2e !important; text-decoration: none; font-weight: 700; }
-        .link-warning:hover { color: #cc7a2a !important; }
+        .btn-login:hover {
+            background: linear-gradient(135deg, #0056b3, #0096b8);
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+        }
     </style>
-    <script src="/ga.js"></script>
 </head>
-<body data-nav-active="login">
-
-    <!-- Header sẽ được load tự động bởi shared-layout.js -->
-    <div id="site-header"></div>
-
-    <main class="login-page">
+<body>
+    <div class="container">
         <div class="login-card">
-            <div class="login-shell">
-                <div class="login-header">
-                    <h3 class="login-title">Đăng Nhập</h3>
-                </div>
-                <div class="login-body">
-                    <p class="text-secondary mb-3">Đăng nhập để đặt lịch thuê tài xế</p>
-                    <div id="alertContainer"></div>
-                    <form id="loginForm" novalidate>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Loại tài khoản</label>
-                            <select id="accountType" class="form-control form-control-lg" required>
-                                <option value="khach_hang" selected>Khách hàng</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Số điện thoại</label>
-                            <input type="tel" class="form-control form-control-lg" id="identifier" placeholder="Nhập số điện thoại" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Mật khẩu</label>
-                            <div class="input-group input-group-lg">
-                                <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu" required>
-                                <button type="button" class="btn btn-outline-secondary" id="togglePwd">
-                                    <i class="fas fa-eye" id="eyeIcon"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="msg" class="mb-3 small"></div>
-                        <button type="button" id="loginBtn" class="btn btn-login btn-lg w-100">Đăng Nhập</button>
-                    </form>
-                    <div class="text-center mt-4">
-                        <p class="mb-0">Chưa có tài khoản? <a href="register.html" class="link-warning">Đăng ký ngay</a></p>
+            <div class="login-header">
+                <img src="assets/logo_main.png" alt="Logo">
+                <h3>Đăng nhập</h3>
+                <p class="mb-0">Dịch Vụ Thuê Tài Xế</p>
+            </div>
+            <div class="login-body">
+                <div id="errorMsg" class="alert alert-danger d-none"></div>
+                
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Số điện thoại</label>
+                        <input type="tel" id="phone" class="form-control" placeholder="Nhập số điện thoại" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mật khẩu</label>
+                        <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <button type="submit" class="btn btn-login w-100">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
+                    </button>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p>Chưa có tài khoản? <a href="register.html" class="fw-bold text-primary">Đăng ký ngay</a></p>
+                    <a href="index.html" class="text-muted"><i class="bi bi-arrow-left me-1"></i>Quay lại trang chủ</a>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Footer sẽ được load tự động bởi shared-layout.js -->
-    <div id="site-footer"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
-        document.getElementById('togglePwd').addEventListener('click', function() {
-            const input = document.getElementById('password');
-            const icon = document.getElementById('eyeIcon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fas fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fas fa-eye';
-            }
-        });
-
-        document.getElementById('loginBtn').addEventListener('click', login);
-        document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-
-        function normalizePhone(value) {
-            return String(value || '').replace(/\D/g, '');
-        }
-
-        async function login() {
-            const identifier = document.getElementById('identifier').value.trim();
-            const password = document.getElementById('password').value;
-            const btn = document.getElementById('loginBtn');
-            const msg = document.getElementById('msg');
-
-            if (!identifier || !password) {
-                msg.innerHTML = '<span class="text-danger">Vui lòng nhập đầy đủ thông tin</span>';
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+            
+            errorMsg.classList.add('d-none');
+            
+            if (!phone || !password) {
+                errorMsg.textContent = 'Vui lòng nhập đầy đủ thông tin';
+                errorMsg.classList.remove('d-none');
                 return;
             }
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
-            msg.innerHTML = '';
-
-            try {
-                const rows = await krud('list', 'khachhang');
-                const data = Array.isArray(rows) ? rows : (rows.data || rows.rows || []);
-                const phoneDigits = normalizePhone(identifier);
-                const account = data.find(item => normalizePhone(item.sodienthoai || item.so_dien_thoai || '') === phoneDigits);
-
-                if (!account) throw new Error('Không tìm thấy tài khoản');
-
-                if (account.matkhau !== password) throw new Error('Sai mật khẩu');
-
-                const user = {
-                    id: account.id,
-                    ten: account.hovaten || account.ten || 'Khách hàng',
-                    sodienthoai: account.sodienthoai,
-                    email: account.email || '',
-                    dia_chi: account.dia_chi || ''
-                };
-
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                localStorage.setItem('customer_logged_in', 'true');
-                localStorage.setItem('customer_name', user.ten);
-
-                msg.innerHTML = '<span class="text-success">Đăng nhập thành công!</span>';
-                setTimeout(() => window.location.href = 'index.html', 700);
-
-            } catch (err) {
-                msg.innerHTML = '<span class="text-danger">' + (err.message || 'Đăng nhập thất bại') + '</span>';
-                btn.disabled = false;
-                btn.innerHTML = 'Đăng Nhập';
-            }
-        }
-    </script>
+            
+          try {
+    const res = await fetch('https://api.dvqt.vn/list/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'nguoidung' })
+    });
     
-    <!-- File JS của dự án -->
-    <script src="JS/shared-layout.js"></script>
-    <script src="JS/user-nav-menu.js"></script>
+    const data = await res.json();
+    const users = data.data || data.rows || [];
+    
+    const user = users.find(u => {
+        const userPhone = (u.sodienthoai || u.phone || '').trim();
+        const userPass = (u.matkhau || u.password || '').trim();
+        return userPhone === phone && userPass === password;
+    });
+    
+    if (!user) {
+        errorMsg.textContent = 'Số điện thoại hoặc mật khẩu không đúng';
+        errorMsg.classList.remove('d-none');
+        return;
+    }
+    
+    // Set cookie
+    document.cookie = `dvqt_u=${phone}; path=/; max-age=${30*24*60*60}`;
+    document.cookie = `dvqt_p=${password}; path=/; max-age=${30*24*60*60}`;
+    
+    // Gọi session_user.php để tạo session
+    const sessionRes = await fetch('session_user.php', { credentials: 'include' });
+    const sessionData = await sessionRes.json();
+    
+    if (!sessionData.success) {
+        errorMsg.textContent = sessionData.message || 'Không thể tạo phiên đăng nhập';
+        errorMsg.classList.remove('d-none');
+        return;
+    }
+    
+    // Chuyển hướng
+    const idDichvu = (user.id_dichvu || '').toString();
+    const isDriver = idDichvu.includes('6') || idDichvu.includes('1');
+    
+    if (isDriver) {
+        window.location.href = 'nhan_vien/danh-sach-don-hang.php';
+    } else {
+        window.location.href = 'khach_hang/danh-sach-don-hang.php';
+    }
+} catch (err) {
+    console.error('Lỗi:', err);
+    errorMsg.textContent = 'Lỗi kết nối: ' + err.message;
+    errorMsg.classList.remove('d-none');
+}
+        });
+    </script>
 </body>
 </html>

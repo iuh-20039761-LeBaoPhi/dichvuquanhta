@@ -9,23 +9,24 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 // Check login via cookie (no form)
-function get_cookie($name) {
+function get_cookie($name)
+{
 	return $_COOKIE[$name] ?? '';
 }
 
-$email = trim((string)get_cookie('admin_e'));
-$password = (string)get_cookie('admin_p');
+$email = trim((string) get_cookie('admin_e'));
+$password = (string) get_cookie('admin_p');
 
 if ($email !== '' && $password !== '') {
 	$apiResult = admin_api_list_table('admin');
 	$admins = $apiResult['rows'] ?? [];
-	$apiError = (string)($apiResult['error'] ?? '');
+	$apiError = (string) ($apiResult['error'] ?? '');
 
 	if ($apiError === '') {
 		$account = null;
 		foreach ($admins as $row) {
-			$rowEmail = strtolower(trim((string)($row['email'] ?? '')));
-			$rowPass = (string)($row['matkhau'] ?? $row['password'] ?? '');
+			$rowEmail = strtolower(trim((string) ($row['email'] ?? '')));
+			$rowPass = (string) ($row['matkhau'] ?? $row['password'] ?? '');
 			if ($rowEmail !== '' && $rowEmail === strtolower($email) && $rowPass === $password) {
 				$account = $row;
 				break;
@@ -34,9 +35,9 @@ if ($email !== '' && $password !== '') {
 		if (is_array($account)) {
 			$_SESSION['admin_logged_in'] = true;
 			$_SESSION['admin_user'] = [
-				'id' => (int)($account['id'] ?? 0),
-				'name' => (string)($account['hovaten'] ?? $account['ten'] ?? 'Admin'),
-				'email' => (string)($account['email'] ?? $email),
+				'id' => (int) ($account['id'] ?? 0),
+				'name' => (string) ($account['hovaten'] ?? $account['ten'] ?? 'Admin'),
+				'email' => (string) ($account['email'] ?? $email),
 			];
 			header('Location: index.php');
 			exit;
@@ -47,7 +48,7 @@ if ($email !== '' && $password !== '') {
 // Nếu không hợp lệ, xóa session và chuyển về trang nhập lại
 $_SESSION['admin_logged_in'] = false;
 unset($_SESSION['admin_user']);
-header('Location: ../../public/admin-login.html');
+header('Location: ../../../../public/admin-login.html');
 exit;
 
 if (!function_exists('admin_login_h')) {
@@ -81,22 +82,22 @@ $email = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	$email = trim((string)($_POST['email'] ?? ''));
-	$password = (string)($_POST['password'] ?? '');
+	$email = trim((string) ($_POST['email'] ?? ''));
+	$password = (string) ($_POST['password'] ?? '');
 
 	if ($email === '' || $password === '') {
 		$error = 'Vui long nhap day du email va mat khau.';
 	} else {
 		$apiResult = admin_api_list_table('admin');
 		$admins = $apiResult['rows'] ?? [];
-		$apiError = (string)($apiResult['error'] ?? '');
+		$apiError = (string) ($apiResult['error'] ?? '');
 
 		if ($apiError !== '') {
 			$error = 'Khong lay duoc du lieu admin: ' . $apiError;
 		} else {
 			$account = null;
 			foreach ($admins as $row) {
-				$rowEmail = strtolower(trim((string)($row['email'] ?? '')));
+				$rowEmail = strtolower(trim((string) ($row['email'] ?? '')));
 				if ($rowEmail !== '' && $rowEmail === strtolower($email)) {
 					$account = $row;
 					break;
@@ -106,15 +107,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			if (!is_array($account)) {
 				$error = 'Tai khoan admin khong ton tai.';
 			} else {
-				$storedPassword = (string)($account['matkhau'] ?? $account['password'] ?? '');
+				$storedPassword = (string) ($account['matkhau'] ?? $account['password'] ?? '');
 				if (!admin_password_match($password, $storedPassword)) {
 					$error = 'Mat khau khong dung.';
 				} else {
 					$_SESSION['admin_logged_in'] = true;
 					$_SESSION['admin_user'] = [
-						'id' => (int)($account['id'] ?? 0),
-						'name' => (string)($account['hovaten'] ?? $account['ten'] ?? 'Admin'),
-						'email' => (string)($account['email'] ?? $email),
+						'id' => (int) ($account['id'] ?? 0),
+						'name' => (string) ($account['hovaten'] ?? $account['ten'] ?? 'Admin'),
+						'email' => (string) ($account['email'] ?? $email),
 					];
 					header('Location: index.php');
 					exit;

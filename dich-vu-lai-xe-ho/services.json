@@ -13,20 +13,14 @@
       "Hỗ trợ xe tự lái hoặc lái xe cho khách (xe khách tự cung cấp)",
       "Thái độ phục vụ chuyên nghiệp, lịch sự và thân thiện"
     ],
-    "time_slots": [
-      { "value": "morning", "label": "06:00 - 11:00" },
-      { "value": "afternoon", "label": "11:00 - 17:00" },
-      { "value": "evening", "label": "17:00 - 22:00" },
-      { "value": "night", "label": "22:00 - 06:00" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Gói 2 giờ", "price": 160000, "staff": 1, "hours": 2 },
-        { "name": "Gói 4 giờ", "price": 320000, "staff": 1, "hours": 4 },
-        { "name": "Gói 6 giờ", "price": 480000, "staff": 1, "hours": 6 },
-        { "name": "Gói 8 giờ", "price": 600000, "staff": 1, "hours": 8 },
-        { "name": "Gói 10 giờ", "price": 750000, "staff": 1, "hours": 10 }
+        { "name": "Gói 2 giờ", "price": 160000, "hours": 2, "km_included": 30, "extra_km_fee": 5000 },
+        { "name": "Gói 4 giờ", "price": 320000, "hours": 4, "km_included": 60, "extra_km_fee": 5000 },
+        { "name": "Gói 6 giờ", "price": 480000, "hours": 6, "km_included": 90, "extra_km_fee": 5000 },
+        { "name": "Gói 8 giờ", "price": 600000, "hours": 8, "km_included": 120, "extra_km_fee": 5000 },
+        { "name": "Gói 10 giờ", "price": 750000, "hours": 10, "km_included": 150, "extra_km_fee": 5000 }
       ]
     }
   },
@@ -44,18 +38,14 @@
       "Bảo hiểm hành khách đi kèm trong suốt chuyến đi",
       "Đảm bảo đúng giờ, lái xe an toàn, tuân thủ luật giao thông"
     ],
-    "time_slots": [
-      { "value": "full_day", "label": "08:00 - 17:00" },
-      { "value": "flexible", "label": "Linh hoạt theo yêu cầu" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "1 Ngày (8 giờ)", "price": 500000, "staff": 1, "hours": 8 },
-        { "name": "2 Ngày", "price": 950000, "staff": 1, "hours": 16 },
-        { "name": "3 Ngày", "price": 1400000, "staff": 1, "hours": 24 },
-        { "name": "5 Ngày", "price": 2250000, "staff": 1, "hours": 40 },
-        { "name": "7 Ngày", "price": 3200000, "staff": 1, "hours": 56 }
+        { "name": "1 Ngày (8 giờ)", "price": 500000, "hours": 8, "km_included": 150, "extra_km_fee": 4000 },
+        { "name": "2 Ngày", "price": 950000, "hours": 16, "km_included": 300, "extra_km_fee": 4000 },
+        { "name": "3 Ngày", "price": 1400000, "hours": 24, "km_included": 450, "extra_km_fee": 4000 },
+        { "name": "5 Ngày", "price": 2250000, "hours": 40, "km_included": 750, "extra_km_fee": 4000 },
+        { "name": "7 Ngày", "price": 3200000, "hours": 56, "km_included": 1050, "extra_km_fee": 4000 }
       ]
     }
   },
@@ -73,20 +63,14 @@
       "Nghỉ ngơi hợp lý đảm bảo tỉnh táo và an toàn",
       "Sẵn sàng tư vấn lộ trình, điểm ăn uống, nghỉ ngơi"
     ],
-    "time_slots": [
-      { "value": "morning", "label": "Sáng sớm (04:00 - 06:00)" },
-      { "value": "day", "label": "Ban ngày (06:00 - 18:00)" },
-      { "value": "night", "label": "Ban đêm (18:00 - 04:00)" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Dưới 100km", "price": 800000, "staff": 1, "hours": 3 },
-        { "name": "100 - 200km", "price": 1500000, "staff": 1, "hours": 5 },
-        { "name": "200 - 300km", "price": 2100000, "staff": 1, "hours": 7 },
-        { "name": "300 - 400km", "price": 2800000, "staff": 1, "hours": 9 },
-        { "name": "400 - 500km", "price": 3500000, "staff": 1, "hours": 11 },
-        { "name": "Trên 500km", "price": "Liên hệ", "staff": 2, "hours": "Theo thỏa thuận" }
+        { "name": "Dưới 100km", "price": 800000, "hours": 3, "km_included": 100, "extra_km_fee": 6000 },
+        { "name": "100 - 200km", "price": 1500000, "hours": 5, "km_included": 200, "extra_km_fee": 6000 },
+        { "name": "200 - 300km", "price": 2100000, "hours": 7, "km_included": 300, "extra_km_fee": 6000 },
+        { "name": "300 - 400km", "price": 2800000, "hours": 9, "km_included": 400, "extra_km_fee": 6000 },
+        { "name": "400 - 500km", "price": 3500000, "hours": 11, "km_included": 500, "extra_km_fee": 6000 }
       ]
     }
   },
@@ -104,17 +88,13 @@
       "Chăm sóc và bảo dưỡng xe định kỳ (nếu xe khách cung cấp)",
       "Đảm bảo sự trung thực, thái độ phục vụ chuyên nghiệp"
     ],
-    "time_slots": [
-      { "value": "full_time", "label": "Toàn thời gian" },
-      { "value": "part_time", "label": "Bán thời gian" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Theo tháng (22 ngày)", "price": 12000000, "staff": 1, "hours": 176 },
-        { "name": "Theo quý (3 tháng)", "price": 33000000, "staff": 1, "hours": 528 },
-        { "name": "Theo 6 tháng", "price": 63000000, "staff": 1, "hours": 1056 },
-        { "name": "Theo năm", "price": 120000000, "staff": 1, "hours": 2112 }
+        { "name": "Theo tháng (22 ngày)", "price": 12000000, "hours": 176, "km_included": 2500, "extra_km_fee": 4000 },
+        { "name": "Theo quý (3 tháng)", "price": 33000000, "hours": 528, "km_included": 7500, "extra_km_fee": 4000 },
+        { "name": "Theo 6 tháng", "price": 63000000, "hours": 1056, "km_included": 15000, "extra_km_fee": 4000 },
+        { "name": "Theo năm", "price": 120000000, "hours": 2112, "km_included": 30000, "extra_km_fee": 4000 }
       ]
     }
   },
@@ -132,17 +112,12 @@
       "Xe sạch sẽ, điều hòa mát mẻ",
       "Phí chờ miễn phí 60 phút tại sân bay"
     ],
-    "time_slots": [
-      { "value": "anytime", "label": "24/7" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Nội thành - Sân bay Tân Sơn Nhất", "price": 350000, "staff": 1, "hours": 2 },
-        { "name": "Nội thành - Sân bay Nội Bài", "price": 400000, "staff": 1, "hours": 2 },
-        { "name": "Nội thành - Sân bay Đà Nẵng", "price": 300000, "staff": 1, "hours": 1.5 },
-        { "name": "Nội thành - Sân bay Cam Ranh", "price": 450000, "staff": 1, "hours": 2 },
-        { "name": "Liên tỉnh - Sân bay (theo km)", "price": "Tính theo km", "staff": 1, "hours": "Theo thực tế" }
+        { "name": "Nội thành - Sân bay TSN", "price": 350000, "hours": 2, "km_included": 30, "extra_km_fee": 8000 },
+        { "name": "Nội thành - Sân bay Nội Bài", "price": 400000, "hours": 2, "km_included": 35, "extra_km_fee": 8000 },
+        { "name": "Nội thành - Sân bay Đà Nẵng", "price": 300000, "hours": 1.5, "km_included": 25, "extra_km_fee": 8000 }
       ]
     }
   },
@@ -160,17 +135,13 @@
       "Đảm bảo an toàn tuyệt đối cho đoàn khách",
       "Thái độ thân thiện, nhiệt tình hỗ trợ hành khách"
     ],
-    "time_slots": [
-      { "value": "full_day", "label": "Theo lịch trình" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Xe 7 chỗ (theo ngày)", "price": 800000, "staff": 1, "hours": 8 },
-        { "name": "Xe 16 chỗ (theo ngày)", "price": 1200000, "staff": 1, "hours": 8 },
-        { "name": "Xe 29 chỗ (theo ngày)", "price": 1800000, "staff": 1, "hours": 8 },
-        { "name": "Xe 45 chỗ (theo ngày)", "price": 2500000, "staff": 1, "hours": 8 },
-        { "name": "Tour trọn gói (3 ngày 2 đêm)", "price": "Theo thỏa thuận", "staff": 1, "hours": "Theo lịch trình" }
+        { "name": "Xe 7 chỗ (theo ngày)", "price": 800000, "hours": 8, "km_included": 150, "extra_km_fee": 5000 },
+        { "name": "Xe 16 chỗ (theo ngày)", "price": 1200000, "hours": 8, "km_included": 150, "extra_km_fee": 7000 },
+        { "name": "Xe 29 chỗ (theo ngày)", "price": 1800000, "hours": 8, "km_included": 150, "extra_km_fee": 10000 },
+        { "name": "Xe 45 chỗ (theo ngày)", "price": 2500000, "hours": 8, "km_included": 150, "extra_km_fee": 12000 }
       ]
     }
   },
@@ -188,18 +159,14 @@
       "Phụ thu ca đêm 20% áp dụng cho khung giờ 22h-6h",
       "Thái độ phục vụ chuyên nghiệp, kín đáo"
     ],
-    "time_slots": [
-      { "value": "night", "label": "18:00 - 22:00" },
-      { "value": "late_night", "label": "22:00 - 06:00" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Gói 4 giờ (18h-22h)", "price": 380000, "staff": 1, "hours": 4 },
-        { "name": "Gói 4 giờ (22h-2h)", "price": 450000, "staff": 1, "hours": 4 },
-        { "name": "Gói 8 giờ (18h-2h)", "price": 750000, "staff": 1, "hours": 8 },
-        { "name": "Gói 8 giờ (22h-6h)", "price": 850000, "staff": 1, "hours": 8 },
-        { "name": "Trọn đêm (18h-6h)", "price": 1200000, "staff": 1, "hours": 12 }
+        { "name": "Gói 4 giờ (18h-22h)", "price": 380000, "hours": 4, "km_included": 50, "extra_km_fee": 6000 },
+        { "name": "Gói 4 giờ (22h-2h)", "price": 450000, "hours": 4, "km_included": 50, "extra_km_fee": 6000 },
+        { "name": "Gói 8 giờ (18h-2h)", "price": 750000, "hours": 8, "km_included": 100, "extra_km_fee": 6000 },
+        { "name": "Gói 8 giờ (22h-6h)", "price": 850000, "hours": 8, "km_included": 100, "extra_km_fee": 6000 },
+        { "name": "Trọn đêm (18h-6h)", "price": 1200000, "hours": 12, "km_included": 150, "extra_km_fee": 6000 }
       ]
     }
   },
@@ -216,17 +183,13 @@
       "Hỗ trợ bốc xếp hàng hóa cơ bản",
       "Phục vụ 24/7 cho các nhu cầu vận chuyển khẩn cấp"
     ],
-    "time_slots": [
-      { "value": "anytime", "label": "24/7" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Xe tải dưới 1.5 tấn (theo giờ)", "price": 120000, "staff": 1, "hours": 1 },
-        { "name": "Xe tải dưới 1.5 tấn (theo ngày)", "price": 800000, "staff": 1, "hours": 8 },
-        { "name": "Xe tải 1.5 - 3.5 tấn (theo giờ)", "price": 150000, "staff": 1, "hours": 1 },
-        { "name": "Xe tải 1.5 - 3.5 tấn (theo ngày)", "price": 1000000, "staff": 1, "hours": 8 },
-        { "name": "Xe tải trên 3.5 tấn (theo ngày)", "price": "Liên hệ", "staff": 1, "hours": "Theo thỏa thuận" }
+        { "name": "Xe tải dưới 1.5 tấn (theo giờ)", "price": 120000, "hours": 1, "km_included": 20, "extra_km_fee": 4000 },
+        { "name": "Xe tải dưới 1.5 tấn (theo ngày)", "price": 800000, "hours": 8, "km_included": 150, "extra_km_fee": 4000 },
+        { "name": "Xe tải 1.5-3.5 tấn (theo giờ)", "price": 150000, "hours": 1, "km_included": 20, "extra_km_fee": 5000 },
+        { "name": "Xe tải 1.5-3.5 tấn (theo ngày)", "price": 1000000, "hours": 8, "km_included": 150, "extra_km_fee": 5000 }
       ]
     }
   },
@@ -243,16 +206,12 @@
       "Hỗ trợ mở cửa, mang vác hành lý",
       "Đúng giờ tuyệt đối, có mặt trước giờ hẹn"
     ],
-    "time_slots": [
-      { "value": "anytime", "label": "Theo yêu cầu" }
-    ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Theo giờ (tối thiểu 4h)", "price": 250000, "staff": 1, "hours": 1 },
-        { "name": "Gói nửa ngày (4 giờ)", "price": 1000000, "staff": 1, "hours": 4 },
-        { "name": "Gói cả ngày (8 giờ)", "price": 1800000, "staff": 1, "hours": 8 },
-        { "name": "Sự kiện đám cưới", "price": "Liên hệ", "staff": 1, "hours": "Theo thỏa thuận" }
+        { "name": "Theo giờ (tối thiểu 4h)", "price": 250000, "hours": 1, "km_included": 20, "extra_km_fee": 10000 },
+        { "name": "Gói nửa ngày (4 giờ)", "price": 1000000, "hours": 4, "km_included": 80, "extra_km_fee": 10000 },
+        { "name": "Gói cả ngày (8 giờ)", "price": 1800000, "hours": 8, "km_included": 150, "extra_km_fee": 10000 }
       ]
     }
   }

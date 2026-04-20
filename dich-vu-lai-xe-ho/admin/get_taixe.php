@@ -124,4 +124,13 @@ function xoa_taixe(int $id): array
     
     return admin_api_delete_table('taixe', $id);
 }
+/**
+ * Lấy danh sách tài xế (alias của get_all_taixe để tương thích)
+ */
+if (!function_exists('get_taixe_data')) {
+    function get_taixe_data(): array
+    {
+        return get_all_taixe();
+    }
+}
 ?>
