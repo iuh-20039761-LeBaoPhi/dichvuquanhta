@@ -175,6 +175,11 @@
       margin-top: 16px !important;
     }
 
+    .review-action-row .btn {
+      padding-top: 5px !important;
+      padding-bottom: 5px !important;
+    }
+
     .review-btn-edit {
       background: #7d8790;
       border: none;
@@ -763,7 +768,7 @@
     <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #e8f4ff 100%)">
       <div class="container py-lg-4">
         <div class="text-center mb-4 booking-page-heading">
-          <h1 class="display-5 fw-bold mb-2">Đặt Lịch Dịch Vụ</h1>
+          <h1 class="display-5 fw-bold mb-2">Đặt Lịch Dịch Vụ Người Bệnh</h1>
         </div>
 
         <div id="bookingPageSection" class="mx-auto" style="max-width: 760px">
@@ -1072,10 +1077,10 @@
 
               <div class="d-flex gap-2 mt-4 review-action-row">
                 <button type="button" id="btnBackToEdit" class="btn rounded-pill flex-fill fw-bold review-btn-edit">
-                  <i class="fas fa-pen me-1"></i>Chỉnh Sửa Lại
+                  <i class="fas fa-pen me-1"></i>Chỉnh Sửa
                 </button>
-                <button type="button" id="btnConfirmSave" class="btn text-white rounded-pill fw-bold review-btn-save"
-                  style="flex: 2; border: none">
+                <button type="button" id="btnConfirmSave"
+                  class="btn text-white rounded-pill flex-fill fw-bold review-btn-save" style="border: none">
                   <i class="fas fa-check me-1"></i>Xác Nhận
                 </button>
               </div>
@@ -2014,58 +2019,64 @@
             }
 
             // =========================
-            // 2. LƯU DATABASE (KRUD)
-            // =========================
-            // =========================
             // 2a. UPLOAD ẢNH/VIDEO LÊN DRIVE
             // =========================
             var anhId = window._uploadedPhotoIds ? window._uploadedPhotoIds.join(',') : '';
             var videoId = window._uploadedVideoIds ? window._uploadedVideoIds.join(',') : '';
 
-            // Upload các file chưa được upload (còn trong queue)
-            if (window._pendingPhotoFiles && window._pendingPhotoFiles.length) {
-              btn.innerHTML = 'Đang upload ảnh...';
-              var photoIds = await uploadFilesToDrive(window._pendingPhotoFiles);
-              if (photoIds.length) anhId = (anhId ? anhId + ',' : '') + photoIds.join(',');
-              window._uploadedPhotoIds = (window._uploadedPhotoIds || []).concat(photoIds);
-              window._pendingPhotoFiles = [];
-            }
-            if (window._pendingVideoFiles && window._pendingVideoFiles.length) {
-              btn.innerHTML = 'Đang upload video...';
-              var videoIds = await uploadFilesToDrive(window._pendingVideoFiles);
-              if (videoIds.length) videoId = (videoId ? videoId + ',' : '') + videoIds.join(',');
-              window._uploadedVideoIds = (window._uploadedVideoIds || []).concat(videoIds);
-              window._pendingVideoFiles = [];
+            try {
+              // Upload các file chưa được upload (còn trong queue)
+              if (window._pendingPhotoFiles && window._pendingPhotoFiles.length) {
+                btn.innerHTML = 'Đang upload ảnh...';
+                var photoIds = await uploadFilesToDrive(window._pendingPhotoFiles);
+                if (photoIds.length) anhId = (anhId ? anhId + ',' : '') + photoIds.join(',');
+                window._uploadedPhotoIds = (window._uploadedPhotoIds || []).concat(photoIds);
+                window._pendingPhotoFiles = [];
+              }
+              if (window._pendingVideoFiles && window._pendingVideoFiles.length) {
+                btn.innerHTML = 'Đang upload video...';
+                var videoIds = await uploadFilesToDrive(window._pendingVideoFiles);
+                if (videoIds.length) videoId = (videoId ? videoId + ',' : '') + videoIds.join(',');
+                window._uploadedVideoIds = (window._uploadedVideoIds || []).concat(videoIds);
+                window._pendingVideoFiles = [];
+              }
+            } catch (e) {
+              console.warn('Lỗi upload file nhưng vẫn tiếp tục lưu DB:', e);
             }
             btn.innerHTML = 'Đang lưu...';
 
             // =========================
             // 2. LƯU DATABASE (KRUD)
             // =========================
-            var res = await krud('insert', 'datlich_nguoibenh', {
-              tenkhachhang: formData.name || '',
-              sdtkhachhang: formData.phone || '',
-              emailkhachhang: formData.email || '',
-              diachikhachhang: formData.address || '',
-              dich_vu: formData.service || '',
-              goi_dich_vu: formData.selectedPackage || '',
-              cong_viec: (formData.jobs || []).join(', '),
+            var res = null;
+            try {
+              res = await krud('insert', 'datlich_nguoibenh', {
+                tenkhachhang: formData.name || '',
+                sdtkhachhang: formData.phone || '',
+                emailkhachhang: formData.email || '',
+                diachikhachhang: formData.address || '',
+                dich_vu: formData.service || '',
+                goi_dich_vu: formData.selectedPackage || '',
+                cong_viec: (formData.jobs || []).join(', '),
 
-              ngay_bat_dau_kehoach: formData.startDate || '',
-              ngay_ket_thuc_kehoach: formData.endDate || '',
-              gio_bat_dau_kehoach: formData.startTime || '',
-              gio_ket_thuc_kehoach: formData.endTime || '',
+                ngay_bat_dau_kehoach: formData.startDate || '',
+                ngay_ket_thuc_kehoach: formData.endDate || '',
+                gio_bat_dau_kehoach: formData.startTime || '',
+                gio_ket_thuc_kehoach: formData.endTime || '',
 
-              tong_tien: normalizeMoneyToNumber(formData.price),
+                tong_tien: normalizeMoneyToNumber(formData.price),
 
-              yeu_cau_khac: formData.extraRequest || '',
-              ghi_chu: formData.note || '',
-              anh_id: anhId,
-              video_id: videoId,
-              ngaydat: nowNgayDat()
-            });
-
-            console.log('DB:', res);
+                yeu_cau_khac: formData.extraRequest || '',
+                ghi_chu: formData.note || '',
+                anh_id: anhId,
+                video_id: videoId,
+                ngaydat: nowNgayDat()
+              });
+              console.log('DB res:', res);
+            } catch (e) {
+              console.error('Lỗi DB:', e);
+              throw new Error('Lỗi kết nối cơ sở dữ liệu: ' + (e.message || 'vui lòng thử lại sau'));
+            }
 
             if (!isKrudSuccess(res)) {
               throw new Error(res.message || 'Lưu DB thất bại');
@@ -2175,9 +2186,12 @@
           var address = formData.address || '';
 
           var Utils = window.Utils || {
+            normalizePhone: function (p) {
+              return String(p || '').replace(/\D/g, '');
+            },
             setCookie: function (name, value, days) {
               var expires = "";
-              var d = days || 30;
+              var d = (typeof days !== "undefined") ? days : 30;
               var date = new Date();
               date.setTime(date.getTime() + (d * 24 * 60 * 60 * 1000));
               expires = "; expires=" + date.toUTCString();
@@ -2188,11 +2202,27 @@
 
           try {
             let matkhau = '';
-            let res = await fetchRows('nguoidung');
-            let rows = normalizeRows(res);
-            let found = rows.find(r => (r.sodienthoai || r.so_dien_thoai || r.phone) === phone);
+            // Lấy dữ liệu từ bảng nguoidung, giới hạn 10000 dòng để check kỹ từng ID
+            const res = await krudList({ table: 'nguoidung', limit: 100000 });
+            const rows = normalizeRows(res);
+
+            // Sắp xếp theo ID từ nhỏ nhất đến lớn nhất để kiểm tra tuần tự
+            rows.sort((a, b) => parseInt(a.id || 0) - parseInt(b.id || 0));
+
+            // Duyệt qua từng ID (đã sort) và dừng ngay khi tìm thấy số điện thoại trùng
+            let found = null;
+            const phoneNorm = Utils.normalizePhone(phone);
+            for (const r of rows) {
+              const dbPhone = Utils.normalizePhone(r.sodienthoai || r.phone || r.so_dien_thoai);
+              if (dbPhone === phoneNorm) {
+                found = r;
+                break; // Dừng ngay khi tìm thấy
+              }
+            }
+
             if (found) {
-              matkhau = found.matkhau;
+              // Lấy mật khẩu từ bản ghi tìm được (hỗ trợ các trường matkhau, password, mat_khau)
+              matkhau = found.matkhau || found.password || found.mat_khau || '';
             } else {
               matkhau = phone;
               await krud('insert', 'nguoidung', {
@@ -2205,11 +2235,20 @@
               });
             }
 
+            // 1. Đăng xuất tài khoản cũ và xóa sạch session trên server
+            await fetch('session_user.php?action=logout', { credentials: 'same-origin' }).catch(function (e) {
+              console.error('Logout error:', e);
+            });
+
             // 2. Thiết lập cookie đăng nhập (dvqt_u, dvqt_p) để session_user.php nhận diện
+            // Tự động reset cookie cục bộ trước khi thiết lập mới
+            Utils.setCookie('dvqt_u', '', -1);
+            Utils.setCookie('dvqt_p', '', -1);
+
             Utils.setCookie('dvqt_u', phone);
             Utils.setCookie('dvqt_p', matkhau);
 
-            // 3. Khởi tạo session trên server bằng cách gọi session_user.php
+            // 3. Khởi tạo session mới trên server bằng cách gọi session_user.php
             // credentials: 'same-origin' đảm bảo gửi kèm cookie vừa set
             await fetch('session_user.php', { credentials: 'same-origin' }).catch(function (e) {
               console.error('Session sync error:', e);

@@ -106,8 +106,10 @@ const providerProfileModule = (function (window, document) {
 
   function showFeedback(target, type, message) {
     if (!target) return;
+    const stateClass =
+      type === "error" ? "is-error" : type === "warning" ? "is-warning" : "";
     target.innerHTML = `
-      <div class="customer-state-card ${type === "error" ? "is-error" : ""}">
+      <div class="customer-state-card ${stateClass}">
         <p class="customer-panel-subtext">${escapeHtml(message)}</p>
       </div>
     `;
@@ -389,8 +391,13 @@ const providerProfileModule = (function (window, document) {
             cccd_front_file: formData.get("cccd_front_file"),
             cccd_back_file: formData.get("cccd_back_file"),
           });
-          showFeedback(profileFeedback, "success", "Đã cập nhật hồ sơ nhà cung cấp.");
-          window.setTimeout(() => renderProfile({ profile, stats }), 300);
+          const warning = String(profile?.warning || "").trim();
+          showFeedback(
+            profileFeedback,
+            warning ? "warning" : "success",
+            warning || "Đã cập nhật hồ sơ nhà cung cấp.",
+          );
+          window.setTimeout(() => renderProfile({ profile, stats }), warning ? 1600 : 300);
           return;
         }
       } catch (error) {

@@ -48,15 +48,6 @@
     return `${(toNumber(value, 0) * 100).toFixed(2)}%`;
   }
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
   function clonePricingData(pricingData) {
     return JSON.parse(JSON.stringify(pricingData || {}));
   }
@@ -184,7 +175,6 @@
     sanitizePriceKey,
     formatMoneyPreview,
     formatPercent,
-    escapeHtml,
     clonePricingData,
     normalizePricingDisplayLabels,
     stripKrudMeta,

@@ -1683,29 +1683,58 @@
       const existingFeedbackMedia = normalizeMediaItems(
         nextDetail.provider.feedback_media,
       );
-      const uploadedFeedbackMedia = mediaFiles.length
-        ? await uploadOrderMedia(orderRef, mediaFiles, "feedback")
-        : [];
+      let mediaWarning = "";
+      let uploadedFeedbackMedia = [];
+      if (mediaFiles.length) {
+        try {
+          uploadedFeedbackMedia = await uploadOrderMedia(
+            orderRef,
+            mediaFiles,
+            "feedback",
+          );
+        } catch (uploadError) {
+          console.warn("Cannot upload feedback media:", uploadError);
+          mediaWarning =
+            "Ảnh/video phản hồi chưa được tải lên Drive; phần đánh giá vẫn được lưu.";
+        }
+      }
       const feedbackMedia = uploadedFeedbackMedia.length
         ? [...existingFeedbackMedia, ...uploadedFeedbackMedia]
         : existingFeedbackMedia;
       nextDetail.order.rating = rating;
       nextDetail.order.feedback = feedback;
       nextDetail.provider.feedback_media = feedbackMedia;
-      const updatedOnKrud = await updateKrudOrderRecord(nextDetail, {
-        danh_gia_so_sao: rating || "",
-        rating: rating || "",
-        phan_hoi: feedback,
-        feedback,
-        feedback_media_json: JSON.stringify(feedbackMedia),
-      });
+      let updatedOnKrud = false;
+      try {
+        updatedOnKrud = await updateKrudOrderRecord(nextDetail, {
+          danh_gia_so_sao: rating || "",
+          rating: rating || "",
+          phan_hoi: feedback,
+          feedback,
+          feedback_media_json: JSON.stringify(feedbackMedia),
+        });
+      } catch (krudError) {
+        console.warn("Cannot update KRUD for submit-feedback:", krudError);
+        throw new Error(
+          mediaWarning
+            ? `${mediaWarning} Đồng thời KRUD chưa lưu được phản hồi.`
+            : "Không thể lưu phản hồi vào KRUD lúc này.",
+        );
+      }
       if (!updatedOnKrud) {
         console.warn(
           "KRUD update unavailable for submit-feedback, saved locally.",
         );
       }
       persistOrderDetail(nextDetail);
-      return { status: "success" };
+      return {
+        status: "success",
+        warning:
+          mediaWarning ||
+          (!updatedOnKrud
+            ? "Phản hồi đã lưu cục bộ nhưng hệ thống chính chưa cập nhật."
+            : ""),
+      };
     }
 
     if (action === "profile") {
@@ -1908,9 +1937,19 @@
         return normalizeText(uploaded?.fileId || uploaded?.id || "");
       };
 
-      const avatarLink = await uploadSingleFile("avatar_file");
-      const cccdFrontLink = await uploadSingleFile("cccd_front_file");
-      const cccdBackLink = await uploadSingleFile("cccd_back_file");
+      let mediaWarning = "";
+      let avatarLink = "";
+      let cccdFrontLink = "";
+      let cccdBackLink = "";
+      try {
+        avatarLink = await uploadSingleFile("avatar_file");
+        cccdFrontLink = await uploadSingleFile("cccd_front_file");
+        cccdBackLink = await uploadSingleFile("cccd_back_file");
+      } catch (uploadError) {
+        console.warn("Cannot upload customer profile media:", uploadError);
+        mediaWarning =
+          "Ảnh hồ sơ/CCCD chưa được tải lên Drive; thông tin hồ sơ vẫn được lưu.";
+      }
       const profilePatch = {
         fullname: String(
           formData?.get("ho_ten") || session.fullname || "",
@@ -1960,8 +1999,15 @@
         link_cccd_sau: cccdBackLink || session.link_cccd_sau || "",
       };
 
+      let krudWarning = "";
       if (localAuth && typeof localAuth.updateKrudUser === "function") {
-        await localAuth.updateKrudUser(session.id, "customer", profilePatch);
+        try {
+          await localAuth.updateKrudUser(session.id, "customer", profilePatch);
+        } catch (krudError) {
+          console.warn("Cannot update KRUD customer profile:", krudError);
+          krudWarning =
+            "Hệ thống chính chưa cập nhật hồ sơ; dữ liệu chỉ mới lưu cục bộ.";
+        }
       }
 
       const updatedUser = updateAuthStorage((currentUser) => ({
@@ -1983,7 +2029,11 @@
       if (!updatedUser) {
         throw new Error("Không thể cập nhật hồ sơ trong chế độ cục bộ.");
       }
-      return { status: "success", profile: updatedUser };
+      return {
+        status: "success",
+        profile: updatedUser,
+        warning: [mediaWarning, krudWarning].filter(Boolean).join(" "),
+      };
     }
 
     if (action === "change-password") {
@@ -3164,9 +3214,20 @@
         });
 
         try {
-          await apiRequest("submit-feedback", { method: "POST", body: formData });
-          showToast("Đã gửi phản hồi thành công.", "success");
-          window.location.reload();
+          const result = await apiRequest("submit-feedback", {
+            method: "POST",
+            body: formData,
+          });
+          const warning = String(result?.warning || "").trim();
+          showToast(
+            warning || "Đã gửi phản hồi thành công.",
+            warning ? "warning" : "success",
+          );
+          if (warning) {
+            window.setTimeout(() => window.location.reload(), 1800);
+          } else {
+            window.location.reload();
+          }
         } catch (error) {
           showToast(error.message, "error");
         }
@@ -3448,9 +3509,19 @@
             submitButton.disabled = true;
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
           }
-          await apiRequest("update-profile", { method: "POST", body: new FormData(profileForm) });
-          showToast("Đã cập nhật hồ sơ cá nhân thành công.", "success");
-          window.setTimeout(() => window.location.reload(), 600);
+          const result = await apiRequest("update-profile", {
+            method: "POST",
+            body: new FormData(profileForm),
+          });
+          const warning = String(result?.warning || "").trim();
+          showToast(
+            warning || "Đã cập nhật hồ sơ cá nhân thành công.",
+            warning ? "warning" : "success",
+          );
+          window.setTimeout(
+            () => window.location.reload(),
+            warning ? 1800 : 600,
+          );
         } catch (error) {
           showToast(error.message, "error");
         } finally {

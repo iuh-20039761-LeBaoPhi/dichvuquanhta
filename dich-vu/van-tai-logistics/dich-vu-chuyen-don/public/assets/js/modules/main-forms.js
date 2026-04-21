@@ -346,7 +346,13 @@ const partialPaths = {
     }
 
     if (typeof core.uploadFilesToDrive !== "function") {
-      throw new Error("Không tìm thấy helper upload Google Drive.");
+      return {
+        imageLinks: [],
+        videoLinks: [],
+        warnings: [
+          "Media đính kèm chưa được tải lên Google Drive vì thiếu helper upload.",
+        ],
+      };
     }
 
     const imageLinks = [];
@@ -600,9 +606,34 @@ const partialPaths = {
       );
     }
 
-    const mediaUploadResult = await uploadSelectedBookingMedia(scope);
+    let mediaUploadResult = {
+      imageLinks: [],
+      videoLinks: [],
+      warnings: [],
+    };
+    try {
+      mediaUploadResult = await uploadSelectedBookingMedia(scope);
+    } catch (mediaError) {
+      console.error("Không thể xử lý media đặt lịch chuyển dọn:", mediaError);
+      mediaUploadResult.warnings.push(
+        "Media đính kèm chưa được tải lên Google Drive.",
+      );
+    }
     const payload = getBookingPayload(scope, portalStore, mediaUploadResult);
-    const bookingResult = await bookingApi.createBooking(payload);
+    let bookingResult = null;
+    try {
+      bookingResult = await bookingApi.createBooking(payload);
+    } catch (krudError) {
+      console.error("Không thể lưu yêu cầu đặt lịch chuyển dọn vào KRUD:", krudError);
+      const uploadedMediaBeforeKrudError =
+        mediaUploadResult.imageLinks.length || mediaUploadResult.videoLinks.length;
+      throw new Error(
+        uploadedMediaBeforeKrudError
+          ? "Media có thể đã tải lên Google Drive, nhưng yêu cầu chưa được lưu vào KRUD."
+          : krudError?.message ||
+              "Không thể lưu yêu cầu đặt lịch vào KRUD lúc này.",
+      );
+    }
     return {
       ...bookingResult,
       accountSetup,

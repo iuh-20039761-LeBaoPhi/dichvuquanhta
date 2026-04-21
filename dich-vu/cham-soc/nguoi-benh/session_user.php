@@ -157,48 +157,61 @@ if (isset($_SESSION['last_activity'])) {
     }
 }
 
-// --- 3. TỰ ĐỘNG ĐỒNG BỘ TỪ COOKIE (Logic gốc của session_user.php) ---
-if (empty($_SESSION['logged_in']) || !isset($_SESSION['user'])) {
-    $phone = $_COOKIE['dvqt_u'] ?? '';
-    $password = $_COOKIE['dvqt_p'] ?? '';
+// --- 3. TỰ ĐỘNG ĐỒNG BỘ TỪ COOKIE (Auto-sync session with current cookies) ---
+$cookiePhone = preg_replace('/\D/', '', (string)($_COOKIE['dvqt_u'] ?? ''));
+$cookiePass  = (string)($_COOKIE['dvqt_p'] ?? '');
 
-    if ($phone !== '' && $password !== '') {
-        // Gọi API lấy danh sách người dùng để xác thực cookie
-        $url = 'https://api.dvqt.vn/list/';
-        $postData = json_encode(['table' => 'nguoidung', 'limit' => 100000], JSON_UNESCAPED_UNICODE);
-        $opts = [
-            'http' => [
-                'method' => 'POST',
-                'header' => "Content-Type: application/json\r\n",
-                'content' => $postData,
-                'timeout' => 20,
-            ]
-        ];
-        $raw = @file_get_contents($url, false, stream_context_create($opts));
-        if ($raw) {
-            $json = json_decode($raw, true);
-            $users = $json['data'] ?? $json['rows'] ?? $json['list'] ?? [];
-            foreach ($users as $u) {
-                $dbPhone = preg_replace('/\D/', '', $u['sodienthoai'] ?? $u['phone'] ?? '');
-                $inputPhone = preg_replace('/\D/', '', $phone);
-                $dbPass = $u['matkhau'] ?? $u['password'] ?? '';
-                if ($dbPhone === $inputPhone && $dbPass === $password) {
-                    $_SESSION['logged_in'] = true;
-                    $_SESSION['user'] = [
-                        'id' => $u['id'] ?? '',
-                        'hovaten' => $u['hovaten'] ?? '',
-                        'sodienthoai' => $u['sodienthoai'] ?? '',
-                        'email' => $u['email'] ?? '',
-                        'diachi' => $u['diachi'] ?? '',
-                        'matkhau' => $u['matkhau'] ?? '',
-                        'avatartenfile' => $u['link_avatar'] ?? '',
-                        'id_dichvu' => $u['id_dichvu'] ?? '',
-                        'trangthai' => $u['trangthai'] ?? 'active'
-                    ];
-                    $_SESSION['last_activity'] = time();
-                    break;
-                }
+$sessionPhone = isset($_SESSION['user']['sodienthoai']) ? preg_replace('/\D/', '', (string)$_SESSION['user']['sodienthoai']) : '';
+$sessionPass  = (string)($_SESSION['user']['matkhau'] ?? '');
+
+// Nếu cookie trống -> Xóa session (người dùng đã xóa cookie hoặc logout ở tab khác)
+if ($cookiePhone === '' || $cookiePass === '') {
+    if (isset($_SESSION['logged_in'])) {
+        clear_session_data();
+    }
+} 
+// Nếu có cookie nhưng khác dữ liệu session -> Cập nhật lại session từ API
+else if ($cookiePhone !== $sessionPhone || $cookiePass !== $sessionPass) {
+    // Gọi API lấy danh sách người dùng để xác thực cookie
+    $url = 'https://api.dvqt.vn/list/';
+    $postData = json_encode(['table' => 'nguoidung', 'limit' => 100000], JSON_UNESCAPED_UNICODE);
+    $opts = [
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/json\r\n",
+            'content' => $postData,
+            'timeout' => 20,
+        ]
+    ];
+    $raw = @file_get_contents($url, false, stream_context_create($opts));
+    if ($raw) {
+        $json = json_decode($raw, true);
+        $users = $json['data'] ?? $json['rows'] ?? $json['list'] ?? [];
+        $found = false;
+        foreach ($users as $u) {
+            $dbPhone = preg_replace('/\D/', '', (string)($u['sodienthoai'] ?? $u['phone'] ?? ''));
+            $dbPass = (string)($u['matkhau'] ?? $u['password'] ?? '');
+            if ($dbPhone === $cookiePhone && $dbPass === $cookiePass) {
+                $_SESSION['logged_in'] = true;
+                $_SESSION['user'] = [
+                    'id' => $u['id'] ?? '',
+                    'hovaten' => $u['hovaten'] ?? '',
+                    'sodienthoai' => $u['sodienthoai'] ?? '',
+                    'email' => $u['email'] ?? '',
+                    'diachi' => $u['diachi'] ?? '',
+                    'matkhau' => $u['matkhau'] ?? '',
+                    'avatartenfile' => $u['link_avatar'] ?? '',
+                    'id_dichvu' => $u['id_dichvu'] ?? '',
+                    'trangthai' => $u['trangthai'] ?? 'active'
+                ];
+                $_SESSION['last_activity'] = time();
+                $found = true;
+                break;
             }
+        }
+        // Nếu có cookie nhưng không tìm thấy user hợp lệ trong danh sách -> Xóa session
+        if (!$found && isset($_SESSION['logged_in'])) {
+            clear_session_data();
         }
     }
 }

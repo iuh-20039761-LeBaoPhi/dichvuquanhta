@@ -1410,29 +1410,46 @@
         const uploaded = await core.uploadFileToDrive(file, { name: file.name });
         return normalizeText(uploaded?.fileId || uploaded?.id || "");
       };
-      const avatarLink = await uploadSingleFile("avatar_file");
-      const cccdFrontLink = await uploadSingleFile("cccd_front_file");
-      const cccdBackLink = await uploadSingleFile("cccd_back_file");
+      let mediaWarning = "";
+      let avatarLink = "";
+      let cccdFrontLink = "";
+      let cccdBackLink = "";
+      try {
+        avatarLink = await uploadSingleFile("avatar_file");
+        cccdFrontLink = await uploadSingleFile("cccd_front_file");
+        cccdBackLink = await uploadSingleFile("cccd_back_file");
+      } catch (uploadError) {
+        console.warn("Cannot upload shipper profile media:", uploadError);
+        mediaWarning =
+          "Ảnh hồ sơ/CCCD chưa được tải lên Drive; thông tin hồ sơ vẫn được lưu.";
+      }
 
       if (!fullname || !phone) {
         throw new Error("Vui lòng nhập đầy đủ họ tên và số điện thoại.");
       }
 
+      let krudWarning = "";
       if (localAuth && typeof localAuth.updateKrudUser === "function") {
-        await localAuth.updateKrudUser(session.id, "shipper", {
-          fullname,
-          ho_ten: fullname,
-          phone,
-          so_dien_thoai: phone,
-          email,
-          address,
-          dia_chi: address,
-          vehicle_type: vehicleType,
-          loai_phuong_tien: vehicleType,
-          link_avatar: avatarLink || session.link_avatar || "",
-          link_cccd_truoc: cccdFrontLink || session.link_cccd_truoc || "",
-          link_cccd_sau: cccdBackLink || session.link_cccd_sau || "",
-        });
+        try {
+          await localAuth.updateKrudUser(session.id, "shipper", {
+            fullname,
+            ho_ten: fullname,
+            phone,
+            so_dien_thoai: phone,
+            email,
+            address,
+            dia_chi: address,
+            vehicle_type: vehicleType,
+            loai_phuong_tien: vehicleType,
+            link_avatar: avatarLink || session.link_avatar || "",
+            link_cccd_truoc: cccdFrontLink || session.link_cccd_truoc || "",
+            link_cccd_sau: cccdBackLink || session.link_cccd_sau || "",
+          });
+        } catch (krudError) {
+          console.warn("Cannot update KRUD shipper profile:", krudError);
+          krudWarning =
+            "Hệ thống chính chưa cập nhật hồ sơ; dữ liệu chỉ mới lưu cục bộ.";
+        }
       }
 
       const updatedUser = updateAuthStorage((currentUser) => ({
@@ -1458,6 +1475,7 @@
       return {
         status: "success",
         profile: updatedUser,
+        warning: [mediaWarning, krudWarning].filter(Boolean).join(" "),
       };
     }
 
@@ -2145,14 +2163,18 @@
             submitButton.disabled = true;
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu hồ sơ';
           }
-          await portalApiRequest("update-profile", {
+          const result = await portalApiRequest("update-profile", {
             method: "POST",
             body: new FormData(profileForm),
           });
-          showToast("Đã cập nhật hồ sơ cá nhân.", "success");
+          const warning = String(result?.warning || "").trim();
+          showToast(
+            warning || "Đã cập nhật hồ sơ cá nhân.",
+            warning ? "warning" : "success",
+          );
           window.setTimeout(() => {
             window.location.reload();
-          }, 600);
+          }, warning ? 1800 : 600);
         } catch (error) {
           showToast(error.message, "error");
         } finally {
