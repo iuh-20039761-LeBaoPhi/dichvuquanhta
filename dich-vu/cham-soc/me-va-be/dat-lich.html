@@ -757,7 +757,7 @@
   <section class="py-5" style="background: linear-gradient(135deg, #ffe1ec 0%, #ffffff 50%, #f7e0f4 100%)">
     <div class="container py-lg-4">
       <div class="text-center mb-4 booking-page-heading">
-        <h1 class="display-5 fw-bold mb-2">Đặt Lịch Dịch Vụ</h1>
+        <h1 class="display-5 fw-bold mb-2">Đặt Lịch Dịch Vụ Mẹ và bé</h1>
       </div>
 
       <div id="bookingPageSection" class="mx-auto" style="max-width: 760px">
@@ -1077,8 +1077,8 @@
               <button type="button" id="btnBackToEdit" class="btn rounded-pill flex-fill fw-bold review-btn-edit">
                 <i class="fas fa-pen me-1"></i>Chỉnh Sửa
               </button>
-              <button type="button" id="btnConfirmSave" class="btn text-white rounded-pill flex-fill fw-bold review-btn-save"
-                style="border: none">
+              <button type="button" id="btnConfirmSave"
+                class="btn text-white rounded-pill flex-fill fw-bold review-btn-save" style="border: none">
                 <i class="fas fa-check me-1"></i>Xác Nhận
               </button>
             </div>
@@ -2104,32 +2104,32 @@
           var res = null;
           try {
             res = await krud('insert', 'datlich_mevabe', {
-            tenkhachhang: formData.name || '',
-            sdtkhachhang: formData.phone || '',
-            emailkhachhang: formData.email || '',
-            diachikhachhang: formData.address || '',
-            dich_vu: formData.service || '',
-            goi_dich_vu: formData.selectedPackage || '',
-            cong_viec: (formData.jobs || []).join(', '),
+              tenkhachhang: formData.name || '',
+              sdtkhachhang: formData.phone || '',
+              emailkhachhang: formData.email || '',
+              diachikhachhang: formData.address || '',
+              dich_vu: formData.service || '',
+              goi_dich_vu: formData.selectedPackage || '',
+              cong_viec: (formData.jobs || []).join(', '),
 
-            ngay_bat_dau_kehoach: formData.startDate || '',
-            ngay_ket_thuc_kehoach: formData.endDate || '',
-            gio_bat_dau_kehoach: formData.startTime || '',
-            gio_ket_thuc_kehoach: formData.endTime || '',
+              ngay_bat_dau_kehoach: formData.startDate || '',
+              ngay_ket_thuc_kehoach: formData.endDate || '',
+              gio_bat_dau_kehoach: formData.startTime || '',
+              gio_ket_thuc_kehoach: formData.endTime || '',
 
-            tong_tien: normalizeMoneyToNumber(formData.price),
+              tong_tien: normalizeMoneyToNumber(formData.price),
 
-            yeu_cau_khac: formData.extraRequest || '',
-            ghi_chu: formData.note || '',
-            anh_id: anhId,
-            video_id: videoId,
-            ngaydat: nowNgayDat()
-          });
-          console.log('DB res:', res);
-        } catch (e) {
-          console.error('Lỗi DB:', e);
-          throw new Error('Lỗi kết nối cơ sở dữ liệu: ' + (e.message || 'vui lòng thử lại sau'));
-        }
+              yeu_cau_khac: formData.extraRequest || '',
+              ghi_chu: formData.note || '',
+              anh_id: anhId,
+              video_id: videoId,
+              ngaydat: nowNgayDat()
+            });
+            console.log('DB res:', res);
+          } catch (e) {
+            console.error('Lỗi DB:', e);
+            throw new Error('Lỗi kết nối cơ sở dữ liệu: ' + (e.message || 'vui lòng thử lại sau'));
+          }
 
           if (!isKrudSuccess(res)) {
             throw new Error(res.message || 'Lưu DB thất bại');
