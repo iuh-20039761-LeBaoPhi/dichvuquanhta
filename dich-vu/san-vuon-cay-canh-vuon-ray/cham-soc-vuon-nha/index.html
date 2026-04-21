@@ -1,0 +1,415 @@
+﻿<!doctype html>
+<html lang="vi">
+
+<head>
+  <script src="/ga.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang Chủ - Chăm Sóc Vườn Nhà</title>
+  <meta name="description" content="Dịch vụ chăm sóc sân vườn nhà chuyên nghiệp tại gia.">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo1.jpg" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://dichvuquanhta.vn/#business",
+      "name": "Dịch Vụ Quanh Ta",
+      "url": "https://dichvuquanhta.vn",
+      "telephone": "0775472347"
+    },
+    {
+      "@type": "Service",
+      "name": "Chăm sóc vườn nhà",
+      "url": "https://dichvuquanhta.vn/cham-soc-vuon-nha/",
+      "description": "Dịch vụ chăm sóc vườn nhà, cắt tỉa cây cảnh, bón phân và vệ sinh sân vườn chuyên nghiệp tại TP.HCM",
+      "areaServed": {
+        "@type": "Place",
+        "name": "TP.HCM"
+      },
+      "provider": {
+        "@id": "https://dichvuquanhta.vn/#business"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Trang chủ",
+          "item": "https://dichvuquanhta.vn"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Chăm sóc vườn nhà",
+          "item": "https://dichvuquanhta.vn/cham-soc-vuon-nha/"
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+    <!-- ===== Preconnect for performance ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Leaflet Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    :root {
+      --primary-green: #1a4d2e;
+      --accent-green: #4f6f52;
+      --soft-lime: #e8f3d6;
+      --nature-white: #f9fbf9;
+      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background-color: var(--nature-white);
+      font-family: "Quicksand", sans-serif;
+    }
+
+    body { padding-top: 96px; }
+
+    /* --- HIỆU ỨNG CHUNG --- */
+    .hover-lift {
+      transition: var(--transition);
+    }
+    .hover-lift:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 25px 50px rgba(26, 77, 46, 0.12) !important;
+    }
+
+    /* --- HERO SECTION --- */
+    .hero-section {
+      position: relative;
+      padding: 100px 0;
+      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
+      overflow: hidden;
+    }
+
+    .display-3 {
+      font-family: 'Playfair Display', serif;
+      color: var(--primary-green);
+      line-height: 1.1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-img-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero-img-wrapper::before {
+      content: "";
+      position: absolute;
+      top: 20px; left: 20px; right: -20px; bottom: -20px;
+      border: 2px solid var(--accent-green);
+      border-radius: 60% 40% 70% 30% / 40% 50% 60% 70%;
+      z-index: 0;
+      animation: morphing 10s infinite alternate;
+    }
+
+    @keyframes morphing {
+      0% { border-radius: 60% 40% 70% 30% / 40% 50% 60% 70%; }
+      100% { border-radius: 30% 60% 40% 70% / 70% 40% 50% 60%; }
+    }
+
+    .img-hero-custom {
+      width: 450px; height: 500px;
+      object-fit: cover;
+      border-radius: 60% 40% 70% 30% / 40% 50% 60% 70%;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+    }
+
+    /* --- FEATURE CARDS --- */
+    .feature-card {
+      border: none;
+      background: #ffffff;
+      border-radius: 35px;
+      padding: 40px !important;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .icon-box {
+      width: 70px; height: 70px;
+      background: var(--soft-lime);
+      color: var(--primary-green);
+      display: flex;
+      align-items: center; justify-content: center;
+      border-radius: 20px;
+      margin: 0 auto 25px;
+      font-size: 1.8rem;
+    }
+
+    /* --- CTA BANNER & BUTTONS FIX --- */
+    .cta-banner {
+      background: var(--primary-green);
+      border-radius: 50px;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-premium, .btn-phone-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 58px;
+      padding: 0 40px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: var(--transition);
+      text-decoration: none;
+      border: none;
+    }
+
+    .btn-premium {
+      background: #ffffff;
+      color: var(--primary-green) !important;
+    }
+
+    .btn-premium:hover {
+      background: var(--soft-lime);
+      transform: translateY(-3px);
+    }
+
+    .btn-phone-outline {
+      background: transparent;
+      color: #ffffff !important;
+      border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .btn-phone-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #ffffff !important;
+      transform: translateY(-3px);
+    }
+
+    /* --- MOBILE RESPONSIVE --- */
+    @media (max-width: 991.98px) {
+      .display-3 { font-size: 2.8rem; }
+      .img-hero-custom { width: 300px; height: 350px; }
+      .cta-banner { border-radius: 30px; padding: 40px 20px; }
+      .btn-premium, .btn-phone-outline { width: 100%; max-width: 300px; }
+    }
+  </style>
+</head>
+
+<body data-nav-active="home">
+
+  <div id="site-header"></div>
+
+  <section class="hero-section">
+    <div class="container position-relative" style="z-index: 2;">
+      <div class="row align-items-center">
+        <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+          <h1 class="display-3 fw-bold mb-4">
+            Khơi Nguồn Đẳng Cấp <br /> Cho 
+            <span style="color: var(--accent-green); font-style: italic;">Vườn Nhà Bạn</span>
+          </h1>
+          <p class="lead text-muted mb-5 fs-5">Giải pháp chăm sóc và duy trì cảnh quan chuyên nghiệp, mang hơi thở thiên nhiên trọn vẹn vào không gian sống thượng lưu.</p>
+
+          <button class="btn btn-nature text-white rounded-pill btn-lg px-5 py-3 shadow-lg"
+            style="background: var(--primary-green); transition: 0.3s;" 
+            onclick="window.location.href = 'lien-he.html'">
+            <i class="fas fa-calendar-alt me-2"></i> Đặt Lịch Khảo Sát
+          </button>
+        </div>
+
+        <div class="col-lg-6 text-center">
+          <div class="hero-img-wrapper">
+            <img src="assets/images/xu-huong-thiet-ke-vuon-2026.jpg" alt="Không gian vườn xịn" class="img-fluid img-hero-custom">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container py-5">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold display-5 mb-3" style="color: var(--primary-green)">Tại Sao Là Chúng Tôi?</h2>
+        <div style="width: 60px; height: 4px; background: var(--accent-green); margin: 0 auto; border-radius: 10px;"></div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3 text-center">
+          <div class="feature-card shadow-sm h-100 hover-lift">
+            <div class="icon-box"><i class="fas fa-award"></i></div>
+            <h3 class="h5 fw-bold">Nghệ Nhân Bậc Thầy</h3>
+            <p class="text-muted small mb-0">Đội ngũ kỹ thuật viên được đào tạo chuyên sâu về sinh học cây trồng.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+          <div class="feature-card shadow-sm h-100 hover-lift">
+            <div class="icon-box"><i class="fas fa-leaf"></i></div>
+            <h3 class="h5 fw-bold">Vật Tư Sinh Học</h3>
+            <p class="text-muted small mb-0">Sử dụng 100% chế phẩm hữu cơ an toàn cho gia đình và vật nuôi.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+          <div class="feature-card shadow-sm h-100 hover-lift">
+            <div class="icon-box"><i class="fas fa-microchip"></i></div>
+            <h3 class="h5 fw-bold">Công Nghệ 4.0</h3>
+            <p class="text-muted small mb-0">Giám sát và tự động hóa hệ thống tưới, chăm bón từ xa.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 text-center">
+          <div class="feature-card shadow-sm h-100 hover-lift">
+            <div class="icon-box"><i class="fas fa-shield-heart"></i></div>
+            <h3 class="h5 fw-bold">Bảo Hành Sống Khỏe</h3>
+            <p class="text-muted small mb-0">Cam kết cây luôn xanh tươi, hỗ trợ thay mới nếu không đạt tiêu chuẩn.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 bg-white shadow-sm">
+    <div class="container py-5">
+      <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+          <h2 class="fw-bold display-6 mb-0" style="color: var(--primary-green)">Các Dịch Vụ Nổi Bật</h2>
+          <p class="text-muted mt-2">Được thiết kế riêng cho từng kiến trúc vườn</p>
+        </div>
+        <a href="dich-vu.html" class="btn btn-link text-success fw-bold text-decoration-none">
+          Khám phá tất cả <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+      <div class="row g-4" id="services-grid">
+        </div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-6 col-md-3">
+          <div class="p-4 rounded-4 bg-white shadow-sm">
+            <h3 class="display-6 fw-bold text-success">15+</h3>
+            <p class="mb-0 text-muted">Năm Kinh Nghiệm</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-4 rounded-4 bg-white shadow-sm">
+            <h3 class="display-6 fw-bold text-success">10k+</h3>
+            <p class="mb-0 text-muted">Dự Án Hoàn Tất</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-4 rounded-4 bg-white shadow-sm">
+            <h3 class="display-6 fw-bold text-success">98%</h3>
+            <p class="mb-0 text-muted">Hài Lòng</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-4 rounded-4 bg-white shadow-sm">
+            <h3 class="display-6 fw-bold text-success">24/7</h3>
+            <p class="mb-0 text-muted">Hỗ Trợ Tận Tâm</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container py-5">
+      <div class="cta-banner text-center text-white shadow-lg">
+        <h2 class="display-5 fw-bold mb-4">Bạn Đã Sẵn Sàng Cho Một Không Gian Xanh?</h2>
+        <p class="fs-5 mb-5 opacity-90 mx-auto" style="max-width: 700px;">
+          Để chúng tôi giúp bạn kiến tạo và duy trì khu vườn mơ ước, nơi mỗi ngày trở về đều là một kỳ nghỉ dưỡng.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+          <button class="btn btn-premium shadow-lg" onclick="window.location.href = 'lien-he.html'">
+            Liên Hệ Ngay
+          </button>
+          <a href="tel:0775472347" class="btn btn-phone-outline shadow-sm">
+            <i class="fas fa-phone-alt me-2"></i> 077.547.2347
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    async function loadHomeServices() {
+      try {
+        // Lấy dữ liệu từ tệp dich-vu.json
+        const response = await fetch('dich-vu.json');
+        const services = await response.json();
+        const servicesGrid = document.getElementById("services-grid");
+        
+        // Lấy 4 dịch vụ đầu tiên để làm tiêu điểm trang chủ
+        const homepageServices = services.slice(0, 4);
+
+        homepageServices.forEach(service => {
+          const col = document.createElement("div");
+          col.className = "col-md-6 col-lg-3";
+          
+          // Xử lý đường dẫn ảnh (giả sử ảnh nằm trong assets/images/ như trang chi tiết)
+          const imagePath = `assets/images/${service.image}`;
+          const imageAlt = (service.name || "Dịch vụ").replace(/"/g, "&quot;");
+
+          col.innerHTML = `
+            <a href="chi-tiet-dich-vu.html?id=${service.id}" class="text-decoration-none h-100 d-block">
+                <div class="card border-0 shadow-sm h-100 hover-lift" style="border-radius: 30px; overflow: hidden;">
+                    <div class="overflow-hidden">
+                       <img src="${imagePath}" class="card-img-top" alt="${imageAlt}" style="height: 220px; object-fit: cover; transition: 0.4s;" onerror="this.src='assets/vuon-nha-dep.png'">
+                    </div>
+                    <div class="card-body p-4">
+                        <h3 class="h5 fw-bold mb-2 text-dark">${service.name}</h3>
+                        <p class="card-text text-muted small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${service.description}</p>
+                    </div>
+                </div>
+            </a>
+          `;
+          servicesGrid.appendChild(col);
+        });
+      } catch (error) {
+        console.error('Error loading services:', error);
+      }
+    }
+    document.addEventListener("DOMContentLoaded", loadHomeServices);
+  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../public/asset/js/dvqt-map.js"></script>
+    <!-- BD_BASE = './' vì index.html ở tho-nha root -->
+    <script>window.BD_BASE = './';</script>
+    <script src="../public/asset/js/dvqt-krud.js"></script>
+    <script src="../public/asset/js/dvqt-app.js"></script>
+    <script src="../public/asset/js/driveUtil.js"></script>
+    <script src="assets/js/public/booking-panel.js"></script>
+    <script src="assets/js/shared/auth-nav.js"></script>
+    <script src="assets/js/public/booking-detail-shared.js"></script>
+    <script src="assets/js/public/booking-detail-modal.js"></script>
+    <script src="assets/js/public/booking-detail-standalone.js"></script>
+    <script src="assets/js/public/booking-detail.js"></script>
+    <script src="assets/js/public/order-tracking.js"></script>
+</body>
+</html>

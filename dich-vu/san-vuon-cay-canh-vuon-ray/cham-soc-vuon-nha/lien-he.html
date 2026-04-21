@@ -1,0 +1,338 @@
+﻿<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Liên hệ dịch vụ chăm sóc sân vườn nhà chuyên nghiệp để được tư vấn nhanh chóng.">
+  <title>Liên Hệ - Chăm Sóc Vườn Nhà</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo1.jpg" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
+  
+  <style>
+    :root {
+      --primary-green: #1a4d2e;
+      --accent-green: #4f6f52;
+      --soft-lime: #e8f3d6;
+      --nature-white: #f9fbf9;
+      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    body {
+      font-family: "Quicksand", sans-serif;
+      background-color: var(--nature-white);
+      padding-top: 96px;
+      color: #2d3436;
+      overflow-x: hidden;
+    }
+
+    /* --- HERO SECTION - FIX LỖI XUỐNG HÀNG --- */
+    .contact-hero {
+      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
+      padding: 150px 0 80px;
+      position: relative;
+    }
+
+    .contact-hero::before {
+      content: "Contact";
+      position: absolute;
+      font-family: 'Playfair Display';
+      font-size: 15vw;
+      font-weight: 900;
+      color: rgba(26, 77, 46, 0.03);
+      top: 0; left: -2%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-content-wrapper {
+      max-width: 1000px; /* Nới rộng khung để chữ không bị ép xuống hàng */
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--primary-green);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+
+    .contact-hero p {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: #636e72;
+      max-width: 850px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
+
+    .custom-underline {
+      width: 120px;
+      height: 5px;
+      background: var(--primary-green);
+      margin: 0 auto;
+      border-radius: 50px;
+    }
+
+    /* --- LAYOUT CARDS --- */
+    .info-container, .form-container {
+      background: #ffffff;
+      border-radius: 45px;
+      padding: 50px;
+      box-shadow: 0 30px 60px rgba(26, 77, 46, 0.06);
+      border: 1px solid rgba(26, 77, 46, 0.05);
+      height: 100%;
+    }
+
+    .contact-method-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      border-radius: 25px;
+      transition: var(--transition);
+      margin-bottom: 15px;
+      background: var(--nature-white);
+    }
+
+    .contact-method-card:hover {
+      background: var(--soft-lime);
+      transform: translateX(10px);
+    }
+
+    .icon-circle {
+      width: 55px; height: 55px;
+      background: var(--primary-green);
+      color: white;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    /* --- FORM STYLES --- */
+    .form-control {
+      border: 2px solid #f1f1f1 !important;
+      border-radius: 18px !important;
+      padding: 14px 22px !important;
+      background: var(--nature-white) !important;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-green) !important;
+      box-shadow: 0 0 0 5px rgba(26, 77, 46, 0.05) !important;
+    }
+
+    .service-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .service-list .btn-outline-success {
+      border: 2px solid #f1f1f1;
+      color: var(--accent-green);
+      border-radius: 12px;
+      padding: 8px 20px;
+      font-weight: 700;
+      background: white;
+    }
+
+    .service-list .btn-check:checked + .btn-outline-success {
+      background: var(--primary-green);
+      border-color: var(--primary-green);
+      color: white;
+    }
+
+    .btn-submit {
+      background: var(--primary-green);
+      border: none;
+      border-radius: 18px;
+      padding: 16px;
+      font-weight: 700;
+      color: white;
+      transition: var(--transition);
+    }
+
+    .btn-submit:hover {
+      background: #0d2b1a;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(26, 77, 46, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .form-container, .info-container { padding: 30px; }
+      .contact-hero { padding: 120px 0 60px; }
+    }
+  </style>
+</head>
+
+<body data-nav-active="contact">
+
+  <div id="site-header"></div>
+
+  <section class="contact-hero text-center">
+    <div class="container">
+      <div class="hero-content-wrapper">
+        <h1>Kết nối cùng <span style="color: var(--accent-green)">Chăm Sóc Vườn Nhà</span></h1>
+        <p class="fw-medium">Hãy để các nghệ nhân của chúng tôi giúp bạn kiến tạo và giữ gìn không gian xanh hoàn mỹ cho tổ ấm.</p>
+        <div class="custom-underline"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 mb-5">
+    <div class="container">
+      <div class="row g-5">
+        
+        <div class="col-lg-5">
+          <div class="info-container">
+            <h2 class="fw-bold mb-4" style="color: var(--primary-green); font-family: 'Playfair Display', serif;">Thông Tin Liên Hệ</h2>
+            
+            <div class="contact-method-card">
+              <div class="icon-circle"><i class="fas fa-map-marker-alt"></i></div>
+              <div>
+                <small class="text-muted fw-bold d-block">ĐỊA CHỈ</small>
+                <span class="fw-bold">123 Đường ABC, Quận 1, TP. HCM</span>
+              </div>
+            </div>
+
+            <div class="contact-method-card">
+              <div class="icon-circle"><i class="fas fa-phone-alt"></i></div>
+              <div>
+                <small class="text-muted fw-bold d-block">HOTLINE</small>
+                <a href="tel:0775472347" class="text-decoration-none fw-bold text-dark">077.547.2347</a>
+              </div>
+            </div>
+
+            <div class="contact-method-card">
+              <div class="icon-circle"><i class="fas fa-envelope"></i></div>
+              <div>
+                <small class="text-muted fw-bold d-block">EMAIL</small>
+                <a href="mailto:dichvuquanhta.vn@gmail.com" class="text-decoration-none fw-bold text-dark">dichvuquanhta.vn@gmail.com</a>
+              </div>
+            </div>
+
+            <div class="contact-method-card">
+              <div class="icon-circle"><i class="fas fa-clock"></i></div>
+              <div>
+                <small class="text-muted fw-bold d-block">GIỜ LÀM VIỆC</small>
+                <span class="fw-bold">T2 - CN: 08:00 - 18:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <div class="form-container">
+            <div id="formContent">
+              <h2 class="fw-bold mb-4" style="color: var(--primary-green); font-family: 'Playfair Display', serif;">Gửi Yêu Cầu Khảo Sát</h2>
+              
+              <form id="bookingForm">
+                <div class="mb-4">
+                  <label class="form-label fw-bold">Dịch vụ quan tâm:</label>
+                  <div id="serviceList" class="service-list"></div>
+                  <input type="hidden" id="servicePrice" value="Liên hệ" />
+                </div>
+
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Họ và tên *</label>
+                    <input type="text" id="customerName" class="form-control" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Số điện thoại *</label>
+                    <input type="tel" id="customerPhone" class="form-control" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Email</label>
+                    <input type="email" id="customerEmail" class="form-control">
+                  </div>
+                  <div class="col-12 mb-4">
+                    <label class="form-label fw-bold">Ghi chú yêu cầu</label>
+                    <textarea id="customerNote" class="form-control" rows="4" placeholder="Nhập địa chỉ vườn hoặc tình trạng cây hiện tại..."></textarea>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-submit w-100 fs-5">
+                  <i class="fas fa-paper-plane me-2"></i> ĐĂNG KÝ TƯ VẤN
+                </button>
+              </form>
+            </div>
+
+            <div id="successMessage" style="display: none;" class="text-center py-5">
+              <i class="fas fa-check-circle mb-3" style="color: var(--primary-green); font-size: 4rem"></i>
+              <h3 class="fw-bold">Gửi Thành Công!</h3>
+              <p class="text-muted">Chúng tôi sẽ liên hệ khảo sát trong thời gian sớm nhất.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // GIỮ NGUYÊN LOGIC CŨ CỦA BẠN
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
+      
+      // Load services (logic cũ)
+      $.getJSON("services.json").done(function (services) {
+        if (Array.isArray(services)) {
+          services.forEach((s, i) => {
+            $("#serviceList").append(`
+              <input type="checkbox" class="btn-check" id="opt-${i}" value="${s.name}">
+              <label class="btn btn-outline-success" for="opt-${i}">${s.name}</label>
+            `);
+          });
+        }
+      });
+
+      // Submit Form (logic cũ)
+      $("#bookingForm").on("submit", function (e) {
+        e.preventDefault();
+        const btn = $(this).find('button');
+        const data = {
+          name: $("#customerName").val(),
+          phone: $("#customerPhone").val(),
+          email: $("#customerEmail").val(),
+          service: $(".btn-check:checked").map(function() { return this.value; }).get().join(", "),
+          note: $("#customerNote").val()
+        };
+
+        btn.prop("disabled", true).text("Đang gửi...");
+
+        $.ajax({
+          url: SCRIPT_URL,
+          method: "POST",
+          data: JSON.stringify(data),
+          contentType: "text/plain",
+          success: function () {
+            $("#formContent").fadeOut(300, () => $("#successMessage").fadeIn());
+          },
+          error: function() { 
+            $("#formContent").fadeOut(300, () => $("#successMessage").fadeIn()); 
+          }
+        });
+      });
+    });
+  </script>
+  <script src="JS/shared-layout.js"></script>
+  <script src="JS/user-nav-menu.js"></script>
+</body>
+</html>

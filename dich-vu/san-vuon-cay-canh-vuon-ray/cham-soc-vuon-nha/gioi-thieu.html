@@ -1,0 +1,351 @@
+﻿<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dịch vụ chăm sóc sân vườn nhà chuyên nghiệp.">
+  <title>Giới Thiệu - Chăm Sóc Vườn Nhà</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo1.jpg" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
+  
+  <style>
+    :root {
+      --primary-green: #1a4d2e; 
+      --accent-green: #4f6f52;
+      --soft-lime: #e8f3d6;
+      --nature-white: #f9fbf9;
+    }
+
+    body {
+      font-family: "Quicksand", sans-serif;
+      color: #2d3436;
+      background-color: var(--nature-white);
+    }
+
+    /* --- NÂNG CẤP HEADER --- */
+    .navbar {
+      background: rgba(255, 255, 255, 0.9) !important;
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(26, 77, 46, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    /* --- HERO SECTION - PARALLAX EFFECT --- */
+    .hero-premium {
+      background: radial-gradient(circle at top right, #e8f3d6 0%, #ffffff 70%);
+      position: relative;
+      overflow: hidden;
+      padding: 180px 0 120px;
+    }
+
+    .hero-premium::before {
+      content: "Nature";
+      position: absolute;
+      font-family: 'Playfair Display';
+      font-size: 20vw;
+      font-weight: 900;
+      color: rgba(26, 77, 46, 0.03);
+      top: 0; left: -5%;
+      z-index: 0;
+    }
+
+    .display-3 {
+      font-family: 'Playfair Display', serif;
+      color: var(--primary-green);
+      font-size: 4.5rem;
+      line-height: 1.1;
+    }
+
+    /* --- CARD MODERN - NEUMORPHISM --- */
+    .card-modern {
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 30px;
+      background: #ffffff;
+      box-shadow: 20px 20px 60px #d9dfd9, -20px -20px 60px #ffffff;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card-modern:hover {
+      transform: translateY(-15px) scale(1.02);
+      box-shadow: 0 40px 80px rgba(26, 77, 46, 0.15);
+    }
+
+    .icon-circle {
+      width: 90px; height: 90px;
+      background: linear-gradient(145deg, #f0f0f0, #ffffff);
+      box-shadow: 5px 5px 15px #d1d1d1, -5px -5px 15px #ffffff;
+      color: var(--primary-green);
+      display: flex;
+      align-items: center; justify-content: center;
+      border-radius: 25px;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+    }
+
+    /* --- FEATURE BOX - GLASSY --- */
+    .feature-box {
+      border-radius: 25px;
+      padding: 40px 30px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(5px);
+      transition: 0.4s;
+      height: 100%;
+    }
+
+    .feature-box:hover {
+      background: var(--primary-green);
+      color: #fff !important;
+    }
+
+    .feature-box:hover .text-muted, .feature-box:hover .step-num {
+      color: rgba(255,255,255,0.8) !important;
+    }
+
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--soft-lime);
+      opacity: 0.5;
+      margin-top: -20px;
+    }
+
+    /* --- IMAGE STACK ART --- */
+    .img-stack {
+      position: relative;
+      padding: 30px;
+    }
+
+    .img-stack::after {
+      content: "";
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      border: 2px solid var(--primary-green);
+      border-radius: 50px;
+      transform: rotate(3deg);
+      z-index: -1;
+    }
+
+    .img-main {
+      border-radius: 50px;
+      filter: grayscale(10%) contrast(110%);
+      transition: 0.6s ease;
+    }
+
+    .img-main:hover {
+      filter: grayscale(0%);
+      transform: rotate(-3deg);
+    }
+
+    /* --- TIMELINE ART --- */
+    .timeline-item {
+      padding-left: 40px;
+      border-left: 3px dashed var(--accent-green);
+      position: relative;
+      padding-bottom: 50px;
+    }
+
+    .timeline-item::after {
+      content: "\f06c"; /* FontAwesome Leaf */
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      left: -14px; top: 0;
+      color: var(--primary-green);
+      background: var(--nature-white);
+      padding: 2px;
+    }
+
+    .year-label {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      background: linear-gradient(to right, var(--primary-green), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* --- BUTTON & DECOR --- */
+    .btn-nature {
+      background: var(--primary-green);
+      color: white;
+      border-radius: 50px;
+      padding: 12px 35px;
+      font-weight: 700;
+      border: none;
+      transition: 0.3s;
+    }
+
+    .btn-nature:hover {
+      background: var(--accent-green);
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .display-3 { font-size: 3rem; }
+    }
+  </style>
+</head>
+
+<body data-nav-active="about">
+  <div id="site-header"></div>
+
+  <section class="hero-premium">
+    <div class="container text-center position-relative" style="z-index: 1;">
+      <h1 class="display-3 fw-bold mb-3">Về <span class="fst-italic" style="color: var(--accent-green)">Chăm Sóc Vườn Nhà</span></h1>
+      <p class="lead text-muted mb-4 fw-medium fs-4">Nâng tầm giá trị mảng xanh — Khơi nguồn mạch sống tự nhiên</p>
+      <div style="width: 120px; height: 5px; background: var(--primary-green); margin: 0 auto; border-radius: 50px;"></div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container py-lg-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <span class="text-uppercase fw-bold text-success mb-2 d-block" style="letter-spacing: 4px;">Từ năm 2009</span>
+          <h2 class="fw-bold display-5 mb-4" style="color: var(--primary-green)">Nơi Những Nghệ Nhân Giao Thoa Cùng Thiên Nhiên</h2>
+          <p class="lead text-muted mb-4" style="line-height: 1.8;">
+            Không chỉ là dịch vụ cắt tỉa, <strong>Chăm Sóc Vườn Nhà</strong> là hành trình của những tâm hồn yêu cây cỏ. Chúng tôi tỉ mỉ trong từng đường kéo, thấu hiểu từng đặc tính sinh trưởng để biến khu vườn thành một tác phẩm nghệ thuật sống động.
+          </p>
+          <div class="row g-4 mt-2">
+            <div class="col-6">
+              <div class="p-3 rounded-4 bg-white shadow-sm border-start border-4 border-success">
+                <h3 class="fw-bold text-success mb-0">15+</h3>
+                <small class="text-muted text-uppercase fw-bold">Năm tận tâm</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3 rounded-4 bg-white shadow-sm border-start border-4 border-success">
+                <h3 class="fw-bold text-success mb-0">10k+</h3>
+                <small class="text-muted text-uppercase fw-bold">Khu vườn xanh</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 text-center">
+          <div class="img-stack">
+            <img src="assets/images/thiet-ke-loi-di-san-vuon.jpg" alt="Sân vườn đẹp" class="img-fluid img-main shadow-lg" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5" style="background: linear-gradient(to bottom, var(--nature-white), #ffffff)">
+    <div class="container py-5">
+      <div class="row g-5">
+        <div class="col-md-4">
+          <div class="p-5 card-modern h-100 text-center">
+            <div class="icon-circle mx-auto"><i class="fas fa-leaf"></i></div>
+            <h3 class="h4 fw-bold mb-3" style="color: var(--primary-green)">Sứ Mệnh</h3>
+            <p class="text-muted mb-0">Trả lại sự cân bằng cho không gian sống, biến mỗi mét vuông sân vườn thành nơi chữa lành tâm hồn.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-5 card-modern h-100 text-center">
+            <div class="icon-circle mx-auto"><i class="fas fa-compass"></i></div>
+            <h3 class="h4 fw-bold mb-3" style="color: var(--primary-green)">Tầm Nhìn</h3>
+            <p class="text-muted mb-0">Đưa tiêu chuẩn chăm sóc cảnh quan quốc tế vào từng gia đình Việt, kiến tạo đô thị xanh bền vững.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-5 card-modern h-100 text-center">
+            <div class="icon-circle mx-auto"><i class="fas fa-hand-holding-heart"></i></div>
+            <h3 class="h4 fw-bold mb-3" style="color: var(--primary-green)">Giá Trị</h3>
+            <p class="text-muted mb-0">Sự tử tế với môi trường là tôn chỉ. Chúng tôi chăm sóc cây như chăm sóc chính người thân của mình.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container py-5">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold display-5" style="color: var(--primary-green)">Sự Khác Biệt Của Chúng Tôi</h2>
+        <p class="text-muted">Tại sao hàng ngàn gia đình trao gửi niềm tin cho Chăm Sóc Vườn Nhà?</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-box shadow-sm">
+            <div class="step-num">01</div>
+            <h3 class="h5 fw-bold mb-3">Tư Duy Nghệ Thuật</h3>
+            <p class="text-muted mb-0">Chúng tôi không chỉ cắt cỏ, chúng tôi sắp đặt lại không gian để tạo ra chiều sâu thị giác.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-box shadow-sm">
+            <div class="step-num">02</div>
+            <h3 class="h5 fw-bold mb-3">Công Nghệ Sinh Học</h3>
+            <p class="text-muted mb-0">Ưu tiên sử dụng phân bón hữu cơ và thuốc bảo vệ thực vật sinh học, an toàn tuyệt đối cho trẻ nhỏ.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-box shadow-sm">
+            <div class="step-num">03</div>
+            <h3 class="h5 fw-bold mb-3">Hỗ Trợ 24/7</h3>
+            <p class="text-muted mb-0">Bất kể khi nào cây có dấu hiệu bất thường, đội ngũ kỹ thuật sẽ có mặt ngay để xử lý.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5" style="background-color: #fff">
+    <div class="container py-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <h2 class="fw-bold display-5 mb-5" style="color: var(--primary-green)">Cột Mốc Phát Triển</h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="year-label">2009</div>
+              <h4 class="h5 fw-bold">Gieo Mầm</h4>
+              <p class="text-muted">Thành lập đội ngũ nhỏ phục vụ các khu biệt thự tại Thảo Điền.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="year-label">2017</div>
+              <h4 class="h5 fw-bold">Phát Triển</h4>
+              <p class="text-muted">Trở thành đơn vị tiên phong áp dụng hệ thống quản lý cây trồng kỹ thuật số.</p>
+            </div>
+            <div class="timeline-item" style="border:none">
+              <div class="year-label">2026</div>
+              <h4 class="h5 fw-bold">Vươn Tầm</h4>
+              <p class="text-muted">Mở rộng dịch vụ ra toàn quốc, khẳng định vị thế dẫn đầu cảnh quan xanh.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="position-relative">
+            <img src="assets/images/phan-bon-tu-nhien.jpg" alt="Hành trình" class="img-fluid rounded-5 shadow-lg" />
+            <div class="position-absolute bottom-0 start-0 bg-success p-4 rounded-5 m-3 text-white shadow-lg d-none d-md-block">
+                <p class="mb-0 fw-bold">Cam kết sống xanh</p>
+                <small>100% Thuần tự nhiên</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../../../public/asset/js/dvqt-map.js"></script>
+    <script>window.BD_BASE = '../../';</script>
+    <script src="../../../public/asset/js/dvqt-krud.js"></script>
+    <script src="../../../public/asset/js/dvqt-app.js"></script>
+    <script src="../../../public/asset/js/driveUtil.js"></script>
+    <script src="../../assets/js/public/booking-panel.js"></script>
+    <script src="../../assets/js/shared/auth-nav.js"></script>
+    <script src="../../assets/js/public/booking-detail-shared.js"></script>
+    <script src="../../assets/js/public/booking-detail-modal.js"></script>
+    <script src="../../assets/js/public/booking-detail-standalone.js"></script>
+    <script src="../../assets/js/public/booking-detail.js"></script>
+    <script src="../../assets/js/public/order-tracking.js"></script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi tiết dịch vụ - Chăm Sóc Vườn Nhà</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo1.jpg" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-green: #1a4d2e;
+      --accent-green: #4f6f52;
+      --soft-lime: #e8f3d6;
+      --nature-white: #f9fbf9;
+      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    body {
+      font-family: "Quicksand", sans-serif;
+      padding-top: 96px;
+      background-color: var(--nature-white);
+    }
+
+    /* --- CẬP NHẬT BANNER ĐỒNG NHẤT VỚI BÀI VIẾT --- */
+    .page-banner {
+      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
+      padding: 140px 0 80px; /* Tăng padding để tạo không gian cho chữ mờ */
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(26, 77, 46, 0.05);
+      margin-bottom: 40px;
+    }
+
+    .page-banner::before {
+      content: "Details"; /* Chữ mờ chạy nền */
+      position: absolute;
+      font-family: 'Playfair Display';
+      font-size: 15vw;
+      font-weight: 900;
+      color: rgba(26, 77, 46, 0.03);
+      top: 0;
+      left: -2%;
+      z-index: 0;
+    }
+
+    .page-banner h2 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic; /* Kiểu chữ nghiêng sang trọng */
+      color: var(--primary-green);
+      font-size: 3.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .breadcrumb {
+      position: relative;
+      z-index: 1;
+    }
+
+    .breadcrumb-item a {
+      color: var(--accent-green);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .breadcrumb-item.active {
+      color: var(--primary-green);
+      font-weight: 700;
+    }
+
+    /* --- GIỮ NGUYÊN STYLE CŨ CHO PHẦN NỘI DUNG --- */
+    h1, h4, h5 {
+      font-family: 'Playfair Display', serif;
+      color: var(--primary-green);
+    }
+
+    .service-header-img {
+      width: 100%;
+      max-height: 550px;
+      object-fit: cover;
+      border-radius: 45px; /* Bo góc lớn hơn cho hiện đại */
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+
+    .badge-custom {
+      background: #fff;
+      color: var(--primary-green);
+      border: 1px solid var(--soft-lime);
+      border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    .info-card {
+      background: #fff;
+      border-radius: 40px;
+      border: 1px solid rgba(0,0,0,0.03);
+      padding: 40px;
+      box-shadow: 0 15px 40px rgba(26, 77, 46, 0.08);
+    }
+
+    .sticky-info {
+      position: sticky;
+      top: 120px;
+    }
+
+    .price-box {
+      background: var(--soft-lime);
+      border-left: 8px solid var(--primary-green);
+      padding: 20px;
+      border-radius: 0 20px 20px 0;
+    }
+
+    .tag-item {
+      display: inline-block;
+      padding: 6px 18px;
+      background: #fff;
+      border: 1px solid var(--soft-lime);
+      border-radius: 50px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: var(--primary-green);
+      font-weight: 700;
+    }
+
+    .btn-book-now {
+      background-color: var(--primary-green);
+      color: white;
+      border: none;
+      padding: 15px;
+      transition: var(--transition);
+      border-radius: 50px;
+    }
+
+    .btn-book-now:hover {
+      background-color: var(--accent-green);
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(26, 77, 46, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <section class="page-banner">
+    <div class="container position-relative">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-3">
+          <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+          <li class="breadcrumb-item"><a href="dich-vu.html">Dịch vụ</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+        </ol>
+      </nav>
+      <h2 class="fw-bold">Thông Tin <span style="color: var(--accent-green)">Dịch Vụ</span></h2>
+    </div>
+  </section>
+
+  <div class="container mb-5" id="detailContainer">
+    <div class="text-center py-5">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Đang tải...</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="site-footer"></div>
+
+  <div class="modal fade" id="bookingFlowModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+        <div class="modal-header border-0 bg-light">
+          <h5 class="modal-title fw-bold">Đăng ký dịch vụ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-0">
+          <iframe id="bookingFlowFrame" src="about:blank" style="width:100%; height:550px; border:0;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    $(document).ready(async function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const serviceId = urlParams.get('id');
+      const bookingModal = new bootstrap.Modal('#bookingFlowModal');
+
+      try {
+        const response = await fetch('dich-vu.json');
+        const services = await response.json();
+        const item = services.find(s => s.id == serviceId);
+
+        if (!item) {
+          $('#detailContainer').html(`
+            <div class="text-center py-5">
+              <h2 class="text-muted">Không tìm thấy dịch vụ yêu cầu!</h2>
+              <a href="dich-vu.html" class="btn btn-success mt-3 rounded-pill px-4">Quay lại danh sách</a>
+            </div>
+          `);
+          return;
+        }
+
+        const tagsHTML = item.tags.map(t => `<span class="tag-item">#${t}</span>`).join('');
+
+        $('#detailContainer').html(`
+          <div class="row g-5">
+            <div class="col-lg-7">
+              <img src="assets/images/${item.image}" class="service-header-img mb-5" alt="${item.name}" onerror="this.src='assets/vuon-nha-dep.png'">
+              
+              <h1 class="display-4 fw-bold mb-3">${item.name}</h1>
+              
+              <div class="mb-4 d-flex flex-wrap gap-2">
+                <span class="badge badge-custom px-3 py-2 text-dark">
+                  <i class="fas fa-star text-warning me-1"></i> ${item.rating} (${item.total_reviews} đánh giá)
+                </span>
+                <span class="badge badge-custom px-3 py-2 text-dark">
+                  <i class="fas fa-clock text-success me-1"></i> Dự kiến: ${item.duration_estimate}
+                </span>
+              </div>
+
+              <div class="content-detail mt-5">
+                <h4 class="fw-bold mb-3"><i class="fas fa-info-circle me-2 text-success"></i>Mô tả chi tiết</h4>
+                <p class="lead text-secondary lh-lg mb-5" style="font-size: 1.1rem; text-align: justify;">${item.description}</p>
+                
+                <h4 class="fw-bold mb-3"><i class="fas fa-map-marker-alt me-2 text-success"></i>Khu vực phục vụ</h4>
+                <p class="text-secondary mb-5 fs-5">${item.service_area}</p>
+                
+                <div class="mt-5">
+                  <h5 class="fw-bold mb-3">Tags:</h5>
+                  ${tagsHTML}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-5">
+              <div class="info-card sticky-info shadow-sm">
+                <h4 class="fw-bold mb-4">Thông tin báo giá</h4>
+                
+                <div class="price-box mb-4">
+                  <h3 class="fw-bold text-success mb-1" style="font-family: 'Quicksand', sans-serif;">
+                    ${item.price_m2_min.toLocaleString()}đ - ${item.price_m2_max.toLocaleString()}đ
+                  </h3>
+                  <p class="text-muted small mb-0 fw-bold">Đơn vị: ${item.area_unit}</p>
+                </div>
+
+                <p class="text-secondary small mb-4">
+                   ${item.price_note}
+                </p>
+                
+                <hr class="my-4 opacity-50">
+                
+                <div class="mb-5">
+                   <div class="d-flex justify-content-between mb-3">
+                      <span class="text-muted fw-bold">Độ khó:</span>
+                      <span class="fw-bold text-uppercase text-success">${item.difficulty_level}</span>
+                   </div>
+                   <div class="d-flex justify-content-between">
+                      <span class="text-muted fw-bold">Ngày cập nhật:</span>
+                      <span class="fw-bold text-dark">${item.updated_at}</span>
+                   </div>
+                </div>
+
+                <button class="btn btn-book-now w-100 py-3 fw-bold fs-5 mb-0 shadow-sm">
+                  ĐẶT LỊCH NGAY
+                </button>
+              </div>
+            </div>
+          </div>
+        `);
+
+        $('.btn-book-now').on('click', function() {
+          const frame = document.getElementById('bookingFlowFrame');
+          frame.src = `dat-lich.html?embedded=1&serviceId=${item.id}`;
+          bookingModal.show();
+        });
+
+      } catch (e) {
+        console.error(e);
+        $('#detailContainer').html('<div class="alert alert-danger">Lỗi tải dữ liệu.</div>');
+      }
+    });
+  </script>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../../../public/asset/js/dvqt-map.js"></script>
+    <script src="../../../public/asset/js/dvqt-krud.js"></script>
+    <script src="../../../public/asset/js/dvqt-app.js"></script>
+    <script src="../../../public/asset/js/driveUtil.js"></script>
+    <script>window.BD_BASE = '../../';</script>
+    <script src="../../assets/js/shared/auth-nav.js"></script>
+    <script src="../../assets/js/public/booking-panel.js"></script>
+    <script src="../../assets/js/public/booking-detail-shared.js"></script>
+</body>
+
+</html>

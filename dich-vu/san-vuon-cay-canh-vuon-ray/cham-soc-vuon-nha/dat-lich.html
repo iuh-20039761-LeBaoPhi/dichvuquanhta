@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đặt Lịch Dịch Vụ - Chăm Sóc Vườn Nhà</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo1.jpg" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
+  
+  <style>
+    :root {
+      --primary: #2d5a27;
+      --secondary: #2ecc71;
+      --accent: #5d6dfc;
+      --bg: #f8f9fa;
+      --text: #333;
+      --border: #e9ecef;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px 0;
+    }
+
+    /* HEADER */
+    .header-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      width: 100%;
+    }
+
+    .brand-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .form-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    .booking-card {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      padding: 30px;
+    }
+
+    .form-section {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      color: var(--primary);
+    }
+
+    .section-title i { margin-right: 8px; }
+
+    .form-label { font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; }
+
+    .form-control {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 10px;
+      background-color: #fdfdfd;
+      font-size: 0.9rem;
+    }
+
+    .service-list-container {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #fdfdfd;
+    }
+
+    .service-item {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border-bottom: 1px solid #f1f1f1;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .service-item:last-child { border-bottom: none; }
+    .service-item:hover { background: #f1f8f1; }
+    .service-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 12px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .service-info { flex: 1; font-size: 0.9rem; }
+    .service-price-tag { font-weight: 700; color: var(--primary); float: right; }
+
+    .btn-map-group { display: flex; gap: 10px; margin-top: 10px; }
+    .btn-map {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      border-radius: 20px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .btn-choose-map { background-color: var(--secondary); }
+    .btn-current-loc { background-color: var(--accent); }
+
+    .attach-box {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .attach-btn-wrapper { flex: 1; text-align: center; }
+    .btn-attach {
+      width: 100%;
+      border: none;
+      padding: 10px;
+      border-radius: 20px;
+      color: white;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+    .btn-photo { background-color: var(--secondary); }
+    .btn-video { background-color: #34495e; }
+    .file-status {
+      background: #f8f9fa;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .price-box {
+      background: #f1f8f1;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .price-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.95rem; }
+    .price-total { border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; font-weight: 700; color: var(--primary); font-size: 1.2rem; }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .btn-submit {
+      flex: 2;
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 30px;
+      font-weight: 700;
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .btn-back {
+      flex: 1;
+      background-color: #6c757d;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      border-radius: 30px;
+      font-weight: 700;
+      transition: 0.3s;
+    }
+
+    .btn-submit:hover, .btn-back:hover { 
+      transform: translateY(-2px); 
+      opacity: 0.9;
+      color: white; 
+    }
+
+    .note-price { font-size: 0.8rem; color: #666; font-style: italic; }
+
+    /* CSS CHO MODAL */
+    .confirm-item { margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 8px; }
+    .confirm-label { font-weight: 700; color: #555; width: 130px; display: inline-block; }
+    .confirm-value { color: var(--primary); font-weight: 600; }
+
+    @media (max-width: 480px) {
+      .brand-name { font-size: 1.1rem; }
+      .brand-logo { width: 45px; height: 45px; }
+      .form-title { font-size: 1rem; }
+      .form-actions { flex-direction: column-reverse; }
+    }
+
+    /* Style bản đồ và nút vị trí đồng nhất hệ thống */
+.bk-map-btns { display: flex; gap: 8px; margin-top: 10px; }
+.btn-map, .btn-gps { 
+    flex: 1; padding: 10px; border-radius: 10px; border: none; 
+    font-weight: 600; font-size: 0.85rem; color: white; transition: 0.3s; 
+}
+.btn-map { background: #11998e; } /* Màu xanh Teal chuẩn */
+.btn-gps { background: #38ef7d; } /* Màu xanh lá chuẩn */
+#mapPickerEl { height: 300px; width: 100%; border-radius: 12px; margin-top: 10px; border: 1px solid #ddd; }
+
+/* Media Preview Grid cho ảnh và video */
+.media-preview-box { 
+    background: #f8fafc; border: 1px dashed #cbd5e1; 
+    border-radius: 12px; padding: 10px; min-height: 80px; 
+}
+.media-preview-grid { 
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); 
+    gap: 8px; 
+}
+.media-preview-item { 
+    position: relative; aspect-ratio: 1; border-radius: 8px; 
+    overflow: hidden; border: 1px solid #ddd; 
+}
+
+/* Nút chụp hình/quay video */
+.btn-capture-photo, .btn-capture-video { 
+    width: 100%; padding: 12px; border-radius: 12px; border: none; 
+    color: white; font-weight: 600; font-size: 0.85rem; 
+}
+.btn-capture-photo { background: #00b09b; }
+.btn-capture-video { background: #34495e; }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="booking-card">
+      
+      <div class="header-wrapper">
+        <div class="brand-row">
+          <img src="assets/images/logo1.jpg" class="brand-logo" alt="Logo 1">
+          <h1 class="brand-name">Chăm Sóc Vườn Nhà</h1>
+          <img src="assets/images/logo2.jpg" class="brand-logo" alt="Logo 2">
+        </div>
+        <div class="form-title text-center">Đăng Ký Đặt Lịch</div>
+      </div>
+
+      <form id="bookingForm">
+        <div class="mb-3">
+          <label class="form-label">Họ và tên khách hàng</label>
+          <input type="text" id="custName" class="form-control" placeholder="Nhập tên của bạn" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Địa chỉ Email</label>
+          <input type="email" id="custEmail" class="form-control" placeholder="example@gmail.com" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Số điện thoại liên hệ</label>
+          <input type="tel" id="custPhone" class="form-control" placeholder="Nhập số điện thoại" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Chọn các dịch vụ <span class="text-danger">*</span></label>
+          <div id="serviceCheckboxContainer" class="service-list-container">
+            <div class="p-2 text-muted">Đang tải danh sách dịch vụ...</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Diện tích (m²)</label>
+            <input type="number" id="gardenArea" class="form-control" placeholder="Nhập diện tích" min="1" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Ngày bắt đầu</label>
+            <input type="date" id="startDate" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Ghi chú yêu cầu</label>
+          <textarea id="note" class="form-control" rows="2" placeholder="Mô tả thêm về vấn đề cần sửa chữa..."></textarea>
+        </div>
+
+        <div class="form-section">
+    <div class="section-title"><i class="fa-solid fa-location-dot"></i> Địa chỉ</div>
+    <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+    <textarea id="diachi" class="form-control" rows="2" placeholder="Số nhà, tên đường..." required></textarea>
+    
+    <div class="bk-map-btns">
+        <button type="button" class="btn-map" id="btnbando" onclick="mapPicker.toggle()">
+            <i class="fas fa-map-marker-alt"></i> Chọn trên bản đồ
+        </button>
+        <button type="button" class="btn-gps" onclick="mapPicker.gps()">
+            <i class="fas fa-location-arrow"></i> Vị trí hiện tại
+        </button>
+    </div>
+    
+    <div id="mapPickerBox" style="display:none; margin-top:10px;">
+        <div id="mapPickerEl"></div>
+        <p class="text-muted small mt-1 mb-0">
+            <i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền
+        </p>
+    </div>
+</div>
+
+       <div class="form-section">
+    <div class="section-title"><i class="fa-solid fa-paperclip"></i> Đính kèm hình ảnh / video</div>
+    <div class="row g-2">
+        <div class="col-6">
+            <button type="button" id="btnchuphinh" class="btn-capture-photo" onclick="document.getElementById('inputhinhanh').click()">
+                <i class="fas fa-camera"></i> Chụp hình
+            </button>
+            <input type="file" id="inputhinhanh" accept="image/*" multiple style="display:none">
+            <div class="media-preview-box mt-2">
+                <div id="mediaPhotoPreviewContainer" class="media-preview-grid"></div>
+            </div>
+        </div>
+        <div class="col-6">
+            <button type="button" id="btnquayvideo" class="btn-capture-video" onclick="document.getElementById('inputvideo').click()">
+                <i class="fas fa-video"></i> Quay video
+            </button>
+            <input type="file" id="inputvideo" accept="video/*" style="display:none">
+            <div class="media-preview-box mt-2">
+                <div id="mediaVideoPreviewContainer" class="media-preview-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div class="price-box">
+          <div class="price-row"><span>Tiền dịch vụ (ước tính):</span><span id="txtBase">0đ</span></div>
+          <div class="price-row"><span>Phí dịch vụ (10%):</span><span id="txtCommission">0đ</span></div>
+          <div class="price-row price-total"><span>TỔNG THANH TOÁN:</span><span id="txtTotal">0đ</span></div>
+          <p class="note-price mt-2" id="txtPriceNote">* Giá thực tế có thể thay đổi tùy theo địa hình.</p>
+        </div>
+
+        <div class="form-actions">
+          <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left me-2"></i> Quay lại</a>
+          <button type="submit" id="btnBooking" class="btn-submit"><i class="fa-solid fa-circle-check me-2"></i> Đặt lịch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius: 15px; border: none;">
+        <div class="modal-header" style="background-color: var(--primary); color: white; border-radius: 15px 15px 0 0;">
+          <h5 class="modal-title"><i class="fa-solid fa-file-invoice me-2"></i>Xác nhận thông tin</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="confirmContent">
+          </div>
+        <div class="modal-footer" style="border-top: none;">
+          <button type="button" class="btn btn-secondary" style="border-radius: 20px;" data-bs-dismiss="modal">Chỉnh sửa</button>
+          <button type="button" id="btnFinalConfirm" class="btn btn-primary" style="background-color: var(--secondary); border: none; border-radius: 20px; padding: 8px 25px;">Xác nhận đặt ngay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_URL = "https://api.dvqt.vn";
+    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxrQd_YVBSSFaS964vOq0PxfB4YvNpEoYRRGdclpGTPEnIF6Z_0lmWuJqCKUxCwKO79/exec";
+
+    const $ = (id) => document.getElementById(id);
+    const toNum = (v) => isNaN(parseInt(v)) ? 0 : parseInt(v);
+
+    let myConfirmModal;
+
+    async function loadServices() {
+      const container = $('serviceCheckboxContainer');
+      try {
+        const res = await fetch('dich-vu.json');
+        const data = await res.json();
+        container.innerHTML = '';
+        
+        data.forEach(s => {
+          if(s.is_active) {
+            const div = document.createElement('div');
+            div.className = 'service-item';
+            div.innerHTML = `
+              <input type="checkbox" name="services" value="${s.name}" data-price="${s.price_m2_min}" onchange="updatePrice()">
+              <div class="service-info ms-2">
+                <span>${s.name}</span>
+                <span class="service-price-tag">${toNum(s.price_m2_min).toLocaleString()}đ/m²</span>
+              </div>
+            `;
+            container.appendChild(div);
+          }
+        });
+      } catch (e) {
+        container.innerHTML = '<div class="p-2 text-danger">Không thể tải dịch vụ.</div>';
+      }
+    }
+
+    function updatePrice() {
+      const checkboxes = document.querySelectorAll('input[name="services"]:checked');
+      const area = toNum($('gardenArea').value);
+      
+      let totalUnitPrice = 0;
+      checkboxes.forEach(cb => {
+        totalUnitPrice += toNum(cb.getAttribute('data-price'));
+      });
+
+      const base = totalUnitPrice * area;
+      const comm = Math.round(base * 0.1);
+      const total = base + comm;
+
+      $('txtBase').innerText = base.toLocaleString() + 'đ';
+      $('txtCommission').innerText = comm.toLocaleString() + 'đ';
+      $('txtTotal').innerText = total.toLocaleString() + 'đ';
+      
+      return { base, comm, total, area, selectedServices: Array.from(checkboxes).map(cb => cb.value) };
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const pricing = updatePrice();
+      
+      if (pricing.selectedServices.length === 0 || pricing.area <= 0) {
+        return alert("Vui lòng chọn ít nhất 1 dịch vụ và nhập diện tích.");
+      }
+
+      // Đổ dữ liệu vào Modal xác nhận
+      $('confirmContent').innerHTML = `
+        <div class="confirm-item"><span class="confirm-label">Khách hàng:</span> <span class="confirm-value">${$('custName').value}</span></div>
+        <div class="confirm-item"><span class="confirm-label">Điện thoại:</span> <span class="confirm-value">${$('custPhone').value}</span></div>
+        <div class="confirm-item"><span class="confirm-label">Dịch vụ:</span> <span class="confirm-value">${pricing.selectedServices.join(", ")}</span></div>
+        <div class="confirm-item"><span class="confirm-label">Diện tích:</span> <span class="confirm-value">${pricing.area} m²</span></div>
+        <div class="confirm-item"><span class="confirm-label">Ngày bắt đầu:</span> <span class="confirm-value">${$('startDate').value}</span></div>
+        <div class="confirm-item"><span class="confirm-label">Địa chỉ:</span> <span class="confirm-value">${$('address').value}</span></div>
+        <div class="confirm-item"><span class="confirm-label">Ghi chú:</span> <span class="confirm-value">${$('note').value || 'Không có'}</span></div>
+        <div class="mt-3 text-end"><h5 style="color:var(--primary)">Tổng: ${$('txtTotal').innerText}</h5></div>
+      `;
+
+      myConfirmModal.show();
+
+      // Sự kiện nhấn nút cuối cùng trong Modal
+      $('btnFinalConfirm').onclick = async function() {
+        this.disabled = true;
+        this.innerText = "ĐANG GỬI...";
+
+        // Trong hàm handleSubmit(e) của bạn, hãy cập nhật object 'data'
+const data = {
+    ten_khach: $('custName').value,
+    email: $('custEmail').value,
+    sdt: $('custPhone').value,
+    dia_chi: $('diachi').value, // Đảm bảo ID khớp với phần HTML mới
+    
+    // Dữ liệu bản đồ (Lấy từ script dvqt-map.js)
+    lat: window.currentLat || "", 
+    lng: window.currentLng || "",
+    
+    // Danh sách link ảnh/video (driveUtil.js tự động xử lý và lưu vào các biến này)
+    list_image: window.uploadedImages || [], 
+    list_video: window.uploadedVideos || [],
+    
+    dich_vu: pricing.selectedServices.join(", "),
+    dien_tich: pricing.area,
+    ngay_lam: $('startDate').value,
+    ghi_chu: $('note').value,
+    tong_tien: $('txtTotal').innerText,
+    sheet_type: "DAT_LICH_VUON"
+};
+
+        try {
+          await fetch(API_URL + "/krud/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: 'create', table: 'datlich_vuonnha', data: data })
+          });
+          await fetch(SHEET_API_URL, { method: "POST", mode: "cors", body: JSON.stringify(data) });
+          
+          myConfirmModal.hide();
+          alert("✅ Đặt lịch thành công!");
+          window.location.reload();
+        } catch (err) {
+          alert("Lỗi: " + err.message);
+          this.disabled = false;
+          this.innerText = "Xác nhận đặt ngay";
+        }
+      };
+    }
+
+   document.addEventListener('DOMContentLoaded', () => {
+    // 1. Khởi tạo Modal xác nhận (Logic cũ của bạn)
+    myConfirmModal = new bootstrap.Modal($('confirmModal'));
+
+    // 2. Tải danh sách dịch vụ từ JSON (Logic cũ của bạn)
+    loadServices();
+
+    // 3. Khởi tạo Bản đồ (Đồng bộ 100% với dvqt-map.js)
+    // Hệ thống sẽ tự tìm element 'mapPickerEl' và điền kết quả vào 'diachi'
+    if (typeof mapPicker !== 'undefined') {
+        mapPicker.init({
+            mapEl: 'mapPickerEl',
+            inputEl: 'diachi', // Lưu ý: Đảm bảo ID textarea địa chỉ của bạn là 'diachi'
+            latEl: 'lat',      // Nếu bạn có input ẩn lưu tọa độ
+            lngEl: 'lng'       // Nếu bạn có input ẩn lưu tọa độ
+        });
+    }
+
+    // 4. Khởi tạo Xử lý Media/Upload (Đồng bộ 100% với driveUtil.js)
+    // Tự động xử lý chọn ảnh, nén ảnh và hiển thị preview
+    if (typeof driveUtil !== 'undefined') {
+        driveUtil.init({
+            photoInput: 'inputhinhanh',           // ID input file ảnh
+            videoInput: 'inputvideo',            // ID input file video
+            photoPreview: 'mediaPhotoPreviewContainer', // ID nơi hiện ảnh preview
+            videoPreview: 'mediaVideoPreviewContainer'  // ID nơi hiện video preview
+        });
+    }
+
+    // 5. Các sự kiện lắng nghe (Event Listeners)
+    $('gardenArea').addEventListener('input', updatePrice);
+    $('bookingForm').addEventListener('submit', handleSubmit);
+
+    // 6. Logic xử lý nhúng (Nếu trang này nằm trong iframe của trang chi tiết)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('embedded')) {
+        document.body.classList.add('is-embedded');
+    }
+});
+    
+  </script>
+
+  <script>window.BD_BASE = '../../';</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="../../public/asset/js/dvqt-map.js"></script>
+<script src="../../public/asset/js/dvqt-krud.js"></script>
+<script src="../../public/asset/js/dvqt-app.js"></script>
+<script src="../../public/asset/js/driveUtil.js"></script>
+
+<script src="../assets/js/shared/auth-nav.js"></script>
+<script src="../assets/js/public/booking-panel.js"></script>
+<script src="../assets/js/public/booking-detail-shared.js"></script>
+<script src="../assets/js/public/booking-detail-standalone.js"></script>
+</body>
+</html>

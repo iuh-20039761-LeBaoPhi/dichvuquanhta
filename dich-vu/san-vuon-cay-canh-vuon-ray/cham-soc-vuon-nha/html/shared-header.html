@@ -1,0 +1,208 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-2">
+  <style>
+    :root {
+      /* MÀU XANH CẢNH QUAN CAO CẤP */
+      --primary-green: #1a4d2e; 
+      --hover-green: #4f6f52;
+      --soft-lime: #e8f3d6;
+      --text-dark: #2d3436;
+      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    /* Đổ bóng tinh tế cho Navbar */
+    .navbar {
+      backdrop-filter: blur(15px);
+      background-color: rgba(255, 255, 255, 0.96) !important;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(26, 77, 46, 0.05);
+      z-index: 1050;
+    }
+
+    .brand-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none !important;
+    }
+
+    .brand-text {
+      color: var(--primary-green);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    /* --- CÁCH ĐIỆU MENU LINKS --- */
+    .navbar-nav .nav-link {
+      color: var(--text-dark) !important;
+      position: relative !important; 
+      padding: 0.5rem 1rem !important;
+      transition: color 0.3s ease;
+      border-radius: 8px;
+      overflow: hidden; 
+    }
+
+    .navbar-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 5px;
+      left: 50%;
+      background-color: var(--primary-green);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .navbar-nav .nav-link:hover::after,
+    .navbar-nav .nav-link.active::after {
+      width: 60%;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: var(--primary-green) !important;
+      background-color: var(--soft-lime);
+    }
+
+    /* --- HIỆU ỨNG RIPPLE KHI CLICK --- */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(26, 77, 46, 0.2); 
+      transform: scale(0);
+      animation: ripple-animation 0.6s linear;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes ripple-animation {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Dropdown */
+    .dropdown-menu {
+      border-radius: 15px !important;
+      padding: 10px !important;
+      margin-top: 10px !important;
+      box-shadow: 0 10px 30px rgba(26, 77, 46, 0.1) !important;
+      border: 1px solid rgba(26, 77, 46, 0.05);
+    }
+
+    .dropdown-item {
+      border-radius: 8px !important;
+      padding: 8px 15px !important;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--soft-lime) !important;
+      color: var(--primary-green) !important;
+    }
+
+    .btn-user-nav {
+      background: white;
+      border: 1px solid #eee;
+      transition: all 0.3s ease;
+    }
+
+    .btn-user-nav:hover {
+      background: var(--soft-lime);
+      border-color: var(--primary-green);
+    }
+
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        background: white;
+        margin-top: 15px;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 15px 30px rgba(26, 77, 46, 0.1);
+      }
+      .navbar-nav { gap: 8px !important; }
+    }
+  </style>
+
+  <div class="container">
+    <div class="d-flex align-items-center">
+      <a class="brand-wrapper" href="../index.html">
+        <img style="width: 65px; height: auto;" src="assets/images/logo1.jpg" alt="logo-main" />
+      </a>
+      <span class="brand-text ms-2 d-none d-sm-block">Chăm Sóc Vườn Nhà</span>
+      <a class="brand-wrapper ms-2" href="index.html">
+        <img style="width: 65px; height: auto;" src="assets/images/logo2.jpg" alt="logo-sub" />
+      </a>
+    </div>
+
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav mx-auto align-items-center gap-1">
+        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="home" href="index.html">Trang Chủ</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="about" href="gioi-thieu.html">Giới Thiệu</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="services" href="dich-vu.html">Dịch Vụ</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="blog" href="bai-viet.html">Bài Viết</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="terms" href="dieu-khoan.html">Điều Khoản</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="contact" href="lien-he.html">Liên Hệ</a></li>
+      </ul>
+
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item" id="loginNavItem">
+          <a id="btnLoginCheck" 
+             href="../../../dichvuquanhta/public/dang-nhap.html?redirect=/dichvuquanhta/cham-soc-me-va-be/index.html" 
+             class="btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" 
+             style="background-color: var(--primary-green); transition: 0.3s;"
+             onmouseover="this.style.backgroundColor='var(--hover-green)'; this.style.transform='scale(1.05)'"
+             onmouseout="this.style.backgroundColor='var(--primary-green)'; this.style.transform='scale(1)'">
+             Đăng Nhập
+          </a>
+        </li>
+
+        <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
+          <div class="dropdown">
+            <button class="btn btn-user-nav rounded-pill px-2 py-1 d-inline-flex align-items-center gap-2 shadow-sm" 
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img id="navAvatar" src="assets/logomvb.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
+              <span id="navUserName" class="fw-bold small text-dark">Tài khoản</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0">
+              <li><a class="dropdown-item" id="navInvoiceLink" href="nhan-vien/danh-sach-hoa-don.php">
+                <i class="fas fa-file-invoice me-2"></i>Hóa đơn của bạn</a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="logout.html">
+                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav-link').forEach(button => {
+      button.addEventListener('click', function (e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        let ripples = document.createElement('span');
+        ripples.style.left = x + 'px';
+        ripples.style.top = y + 'px';
+        ripples.classList.add('ripple');
+        this.appendChild(ripples);
+
+        setTimeout(() => { ripples.remove(); }, 600);
+      });
+    });
+  </script>
+</nav>

@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Đang tải bài viết... - Chăm Sóc Vườn Nhà</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo1.jpg" />
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root { 
+        --primary-green: #1a4d2e; 
+        --accent-green: #4f6f52; 
+        --nature-white: #f9fbf9; 
+        --soft-lime: #e8f3d6; 
+        --transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    body { font-family: "Quicksand", sans-serif; background-color: #fff; padding-top: 96px; line-height: 1.8; color: #333; }
+    
+    /* --- HERO BANNER ĐỒNG NHẤT --- */
+    .page-banner {
+      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
+      padding: 140px 0 80px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(26, 77, 46, 0.05);
+    }
+
+    .page-banner::before {
+      content: "Reading";
+      position: absolute;
+      font-family: 'Playfair Display';
+      font-size: 15vw;
+      font-weight: 900;
+      color: rgba(26, 77, 46, 0.03);
+      top: 0; left: -2%;
+      z-index: 0;
+    }
+
+    .page-banner h2 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--primary-green);
+      font-size: 3.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Progress bar */
+    .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: transparent; z-index: 9999; }
+    .progress-bar { height: 5px; background: var(--primary-green); width: 0%; transition: width 0.1s; }
+
+    /* Nội dung bài viết */
+    .article-header { max-width: 850px; margin: 0 auto 30px; text-align: center; }
+    .article-header h1 { font-family: 'Playfair Display', serif; color: var(--primary-green); font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; margin: 20px 0; line-height: 1.3; }
+    
+    .main-thumb-wrapper { width: 100%; border-radius: 45px; overflow: hidden; margin-bottom: 40px; box-shadow: 0 20px 45px rgba(0,0,0,0.1); }
+    .main-thumb { width: 100%; max-height: 550px; object-fit: cover; display: block; }
+    
+    .content-area { max-width: 820px; margin: 0 auto; font-size: 1.15rem; }
+    .content-area p { margin-bottom: 25px; text-align: justify; }
+    .content-area img { max-width: 100%; border-radius: 25px; margin: 30px 0; }
+
+    /* Social & Sidebar */
+    .btn-share { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff !important; transition: 0.3s; }
+    .bg-fb { background: #3b5998; }
+    .bg-tw { background: #1da1f2; }
+    .bg-copy { background: #6c757d; }
+
+    .sidebar-sticky { position: sticky; top: 120px; }
+    .rel-card { border: none; border-radius: 20px; overflow: hidden; margin-bottom: 15px; padding: 12px; display: flex; gap: 15px; align-items: center; background: #fff; border: 1px solid #f0f0f0; transition: var(--transition); text-decoration: none !important; color: inherit !important; }
+    .rel-card:hover { transform: translateX(8px); border-color: var(--accent-green); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .rel-img { width: 80px; height: 80px; object-fit: cover; border-radius: 15px; }
+
+    #back-to-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: var(--primary-green); color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; border: none; z-index: 1000; }
+  </style>
+</head>
+<body>
+  <div class="progress-container"><div class="progress-bar" id="readingProgress"></div></div>
+
+  <div id="site-header"></div>
+
+  <section class="page-banner">
+    <div class="container position-relative">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-3">
+          <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-success">Trang chủ</a></li>
+          <li class="breadcrumb-item"><a href="bai-viet.html" class="text-decoration-none text-success">Bài viết</a></li>
+          <li class="breadcrumb-item active">Chi tiết</li>
+        </ol>
+      </nav>
+      <h2 class="fw-bold">Góc Chia Sẻ <span style="color: var(--accent-green)">Kiến Thức</span></h2>
+    </div>
+  </section>
+
+  <main class="py-5">
+    <div class="container">
+      <div class="row g-lg-5">
+        <div class="col-lg-8" id="main-article">
+          <div id="loading-spinner" class="text-center py-5">
+            <div class="spinner-border text-success" role="status"></div>
+            <p class="mt-2 text-muted fw-bold">Đang tải nội dung...</p>
+          </div>
+
+          <div id="article-data" style="display: none;">
+            <article class="article-header">
+              <span id="art-cat" class="badge bg-success px-4 py-2 rounded-pill mb-3"></span>
+              <h1 id="art-title"></h1>
+              
+              <div class="text-muted d-flex justify-content-center gap-4 small mb-4 fw-medium">
+                <span><i class="far fa-calendar-alt me-1 text-success"></i> <span id="art-date"></span></span>
+                <span><i class="far fa-eye me-1 text-success"></i> <span id="art-views"></span> lượt xem</span>
+                <span><i class="far fa-clock me-1 text-success"></i> <span id="art-time"></span> phút đọc</span>
+              </div>
+
+              <div class="d-flex gap-2 justify-content-center mb-5">
+                <a href="#" id="fb-link" target="_blank" class="btn-share bg-fb shadow-sm"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" id="tw-link" target="_blank" class="btn-share bg-tw shadow-sm"><i class="fab fa-twitter"></i></a>
+                <div onclick="copyLink()" class="btn-share bg-copy shadow-sm" style="cursor: pointer;"><i class="fas fa-link"></i></div>
+              </div>
+            </article>
+
+            <div class="main-thumb-wrapper">
+              <img id="art-image" src="" class="main-thumb" alt="Bài viết">
+            </div>
+
+            <div class="content-area" id="art-body"></div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="sidebar-sticky">
+            <div class="p-4 rounded-4 shadow-sm border bg-white">
+              <h5 class="fw-bold mb-4" style="color: var(--primary-green); font-family: 'Playfair Display', serif;">
+                <i class="fas fa-leaf me-2 text-success"></i>Bài viết liên quan
+              </h5>
+              <div id="related-list"></div>
+            </div>
+            
+            <div class="mt-4 p-5 rounded-4 text-white text-center shadow-lg" style="background: linear-gradient(135deg, var(--primary-green), var(--accent-green));">
+              <h5 class="fw-bold">Cần tư vấn ngay?</h5>
+              <p class="small opacity-75">Liên hệ nghệ nhân để khảo sát không gian miễn phí.</p>
+              <a href="lien-he.html" class="btn btn-light rounded-pill fw-bold px-4 mt-2 py-2">LIÊN HỆ NGAY</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <div id="toast-msg" style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 25px; border-radius: 50px; display: none; z-index: 9999;">Đã sao chép liên kết!</div>
+  <button id="back-to-top"><i class="fas fa-chevron-up"></i></button>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      const params = new URLSearchParams(window.location.search);
+      const postId = parseInt(params.get('id'));
+
+      if (!postId) { window.location.href = 'bai-viet.html'; return; }
+
+      $.getJSON('bai-viet.json').done(function(data) {
+          const post = data.find(p => p.id === postId);
+          if (post) {
+            renderFullArticle(post);
+            renderRelated(data, post.category, post.id);
+            setupShareLinks(post.title);
+            $('#loading-spinner').hide();
+            $('#article-data').fadeIn(600);
+          } else {
+            $('#main-article').html('<div class="alert alert-warning">Bài viết không tồn tại.</div>');
+          }
+      });
+
+      $(window).scroll(function() {
+        let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        let scrolled = (winScroll / height) * 100;
+        $("#readingProgress").css("width", scrolled + "%");
+        if ($(this).scrollTop() > 400) $('#back-to-top').fadeIn(); else $('#back-to-top').fadeOut();
+      });
+
+      $('#back-to-top').click(function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    });
+
+    function renderFullArticle(p) {
+      document.title = p.title + " - Chăm Sóc Vườn Nhà";
+      $('#art-title').text(p.title);
+      $('#art-cat').text(p.category);
+      $('#art-date').text(p.date || 'Gần đây');
+      $('#art-views').text(p.views || '1.025');
+      $('#art-time').text(p.readingTime || 5);
+      
+      const imgTarget = $('#art-image');
+      imgTarget.attr('src', 'assets/blog/' + p.image);
+      imgTarget.on('error', function() { $(this).attr('src', 'assets/images/default-blog.jpg'); });
+
+      $('#art-body').html(p.content);
+    }
+
+    function setupShareLinks(title) {
+      const url = encodeURIComponent(window.location.href);
+      $('#fb-link').attr('href', `https://www.facebook.com/sharer/sharer.php?u=${url}`);
+      $('#tw-link').attr('href', `https://twitter.com/intent/tweet?url=${url}&text=${encodeURIComponent(title)}`);
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        $('#toast-msg').fadeIn().delay(2000).fadeOut();
+      });
+    }
+
+    function renderRelated(all, cat, currentId) {
+      const related = all.filter(p => p.category === cat && p.id !== currentId).slice(0, 5);
+      const html = related.map(p => `
+        <a href="chi-tiet-bai-viet.html?id=${p.id}" class="rel-card">
+          <img src="assets/images/${p.image}" class="rel-img" onerror="this.src='assets/images/default-blog-sm.jpg'">
+          <div>
+            <h6 class="fw-bold mb-1 small">${p.title}</h6>
+            <span class="text-muted" style="font-size:0.7rem"><i class="far fa-calendar-alt me-1"></i>${p.date || 'Tin mới'}</span>
+          </div>
+        </a>
+      `).join('');
+      $('#related-list').html(html || '<p class="text-muted small">Không có bài viết liên quan.</p>');
+    }
+  </script>
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../../../public/asset/js/dvqt-map.js"></script>
+    <script src="../../../public/asset/js/dvqt-krud.js"></script>
+    <script src="../../../public/asset/js/dvqt-app.js"></script>
+    <script src="../../../public/asset/js/driveUtil.js"></script>
+<script src="../../assets/js/public/booking-detail-shared.js"></script>
+<script src="../../assets/js/public/booking-detail-modal.js"></script>
+<script src="../../assets/js/public/booking-detail-standalone.js"></script>
+<script src="../../assets/js/public/booking-detail.js"></script>
+<script>window.BD_BASE = '../../';</script>
+<script src="../../assets/js/public/booking-panel.js"></script>
+<script src="../../assets/js/shared/auth-nav.js"></script>
+</body>
+</html>

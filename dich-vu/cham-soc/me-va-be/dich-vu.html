@@ -256,7 +256,7 @@
         <div class="modal-header border-0"
           style="background: linear-gradient(135deg, #ffe1ec 0%, #ffffff 50%, #f7e0f4 100%);">
           <h5 class="modal-title fw-bold booking-modal-title">
-            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3 brand-logo" href="../index.html"
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3 brand-logo" href="../../../index.html"
               style="color: #f06292">
               <img src="assets/logo.png" alt="cham-soc-me-va-be" />
             </a>
@@ -358,11 +358,11 @@
           var mediaHTML = '';
           if (isDriveId && service.image) {
             mediaHTML = '<div class="rounded-4 shadow-lg w-100 overflow-hidden position-relative" style="aspect-ratio: 4/3;">' +
-                          '<iframe src="https://drive.google.com/file/d/' + encodeURIComponent(service.image) + '/preview" ' +
-                            'class="position-absolute w-100 h-100" ' +
-                            'style="top:0; left:0; border:none; pointer-events:none; transform: scale(1.45); transform-origin: center;" ' +
-                            'scrolling="no" loading="lazy"></iframe>' +
-                        '</div>';
+              '<iframe src="https://drive.google.com/file/d/' + encodeURIComponent(service.image) + '/preview" ' +
+              'class="position-absolute w-100 h-100" ' +
+              'style="top:0; left:0; border:none; pointer-events:none; transform: scale(1.45); transform-origin: center;" ' +
+              'scrolling="no" loading="lazy"></iframe>' +
+              '</div>';
           } else {
             mediaHTML = '<img src="' + (service.image || '') + '" alt="' + serviceAlt + '" class="img-fluid rounded-4 shadow-lg w-100" style="aspect-ratio: 4/3; object-fit: cover; border: none;">';
           }

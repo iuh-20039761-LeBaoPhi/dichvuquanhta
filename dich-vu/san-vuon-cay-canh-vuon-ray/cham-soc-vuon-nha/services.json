@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "name": "Chăm sóc vườn nhà cơ bản",
+    "description": "Dịch vụ chăm sóc vườn nhà toàn diện bao gồm cắt tỉa, bón phân, tưới nước và kiểm soát sâu bệnh.",
+    "pricing": [
+      {
+        "label": "Gói ngày (8h)",
+        "value": 500000,
+        "hours": 8,
+        "type": "day"
+      },
+      {
+        "label": "Gói buổi sáng (4h)",
+        "value": 300000,
+        "hours": 4,
+        "type": "morning"
+      },
+      {
+        "label": "Gói buổi chiều (4h)",
+        "value": 300000,
+        "hours": 4,
+        "type": "afternoon"
+      }
+    ],
+    "includes": [
+      "Cắt tỉa cây cối",
+      "Bón phân hữu cơ",
+      "Tưới nước tự động",
+      "Kiểm soát sâu bệnh",
+      "Vệ sinh vườn"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Thiết kế và cải tạo vườn",
+    "description": "Thiết kế và cải tạo không gian vườn theo phong cách hiện đại, tạo điểm nhấn thẩm mỹ.",
+    "pricing": [
+      {
+        "label": "Gói thiết kế cơ bản",
+        "value": 2000000,
+        "hours": 16,
+        "type": "day_full"
+      },
+      {
+        "label": "Gói cải tạo toàn diện",
+        "value": 5000000,
+        "hours": 40,
+        "type": "day_full"
+      }
+    ],
+    "includes": [
+      "Thiết kế layout vườn",
+      "Chọn giống cây phù hợp",
+      "Cải tạo đất",
+      "Lắp đặt hệ thống tưới",
+      "Trang trí điểm nhấn"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Hệ thống tưới tự động",
+    "description": "Lắp đặt và bảo trì hệ thống tưới nước thông minh cho vườn nhà.",
+    "pricing": [
+      {
+        "label": "Gói lắp đặt cơ bản",
+        "value": 1500000,
+        "hours": 12,
+        "type": "day"
+      },
+      {
+        "label": "Gói thông minh IoT",
+        "value": 3000000,
+        "hours": 24,
+        "type": "day_full"
+      }
+    ],
+    "includes": [
+      "Khảo sát và thiết kế",
+      "Lắp đặt đường ống",
+      "Cài đặt van tự động",
+      "Kết nối ứng dụng",
+      "Đào tạo sử dụng"
+    ]
+  }
+]
