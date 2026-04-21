@@ -18,7 +18,7 @@ document.querySelectorAll(".service-item").forEach((card) => {
 document.addEventListener("DOMContentLoaded", function () {
   const navbarCollapse = document.getElementById("navbarNav");
   const closeMenuLinks = document.querySelectorAll(
-    "#navbarNav .nav-link:not(.dropdown-toggle), #navbarNav .dropdown-item"
+    "#navbarNav .nav-link:not(.dropdown-toggle), #navbarNav .dropdown-item:not(.dropdown-toggle)"
   );
 
   closeMenuLinks.forEach(function (link) {
