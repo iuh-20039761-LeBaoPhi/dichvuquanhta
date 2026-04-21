@@ -606,28 +606,31 @@
                         const helper = window.DVQTBookingHelper;
                         if (helper) {
                             accountResult = await helper.autoCreateOrFindAccount(custName, custPhone);
-                            console.log('📝 TX Account result (Helper):', accountResult);
                         } else {
-                            // Fallback nếu helper chưa nạp
                             accountResult = await _txAutoCreateOrFindAccount(custName, custPhone);
                         }
                     }
 
-                    // BƯỚC 2: Tải file lên Drive (nếu có)
+                    // BƯỚC 2: Tải file lên Drive (CATCH lỗi không làm dừng các bước sau)
                     let driveIds = [];
-                    if (_modalMediaFiles.length > 0) {
-                        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tải ảnh...';
-                        for (const m of _modalMediaFiles) {
-                            try {
-                                const up = await DVQTApp.uploadFile(m.file);
-                                if (up && up.success) driveIds.push(up.fileId);
-                            } catch (err) {
-                                console.warn('Upload failed for 1 file:', err);
+                    try {
+                        if (_modalMediaFiles && _modalMediaFiles.length > 0) {
+                            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tải ảnh...';
+                            for (const m of _modalMediaFiles) {
+                                try {
+                                    const up = await DVQTApp.uploadFile(m.file);
+                                    if (up && up.success) driveIds.push(up.fileId);
+                                } catch (err) {
+                                    console.warn('Upload failed for 1 file:', err);
+                                }
                             }
                         }
+                    } catch (e) {
+                        console.error('Lỗi Google Drive:', e);
                     }
 
-                    // BƯỚC 3: Gửi đơn đặt xe
+                    // BƯỚC 3: Gửi đơn đặt xe (Bắt buộc thành công)
+                    let rawId = null;
                     const nowStr = new Date().toISOString().slice(0, 19).replace('T', ' ');
                     const payload = {
                         id_nguoidung: accountResult?.userId || s?.id || null,
@@ -651,39 +654,52 @@
                         ngaydat: nowStr,
                         created_at: nowStr
                     };
-                    const res = await DVQTKrud.insertRow('datlich_thuexe', payload);
-                    const rawId = res ? (res.id || (res.data && res.data.id)) : null;
-                    const orderCodePadded = rawId ? String(rawId).padStart(7, '0') : "N/A";
 
-                    // Gửi lên Google Sheet (fire-and-forget)
-                    if (window.saveToGoogleSheet) {
-                        const sheetData = buildSheetData({
-                            customer_name: custName,
-                            customer_phone: custPhone,
-                            customer_email: form.customer_email.value,
-                            car_name: car.tenxe,
-                            pickup_date: pickupDateVal,
-                            pickup_time: document.getElementById('pickupTime')?.value || '08:00',
-                            return_date: returnDateVal,
-                            return_time: document.getElementById('returnTime')?.value || '08:00',
-                            customer_address: form.customer_address.value,
-                            notes: form.notes.value,
-                            days: days,
-                            price_per_day: pricePerDay,
-                            addon_total: addonTotal,
-                            total_cost: totalCost,
-                            addon_names: addonNames
-                        }, rawId);
-                        window.saveToGoogleSheet(sheetData).catch(e => console.error('Gửi Sheet thất bại:', e));
+                    try {
+                        const res = await DVQTKrud.insertRow('datlich_thuexe', payload);
+                        rawId = res ? (res.id || (res.data && res.data.id)) : null;
+                        if (!rawId) throw new Error('Hệ thống không thể tiếp nhận yêu cầu.');
+                    } catch (err) {
+                        console.error('Database error:', err);
+                        Swal.fire('Lỗi Database', err?.message || 'Không thể gửi đơn hàng vào hệ thống', 'error');
+                        this.disabled = false;
+                        this.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
+                        return;
                     }
 
-                    // BƯỚC 4: Xử lý kết quả
+                    // BƯỚC 4: Gửi lên Google Sheet (CATCH lỗi không làm dừng flow)
+                    try {
+                        if (window.saveToGoogleSheet) {
+                            const sheetData = buildSheetData({
+                                customer_name: custName,
+                                customer_phone: custPhone,
+                                customer_email: form.customer_email.value,
+                                car_name: car.tenxe,
+                                pickup_date: pickupDateVal,
+                                pickup_time: document.getElementById('pickupTime')?.value || '08:00',
+                                return_date: returnDateVal,
+                                return_time: document.getElementById('returnTime')?.value || '08:00',
+                                customer_address: form.customer_address.value,
+                                notes: form.notes.value,
+                                days: days,
+                                price_per_day: pricePerDay,
+                                addon_total: addonTotal,
+                                total_cost: totalCost,
+                                addon_names: addonNames
+                            }, rawId);
+                            window.saveToGoogleSheet(sheetData).catch(e => console.error('Gửi Sheet thất bại:', e));
+                        }
+                    } catch (e) {
+                        console.error('Lỗi Google Sheet:', e);
+                    }
+
+                    // BƯỚC 5: Xử lý kết quả thành công
+                    const orderCodePadded = String(rawId).padStart(7, '0');
                     if (window.DVQTBookingHelper) {
                         const helper = window.DVQTBookingHelper;
                         const redirectUrl = 'khachhang/trang-ca-nhan.html';
                         await helper.showSuccessAlert(accountResult || {isNew:false}, custPhone, orderCodePadded, redirectUrl);
                     } else {
-                        // Fallback cũ
                         if (accountResult && accountResult.isNew) {
                             try { await DVQTApp.login(custPhone, custPhone); } catch(_e) {}
                             await Swal.fire({
@@ -707,11 +723,12 @@
                         }
                     }
                 } catch(err) {
-                    console.error('Booking error:', err);
-                    Swal.fire('Lỗi', err?.message || 'Không thể gửi đơn hàng', 'error');
+                    console.error('Booking flow error:', err);
+                    Swal.fire('Lỗi', 'Có lỗi xảy ra trong quá trình xử lý đơn hàng.', 'error');
+                } finally {
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
                 }
-                this.disabled = false;
-                this.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
             };
             
             document.getElementById('txConfirmBackBtn').onclick = () => {

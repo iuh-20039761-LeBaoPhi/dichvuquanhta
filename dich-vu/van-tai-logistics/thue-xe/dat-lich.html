@@ -1352,55 +1352,55 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                 };
             }
             
+            const { _days: days, _totalPrice: totalPrice, ...bookingData } = _standalonePending;
+            
+            // Chuẩn bị payload theo cấu trúc bảng datlich_thuexe
+            const now = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            const nowStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+            const payload = {
+                id_nguoidung: (_standaloneSession && _standaloneSession.logged_in) ? _standaloneSession.id : null,
+                tenkhachhang:      bookingData.customer_name,
+                sdtkhachhang:      bookingData.customer_phone,
+                emailkhachhang:    bookingData.customer_email,
+                id_xe:             bookingData.car_id,
+                ten_xe:            bookingData.car_name,
+                ngay_nhan_yeu_cau: bookingData.pickup_date,
+                ngay_tra_yeu_cau:  bookingData.return_date,
+                gio_nhan_yeu_cau:  bookingData.pickup_time,
+                gio_tra_yeu_cau:   bookingData.return_time,
+                diachikhachhang:   bookingData.customer_address,
+                ghi_chu:           bookingData.notes,
+                dich_vu_kem:       JSON.stringify(bookingData.addon_payload || {
+                  names: bookingData.addon_services || [],
+                  items: bookingData.addon_details || [],
+                  total: bookingData.addon_total || 0
+                }),
+                so_ngay_thue:      days,
+                gia_thue_nhat:     bookingData.price_per_day,
+                tong_tien_dich_vu: bookingData.addon_total,
+                tong_tien:         totalPrice,
+                ngaydat:           nowStr,
+                created_at:        nowStr
+            };
+
+            // 1. Tự động tạo/tìm tài khoản (Dùng Helper dùng chung)
+            let accountResult = null;
+            const isLoggedIn = !!(_standaloneSession && _standaloneSession.logged_in);
+            if (!isLoggedIn && window.DVQTBookingHelper) {
+                const custName = bookingData.customer_name;
+                const custPhone = bookingData.customer_phone;
+                accountResult = await window.DVQTBookingHelper.autoCreateOrFindAccount(custName, custPhone);
+            }
+
+            // 2. Gắn ID người dùng và ID XE vào payload
+            payload.id_nguoidung = accountResult?.userId || _standaloneSession?.id || null;
+            payload.id_xe = _standaloneSelectedCarId || bookingData.car_id || _standaloneFallbackCarId || null;
+
+            // 3. Tải file media lên Drive (CATCH lỗi không để làm dừng các bước khác)
+            let driveIds = [];
             try {
-                const { _days: days, _totalPrice: totalPrice, ...bookingData } = _standalonePending;
-                
-                // Chuẩn bị payload theo cấu trúc bảng datlich_thuexe
-                const now = new Date();
-                const pad = (n) => String(n).padStart(2, '0');
-                const nowStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-
-                const payload = {
-                    id_nguoidung: (_standaloneSession && _standaloneSession.logged_in) ? _standaloneSession.id : null,
-                    tenkhachhang:      bookingData.customer_name,
-                    sdtkhachhang:      bookingData.customer_phone,
-                    emailkhachhang:    bookingData.customer_email,
-                    id_xe:             bookingData.car_id,
-                    ten_xe:            bookingData.car_name,
-                    ngay_nhan_yeu_cau: bookingData.pickup_date,
-                    ngay_tra_yeu_cau:  bookingData.return_date,
-                    gio_nhan_yeu_cau:  bookingData.pickup_time,
-                    gio_tra_yeu_cau:   bookingData.return_time,
-                    diachikhachhang:   bookingData.customer_address,
-                    ghi_chu:           bookingData.notes,
-                    dich_vu_kem:       JSON.stringify(bookingData.addon_payload || {
-                      names: bookingData.addon_services || [],
-                      items: bookingData.addon_details || [],
-                      total: bookingData.addon_total || 0
-                    }),
-                    so_ngay_thue:      days,
-                    gia_thue_nhat:     bookingData.price_per_day,
-                    tong_tien_dich_vu: bookingData.addon_total,
-                    tong_tien:         totalPrice,
-                    ngaydat:           nowStr,
-                    created_at:        nowStr
-                };
-
-                // 1. Tự động tạo/tìm tài khoản (Dùng Helper dùng chung)
-                let accountResult = null;
-                const isLoggedIn = !!(_standaloneSession && _standaloneSession.logged_in);
-                if (!isLoggedIn && window.DVQTBookingHelper) {
-                    const custName = bookingData.customer_name;
-                    const custPhone = bookingData.customer_phone;
-                    accountResult = await window.DVQTBookingHelper.autoCreateOrFindAccount(custName, custPhone);
-                }
-
-                // 2. Gắn ID người dùng và ID XE vào payload
-                payload.id_nguoidung = accountResult?.userId || _standaloneSession?.id || null;
-                payload.id_xe = _standaloneSelectedCarId || bookingData.car_id || _standaloneFallbackCarId || null;
-
-                // 3. Tải file media lên Drive (nếu có)
-                let driveIds = [];
                 if (_standaloneMediaFiles && _standaloneMediaFiles.length > 0) {
                     confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tải dữ liệu đính kèm...';
                     for (const m of _standaloneMediaFiles) {
@@ -1414,51 +1414,62 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                         }
                     }
                 }
+            } catch (e) {
+                console.error("Lỗi Google Drive:", e);
+            }
+            payload.hinh_anh = driveIds.join(',');
 
-                // 4. Gọi API Krud
-                payload.hinh_anh = driveIds.join(',');
+            // 4. Lưu DB (Bắt buộc thành công)
+            let rawId = null;
+            try {
                 const result = await DVQTKrud.insertRow('datlich_thuexe', payload);
-                
                 if (result) {
-                    const rawId = result.id || (result.data && result.data.id) || "N/A";
-                    const orderCodePadded = String(rawId).padStart(7, '0');
-                    
-                    // 4. Lưu vào Google Sheet (fire-and-forget)
-                    if (window.saveToGoogleSheet) {
-                        const sheetPayload = buildCarBookingSheetPayload(_standalonePending, rawId);
-                        window.saveToGoogleSheet(sheetPayload).catch(e => console.error("Gửi Sheet thất bại:", e));
-                    }
-                    
-                    document.getElementById('txBookingConfirm').style.display = 'none';
-                    document.getElementById('bookingFormFull').style.display  = '';
-                    const carSelectorEl = document.getElementById('standaloneCarSelector');
-                    if (carSelectorEl) carSelectorEl.style.display = '';
-
-                    // 4. Thông báo thành công chuyên nghiệp (Dùng Helper)
-                    if (window.DVQTBookingHelper) {
-                        const redirectUrl = 'khachhang/trang-ca-nhan.html';
-                        await window.DVQTBookingHelper.showSuccessAlert(accountResult || {isNew:false}, bookingData.customer_phone, orderCodePadded, redirectUrl);
-                    } else {
-                        Swal.fire('Thành công!', `Đơn hàng #${orderCodePadded} đã được nhận.`, 'success')
-                            .then(() => window.location.href = 'khachhang/trang-ca-nhan.html');
-                    }
-
-                    document.getElementById('bookingFormFull').reset();
-                    _standaloneMediaFiles = [];
-                    ['txMediaPhotoPreviewContainer','txMediaVideoPreviewContainer'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.innerHTML = '';
-                    });
-                    _standalonePending = null;
+                    rawId = result.id || (result.data && result.data.id);
                 } else {
                     throw new Error('Hệ thống không thể tiếp nhận yêu cầu đặt xe lúc này.');
                 }
             } catch (err) {
-                showAlert(`<i class="fas fa-exclamation-triangle me-2"></i>Lỗi: ${err.message}`, 'danger');
-            } finally {
+                showAlert(`<i class="fas fa-exclamation-triangle me-2"></i>Lỗi Database: ${err.message}`, 'danger');
                 confirmBtn.disabled = false;
                 confirmBtn.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
+                return;
             }
+
+            // 5. Lưu vào Google Sheet (CATCH lỗi không làm dừng flow)
+            try {
+                if (window.saveToGoogleSheet) {
+                    const sheetPayload = buildCarBookingSheetPayload(_standalonePending, rawId);
+                    window.saveToGoogleSheet(sheetPayload).catch(e => console.error("Gửi Sheet thất bại:", e));
+                }
+            } catch (e) {
+                console.error("Lỗi Google Sheet:", e);
+            }
+
+            // 6. Xử lý kết quả thành công
+            const orderCodePadded = String(rawId || "N/A").padStart(7, '0');
+            
+            document.getElementById('txBookingConfirm').style.display = 'none';
+            document.getElementById('bookingFormFull').style.display  = '';
+            const carSelectorEl = document.getElementById('standaloneCarSelector');
+            if (carSelectorEl) carSelectorEl.style.display = '';
+
+            if (window.DVQTBookingHelper) {
+                const redirectUrl = 'khachhang/trang-ca-nhan.html';
+                await window.DVQTBookingHelper.showSuccessAlert(accountResult || {isNew:false}, bookingData.customer_phone, orderCodePadded, redirectUrl);
+            } else {
+                Swal.fire('Thành công!', `Đơn hàng #${orderCodePadded} đã được nhận.`, 'success')
+                    .then(() => window.location.href = 'khachhang/trang-ca-nhan.html');
+            }
+
+            document.getElementById('bookingFormFull').reset();
+            _standaloneMediaFiles = [];
+            ['txMediaPhotoPreviewContainer','txMediaVideoPreviewContainer'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = '';
+            });
+            _standalonePending = null;
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
         });
     });
 })();

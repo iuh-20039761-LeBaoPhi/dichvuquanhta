@@ -184,14 +184,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         '1': { icon: 'fa-baby', color: '#db2777', bg: '#fdf2f8', link: '../dich-vu/cham-soc/me-va-be/admin_mevabe/index.php', desc: 'Quản lý dịch vụ hỗ trợ phụ sản và trẻ sơ sinh' },
         '2': { icon: 'fa-hospital-user', color: '#0d9488', bg: '#f0fdfa', link: '../dich-vu/cham-soc/nguoi-benh/admin_nguoibenh/index.php', desc: 'Dịch vụ hỗ trợ y tế, chăm sóc tại nhà viện' },
         '3': { icon: 'fa-wheelchair', color: '#ea580c', bg: '#fff7ed', link: '../dich-vu/cham-soc/nguoi-gia/admin_nguoigia/index.php', desc: 'Cung cấp chuyên viên chăm lo người cao tuổi' },
-        '4': { icon: 'fa-leaf', color: '#65a30d', bg: '#f7fee7', link: '#', desc: 'Cắt cỏ, dọn dẹp và chăm sóc cây cảnh' },
+        '4': { icon: 'fa-leaf', color: '#65a30d', bg: '#f7fee7', link: '../dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/admin/index.php', desc: 'Cắt cỏ, dọn dẹp và chăm sóc cây cảnh' },
         '5': { icon: 'fa-broom', color: '#0284c7', bg: '#e0f2fe', link: '../dich-vu/ve-sinh/tap-vu-lau/don-ve-sinh/admin_donvesinh/index.php', desc: 'Giúp việc nhà và vệ sinh công nghiệp' },
-        '6': { icon: 'fa-id-card', color: '#4b5563', bg: '#f3f4f6', link: '#', desc: 'Dịch vụ tìm tài xế lái xe an toàn' },
-        '7': { icon: 'fa-motorcycle', color: '#ca8a04', bg: '#fefce8', link: '#', desc: 'Dịch vụ gọi shipper nhận và chuyển đồ hỏa tốc' },
+        '6': { icon: 'fa-id-card', color: '#4b5563', bg: '#f3f4f6', link: '../dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/admin/index.php', desc: 'Dịch vụ tìm tài xế lái xe an toàn' },
+        '7': { icon: 'fa-motorcycle', color: '#ca8a04', bg: '#fefce8', link: '../dich-vu/van-tai-logistics/giao-hang-nhanh/admin-giaohang/index.php', desc: 'Dịch vụ gọi shipper nhận và chuyển đồ hỏa tốc' },
         '8': { icon: 'fa-wrench', color: '#dc2626', bg: '#fef2f2', link: '../dich-vu/sua-chua/sua-xe-luu-dong/admin/index.html', desc: 'Cứu hộ, vá săm lốp và sửa xe tận nơi' },
         '9': { icon: 'fa-tools', color: '#10b981', bg: '#ecfdf5', link: '../dich-vu/sua-chua/tho-nha/admin_thonha/quan-tri.html', desc: 'Dịch vụ gọi thợ sửa chữa, bảo trì tại gia' },
-        '10': { icon: 'fa-car-side', color: '#3b82f6', bg: '#eff6ff', link: '../dich-vu/van-tai-logistics/thue-xe/views/pages/admin/quan-tri.html', desc: 'Hệ thống cho thuê xe du lịch, tự lái' },
-        '11': { icon: 'fa-tshirt', color: '#4f46e5', bg: '#e0e7ff', link: '../dich-vu/giat-ui/giat-ui-nhanh/admin/index.html', desc: 'Đội ngũ đến nhận giặt sấy đồ cấp tốc tận nhà' }
+        '10': { icon: 'fa-car-side', color: '#3b82f6', bg: '#eff6ff', link: '../dich-vu/van-tai-logistics/thue-xe/admin/quan-tri.html', desc: 'Hệ thống cho thuê xe du lịch, tự lái' },
+        '11': { icon: 'fa-tshirt', color: '#4f46e5', bg: '#e0e7ff', link: '../dich-vu/giat-ui/giat-ui-nhanh/admin/index.html', desc: 'Đội ngũ đến nhận giặt sấy đồ cấp tốc tận nhà' },
+        '12': { icon: 'fa-truck-loading', color: '#1b4332', bg: '#f0fdf4', link: '../dich-vu/van-tai-logistics/dich-vu-chuyen-don/admin-chuyendon/index.php', desc: 'Dịch vụ chuyển dọn nhà và văn phòng trọn gói' }
     };
     const defaultConfig = { icon: 'fa-box', color: '#6366f1', bg: '#e0e7ff', link: '#', desc: 'Phân hệ dịch vụ mở rộng mới' };
 
@@ -207,6 +208,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (cardsContainer) cardsContainer.innerHTML = '<p class="text-muted w-100 mt-4 text-center">Chưa có dịch vụ nào.</p>';
                 return;
             }
+
+            // Sắp xếp dữ liệu theo thứ tự hiển thị tại Trang chủ
+            // 1:Mẹ Bé, 3:Người Già, 2:Người Bệnh, 5:Vệ Sinh, 4:Vườn Nhà, 11:Giặt Ủi, 7:Giao Hàng, 12:Chuyển Dọn, 10:Thuê Xe, 6:Lái Xe Hộ, 8:Sửa Xe, 9:Thợ Nhà
+            const displayOrder = [1, 3, 2, 5, 4, 11, 7, 12, 10, 6, 8, 9];
+            data.sort((a, b) => {
+                const idxA = displayOrder.indexOf(parseInt(a.id));
+                const idxB = displayOrder.indexOf(parseInt(b.id));
+                // Nếu không nằm trong displayOrder (Sẽ đẩy về sau)
+                const valA = idxA === -1 ? 999 : idxA;
+                const valB = idxB === -1 ? 999 : idxB;
+                return valA - valB;
+            });
 
             // Xây dựng bảng Data Quản lý
             tbody.innerHTML = data.map(item => `

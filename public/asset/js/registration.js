@@ -8,19 +8,23 @@
 /* ================================================================
    CẤU HÌNH DỊCH VỤ – id_dichvu tương ứng từ 1 đến 11
    ================================================================ */
-const REG_SERVICES = [
-    { id: 1,  key: 'mevabe',        name: 'Chăm sóc mẹ và bé',   icon: 'fas fa-baby',          color: '#ec4899' },
-    { id: 2,  key: 'nguoibenh',     name: 'Chăm sóc người bệnh',  icon: 'fas fa-hospital-user', color: '#ef4444' },
-    { id: 3,  key: 'nguoigia',      name: 'Chăm sóc người già',    icon: 'fas fa-person-cane',   color: '#f97316' },
-    { id: 4,  key: 'vuonnha',       name: 'Làm vườn',              icon: 'fas fa-leaf',          color: '#22c55e' },
-    { id: 5,  key: 'donvesinh',     name: 'Dọn vệ sinh',           icon: 'fas fa-broom',         color: '#14b8a6' },
-    { id: 6,  key: 'laixeho',       name: 'Lái xe hộ',             icon: 'fas fa-car',           color: '#3b82f6' },
-    { id: 7,  key: 'giaohangnhanh', name: 'Giao hàng nhanh',       icon: 'fas fa-truck-fast',    color: '#6366f1' },
-    { id: 8,  key: 'suaxe',         name: 'Sửa xe',                icon: 'fas fa-motorcycle',    color: '#8b5cf6' },
-    { id: 9,  key: 'thonha',        name: 'Thợ nhà',               icon: 'fas fa-tools',         color: '#11998e' },
-    { id: 10, key: 'thuexe',        name: 'Thuê xe',               icon: 'fas fa-key',           color: '#0ea5e9' },
-    { id: 11, key: 'giatuinhanh',   name: 'Giặt ủi nhanh',        icon: 'fas fa-tshirt',        color: '#f43f5e' },
-];
+const SERVICE_AESTHETICS = {
+    '1':  { icon: 'fas fa-baby',          color: '#ec4899' }, // Chăm sóc mẹ và bé
+    '2':  { icon: 'fas fa-hospital-user', color: '#ef4444' }, // Chăm sóc người bệnh
+    '3':  { icon: 'fas fa-person-cane',   color: '#f97316' }, // Chăm sóc người già
+    '4':  { icon: 'fas fa-leaf',          color: '#22c55e' }, // Chăm sóc vườn nhà
+    '5':  { icon: 'fas fa-broom',         color: '#14b8a6' }, // Dọn vệ sinh
+    '6':  { icon: 'fas fa-car',           color: '#3b82f6' }, // Lái xe hộ
+    '7':  { icon: 'fas fa-truck-fast',    color: '#6366f1' }, // Giao hàng nhanh
+    '8':  { icon: 'fas fa-motorcycle',    color: '#8b5cf6' }, // Sửa xe
+    '9':  { icon: 'fas fa-tools',         color: '#11998e' }, // Thợ nhà
+    '10': { icon: 'fas fa-key',           color: '#0ea5e9' }, // Thuê xe
+    '11': { icon: 'fas fa-tshirt',        color: '#f43f5e' }, // Giặt ủi nhanh
+    '12': { icon: 'fas fa-truck-loading', color: '#1b4332' }, // Chuyển dọn
+};
+const DEFAULT_AESTHETIC = { icon: 'fas fa-box', color: '#6366f1' };
+
+let REG_SERVICES = []; // Sẽ được nạp từ CSDL dichvucungcap
 
 let _selectedServiceIds = new Set(); // Chứa các ID dịch vụ đã chọn
 
@@ -38,6 +42,46 @@ function toggleServices() {
     } else {
         panel.classList.add('open');
         btn.classList.add('open');
+        // Nếu chưa nạp dữ liệu thì nạp ngay khi mở lần đầu
+        if (REG_SERVICES.length === 0) loadAndRenderServices();
+    }
+}
+
+async function loadAndRenderServices() {
+    const grid = document.getElementById('svcGrid');
+    grid.innerHTML = '<div class="text-muted small w-100 p-3"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải danh sách dịch vụ...</div>';
+
+    try {
+        const krud = window.DVQTKrud;
+        let data = await krud.listTable('dichvucungcap', { limit: 100 });
+
+        if (!data || data.length === 0) {
+            grid.innerHTML = '<div class="text-danger small p-3">Không tìm thấy dịch vụ nào.</div>';
+            return;
+        }
+
+        // Sắp xếp theo trang chủ
+        const displayOrder = [1, 3, 2, 5, 4, 11, 7, 12, 10, 6, 8, 9];
+        data.sort((a, b) => {
+            const idxA = displayOrder.indexOf(parseInt(a.id));
+            const idxB = displayOrder.indexOf(parseInt(b.id));
+            return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+        });
+
+        REG_SERVICES = data.map(item => {
+            const aesthetic = SERVICE_AESTHETICS[item.id] || DEFAULT_AESTHETIC;
+            return {
+                id: parseInt(item.id),
+                name: item.dichvu,
+                icon: aesthetic.icon,
+                color: aesthetic.color
+            };
+        });
+
+        renderServiceGrid();
+    } catch (e) {
+        console.error('Lỗi load dịch vụ:', e);
+        grid.innerHTML = '<div class="text-danger small p-3">Lỗi khi tải danh sách dịch vụ.</div>';
     }
 }
 
@@ -52,7 +96,7 @@ function renderServiceGrid() {
         const label = document.createElement('label');
         label.className = 'svc-check';
         label.innerHTML = `
-            <input type="checkbox" name="reg_service" value="${svc.id}" data-key="${svc.key}">
+            <input type="checkbox" name="reg_service" value="${svc.id}">
             <span class="svc-icon" style="background:${svc.color};">
                 <i class="${svc.icon}"></i>
             </span>
@@ -334,7 +378,8 @@ async function regSubmit() {
    INIT
    ================================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-    renderServiceGrid();
+    // Không render ngay mà sẽ render khi user mở panel dịch vụ hoặc load sẵn ngầm
+    loadAndRenderServices(); 
     regUpload.init();
     initPasswordUtils();
     initMapHook();
