@@ -1,0 +1,50 @@
+<aside
+  class="offcanvas-lg offcanvas-start sidebar-shell"
+  tabindex="-1"
+  id="sidebar"
+  aria-labelledby="sidebarLabel"
+>
+  <div class="offcanvas-header border-0 pb-0 d-lg-none">
+    <h5 class="offcanvas-title" id="sidebarLabel">KHÁCH HÀNG THỢ NHÀ</h5>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      data-bs-dismiss="offcanvas"
+      data-bs-target="#sidebar"
+      aria-label="Đóng"
+    ></button>
+  </div>
+
+  <div class="sidebar-brand">
+    <img src="../public/assets/images/tho-nha-logo-thuong-hieu-cropped.jpg" alt="Logo Thợ Nhà" class="brand-logo" />
+    <div>
+      <h1 class="brand-title">Thợ Nhà</h1>
+      <p class="brand-subtitle">CUSTOMER PANEL</p>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <p class="nav-caption">Hoạt động</p>
+    <a class="nav-item nav-link" href="#" data-page="quan-ly-don">
+      <i class="fas fa-receipt" aria-hidden="true"></i>
+      <span>Đơn hàng của tôi</span>
+    </a>
+    <a class="nav-item nav-link" href="../dich-vu.html">
+      <i class="fas fa-calendar-plus" aria-hidden="true"></i>
+      <span>Đặt lịch mới</span>
+    </a>
+
+    <p class="nav-caption mt-4">Tài khoản</p>
+    <a class="nav-item nav-link" href="#" data-page="tai-khoan">
+      <i class="fas fa-user-circle" aria-hidden="true"></i>
+      <span>Hồ sơ cá nhân</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a class="logout-link" onclick="logoutCustomer()" href="#">
+      <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+      <span>Đăng xuất</span>
+    </a>
+  </div>
+</aside>

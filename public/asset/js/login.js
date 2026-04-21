@@ -70,8 +70,8 @@ async function login() {
             target = decodeURIComponent(redirectUrl);
         } else if (service) {
             const serviceHomes = {
-                'thonha': root + '/tho-nha/index.html',
-                'thuexe': root + '/thue-xe/index.html',
+                'thonha': root + '/dich-vu/sua-chua/tho-nha/index.html',
+                'thuexe': root + '/dich-vu/van-tai-logistics/thue-xe/index.html',
                 'giatuinhanh': root + '/dich-vu/giat-ui/giat-ui-nhanh/index.html',
                 'mevabe': root + '/cham-soc-me-va-be/index.html',
                 'nguoibenh': root + '/cham-soc-nguoi-benh/index.html',
@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 target = decodeURIComponent(redirectUrl);
             } else if (service) {
                 const serviceHomes = {
-                    'thonha': root + '/tho-nha/index.html',
-                    'thuexe': root + '/thue-xe/index.html',
+                    'thonha': root + '/dich-vu/sua-chua/tho-nha/index.html',
+                    'thuexe': root + '/dich-vu/van-tai-logistics/thue-xe/index.html',
                     'giatuinhanh': root + '/dich-vu/giat-ui/giat-ui-nhanh/index.html',
                     'mevabe': root + '/cham-soc-me-va-be/index.html',
                     'nguoibenh': root + '/cham-soc-nguoi-benh/index.html',

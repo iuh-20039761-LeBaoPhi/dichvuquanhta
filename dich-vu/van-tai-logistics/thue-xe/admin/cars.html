@@ -1,0 +1,224 @@
+<!-- Admin Car Management Partial -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; overflow: hidden;">
+    <div class="card-header bg-white py-4 border-0">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-800 mb-0">Hệ thống Duyệt xe</h5>
+                <p class="text-muted small mb-0">Quản lý danh mục phương tiện toàn diện của hệ thống</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-light rounded-pill px-3 fw-600" onclick="loadAllCars()"><i class="fas fa-sync-alt me-2"></i>Làm mới</button>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation - Responsive Layout -->
+        <div class="px-2">
+            <ul class="nav nav-pills nav-fill bg-light p-1 flex-column flex-md-row gap-1" style="border-radius: 12px; font-size: 0.82rem; overflow: hidden;">
+                <li class="nav-item">
+                    <a class="nav-link active fw-bold" href="#" id="tabPending" onclick="switchCarTab('pending')">
+                        <i class="fas fa-clock me-2"></i>Chờ duyệt <span class="badge bg-warning ms-1" id="countPending">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabApproved" onclick="switchCarTab('approved')">
+                        <i class="fas fa-check-circle me-2"></i>Đã duyệt <span class="badge bg-success ms-1" id="countApproved">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabRejected" onclick="switchCarTab('rejected')">
+                        <i class="fas fa-ban me-2"></i>Bị từ chối <span class="badge bg-danger ms-1" id="countRejected">0</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0" id="adminCarTable">
+                    <thead class="bg-light text-muted small uppercase">
+                        <tr>
+                            <th class="ps-4">Phương tiện / Nhà CC</th>
+                            <th>Thông số</th>
+                            <th>Pháp lý</th>
+                            <th>Giá (Ngày)</th>
+                            <th>Trạng thái</th>
+                            <th class="pe-4 text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminCarBody">
+                        <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Mobile List Container -->
+            <div id="adminCarMobileList" class="mobile-list-container d-lg-none p-3"></div>
+        </div>
+        <div class="px-4 pb-3 mt-3" id="adminCarPagination"></div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    const TABLE = 'xethue';
+    let allCarsRaw = [];
+    let currentPage = 1;
+    let currentTab = 'pending';
+    const itemsPerPage = 8;
+
+    window.switchCarTab = function(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
+        const tabMap = { 'pending': 'tabPending', 'approved': 'tabApproved', 'rejected': 'tabRejected' };
+        if(tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
+        renderAdminPage(1);
+    };
+
+    window.loadAllCars = async function() {
+        const tbody = document.getElementById('adminCarBody');
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+        
+        try {
+            const cars = await DVQTKrud.listTable(TABLE, { limit: 1000 });
+            allCarsRaw = (cars || []).reverse();
+
+            // Cập nhật số lượng trên badge
+            document.getElementById('countPending').textContent = allCarsRaw.filter(c => String(c.trangthai || '').toLowerCase() === 'pending').length;
+            document.getElementById('countRejected').textContent = allCarsRaw.filter(c => String(c.trangthai || '').toLowerCase() === 'rejected').length;
+            document.getElementById('countApproved').textContent = allCarsRaw.filter(c => {
+                const s = String(c.trangthai || '').toLowerCase();
+                return s !== 'pending' && s !== 'rejected' && s !== '';
+            }).length;
+
+            if(!allCarsRaw.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có xe nào.</td></tr>';
+                document.getElementById('adminCarPagination').innerHTML = '';
+                return;
+            }
+
+            renderAdminPage(1);
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
+    };
+
+    function renderAdminPage(page) {
+        currentPage = page;
+        const tbody = document.getElementById('adminCarBody');
+        const mob = document.getElementById('adminCarMobileList');
+        
+        const filtered = allCarsRaw.filter(c => {
+            const st = String(c.trangthai || '').toLowerCase();
+            if(currentTab === 'pending') return st === 'pending';
+            if(currentTab === 'rejected') return st === 'rejected';
+            return st !== 'pending' && st !== 'rejected';
+        });
+
+        if(!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Không có xe nào trong mục này.</td></tr>`;
+            if(mob) mob.innerHTML = '<div class="text-center text-muted p-4">Danh mục trống</div>';
+            document.getElementById('adminCarPagination').innerHTML = '';
+            return;
+        }
+
+        const items = filtered.slice((page-1)*itemsPerPage, page*itemsPerPage);
+
+        // 1. Render Table
+        tbody.innerHTML = items.map(c => {
+            const st = String(c.trangthai || '').toLowerCase();
+            let badge = '<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill">Chưa xác định</span>';
+            const isApproved = ['available', 'active', 'approved', 'hot_dong', '1', 'rented', 'maintenance', 'hidden'].includes(st);
+            
+            if(st === 'pending') badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
+            else if(isApproved && st !== 'maintenance' && st !== 'hidden' && st !== 'rented') badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Sẵn sàng (Hiện)</span>';
+            else if(st === 'maintenance' || st === 'hidden') badge = '<span class="badge bg-dark text-dark bg-opacity-10 px-2 py-1 rounded-pill">Tạm dừng</span>';
+            else if(st === 'rented') badge = '<span class="badge bg-info text-info bg-opacity-10 px-2 py-1 rounded-pill">Đang thuê</span>';
+            else if(st === 'rejected') badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Bị từ chối</span>';
+
+            const approveBtn = !isApproved ? 
+                `<button class="btn btn-sm btn-light text-success" title="Duyệt xe" onclick="approveCarAdmin(${c.id})"><i class="fas fa-check"></i></button>` : '';
+            const rejectBtn = st !== 'rejected' ? 
+                `<button class="btn btn-sm btn-light text-danger" title="Từ chối" onclick="rejectCarAdmin(${c.id})"><i class="fas fa-ban"></i></button>` : '';
+
+            return `<tr>
+                <td class="ps-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-light rounded overflow-hidden shadow-sm" style="width:50px; height:50px;">
+                            <img src="../public/assets/images/cars/${c.anhngoaitruoc}" onerror="this.src='https://placehold.co/100x100?text=Auto'" class="w-100 h-100 object-fit-cover">
+                        </div>
+                        <div><div class="fw-bold text-dark">${c.tenxe}</div><div class="text-muted small">ID: ${c.id}</div></div>
+                    </div>
+                </td>
+                <td><div class="small fw-600">${c.loaixe}</div><div class="text-muted small">${c.socho} chỗ</div></td>
+                <td><div class="small fw-bold">${c.bienso}</div></td>
+                <td><div class="fw-bold text-primary">${Number(c.giathue).toLocaleString()}đ</div></td>
+                <td>${badge}</td>
+                <td class="pe-4 text-end">
+                    <div class="btn-group">${approveBtn}${rejectBtn}
+                        <button class="btn btn-sm btn-light text-primary" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+
+        // 2. Render Mobile Cards
+        if(mob) {
+            mob.innerHTML = items.map(c => {
+                const st = String(c.trangthai || '').toLowerCase();
+                const isApproved = ['available', 'active', 'approved', 'hot_dong', '1', 'rented', 'maintenance', 'hidden'].includes(st);
+                let statusCls = 'bg-warning';
+                if(isApproved) statusCls = 'bg-success';
+                if(st === 'rejected') statusCls = 'bg-danger';
+
+                return `
+                    <div class="mobile-card shadow-sm">
+                        <div class="mobile-card-head">
+                            <div class="bg-light rounded overflow-hidden" style="width:40px; height:40px;">
+                                <img src="../public/assets/images/cars/${c.anhngoaitruoc}" onerror="this.src='https://placehold.co/100x100?text=Car'" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <h4 class="mobile-title">${c.tenxe}</h4>
+                            <span class="badge ${statusCls}">${st}</span>
+                        </div>
+                        <div class="mobile-body">
+                            <div class="mobile-row"><span>Biển số</span><strong>${c.bienso}</strong></div>
+                            <div class="mobile-row"><span>Loại xe</span><strong>${c.loaixe} · ${c.socho} chỗ</strong></div>
+                            <div class="mobile-row text-primary"><span>Giá thuê</span><strong>${Number(c.giathue).toLocaleString()}đ/ngày</strong></div>
+                        </div>
+                        <div class="mobile-actions">
+                            ${!isApproved ? `<button class="btn btn-sm btn-success flex-grow-1 fw-bold" onclick="approveCarAdmin(${c.id})">Duyệt</button>` : ''}
+                            ${st !== 'rejected' ? `<button class="btn btn-sm btn-outline-danger flex-grow-1 fw-bold" onclick="rejectCarAdmin(${c.id})">Từ chối</button>` : ''}
+                            <button class="btn btn-sm btn-light border p-2" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        renderAdminPagination(filtered.length);
+    }
+
+    function renderAdminPagination(total) {
+        const container = document.getElementById('adminCarPagination');
+        const pages = Math.ceil(total/itemsPerPage);
+        if(pages<=1) { container.innerHTML=''; return; }
+        
+        let h = `<nav><ul class="pagination pagination-sm justify-content-end mb-0">`;
+        for(let i=1; i<=pages; i++) {
+            h += `<li class="page-item ${i===currentPage?'active':''}"><a class="page-link" href="#" onclick="event.preventDefault(); window.changeAdminCarsPage(${i})">${i}</a></li>`;
+        }
+        container.innerHTML = h + `</ul></nav>`;
+    }
+
+    window.changeAdminCarsPage = (p) => { renderAdminPage(p); };
+
+    window.approveCarAdmin = async (id) => { if(await ThueXeAdmin.updateStatus(TABLE, id, 'available', 'Đã duyệt hiện xe!')) loadAllCars(); };
+    window.rejectCarAdmin = async (id) => { if(await ThueXeAdmin.rejectCar(id)) loadAllCars(); };
+
+    window.viewCarDetail = function(id) {
+        // Link sang trang chi tiết xe ngoài public để xem
+        window.open('../public/chi-tiet-xe.html?id=' + id, '_blank');
+    };
+
+    loadAllCars();
+})();
+</script>

@@ -7,9 +7,9 @@
     <title>Thợ Nhà - Chi tiết hóa đơn dịch vụ</title>
     <!-- CSS Dependencies -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/admin-dashboard.css?v=1.4" />
-    <link rel="stylesheet" href="assets/css/order-panel.css?v=1.4" />
-    <link rel="stylesheet" href="assets/css/order-detail-custom.css?v=1.4" />
+    <link rel="stylesheet" href="public/assets/css/admin-dashboard.css?v=1.4" />
+    <link rel="stylesheet" href="public/assets/css/order-panel.css?v=1.4" />
+    <link rel="stylesheet" href="public/assets/css/order-detail-custom.css?v=1.4" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -138,7 +138,7 @@
     </style>
 
     <!-- Re-apply shared detail stylesheet after standalone overrides to keep UI identical with shared page -->
-    <link rel="stylesheet" href="assets/css/order-detail-custom.css?v=1.4" />
+    <link rel="stylesheet" href="public/assets/css/order-detail-custom.css?v=1.4" />
 </head>
 
 <body class="order-standalone-page">
@@ -152,7 +152,7 @@
                 <p class="standalone-subtitle">Hệ thống quản lý dịch vụ tại gia chuyên nghiệp</p>
             </div>
             <a href="index.html" aria-label="Về trang chủ Thợ Nhà">
-                <img class="standalone-logo" src="assets/images/tho-nha-logo-thuong-hieu-cropped.jpg"
+                <img class="standalone-logo" src="public/assets/images/tho-nha-logo-thuong-hieu-cropped.jpg"
                     alt="Logo Thợ Nhà" />
             </a>
         </div>
@@ -179,7 +179,7 @@
             <i class="fas fa-exclamation-triangle state-icon"></i>
             <h3 id="errorTitle">Không tìm thấy hóa đơn</h3>
             <p id="errorMessage">Vui lòng kiểm tra lại mã đơn hàng hoặc quyền truy cập của bạn.</p>
-            <a href="pages/customer/trang-ca-nhan.html" class="btn btn-primary mt-4 px-4 py-2"
+            <a href="khachhang/trang-ca-nhan.html" class="btn btn-primary mt-4 px-4 py-2"
                 style="border-radius:50px;">Về trang cá nhân</a>
         </div>
 
@@ -195,11 +195,11 @@
     <script src="../../../public/asset/js/dvqt-krud.js"></script>
     <script src="../../../public/asset/js/dvqt-app.js"></script>
     <script src="../../../public/asset/js/driveUtil.js"></script>
-    <script src="assets/js/shared/order-store.js"></script>
-    <script src="assets/js/shared/order-view-utils.js"></script>
-    <script src="assets/js/shared/order-service.js"></script>
-    <script src="assets/js/shared/order-detail-renderer.js"></script>
-    <script src="assets/js/shared/order-actions.js"></script>
+    <script src="public/assets/js/shared/order-store.js"></script>
+    <script src="public/assets/js/shared/order-view-utils.js"></script>
+    <script src="public/assets/js/shared/order-service.js"></script>
+    <script src="public/assets/js/shared/order-detail-renderer.js"></script>
+    <script src="public/assets/js/shared/order-actions.js"></script>
 
     <!-- Pricing Modal -->
     <div class="modal fade" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalLabel" aria-hidden="true">
@@ -325,7 +325,7 @@
                 session = { ...visitor, role: identifiedRole };
 
                 // 3. Render giao diện Premium
-                const partialRes = await fetch('partials/chi-tiet-hoa-don-tho-nha.html');
+                const partialRes = await fetch('chi-tiet-hoa-don-tho-nha.html');
                 if (!partialRes.ok) throw new Error('Không thể tải giao diện chi tiết.');
                 detailContainer.innerHTML = await partialRes.text();
 

@@ -1,0 +1,234 @@
+<!-- Stat Summary -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm p-3 p-md-4 h-100" style="border-radius: 20px;">
+            <div class="d-flex align-items-center gap-3">
+                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 flex-shrink-0" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-file-invoice fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                    <div class="h4 fw-800 mb-0" id="stat-total">0</div>
+                    <div class="text-muted small fw-600 text-nowrap">Tổng chuyến</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm p-3 p-md-4 h-100" style="border-radius: 20px;">
+            <div class="d-flex align-items-center gap-3">
+                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 flex-shrink-0" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-spinner fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                    <div class="h4 fw-800 mb-0" id="stat-pending">0</div>
+                    <div class="text-muted small fw-600 text-nowrap">Chờ duyệt</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm p-3 p-md-4 h-100" style="border-radius: 20px;">
+            <div class="d-flex align-items-center gap-3">
+                <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 flex-shrink-0" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-check-double fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                    <div class="h4 fw-800 mb-0" id="stat-success">0</div>
+                    <div class="text-muted small fw-600 text-nowrap">Thành công</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm p-3 p-md-4 h-100" style="border-radius: 20px;">
+            <div class="d-flex align-items-center gap-3">
+                <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-3 flex-shrink-0" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-ban fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                    <div class="h4 fw-800 mb-0" id="stat-fail">0</div>
+                    <div class="text-muted small fw-600 text-nowrap">Đã hủy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- History Table -->
+<div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+    <div class="card-header bg-white py-4 border-0 d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-800 mb-1">Lịch sử đặt xe của bạn</h5>
+            <p class="text-muted small mb-0">Quản lý và theo dõi các hành trình của bạn</p>
+        </div>
+        <button class="btn btn-light btn-sm rounded-pill px-3 fw-bold" onclick="loadCustomerTransactions()">
+            <i class="fas fa-sync-alt me-1"></i> Làm mới
+        </button>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="bg-light text-muted small uppercase">
+                    <tr>
+                        <th class="ps-4" style="width: 25%;">Mã đơn / Phương tiện</th>
+                        <th style="width: 25%;">Thời gian thuê</th>
+                        <th style="width: 20%;">Tổng chi phí</th>
+                        <th style="width: 20%;">Trạng thái</th>
+                        <th class="pe-4 text-end" style="width: 10%;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTxBody">
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="spinner-border text-primary spinner-border-sm me-2"></div>Đang tải dữ liệu...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="customerEmptyTx" class="text-center py-5 d-none">
+            <i class="fas fa-car-rear fa-4x text-light mb-4 d-block"></i>
+            <h6 class="fw-bold">Chưa có đơn hàng nào!</h6>
+            <p class="text-muted small">Bạn chưa thực hiện giao dịch thuê xe nào trên hệ thống.</p>
+            <a href="../index.html" class="btn btn-primary rounded-pill px-4 mt-2 fw-bold shadow-sm">Thuê xe ngay</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Dashboard responsive */
+    @media (max-width: 768px) {
+        .row.g-4.mb-4 .col-6.col-md-3 .card {
+            padding: 12px !important;
+            border-radius: 12px !important;
+        }
+
+        .row.g-4.mb-4 .h4 {
+            font-size: 1.2rem;
+        }
+
+        .row.g-4.mb-4 .small {
+            font-size: 0.7rem;
+        }
+
+        .card-header {
+            flex-direction: column;
+            gap: 8px;
+            padding: 16px !important;
+        }
+
+        .card-header h5 {
+            font-size: 1rem;
+        }
+
+        table th,
+        table td {
+            font-size: 0.8rem;
+            padding: 8px 6px !important;
+        }
+
+        table th:nth-child(3),
+        table td:nth-child(3) {
+            display: none;
+        }
+
+        /* Hide cost column on mobile */
+    }
+
+    @media (max-width: 480px) {
+        .row.g-4.mb-4 .p-3 {
+            padding: 8px !important;
+        }
+
+        .row.g-4.mb-4 .h4 {
+            font-size: 1rem;
+        }
+
+        table th:nth-child(2),
+        table td:nth-child(2) {
+            display: none;
+        }
+
+        /* Hide time column on very small */
+    }
+</style>
+
+<script>
+    (function () {
+        'use strict';
+        
+        const calcDays = (sStr, eStr) => {
+            if (!sStr || !eStr) return '?';
+            try {
+                const s = new Date(sStr);
+                const e = new Date(eStr);
+                const diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24));
+                return diff > 0 ? diff : 1;
+            } catch(e) { return '?'; }
+        };
+
+        window.loadCustomerTransactions = async function () {
+            const tbody = document.getElementById('customerTxBody');
+            const empty = document.getElementById('customerEmptyTx');
+            if (!tbody) return;
+
+            try {
+                const session = window._dvqt_session_cache || await DVQTApp.checkSession();
+                const all = await DVQTKrud.listTable('datlich_thuexe');
+                const myOrders = (all || []).filter(o => o.id_nguoidung == session.id);
+
+                if (!myOrders.length) {
+                    tbody.innerHTML = '';
+                    empty.classList.remove('d-none');
+                    return;
+                }
+
+                empty.classList.add('d-none');
+
+                // Update Stats
+                document.getElementById('stat-total').textContent = myOrders.length;
+                document.getElementById('stat-pending').textContent = myOrders.filter(o => !o.ngaynhan && !o.ngayhuy).length;
+                document.getElementById('stat-success').textContent = myOrders.filter(o => o.ngayhoanthanhthucte).length;
+                document.getElementById('stat-fail').textContent = myOrders.filter(o => o.ngayhuy).length;
+
+                tbody.innerHTML = myOrders.reverse().map(o => {
+                    let badge = '<span class="badge bg-warning text-warning bg-opacity-10 px-3 py-2 rounded-pill">Chờ duyệt</span>';
+                    if (o.ngayhuy) badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-3 py-2 rounded-pill">Đã hủy</span>';
+                    else if (o.ngayhoanthanhthucte) badge = '<span class="badge bg-success text-success bg-opacity-10 px-3 py-2 rounded-pill">Hoàn thành</span>';
+                    else if (o.ngaybatdauthucte) badge = '<span class="badge bg-primary text-primary bg-opacity-10 px-3 py-2 rounded-pill">Đang thuê</span>';
+                    else if (o.ngaynhan) badge = '<span class="badge bg-info text-info bg-opacity-10 px-3 py-2 rounded-pill">Đã xác nhận</span>';
+
+                    return `<tr>
+                    <td class="ps-4">
+                        <div class="fw-bold text-dark mb-1">${String(o.id).padStart(7, '0')}</div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="p-1 px-2 bg-light rounded small fw-600 text-muted">${o.ten_xe || 'Dịch vụ'}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark small">${calcDays(o.ngay_nhan_yeu_cau, o.ngay_tra_yeu_cau)} ngày</div>
+                        <div class="text-muted" style="font-size:11px;">${o.ngay_nhan_yeu_cau}</div>
+                        <div class="text-muted small mt-0"><i class="far fa-clock me-1" style="font-size:10px;"></i>${o.gio_nhan_yeu_cau}</div>
+                    </td>
+                    <td class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</td>
+                    <td>${badge}</td>
+                    <td class="pe-4 text-end">
+                        <button class="btn btn-sm btn-light rounded-circle shadow-sm" onclick="showTxDetail(${o.id})">
+                            <i class="fas fa-eye text-primary"></i>
+                        </button>
+                    </td>
+                </tr>`;
+                }).join('');
+
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Lỗi kết nối dữ liệu</td></tr>';
+            }
+        };
+
+        window.showTxDetail = function (id) {
+            window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
+        };
+
+        loadCustomerTransactions();
+    })();
+</script>
