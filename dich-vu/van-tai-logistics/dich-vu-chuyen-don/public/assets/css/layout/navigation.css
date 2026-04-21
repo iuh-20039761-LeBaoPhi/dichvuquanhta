@@ -318,6 +318,7 @@
   .nav-menu li {
     width: 100%;
     text-align: left;
+    padding: 12px 15px !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
@@ -360,3 +361,4 @@
     text-decoration: underline;
   }
 }
+

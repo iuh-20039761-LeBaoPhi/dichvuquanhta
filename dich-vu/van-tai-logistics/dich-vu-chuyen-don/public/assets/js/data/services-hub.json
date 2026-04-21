@@ -22,7 +22,7 @@
       ],
       "cta": {
         "booking_label": "Đặt lịch chuyển nhà",
-        "booking_url": "dat-lich.html?dich-vu=chuyen_nha",
+        "booking_url": "dat-lich-chuyendon.html?dich-vu=chuyen_nha",
         "pricing_label": "Xem bảng giá",
         "pricing_url": "bang-gia-chuyen-don.html"
       }
@@ -44,7 +44,7 @@
       ],
       "cta": {
         "booking_label": "Đặt lịch chuyển văn phòng",
-        "booking_url": "dat-lich.html?dich-vu=chuyen_van_phong",
+        "booking_url": "dat-lich-chuyendon.html?dich-vu=chuyen_van_phong",
         "pricing_label": "Xem bảng giá",
         "pricing_url": "bang-gia-chuyen-don.html"
       }
@@ -66,7 +66,7 @@
       ],
       "cta": {
         "booking_label": "Đặt lịch chuyển kho bãi",
-        "booking_url": "dat-lich.html?dich-vu=chuyen_kho_bai",
+        "booking_url": "dat-lich-chuyendon.html?dich-vu=chuyen_kho_bai",
         "pricing_label": "Xem bảng giá",
         "pricing_url": "bang-gia-chuyen-don.html"
       }

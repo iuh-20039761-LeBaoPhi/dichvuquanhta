@@ -7,7 +7,7 @@
     typeof core.getPortalRoutes === "function"
       ? core.getPortalRoutes("shipper")
       : {
-          home: "../../index.html",
+          home: "../../../index.html",
           login: "../../dang-nhap.html",
           logout: "../../dang-nhap.html",
           dashboard: "dashboard-giaohang.html",

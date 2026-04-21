@@ -107,7 +107,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
             <!-- View Site -->
             <div class="header-action-item">
-                <a href="../../index.html" target="_blank" class="btn-view-site-pill" title="Xem trang chủ">
+                <a href="../../../index.html" target="_blank" class="btn-view-site-pill" title="Xem trang chủ">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 </a>
             </div>
