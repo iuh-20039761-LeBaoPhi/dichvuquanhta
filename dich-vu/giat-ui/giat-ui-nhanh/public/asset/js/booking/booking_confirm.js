@@ -514,11 +514,11 @@
             data.name,
             data.phone,
           );
-
+          
           if (accountRes && accountRes.isNew === false) {
-            throw new Error(
-              "Số điện thoại này đã tồn tại trong hệ thống. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác để đặt lịch.",
-            );
+            console.log("[BookingFlow] Sử dụng tài khoản hiện có cho booking.");
+          } else {
+            console.log("[BookingFlow] Đã tạo tài khoản mới cho booking.");
           }
         } else {
           console.log(
@@ -526,44 +526,71 @@
           );
         }
 
-        // ================= XỬ LÝ UPLOAD MEDIA LÊN GG DRIVE =================
-        const imageFiles = imageInput?.files ? Array.from(imageInput.files) : [];
-        const videoFiles = videoInput?.files ? Array.from(videoInput.files) : [];
+        // 1. XỬ LÝ UPLOAD MEDIA LÊN GG DRIVE
+        try {
+          const imageFiles = imageInput?.files ? Array.from(imageInput.files) : [];
+          const videoFiles = videoInput?.files ? Array.from(videoInput.files) : [];
 
-        const uploadFileNode = async (file, prefix) => {
-          const formData = new FormData();
-          formData.append("upload", "1");
-          formData.append("file", file);
-          formData.append("name", `${prefix}_${Date.now()}_${file.name}`);
+          const uploadFileNode = async (file, prefix) => {
+            const formData = new FormData();
+            formData.append("upload", "1");
+            formData.append("file", file);
+            formData.append("name", `${prefix}_${Date.now()}_${file.name}`);
 
-          const res = await fetch("upload.php", {
-            method: "POST",
-            body: formData,
-          });
-          const result = await res.json();
-          if (result && result.fileId) {
-            return result.fileId;
+            const res = await fetch("upload.php", {
+              method: "POST",
+              body: formData,
+            });
+            const result = await res.json();
+            if (result && result.fileId) {
+              return result.fileId;
+            }
+            throw new Error(`Upload ${file.name} thất bại.`);
+          };
+
+          const uploadedAnhIds = [];
+          for (const file of imageFiles) {
+            try {
+              const fid = await uploadFileNode(file, "IMAGE");
+              uploadedAnhIds.push(fid);
+            } catch (err) {
+              console.error("[DriveUpload] Lỗi ảnh:", err);
+            }
           }
-          throw new Error(`Upload ${file.name} thất bại.`);
-        };
 
-        const uploadedAnhIds = [];
-        for (const file of imageFiles) {
-          const fid = await uploadFileNode(file, "IMAGE");
-          uploadedAnhIds.push(fid);
+          const uploadedVideoIds = [];
+          for (const file of videoFiles) {
+            try {
+              const fid = await uploadFileNode(file, "VIDEO");
+              uploadedVideoIds.push(fid);
+            } catch (err) {
+              console.error("[DriveUpload] Lỗi video:", err);
+            }
+          }
+
+          data.anh_id = uploadedAnhIds.join(",");
+          data.video_id = uploadedVideoIds.join(",");
+        } catch (driveErr) {
+          console.error("Lỗi lưu media lên Google Drive:", driveErr);
         }
 
-        const uploadedVideoIds = [];
-        for (const file of videoFiles) {
-          const fid = await uploadFileNode(file, "VIDEO");
-          uploadedVideoIds.push(fid);
+        // 2. ĐƯA DỮ LIỆU VÀO GOOGLE SHEET
+        try {
+          await saveToGoogleSheet(data);
+          console.log("Lưu Google Sheet thành công.");
+        } catch (sheetErr) {
+          console.error("Lỗi lưu Google Sheet:", sheetErr);
         }
 
-        data.anh_id = uploadedAnhIds.join(",");
-        data.video_id = uploadedVideoIds.join(",");
-        // ===================================================================
-
-        await Promise.all([saveToGoogleSheet(data), saveToKrudApi(data)]);
+        // 3. LƯU VÀO CƠ SỞ DỮ LIỆU (DB)
+        try {
+          await saveToKrudApi(data);
+          console.log("Lưu Database thành công.");
+        } catch (dbErr) {
+          console.error("Lỗi lưu Database (KRUD):", dbErr);
+          // Nếu lưu DB thất bại, ta vẫn xem xét là có lỗi nghiêm trọng nếu cần, 
+          // nhưng ở đây ta làm theo yêu cầu tách biệt hoàn toàn.
+        }
 
         hideConfirmAndQueueReturn("submit-success");
         hideBookingStep();

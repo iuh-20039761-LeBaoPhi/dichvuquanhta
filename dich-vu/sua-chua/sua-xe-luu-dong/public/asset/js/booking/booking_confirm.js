@@ -360,11 +360,11 @@
             payload.name,
             payload.phone,
           );
-
+          
           if (accountRes && accountRes.isNew === false) {
-            throw new Error(
-              "Số điện thoại này đã tồn tại trong hệ thống. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác để đặt lịch.",
-            );
+            console.log("[BookingFlow] Sử dụng tài khoản hiện có cho booking.");
+          } else {
+            console.log("[BookingFlow] Đã tạo tài khoản mới cho booking.");
           }
         } else if (isAlreadyLoggedIn) {
           console.log(
@@ -373,43 +373,60 @@
         }
 
         // --- BƯỚC 2: UPLOAD ẢNH & VIDEO LÊN GOOGLE DRIVE ---
-        const uploadOne = async (file) => {
-          const fd = new FormData();
-          fd.append("file", file);
-          fd.append("name", file.name);
-          try {
-            const resp = await fetch("upload.php", {
-              method: "POST",
-              body: fd,
-            });
-            const res = await resp.json();
-            return res.success ? res.fileId : null;
-          } catch (e) {
-            console.error("Lỗi upload file:", file.name, e);
-            return null;
+        try {
+          const uploadOne = async (file) => {
+            const fd = new FormData();
+            fd.append("file", file);
+            fd.append("name", file.name);
+            try {
+              const resp = await fetch("upload.php", {
+                method: "POST",
+                body: fd,
+              });
+              const res = await resp.json();
+              return res.success ? res.fileId : null;
+            } catch (e) {
+              console.error("Lỗi upload file:", file.name, e);
+              return null;
+            }
+          };
+
+          const imageFiles = imageInput?.files ? Array.from(imageInput.files) : [];
+          const videoFiles = videoInput?.files ? Array.from(videoInput.files) : [];
+
+          if (imageFiles.length > 0 || videoFiles.length > 0) {
+            confirmBtn.textContent = "Đang tải ảnh/video...";
           }
-        };
 
-        const imageFiles = imageInput?.files ? Array.from(imageInput.files) : [];
-        const videoFiles = videoInput?.files ? Array.from(videoInput.files) : [];
+          const [imageIds, videoIds] = await Promise.all([
+            Promise.all(imageFiles.map(uploadOne)),
+            Promise.all(videoFiles.map(uploadOne)),
+          ]);
 
-        if (imageFiles.length > 0 || videoFiles.length > 0) {
-          confirmBtn.textContent = "Đang tải ảnh/video...";
+          payload.anh_id = imageIds.filter((id) => id).join(",");
+          payload.video_id = videoIds.filter((id) => id).join(",");
+        } catch (driveErr) {
+          console.error("Lỗi lưu media lên Google Drive:", driveErr);
         }
-
-        const [imageIds, videoIds] = await Promise.all([
-          Promise.all(imageFiles.map(uploadOne)),
-          Promise.all(videoFiles.map(uploadOne)),
-        ]);
-
-        payload.anh_id = imageIds.filter((id) => id).join(",");
-        payload.video_id = videoIds.filter((id) => id).join(",");
 
         // --- BƯỚC 3: LƯU DỮ LIỆU ---
         confirmBtn.textContent = "Đang lưu...";
 
-        const dataTasks = [saveToGoogleSheet(payload), saveToKrudApi(payload)];
-        await Promise.all(dataTasks);
+        // 3.1 ĐƯA DỮ LIỆU VÀO GOOGLE SHEET
+        try {
+          await saveToGoogleSheet(payload);
+          console.log("Lưu Google Sheet thành công.");
+        } catch (sheetErr) {
+          console.error("Lỗi lưu Google Sheet:", sheetErr);
+        }
+
+        // 3.2 LƯU VÀO CƠ SỞ DỮ LIỆU (DB)
+        try {
+          await saveToKrudApi(payload);
+          console.log("Lưu Database thành công.");
+        } catch (dbErr) {
+          console.error("Lỗi lưu Database (KRUD):", dbErr);
+        }
 
         bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
         hideBookingStep();
