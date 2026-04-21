@@ -140,6 +140,10 @@
         border-top: 1px solid #e5e7eb;
         background: #fff;
         padding: 0.85rem 1rem;
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.05);
       }
 
       #bookingModal .modal-footer .btn,
@@ -606,9 +610,16 @@
           box-shadow: 0 -8px 16px rgba(15, 23, 42, 0.06);
         }
 
+        #bookingModal .btn, 
+        #bookingConfirmModal .btn {
+          padding: 10px 12px;
+          font-size: 14px;
+          white-space: nowrap;
+        }
+
         #bookingModal .modal-footer .btn,
         #bookingConfirmModal .modal-footer .btn {
-          width: 100%;
+          padding: 12px 10px;
         }
 
         #bookingConfirmModal th,
@@ -639,9 +650,7 @@
         }
 
         body.booking-standalone #bookingModal .modal-footer {
-          position: static;
-          bottom: auto;
-          box-shadow: none;
+          position: sticky;
           padding: 0.75rem 0.85rem 0.85rem;
         }
         .booking-section {
@@ -1077,10 +1086,10 @@
                       multiple
                       hidden
                     />
-                    <div class="d-flex gap-2 flex-wrap" style="justify-content: space-around;">
+                    <div class="d-flex gap-2 flex-nowrap" style="justify-content: space-around;">
                       <button
                         type="button"
-                        class="btn btn-outline-primary"
+                        class="btn btn-outline-primary flex-grow-1"
                         id="nutchupanh"
                         name="nutchupanh"
                       >
@@ -1088,7 +1097,7 @@
                       </button>
                       <button
                         type="button"
-                        class="btn btn-outline-danger"
+                        class="btn btn-outline-danger flex-grow-1"
                         id="nutquayvideo"
                         name="nutquayvideo"
                       >
@@ -1249,11 +1258,11 @@
               </div>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="confirmBackBtn">
+          <div class="modal-footer d-flex gap-2 flex-nowrap">
+            <button type="button" class="btn btn-secondary flex-grow-1" id="confirmBackBtn">
               Quay lại
             </button>
-            <button type="button" class="btn btn-primary" id="confirmSubmitBtn">
+            <button type="button" class="btn btn-primary flex-grow-1" id="confirmSubmitBtn">
               Xác nhận đặt lịch
             </button>
           </div>

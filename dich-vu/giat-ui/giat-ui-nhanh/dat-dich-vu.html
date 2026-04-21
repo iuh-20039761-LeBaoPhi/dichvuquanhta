@@ -86,7 +86,7 @@
       #bookingConfirmModal .modal-content {
         border: 0;
         border-radius: 20px;
-        overflow: hidden;
+        /* overflow: hidden; Removed to fix position:sticky */
         box-shadow: 0 16px 40px rgba(15, 23, 42, 0.22);
       }
 
@@ -143,6 +143,10 @@
         border-top: 1px solid #e2e8f0;
         padding: 12px 18px 16px;
         background: #ffffff;
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.05);
       }
 
       #bookingModal .form-group {
@@ -223,6 +227,55 @@
 
       #bookingModal .form-check-input {
         margin-top: 0.2em;
+      }
+
+      #bookingModal .btn {
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+        justify-content: center;
+      }
+
+      #bookingModal .btn-outline-primary {
+        border-color: #2563eb;
+        color: #2563eb;
+        background: transparent;
+      }
+
+      #bookingModal .btn-outline-danger {
+        border-color: #dc2626;
+        color: #dc2626;
+        background: transparent;
+      }
+
+      #bookingModal .btn-outline-primary:hover {
+        background: #2563eb;
+        color: white;
+      }
+
+      #bookingModal .btn-outline-danger:hover {
+        background: #dc2626;
+        color: white;
+      }
+
+      #bookingModal .btn-info {
+        background: #00d2ff;
+        background: linear-gradient(to right, #3a7bd5, #00d2ff);
+        border: none;
+      }
+
+      #bookingModal .btn-purple {
+        background: #8b5cf6;
+        color: white;
+        border: none;
+      }
+
+      #bookingModal .btn-purple:hover {
+        background: #7c3aed;
+        color: white;
+        transform: translateY(-2px);
       }
 
       #bookingModal .media-grid {
@@ -469,8 +522,7 @@
         }
 
         body.booking-standalone #bookingModal .modal-footer {
-          position: static;
-          box-shadow: none;
+          position: sticky;
         }
 
         #bookingModal .media-grid {
@@ -490,12 +542,24 @@
           padding: 0;
         }
 
-        #bookingModal .modal-footer {
+        /* #bookingModal .modal-footer {
           margin-top: -11px;
-        }
+          padding: 10px 12px;
+        } */
 
         .booking-standalone #bookingModal .modal-footer {
           margin-top: 0;
+        }
+
+        #bookingModal .btn, 
+        #bookingConfirmModal .btn {
+          padding: 10px 12px;
+          font-size: 14px;
+          white-space: nowrap;
+        }
+
+        .modal-footer .btn {
+          padding: 12px 10px;
         }
       }
     </style>
@@ -710,16 +774,20 @@
                     <div id="toaDoHienThi" class="mt-2 text-muted fw-medium d-flex align-items-center flex-wrap" style="font-size: 0.9rem;"></div>
                   </div>
                   <div class="form-group">
-                    <div class="d-flex gap-2 flex-wrap">
-                      <button class="btn btn-info" type="button" id="nutvitrihientai">
-                        <i class="fas fa-location-arrow"></i> Vị trí hiện tại
-                      </button>
+                    <div class="d-flex gap-2">
                       <button
-                        class="btn btn-outline-info"
+                        class="btn btn-info text-white flex-grow-1"
                         type="button"
                         id="nutbando"
                       >
-                        <i class="fas fa-map-marked-alt"></i> Mở bản đồ
+                        <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                      </button>
+                      <button
+                        class="btn btn-purple flex-grow-1"
+                        type="button"
+                        id="nutvitrihientai"
+                      >
+                        <i class="fas fa-location-arrow me-1"></i> Vị trí hiện tại
                       </button>
                     </div>
                   </div>
@@ -868,17 +936,17 @@
                       multiple
                       hidden
                     />
-                    <div class="d-flex gap-2 flex-wrap" style="justify-content: space-around;">
+                    <div class="d-flex gap-2">
                       <button
                         type="button"
-                        class="btn btn-outline-primary"
+                        class="btn btn-outline-primary flex-grow-1"
                         id="nutchupanh"
                       >
                         <i class="fas fa-camera"></i> Chụp ảnh
                       </button>
                       <button
                         type="button"
-                        class="btn btn-outline-danger"
+                        class="btn btn-outline-danger flex-grow-1"
                         id="nutquayvideo"
                       >
                         <i class="fas fa-video"></i> Quay video
@@ -1055,11 +1123,11 @@
               </div>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" id="confirmBackBtn">
+          <div class="modal-footer d-flex gap-2 flex-nowrap">
+            <button type="button" class="btn btn-danger flex-grow-1" id="confirmBackBtn">
               Quay lại
             </button>
-            <button type="button" class="btn btn-primary" id="confirmSubmitBtn">
+            <button type="button" class="btn btn-primary flex-grow-1" id="confirmSubmitBtn">
               Xác nhận đặt lịch
             </button>
           </div>
