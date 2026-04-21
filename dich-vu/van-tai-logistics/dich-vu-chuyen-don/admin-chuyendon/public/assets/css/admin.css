@@ -139,9 +139,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 20px;
 }
 
-.admin-brand { display: flex; flex-direction: column; }
+.admin-brand {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    min-width: 0;
+}
 .admin-brand__eyebrow {
     font-size: 10px;
     text-transform: uppercase;
@@ -155,20 +161,51 @@ body {
     font-weight: 900;
     color: #fff;
     letter-spacing: -0.02em;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
-.admin-nav { display: flex; gap: 8px; }
+.admin-nav {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+}
 .admin-nav a {
     color: rgba(255, 255, 255, 0.7);
     padding: 10px 18px;
     border-radius: 12px;
     font-weight: 600;
     font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
     transition: var(--transition);
 }
 .admin-nav a:hover, .admin-nav a.is-active {
     color: #fff;
     background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-header__actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-user-chip {
+    max-width: 180px;
+    overflow: hidden;
+    padding: 9px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.07);
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Hero Section */
@@ -365,6 +402,18 @@ tr:hover td { background: var(--primary-soft); }
     filter: brightness(1.1);
 }
 
+.button-ghost {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+}
+
+.button-ghost:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.14);
+}
+
 .btn-outline {
     background: white;
     border: 1px solid var(--line);
@@ -449,7 +498,57 @@ tr:hover td { background: var(--primary-soft); }
 }
 
 /* Responsive Grid to Cards */
+@media (max-width: 980px) {
+    .admin-header__inner {
+        height: auto;
+        min-height: 80px;
+        flex-wrap: wrap;
+        padding: 14px 0;
+    }
+
+    .admin-brand {
+        flex: 1 1 auto;
+    }
+
+    .admin-nav {
+        order: 3;
+        width: 100%;
+        flex: 1 0 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+    }
+
+    .admin-nav a {
+        padding: 9px 14px;
+    }
+}
+
 @media (max-width: 768px) {
+    .admin-header__inner,
+    .admin-page {
+        width: min(100% - 24px, 1400px);
+    }
+
+    .admin-brand__title {
+        font-size: 19px;
+    }
+
+    .admin-header__actions {
+        gap: 8px;
+    }
+
+    .admin-user-chip {
+        max-width: 120px;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .admin-header__actions .button {
+        padding: 10px 14px;
+    }
+
     .stats-grid { grid-template-columns: 1fr; }
     .table-wrap { border: none; }
     table, thead, tbody, th, td, tr { display: block; }

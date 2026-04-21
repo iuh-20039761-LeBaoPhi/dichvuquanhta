@@ -324,8 +324,9 @@
         <p>
           Trang nay dung de kiem tra nhanh du lieu dang luu trong bang
           <strong>dich_vu_chuyen_don_dat_lich</strong> va
-          <strong>nguoidung</strong>. Du lieu duoc doc truc tiep tu KRUD, khong
-          qua localStorage.
+          <strong>nguoidung</strong>, kem bang <strong>admin</strong> de doi
+          chieu tai khoan dang nhap admin chung. Du lieu duoc doc truc tiep tu
+          KRUD, khong qua localStorage.
         </p>
       </section>
 
@@ -429,6 +430,38 @@
           </table>
         </div>
       </section>
+
+      <section class="table-wrap">
+        <div class="table-head">
+          <div>
+            <h2>Bang admin chung</h2>
+            <div class="hint">
+              Dung de xem email va mat khau dang duoc public/admin-login.html
+              su dung. Neu bang rong, trang admin-login chung se tao tai khoan
+              moi <strong>admin@dvqt.vn</strong> / <strong>123456</strong>.
+            </div>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Email dang nhap</th>
+                <th>Mat khau</th>
+                <th>Ho so</th>
+                <th>Thoi gian</th>
+                <th>Raw</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <tr>
+                <td colspan="6" class="empty">Chua tai du lieu.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
 
     <script type="module">
@@ -437,6 +470,7 @@
       (function () {
         const TABLE_NAME = "dich_vu_chuyen_don_dat_lich";
         const USER_TABLE_NAME = "nguoidung";
+        const ADMIN_TABLE_NAME = "admin";
 
         const pageInput = document.getElementById("pageInput");
         const limitInput = document.getElementById("limitInput");
@@ -444,6 +478,7 @@
         const resetBtn = document.getElementById("resetBtn");
         const tableBody = document.getElementById("tableBody");
         const userTableBody = document.getElementById("userTableBody");
+        const adminTableBody = document.getElementById("adminTableBody");
         const statusBox = document.getElementById("statusBox");
         const totalOrders = document.getElementById("totalOrders");
         const pendingOrders = document.getElementById("pendingOrders");
@@ -689,6 +724,48 @@
             .join("");
         }
 
+        function renderAdminRows(rows) {
+          if (!rows.length) {
+            adminTableBody.innerHTML =
+              '<tr><td colspan="6" class="empty">Khong co du lieu trong bang admin. Mo public/admin-login.html de tao tai khoan mac dinh neu can.</td></tr>';
+            return;
+          }
+
+          adminTableBody.innerHTML = rows
+            .map((row) => {
+              const rawJson = escapeHtml(JSON.stringify(row, null, 2));
+              const password = normalizeText(row.matkhau || row.password || row.mat_khau || "");
+              return `
+                <tr>
+                  <td class="mono">${escapeHtml(row.id || "--")}</td>
+                  <td>
+                    <strong>${escapeHtml(row.email || "--")}</strong>
+                    <div class="mono">${escapeHtml(row.username || row.tendangnhap || "--")}</div>
+                  </td>
+                  <td>
+                    <strong class="mono">${escapeHtml(password || "--")}</strong>
+                  </td>
+                  <td>
+                    <div><strong>Ten:</strong> ${escapeHtml(row.hovaten || row.fullname || row.ten || "--")}</div>
+                    <div><strong>SDT:</strong> ${escapeHtml(row.sodienthoai || row.phone || "--")}</div>
+                    <div><strong>Vai tro:</strong> ${escapeHtml(row.role || row.vaitro || "admin")}</div>
+                  </td>
+                  <td>
+                    <div><strong>Tao:</strong> ${escapeHtml(formatDateTime(row.created_at || row.created_date || ""))}</div>
+                    <div><strong>Cap nhat:</strong> ${escapeHtml(formatDateTime(row.updated_at || row.updated_date || ""))}</div>
+                  </td>
+                  <td>
+                    <details>
+                      <summary>Xem JSON</summary>
+                      <pre>${rawJson}</pre>
+                    </details>
+                  </td>
+                </tr>
+              `;
+            })
+            .join("");
+        }
+
         function setStatus(message, type) {
           statusBox.textContent = message;
           statusBox.className = type ? "status " + type : "status";
@@ -708,7 +785,7 @@
           setStatus("Dang tai du lieu tu bang " + TABLE_NAME + "...", "info");
 
           try {
-            const [orderResult, userResult] = await Promise.all([
+            const [orderResult, userResult, adminResult] = await Promise.all([
               Promise.resolve(
                 listFn({
                   table: TABLE_NAME,
@@ -723,18 +800,29 @@
                   limit,
                 }),
               ),
+              Promise.resolve(
+                listFn({
+                  table: ADMIN_TABLE_NAME,
+                  page,
+                  limit,
+                }),
+              ),
             ]);
             const rows = normalizeKrudRows(extractRows(orderResult)).sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
             const userRows = normalizeKrudRows(extractRows(userResult)).sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
+            const adminRows = normalizeKrudRows(extractRows(adminResult)).sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
             renderSummary(rows);
             renderRows(rows);
             renderUserRows(userRows);
+            renderAdminRows(adminRows);
             setStatus(
               "Tai thanh cong " +
                 rows.length +
                 " yeu cau va " +
                 userRows.length +
-                " tai khoan tu KRUD.",
+                " tai khoan nguoidung, " +
+                adminRows.length +
+                " tai khoan admin tu KRUD.",
               "success",
             );
           } catch (error) {
@@ -742,6 +830,7 @@
             renderSummary([]);
             renderRows([]);
             renderUserRows([]);
+            renderAdminRows([]);
             setStatus(
               (error && error.message) || "Khong the tai danh sach tu KRUD.",
               "error",

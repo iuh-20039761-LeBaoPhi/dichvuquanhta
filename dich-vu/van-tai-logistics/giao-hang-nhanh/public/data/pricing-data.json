@@ -468,14 +468,14 @@
     "vi_du_hoan_chinh": {
       "ghi_chu": [
         "<strong>Cách đọc nhanh:</strong> Tất cả các gói đều hiển thị và có thể áp dụng <strong>phụ phí thời gian</strong> và <strong>phụ phí thời tiết</strong> dựa trên điều kiện thực tế (Đêm khuya, trời mưa...). Hệ thống sẽ tách riêng các khoản này để bạn nhìn ra vì sao tổng tiền thay đổi.",
-        "<strong>4 ví dụ trên</strong> lần lượt đi theo đúng thứ tự: <strong>Ngay lập tức → Hỏa tốc → Nhanh → Tiêu chuẩn</strong>, để bạn đối chiếu nhanh từ gói khẩn cấp nhất đến gói tiết kiệm nhất. Đây vẫn là giá tham khảo để bạn ra quyết định nhanh trước khi tạo đơn."
+        "<strong>4 ví dụ trên</strong> lần lượt đi theo đúng thứ tự: <strong>Giao Ngay Lập Tức → Hỏa Tốc → Giao Nhanh → Tiêu Chuẩn</strong>, để bạn đối chiếu nhanh từ gói khẩn cấp nhất đến gói tiết kiệm nhất. Đây vẫn là giá tham khảo để bạn ra quyết định nhanh trước khi tạo đơn."
       ]
     }
   },
   "vi_du_hoan_chinh": [
     {
       "icon": "🔥",
-      "title": "Ví dụ 1: Ngay lập tức",
+      "title": "Ví dụ 1: Giao Ngay Lập Tức",
       "summary": "Tuyến 6km, hàng thông thường 3kg, khai giá 5.000.000đ, lấy hàng lúc đêm khuya và gặp mưa lớn.",
       "service_type": "instant",
       "payload": {
@@ -501,7 +501,7 @@
     },
     {
       "icon": "🚀",
-      "title": "Ví dụ 2: Hỏa tốc",
+      "title": "Ví dụ 2: Hỏa Tốc",
       "summary": "Tuyến nội thành khác quận 8km, hàng dễ vỡ 5kg, khai giá 3.000.000đ và chọn xe bán tải / xe van.",
       "service_type": "express",
       "payload": {
@@ -527,7 +527,7 @@
     },
     {
       "icon": "⚡",
-      "title": "Ví dụ 3: Nhanh",
+      "title": "Ví dụ 3: Giao Nhanh",
       "summary": "Tuyến nội quận 3km, hàng thông thường 3kg, có COD 2.000.000đ và lấy hàng vào giờ cao điểm.",
       "service_type": "fast",
       "payload": {
@@ -553,7 +553,7 @@
     },
     {
       "icon": "🍃",
-      "title": "Ví dụ 4: Tiêu chuẩn",
+      "title": "Ví dụ 4: Tiêu Chuẩn",
       "summary": "Tuyến nội thành khác quận 8km, hàng thông thường 3kg, có COD 1.100.000đ và đi xe máy.",
       "service_type": "standard",
       "payload": {
@@ -579,9 +579,9 @@
     }
   ],
   "so_sanh_dich_vu": [
-    { "goi": "Tiêu chuẩn", "service_type": "standard", "tag": "Tiết kiệm", "tagCls": "tag-standard", "phi_thoi_gian": "(Đêm khuya, giờ cao điểm)", "phi_thoi_tiet": "(Mưa nhẹ, mưa lớn, thời tiết xấu)", "phu_hop": "Đơn hằng ngày, shop online, tối ưu chi phí." },
+    { "goi": "Tiêu Chuẩn", "service_type": "standard", "tag": "Tiết kiệm", "tagCls": "tag-standard", "phi_thoi_gian": "(Đêm khuya, giờ cao điểm)", "phi_thoi_tiet": "(Mưa nhẹ, mưa lớn, thời tiết xấu)", "phu_hop": "Đơn hằng ngày, shop online, tối ưu chi phí." },
     { "goi": "Giao Nhanh", "service_type": "fast", "tag": "Ưu tiên", "tagCls": "tag-fast", "phi_thoi_gian": "(Đêm khuya, giờ cao điểm)", "phi_thoi_tiet": "(Mưa nhẹ, mưa lớn, thời tiết xấu)", "phu_hop": "Đơn cần đến sớm, hàng thực phẩm, khách cần gấp." },
-    { "goi": "Hỏa tốc", "service_type": "express", "tag": "Rất gấp", "tagCls": "tag-express", "phi_thoi_gian": "(Đêm khuya, giờ cao điểm)", "phi_thoi_tiet": "(Mưa nhẹ, mưa lớn, thời tiết xấu)", "phu_hop": "Tài liệu mật, hàng giá trị, cần lấy/giao ngay." },
-    { "goi": "Giao Ngay", "service_type": "instant", "tag": "X1.50", "tagCls": "tag-instant", "phi_thoi_gian": "(Đêm khuya, giờ cao điểm)", "phi_thoi_tiet": "(Mưa nhẹ, mưa lớn, thời tiết xấu)", "phu_hop": "Cần giao gấp trong vài phút, mua hộ hoặc ship nhanh." }
+    { "goi": "Hỏa Tốc", "service_type": "express", "tag": "Rất gấp", "tagCls": "tag-express", "phi_thoi_gian": "(Đêm khuya, giờ cao điểm)", "phi_thoi_tiet": "(Mưa nhẹ, mưa lớn, thời tiết xấu)", "phu_hop": "Tài liệu mật, hàng giá trị, cần lấy/giao ngay." },
+    { "goi": "Giao Ngay Lập Tức", "service_type": "instant", "tag": "X1.50", "tagCls": "tag-instant", "phi_thoi_gian": "(Đêm khuya, giờ cao điểm)", "phi_thoi_tiet": "(Mưa nhẹ, mưa lớn, thời tiết xấu)", "phu_hop": "Cần giao gấp trong vài phút, mua hộ hoặc ship nhanh." }
   ]
 }

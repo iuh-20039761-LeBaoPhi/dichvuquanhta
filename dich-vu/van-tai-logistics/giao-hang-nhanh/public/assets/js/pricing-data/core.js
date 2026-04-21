@@ -225,6 +225,10 @@ function loadPricingDataSync() {
           (bd.phidichvu && bd.phidichvu.giaongaylaptuc) || {};
         const instantSurcharges =
           normalizeInstantSurchargeConfig(phiDichVuLapTuc);
+        const resolveServiceLabel = (serviceKey, fallback) => {
+          const label = bd.dichvu?.[serviceKey]?.ten;
+          return String(label || fallback || "").trim();
+        };
         QUOTE_SHIPPING_DATA = {
           cities: parsed.BAOGIACHITIET.thanhpho,
           domestic: {
@@ -290,7 +294,7 @@ function loadPricingDataSync() {
             },
             services: {
               standard: {
-                label: "Gói Tiêu chuẩn",
+                label: resolveServiceLabel("tieuchuan", "tieuchuan"),
                 jsonKey: "tieuchuan",
                 base: {
                   same_district:
@@ -321,7 +325,7 @@ function loadPricingDataSync() {
                 appliesServiceFee: !!bd.dichvu.tieuchuan.ap_dung_phi_dich_vu,
               },
               fast: {
-                label: "Gói Nhanh",
+                label: resolveServiceLabel("nhanh", "nhanh"),
                 jsonKey: "nhanh",
                 base: {
                   same_district:
@@ -352,7 +356,7 @@ function loadPricingDataSync() {
                 appliesServiceFee: !!bd.dichvu.nhanh.ap_dung_phi_dich_vu,
               },
               express: {
-                label: "Gói Hỏa tốc",
+                label: resolveServiceLabel("hoatoc", "hoatoc"),
                 jsonKey: "hoatoc",
                 base: {
                   same_district:
@@ -383,7 +387,7 @@ function loadPricingDataSync() {
                 appliesServiceFee: !!bd.dichvu.hoatoc.ap_dung_phi_dich_vu,
               },
               instant: {
-                label: "Giao Ngay Lập Tức",
+                label: resolveServiceLabel("laptuc", "laptuc"),
                 jsonKey: "laptuc",
                 base: {
                   same_district:
@@ -449,6 +453,14 @@ function toPositiveNumber(value) {
 
 function roundCurrency(value) {
   return Math.round(value / 1000) * 1000;
+}
+
+function getDomesticServiceLabel(serviceType, fallback = "") {
+  return String(
+    QUOTE_SHIPPING_DATA?.domestic?.services?.[serviceType]?.label ||
+      fallback ||
+      "",
+  ).trim();
 }
 
 const GIOI_HAN_HANG_HOA_XE_MAY = {
@@ -556,7 +568,7 @@ function getDomesticInstantTimeConfig(dateLike) {
   const rules = Object.values(config.time || {});
   const fallback = rules[rules.length - 1] || {
     key: "default",
-    label: "Tiêu chuẩn",
+    label: "Khung thường",
     phicodinh: 0,
     heso: 1,
     batdau: "00:00",
@@ -1170,7 +1182,7 @@ function tinh_gia_giao_hang_ngay_lap_tuc(thong_tin = {}) {
 
   return {
     serviceType: "instant",
-    serviceName: "Giao hàng ngay lập tức",
+    serviceName: getDomesticServiceLabel("instant", "laptuc"),
     estimate: "",
     vehicleSuggestion: xe_goi_y.label,
     suggestedVehicleKey: xe_goi_y.key,

@@ -77,10 +77,107 @@ function renderDynamicData(data) {
       toPositiveNumber(distanceConfig.base_included_weight) ||
       toPositiveNumber(domesticData.baseIncludedWeight) ||
       2;
+    const serviceLabelFallbacks = {
+      standard: "standard",
+      fast: "fast",
+      express: "express",
+      instant: "instant",
+    };
+    const serviceDisplayOrder = ["instant", "express", "fast", "standard"];
+    const getServiceLabel = (serviceType, fallback = "") =>
+      String(
+        services?.[serviceType]?.label ||
+          fallback ||
+          serviceLabelFallbacks[serviceType] ||
+          serviceType ||
+          "",
+      ).trim();
+    const replaceServiceNameForType = (text, serviceType) => {
+      const label = getServiceLabel(serviceType);
+      if (!text || !label) return text;
+      const aliasPatterns = {
+        standard: [/Gói\s+Tiêu\s+chuẩn/gi, /Tiêu\s+Chuẩn/gi, /Tiêu\s+chuẩn/gi],
+        fast: [/Gói\s+Nhanh/gi, /Giao\s+Nhanh/gi, /Giao\s+nhanh/gi],
+        express: [/Gói\s+Hỏa\s+tốc/gi, /Hỏa\s*Tốc/gi, /Hỏa\s*tốc/gi],
+        instant: [
+          /Giao\s+hàng\s+ngay\s+lập\s+tức/gi,
+          /Giao\s+Ngay\s+Lập\s+Tức/gi,
+          /Giao\s+ngay\s+lập\s+tức/gi,
+          /Giao\s+Ngay/gi,
+          /Giao\s+ngay/gi,
+          /Ngay\s+lập\s+tức/gi,
+        ],
+      };
+      const sourceText = String(text);
+      for (const pattern of aliasPatterns[serviceType] || []) {
+        const replacedText = sourceText.replace(pattern, label);
+        if (replacedText !== sourceText) return replacedText;
+      }
+      return sourceText;
+    };
+    const replaceKnownServiceNames = (text) =>
+      ["instant", "express", "fast", "standard"].reduce(
+        (nextText, serviceType) => replaceServiceNameForType(nextText, serviceType),
+        String(text || ""),
+      );
+    const getDynamicFinalNotes = (notes) => {
+      if (!Array.isArray(notes)) return notes;
+      const orderedLabels = serviceDisplayOrder
+        .map((serviceType) => getServiceLabel(serviceType))
+        .filter(Boolean)
+        .join(" → ");
+      return notes.map((note) => {
+        const text = String(note || "");
+        if (text.includes("4 ví dụ") && text.includes("→") && orderedLabels) {
+          return `<strong>4 ví dụ trên</strong> lần lượt đi theo đúng thứ tự: <strong>${orderedLabels}</strong>, để bạn đối chiếu nhanh từ gói khẩn cấp nhất đến gói tiết kiệm nhất. Đây vẫn là giá tham khảo để bạn ra quyết định nhanh trước khi tạo đơn.`;
+        }
+        return replaceKnownServiceNames(text);
+      });
+    };
+    const buildFinalExampleTitle = (example, service) => {
+      const serviceType = example?.service_type || service?.serviceType || "";
+      const serviceLabel =
+        service?.serviceName || getServiceLabel(serviceType, "Dịch vụ");
+      const rawTitle = String(example?.title || "").trim();
+      if (!rawTitle) return `Ví dụ: ${serviceLabel}`;
+      const prefixMatch = rawTitle.match(/^(Ví dụ(?:\s+\d+)?\s*:)\s*/i);
+      if (prefixMatch) return `${prefixMatch[1]} ${serviceLabel}`;
+      return replaceServiceNameForType(rawTitle, serviceType);
+    };
+
+    const standardLabel = getServiceLabel("standard");
+    const fastLabel = getServiceLabel("fast");
+    const expressLabel = getServiceLabel("express");
+    const instantLabel = getServiceLabel("instant");
 
     // 1. Bảng giá vùng (Fixed Price)
     const fixedTable = document.getElementById("pricing-fixed-table-body");
     if (fixedTable && services.standard && services.fast && services.express) {
+      const baseTabDesc = fixedTable
+        .closest(".pricing-tab-panel")
+        ?.querySelector(".tab-desc");
+      if (baseTabDesc) {
+        baseTabDesc.innerHTML = `
+          Phí vận chuyển tùy thuộc vào
+          <strong>Lộ trình & Gói cước</strong> bạn chọn. Các gói phổ thông
+          sẽ có giá <strong>cố định theo Vùng</strong>, riêng gói
+          <strong>${escapeHtml(instantLabel)}</strong> sẽ tính
+          <strong>linh hoạt theo số Km</strong>.
+        `;
+      }
+      const fixedTableElement = fixedTable.closest("table");
+      const fixedHeaders = fixedTableElement?.querySelectorAll("thead th");
+      if (fixedHeaders && fixedHeaders.length >= 4) {
+        fixedHeaders[1].textContent = standardLabel;
+        fixedHeaders[2].textContent = fastLabel;
+        fixedHeaders[3].textContent = expressLabel;
+      }
+      const fixedSubtitle =
+        fixedTableElement?.closest(".pricing-table-wrapper")
+          ?.previousElementSibling;
+      if (fixedSubtitle?.classList?.contains("table-subtitle")) {
+        fixedSubtitle.textContent = `1. Giá cố định theo Vùng (${standardLabel}, ${fastLabel}, ${expressLabel})`;
+      }
       fixedTable.innerHTML = `
                 <tr>
                     <td><span class="zone-badge same-district">Nội quận/huyện</span></td>
@@ -108,6 +205,13 @@ function renderDynamicData(data) {
       "pricing-distance-table-body",
     );
     if (distanceTable && domesticData.distanceConfig) {
+      const distanceSubtitle =
+        distanceTable
+          .closest(".pricing-table-wrapper")
+          ?.previousElementSibling;
+      if (distanceSubtitle?.classList?.contains("table-subtitle")) {
+        distanceSubtitle.textContent = `2. Giá tính theo Km thực tế (Chỉ ${instantLabel})`;
+      }
       const xeMay = lay_cau_hinh_xe_giao_ngay("xe_may");
       const cauHinhXeMay =
         typeof lay_cau_hinh_gia_xe_may_giao_ngay === "function"
@@ -135,7 +239,7 @@ function renderDynamicData(data) {
     // 3. Ghi chú công thức giao ngay
     const noteArea = document.getElementById("note-service-multipliers");
     if (noteArea && services.instant) {
-      noteArea.innerHTML = `<p><strong>Giao hàng ngay lập tức</strong> đang áp dụng công thức: <strong>tổng tiền = max(phí tối thiểu, km × giá cơ bản × hệ số xe × hệ số xăng)</strong>. Hệ số xăng mặc định là <strong>x1</strong> và có thể điều chỉnh linh hoạt trong hệ thống quản trị khi cần cập nhật mặt bằng giá.</p>`;
+      noteArea.innerHTML = `<p><strong>${escapeHtml(instantLabel)}</strong> đang áp dụng công thức: <strong>tổng tiền = max(phí tối thiểu, km × giá cơ bản × hệ số xe × hệ số xăng)</strong>. Hệ số xăng mặc định là <strong>x1</strong> và có thể điều chỉnh linh hoạt trong hệ thống quản trị khi cần cập nhật mặt bằng giá.</p>`;
     }
 
     // 4. Quy tắc khối lượng & kích thước
@@ -247,10 +351,12 @@ function renderDynamicData(data) {
         getTongGiaVanChuyen(breakdown) +
         (breakdown.weightFee || 0) +
         (breakdown.goodsFee || 0);
+      const serviceExampleTitle = replaceServiceNameForType(
+        serviceScenario.title || "Ví dụ phụ phí dịch vụ",
+        serviceScenario.service_type,
+      );
       serviceExample.innerHTML = `
-        <strong>${escapeHtml(
-          serviceScenario.title || "Ví dụ phụ phí dịch vụ",
-        )}</strong><br />
+        <strong>${escapeHtml(serviceExampleTitle)}</strong><br />
         Phần vận chuyển trước phụ phí: ${formatMoney(
           transportBeforeService,
         )}<br />
@@ -325,20 +431,22 @@ function renderDynamicData(data) {
     );
     if (compareTable && data.so_sanh_dich_vu) {
       const comparisonOrder = {
-        "tag-instant": 1,
-        "tag-express": 2,
-        "tag-fast": 3,
-        "tag-standard": 4,
+        instant: 1,
+        express: 2,
+        fast: 3,
+        standard: 4,
       };
       compareTable.innerHTML = [...data.so_sanh_dich_vu]
         .sort(
           (a, b) =>
-            (comparisonOrder[a.tagCls] || 99) -
-            (comparisonOrder[b.tagCls] || 99),
+            (comparisonOrder[a.service_type] || 99) -
+            (comparisonOrder[b.service_type] || 99),
         )
         .map((item) => {
           const serviceType = item.service_type;
           const serviceMeta = services[serviceType] || {};
+          const serviceLabel =
+            getServiceLabel(serviceType, item.goi || "Đang cập nhật");
           const estimateLabel =
             (serviceMeta.estimate && serviceMeta.estimate.same_district) ||
             (serviceMeta.estimate && serviceMeta.estimate.same_city) ||
@@ -348,7 +456,7 @@ function renderDynamicData(data) {
                 <tr>
                     <td>
                         <div class="service-name-cell">
-                            <strong>${item.goi}</strong>
+                            <strong>${escapeHtml(serviceLabel)}</strong>
                             <span class="service-tag ${item.tagCls || "tag-standard"}">${item.tag}</span>
                         </div>
                     </td>
@@ -402,9 +510,9 @@ function renderDynamicData(data) {
               payload.loai_hang || payload.itemType || "thuong",
             );
             const serviceLabel =
-              example.title || `Ví dụ: ${service.serviceName || "Dịch vụ"}`;
+              buildFinalExampleTitle(example, service);
             const summary =
-              example.summary ||
+              replaceKnownServiceNames(example.summary) ||
               `${service.serviceName || "Dịch vụ"} tuyến ${
                 result.zoneLabel || "nội địa"
               }.`;
@@ -509,7 +617,7 @@ function renderDynamicData(data) {
     }
     renderParagraphGroup(
       "pricing-final-note",
-      pricingContent.vi_du_hoan_chinh?.ghi_chu,
+      getDynamicFinalNotes(pricingContent.vi_du_hoan_chinh?.ghi_chu),
     );
   }
 

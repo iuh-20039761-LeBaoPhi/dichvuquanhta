@@ -163,8 +163,8 @@ Chưa có:
 ## Tài khoản / phiên người dùng
 
 - Menu `Tài khoản` của chuyển dọn trỏ sang form chung:
-  - `../public/dang-nhap.html?service=chuyendon`
-  - `../public/dang-ky.html?service=chuyendon`
+  - `../../../public/dang-nhap.html?service=chuyendon`
+  - `../../../public/dang-ky.html?service=chuyendon`
 - [main-auth.js](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\js\modules\main-auth.js) chỉ còn giữ logic tạo tài khoản khách hàng tối giản từ form đặt lịch khi chưa có tài khoản.
 - Portal khách hàng / nhà cung cấp của chuyển dọn đọc dữ liệu phiên cục bộ và đồng bộ lại từ bảng `nguoidung`.
 - Hồ sơ khách hàng chỉ cho sửa `họ tên` và `email`; `số điện thoại` là định danh tài khoản nên đang ở chế độ chỉ đọc.
@@ -227,3 +227,4 @@ Chưa có:
 - Hotline: `0775 472 347`
 - Email: `dichvuquanhta.vn@gmail.com`
 - Khu vực phục vụ chính: TP. Hồ Chí Minh
+

@@ -14,18 +14,32 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     exit;
 }
 
+require_once __DIR__ . '/../lib/pricing_config_service.php';
+
 $raw = file_get_contents('php://input');
 $decoded = json_decode((string) $raw, true);
-$pricingData = $decoded['pricingData'] ?? null;
+$versionId = (int) ($decoded['versionId'] ?? 0);
 
-if (!is_array($pricingData)) {
+if ($versionId <= 0) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
-        'message' => 'Thiếu pricingData hợp lệ để export.',
+        'message' => 'Thiếu versionId KRUD hợp lệ để export JSON cache.',
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
+
+$built = pricing_service_export_config_from_version($versionId);
+if (empty($built['success']) || !is_array($built['data'] ?? null)) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => (string) ($built['message'] ?? 'Không dựng được dữ liệu export từ KRUD.'),
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+$pricingData = $built['data'];
 
 $targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'pricing-data.json';
 $encoded = json_encode(

@@ -1,6 +1,23 @@
 (function (window, document) {
   const config = window.GHNAdminPricing || {};
   if (!config.pageUrl || !config.exportUrl) return;
+  const pricingUtils = window.GHNAdminPricingUtils || null;
+  if (!pricingUtils) {
+    console.error("Thiếu admin-pricing-utils.js trước admin-pricing-krud.js.");
+    return;
+  }
+  const {
+    slugify,
+    toNumber,
+    formatDecimal,
+    sanitizePriceKey,
+    formatMoneyPreview,
+    formatPercent,
+    clonePricingData,
+    normalizePricingDisplayLabels,
+    stripKrudMeta,
+    isValidTimeText,
+  } = pricingUtils;
 
   const SERVICE_ORDER = {
     tieuchuan: 10,
@@ -167,72 +184,6 @@
     }
 
     return [];
-  }
-
-  function slugify(value) {
-    const normalized = String(value || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-    if (normalized) return normalized;
-    let hash = 0;
-    const source = String(value || "");
-    for (let i = 0; i < source.length; i += 1) {
-      hash = (hash << 5) - hash + source.charCodeAt(i);
-      hash |= 0;
-    }
-    return `key-${Math.abs(hash)}`;
-  }
-
-  function toNumber(value, fallback = 0) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : fallback;
-  }
-
-  function formatDecimal(value, precision = 3) {
-    return Number(toNumber(value, 0).toFixed(precision));
-  }
-
-  function sanitizePriceKey(value) {
-    return String(value || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9\-_]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  }
-
-  function formatMoneyPreview(value) {
-    return `${new Intl.NumberFormat("vi-VN").format(Math.round(toNumber(value, 0)))}đ`;
-  }
-
-  function formatPercent(value) {
-    return `${(toNumber(value, 0) * 100).toFixed(2)}%`;
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
-  function clonePricingData(pricingData) {
-    return JSON.parse(JSON.stringify(pricingData || {}));
-  }
-
-  function stripKrudMeta(pricingData) {
-    const cloned = clonePricingData(pricingData);
-    if (cloned && typeof cloned === "object") {
-      delete cloned._krud_meta;
-    }
-    return cloned;
-  }
-
-  function isValidTimeText(value) {
-    return /^\d{2}:\d{2}$/.test(String(value || "").trim());
   }
 
   function ensureKrudMeta(pricingData) {
@@ -487,7 +438,152 @@
   }
 
   function serializePricingData(value) {
+    if (Array.isArray(value)) {
+      return `[${value.map((item) => serializePricingData(item)).join(",")}]`;
+    }
+    if (value && typeof value === "object") {
+      return `{${Object.keys(value)
+        .sort()
+        .map((key) => `${JSON.stringify(key)}:${serializePricingData(value[key])}`)
+        .join(",")}}`;
+    }
     return JSON.stringify(value ?? null);
+  }
+
+  function checksumText(value) {
+    const source = String(value || "");
+    let hash = 0;
+    for (let i = 0; i < source.length; i += 1) {
+      hash = (hash * 31 + source.charCodeAt(i)) >>> 0;
+    }
+    return hash.toString(16).padStart(8, "0");
+  }
+
+  function setSyncStatus(status, message) {
+    const panel = document.querySelector("[data-pricing-sync-panel]");
+    const statusNode = document.querySelector("[data-pricing-sync-status]");
+    if (!panel || !statusNode) return;
+
+    panel.classList.remove("is-checking", "is-synced", "is-mismatch", "is-error");
+    if (status) {
+      panel.classList.add(`is-${status}`);
+    }
+    statusNode.textContent = message;
+  }
+
+  async function fetchPublicPricingJson() {
+    if (!config.publicPricingJsonUrl) {
+      throw new Error("Thiếu publicPricingJsonUrl để kiểm tra JSON cache public.");
+    }
+
+    const separator = config.publicPricingJsonUrl.includes("?") ? "&" : "?";
+    const response = await fetch(`${config.publicPricingJsonUrl}${separator}_ts=${Date.now()}`, {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      throw new Error(`Không đọc được pricing-data.json public (HTTP ${response.status}).`);
+    }
+
+    return response.json();
+  }
+
+  async function checkPublicJsonSync() {
+    const button = document.querySelector("[data-pricing-sync-check]");
+    const previousText = button ? button.innerHTML : "";
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang kiểm tra';
+    }
+    setSyncStatus("checking", "Đang đọc JSON cache public/data/pricing-data.json và so sánh với active KRUD...");
+
+    try {
+      const publicPricingData = await fetchPublicPricingJson();
+      const krudPayload = stripKrudMeta(currentPricingSnapshot);
+      const publicPayload = stripKrudMeta(publicPricingData);
+      const krudSerialized = serializePricingData(krudPayload);
+      const publicSerialized = serializePricingData(publicPayload);
+      const krudChecksum = checksumText(krudSerialized);
+      const publicChecksum = checksumText(publicSerialized);
+      const versionText = activeVersionId > 0 ? `KRUD active #${activeVersionId}` : "KRUD chưa có active version";
+
+      if (krudSerialized === publicSerialized) {
+        setSyncStatus(
+          "synced",
+          `${versionText}. JSON cache public đang khớp dữ liệu. Checksum ${publicChecksum}.`,
+        );
+        showAlert("success", "JSON cache public đang khớp với dữ liệu active KRUD.");
+        return true;
+      }
+
+      setSyncStatus(
+        "mismatch",
+        `${versionText} đang lệch với JSON cache public. KRUD ${krudChecksum}, JSON ${publicChecksum}. Bấm Export lại JSON để public nhận dữ liệu active KRUD.`,
+      );
+      showAlert(
+        "warning",
+        "JSON cache public đang lệch dữ liệu active KRUD. Bấm Export lại JSON để đồng bộ.",
+        { durationMs: 12000 },
+      );
+      return false;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Không kiểm tra được đồng bộ JSON cache public.";
+      setSyncStatus("error", message);
+      showAlert("error", message);
+      return false;
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = previousText;
+      }
+    }
+  }
+
+  async function exportActivePricingJson() {
+    const button = document.querySelector("[data-pricing-sync-export]");
+    const checkButton = document.querySelector("[data-pricing-sync-check]");
+    const previousText = button ? button.innerHTML : "";
+
+    if (!currentPricingSnapshot) {
+      const message = "Không có dữ liệu active KRUD để export JSON.";
+      setSyncStatus("error", message);
+      showAlert("error", message);
+      return false;
+    }
+
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang export';
+    }
+    if (checkButton) {
+      checkButton.disabled = true;
+    }
+    setSyncStatus("checking", "Đang export lại JSON cache public/data/pricing-data.json từ active KRUD...");
+
+    try {
+      normalizePricingDisplayLabels(currentPricingSnapshot);
+      await exportPricingDataFile(activeVersionId);
+      setSyncStatus(
+        "synced",
+        `KRUD active #${activeVersionId || "?"}. Đã export lại JSON cache pricing-data.json từ dữ liệu active KRUD.`,
+      );
+      showAlert("success", "Đã export lại JSON cache pricing-data.json từ active KRUD.");
+      await checkPublicJsonSync();
+      return true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Export lại JSON cache public thất bại.";
+      setSyncStatus("error", message);
+      showAlert("error", message, { durationMs: 12000 });
+      return false;
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = previousText;
+      }
+      if (checkButton) {
+        checkButton.disabled = false;
+      }
+    }
   }
 
   function extractBracketKey(formData, prefix) {
@@ -787,9 +883,44 @@
     return false;
   }
 
-  function showAlert(type, message) {
-    if (window.core && typeof window.core.notify === "function") {
+  function showAlert(type, message, options = {}) {
+    const durationMs = Number(options.durationMs || 0);
+    if (!durationMs && window.core && typeof window.core.notify === "function") {
       window.core.notify(message, type);
+      return;
+    }
+    if (durationMs > 0) {
+      let container = document.querySelector(".core-toast-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.className = "core-toast-container";
+        document.body.appendChild(container);
+      }
+
+      const iconByType = {
+        error: "fa-circle-xmark",
+        warning: "fa-triangle-exclamation",
+        info: "fa-circle-info",
+        success: "fa-check-circle",
+      };
+      const toast = document.createElement("div");
+      toast.className = `core-toast ${type}`;
+
+      const icon = document.createElement("div");
+      icon.className = "core-toast-icon";
+      icon.innerHTML = `<i class="fa-solid ${iconByType[type] || iconByType.success}"></i>`;
+
+      const content = document.createElement("div");
+      content.className = "core-toast-message";
+      content.textContent = message;
+
+      toast.append(icon, content);
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add("show"), 10);
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 500);
+      }, durationMs);
       return;
     }
     // Fallback nếu core chưa load
@@ -1103,8 +1234,11 @@
     return upsertVersionRow(table, versionId, extraWhere, data);
   }
 
-  async function exportPricingDataFile(pricingData) {
-    const exportPayload = stripKrudMeta(pricingData);
+  async function exportPricingDataFile(versionId = activeVersionId) {
+    const exportVersionId = Number(versionId || 0);
+    if (exportVersionId <= 0) {
+      throw new Error("Thiếu KRUD versionId để export pricing-data.json.");
+    }
     await fetch(config.exportUrl, {
       method: "POST",
       credentials: "same-origin",
@@ -1112,7 +1246,7 @@
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ pricingData: exportPayload }),
+      body: JSON.stringify({ versionId: exportVersionId }),
     }).then(async (response) => {
       const payload = await response.json();
       if (!response.ok || !payload.success) {
@@ -1122,6 +1256,19 @@
         throw new Error("pricing-data.json chưa được xác minh sau khi export.");
       }
     });
+  }
+
+  function createPartialExportError(error) {
+    const detail = error instanceof Error ? error.message : String(error || "").trim();
+    const message = [
+      "KRUD đã lưu thành công, nhưng export JSON cache pricing-data.json thất bại.",
+      "Public có thể chưa nhận bảng giá mới từ cache.",
+      detail ? `Chi tiết: ${detail}` : "",
+    ].filter(Boolean).join(" ");
+    const partialError = new Error(message);
+    partialError.partialSave = true;
+    partialError.originalError = error;
+    return partialError;
   }
 
   async function persistPricingRowLevel(pricingData, action, formData, versionId) {
@@ -1721,7 +1868,11 @@
       const persisted = await persistPricingRowLevel(pricingData, action, formData, versionId);
       if (persisted) {
         showProgress("Đang export pricing-data.json...");
-        await exportPricingDataFile(pricingData);
+        try {
+          await exportPricingDataFile(versionId);
+        } catch (error) {
+          throw createPartialExportError(error);
+        }
         return versionId;
       }
     }
@@ -1762,9 +1913,6 @@
     doneRows = totalRows;
     updateProgress();
 
-    showProgress("Đang export pricing-data.json...");
-    await exportPricingDataFile(pricingData);
-
     if (current.versionId <= 0) {
       showProgress("Đang kích hoạt phiên bản bảng giá mới...");
       await updateTable("ghn_pricing_versions", versionId, {
@@ -1773,6 +1921,13 @@
       });
       await setActiveVersion(versionId, current);
       activeVersionId = versionId;
+    }
+
+    showProgress("Đang export pricing-data.json...");
+    try {
+      await exportPricingDataFile(versionId);
+    } catch (error) {
+      throw createPartialExportError(error);
     }
     return versionId;
   }
@@ -1809,6 +1964,9 @@
     showAlert("success", "Đang kiểm tra dữ liệu và đồng bộ lên KRUD...");
 
     try {
+      if (config.canEdit === false) {
+        throw new Error("KRUD là nguồn chính, JSON chỉ là cache/export nên không thể lưu khi KRUD chưa sẵn sàng.");
+      }
       showProgress("Đang kiểm tra dữ liệu biểu mẫu...");
       const action = String(formData.get("action") || "").trim();
       if (!action) {
@@ -1817,6 +1975,7 @@
       const pricingData = canPersistRowLevel(action, formData)
         ? applyDirectFormUpdate(action, formData, currentPricingSnapshot)
         : await previewPricingUpdate(formData);
+      normalizePricingDisplayLabels(pricingData);
       if (serializePricingData(pricingData) === serializePricingData(currentPricingSnapshot)) {
         throw new Error("Không phát hiện thay đổi nào để lưu.");
       }
@@ -1837,7 +1996,12 @@
         progressTimer = 0;
       }
       hideProgress();
+      toggleSubmitting(form, false);
       clearPendingFormState(form);
+      setSyncStatus(
+        "synced",
+        `KRUD active #${versionId}. Vừa export JSON cache pricing-data.json thành công từ KRUD.`,
+      );
       showAlert(
         "success",
         `Đã lưu bảng giá. Phiên bản active hiện tại: #${versionId}.`,
@@ -1848,7 +2012,12 @@
         progressTimer = 0;
       }
       hideProgress();
-      showAlert("error", error instanceof Error ? error.message : "Không lưu được bảng giá.");
+      const isPartialSave = Boolean(error && error.partialSave);
+      showAlert(
+        isPartialSave ? "warning" : "error",
+        error instanceof Error ? error.message : "Không lưu được bảng giá.",
+        isPartialSave ? { durationMs: 12000 } : {},
+      );
       toggleSubmitting(form, false);
       clearPendingFormState(form);
     }
@@ -1921,6 +2090,13 @@
         button.addEventListener("click", () => {
           closeModal(button.closest("[data-modal]"));
         });
+      });
+
+      shell.querySelector("[data-pricing-sync-check]")?.addEventListener("click", () => {
+        checkPublicJsonSync();
+      });
+      shell.querySelector("[data-pricing-sync-export]")?.addEventListener("click", () => {
+        exportActivePricingJson();
       });
     }
 

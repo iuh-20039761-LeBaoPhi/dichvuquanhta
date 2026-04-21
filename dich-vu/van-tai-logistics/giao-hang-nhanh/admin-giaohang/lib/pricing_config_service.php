@@ -15,18 +15,25 @@ function pricing_service_load_config(string $fallbackPath): array
         $built = pricing_service_build_config_from_version($activeVersionId);
         if (!empty($built['success'])) {
             return [
-                'data' => $built['data'],
+                'data' => pricing_service_normalize_display_labels($built['data']),
                 'error' => '',
                 'source' => 'krud',
                 'version_id' => $activeVersionId,
             ];
         }
+
+        return [
+            'data' => null,
+            'error' => 'KRUD active #' . $activeVersionId . ' đang lỗi đọc dữ liệu: ' . (string) ($built['message'] ?? 'Không rõ lỗi.') . ' JSON cache public chỉ là export nên không dùng để chỉnh bảng giá.',
+            'source' => 'krud_error',
+            'version_id' => $activeVersionId,
+        ];
     }
 
     if (!is_file($fallbackPath)) {
         return [
             'data' => null,
-            'error' => 'Không tìm thấy file pricing-data.json fallback.',
+            'error' => 'Chưa có KRUD active và không tìm thấy file JSON cache pricing-data.json để bootstrap.',
             'source' => 'none',
             'version_id' => 0,
         ];
@@ -36,7 +43,7 @@ function pricing_service_load_config(string $fallbackPath): array
     if ($raw === false) {
         return [
             'data' => null,
-            'error' => 'Không thể đọc file pricing-data.json fallback.',
+            'error' => 'Chưa có KRUD active và không thể đọc file JSON cache pricing-data.json để bootstrap.',
             'source' => 'none',
             'version_id' => 0,
         ];
@@ -46,7 +53,7 @@ function pricing_service_load_config(string $fallbackPath): array
     if (!is_array($decoded)) {
         return [
             'data' => null,
-            'error' => 'Nội dung pricing-data.json fallback không hợp lệ.',
+            'error' => 'Chưa có KRUD active và nội dung JSON cache pricing-data.json không hợp lệ.',
             'source' => 'none',
             'version_id' => 0,
         ];
@@ -55,9 +62,178 @@ function pricing_service_load_config(string $fallbackPath): array
     return [
         'data' => $decoded,
         'error' => '',
-        'source' => 'file',
+        'source' => 'json_cache_bootstrap',
         'version_id' => 0,
     ];
+}
+
+function pricing_service_export_config_from_version(int $versionId): array
+{
+    if ($versionId <= 0) {
+        return [
+            'success' => false,
+            'message' => 'Thiếu versionId KRUD để export JSON cache.',
+            'data' => [],
+        ];
+    }
+
+    $built = pricing_service_build_config_from_version($versionId);
+    if (empty($built['success'])) {
+        return $built;
+    }
+
+    return [
+        'success' => true,
+        'message' => '',
+        'data' => pricing_service_strip_krud_meta(
+            pricing_service_normalize_display_labels((array) $built['data'])
+        ),
+    ];
+}
+
+function pricing_service_strip_krud_meta(array $pricingData): array
+{
+    unset($pricingData['_krud_meta']);
+    return $pricingData;
+}
+
+function pricing_service_service_labels_by_type(array $pricingData): array
+{
+    $services = $pricingData['BAOGIACHITIET']['noidia']['dichvu'] ?? [];
+    $map = [
+        'standard' => 'tieuchuan',
+        'fast' => 'nhanh',
+        'express' => 'hoatoc',
+        'instant' => 'laptuc',
+    ];
+    $labels = [];
+    foreach ($map as $serviceType => $jsonKey) {
+        $labels[$serviceType] = trim((string) ($services[$jsonKey]['ten'] ?? $jsonKey));
+    }
+    return $labels;
+}
+
+function pricing_service_replace_service_name_for_type(string $text, string $serviceType, array $labels): string
+{
+    $label = trim((string) ($labels[$serviceType] ?? ''));
+    if ($text === '' || $label === '') {
+        return $text;
+    }
+
+    $patterns = [
+        'standard' => ['/Gói\s+Tiêu\s+chuẩn/iu', '/Tiêu\s+Chuẩn/iu', '/Tiêu\s+chuẩn/iu'],
+        'fast' => ['/Gói\s+Nhanh/iu', '/Giao\s+Nhanh/iu', '/Giao\s+nhanh/iu'],
+        'express' => ['/Gói\s+Hỏa\s+tốc/iu', '/Hỏa\s*Tốc/iu', '/Hỏa\s*tốc/iu'],
+        'instant' => [
+            '/Giao\s+hàng\s+ngay\s+lập\s+tức/iu',
+            '/Giao\s+Ngay\s+Lập\s+Tức/iu',
+            '/Giao\s+ngay\s+lập\s+tức/iu',
+            '/Giao\s+Ngay/iu',
+            '/Giao\s+ngay/iu',
+            '/Ngay\s+lập\s+tức/iu',
+        ],
+    ];
+
+    foreach ($patterns[$serviceType] ?? [] as $pattern) {
+        $next = preg_replace($pattern, $label, $text);
+        if (is_string($next) && $next !== $text) {
+            return $next;
+        }
+    }
+
+    return $text;
+}
+
+function pricing_service_replace_known_service_names(string $text, array $labels): string
+{
+    foreach (['instant', 'express', 'fast', 'standard'] as $serviceType) {
+        $text = pricing_service_replace_service_name_for_type($text, $serviceType, $labels);
+    }
+    return $text;
+}
+
+function pricing_service_build_synced_example_title(string $title, string $serviceType, array $labels): string
+{
+    $label = trim((string) ($labels[$serviceType] ?? $serviceType ?: 'Dịch vụ'));
+    if ($title === '') {
+        return 'Ví dụ: ' . $label;
+    }
+    if (preg_match('/^(Ví dụ(?:\s+\d+)?\s*:)\s*/iu', $title, $matches)) {
+        return $matches[1] . ' ' . $label;
+    }
+    return pricing_service_replace_service_name_for_type($title, $serviceType, $labels);
+}
+
+function pricing_service_normalize_display_labels(array $pricingData): array
+{
+    $labels = pricing_service_service_labels_by_type($pricingData);
+
+    if (isset($pricingData['so_sanh_dich_vu']) && is_array($pricingData['so_sanh_dich_vu'])) {
+        foreach ($pricingData['so_sanh_dich_vu'] as &$item) {
+            $serviceType = trim((string) ($item['service_type'] ?? ''));
+            if ($serviceType !== '' && isset($labels[$serviceType])) {
+                $item['goi'] = $labels[$serviceType];
+            }
+        }
+        unset($item);
+    }
+
+    if (isset($pricingData['vi_du_hoan_chinh']) && is_array($pricingData['vi_du_hoan_chinh'])) {
+        foreach ($pricingData['vi_du_hoan_chinh'] as &$example) {
+            $serviceType = trim((string) ($example['service_type'] ?? ''));
+            if ($serviceType === '') {
+                continue;
+            }
+            $example['title'] = pricing_service_build_synced_example_title(
+                trim((string) ($example['title'] ?? '')),
+                $serviceType,
+                $labels
+            );
+            if (!empty($example['summary'])) {
+                $example['summary'] = pricing_service_replace_known_service_names((string) $example['summary'], $labels);
+            }
+        }
+        unset($example);
+    }
+
+    if (
+        isset($pricingData['noi_dung_bang_gia']['phu_phi_dich_vu']['thoi_gian_thoi_tiet']['vi_du'])
+        && is_array($pricingData['noi_dung_bang_gia']['phu_phi_dich_vu']['thoi_gian_thoi_tiet']['vi_du'])
+    ) {
+        $serviceScenario = &$pricingData['noi_dung_bang_gia']['phu_phi_dich_vu']['thoi_gian_thoi_tiet']['vi_du'];
+        if (!empty($serviceScenario['title']) && !empty($serviceScenario['service_type'])) {
+            $serviceScenario['title'] = pricing_service_replace_service_name_for_type(
+                (string) $serviceScenario['title'],
+                (string) $serviceScenario['service_type'],
+                $labels
+            );
+        }
+        unset($serviceScenario);
+    }
+
+    if (
+        isset($pricingData['noi_dung_bang_gia']['vi_du_hoan_chinh']['ghi_chu'])
+        && is_array($pricingData['noi_dung_bang_gia']['vi_du_hoan_chinh']['ghi_chu'])
+    ) {
+        $finalNotes = &$pricingData['noi_dung_bang_gia']['vi_du_hoan_chinh']['ghi_chu'];
+        $orderedLabels = implode(' → ', array_filter([
+            $labels['instant'] ?? '',
+            $labels['express'] ?? '',
+            $labels['fast'] ?? '',
+            $labels['standard'] ?? '',
+        ]));
+        foreach ($finalNotes as &$note) {
+            $text = (string) $note;
+            if ($orderedLabels !== '' && strpos($text, '4 ví dụ') !== false && strpos($text, '→') !== false) {
+                $note = '<strong>4 ví dụ trên</strong> lần lượt đi theo đúng thứ tự: <strong>' . $orderedLabels . '</strong>, để bạn đối chiếu nhanh từ gói khẩn cấp nhất đến gói tiết kiệm nhất. Đây vẫn là giá tham khảo để bạn ra quyết định nhanh trước khi tạo đơn.';
+                continue;
+            }
+            $note = pricing_service_replace_known_service_names($text, $labels);
+        }
+        unset($note, $finalNotes);
+    }
+
+    return $pricingData;
 }
 
 function pricing_service_get_active_version_id(): int

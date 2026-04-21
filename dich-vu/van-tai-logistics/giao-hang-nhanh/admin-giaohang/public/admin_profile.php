@@ -48,31 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "Không thể lưu thông tin hồ sơ admin.";
             }
         }
-    } elseif (isset($_POST['change_password'])) {
-        $currentPass = (string) ($_POST['mat_khau_hien_tai'] ?? '');
-        $newPass = (string) ($_POST['mat_khau_moi'] ?? '');
-        $confirmPass = (string) ($_POST['xac_nhan_mat_khau_moi'] ?? '');
-        $activePassword = (string) ($stored['password'] ?? 'Aq123@cc');
-
-        if ($currentPass === '' || $newPass === '' || $confirmPass === '') {
-            $error = "Vui lòng nhập đầy đủ thông tin mật khẩu.";
-        } elseif ($newPass !== $confirmPass) {
-            $error = "Mật khẩu mới không khớp.";
-        } elseif ($currentPass !== $activePassword) {
-            $error = "Mật khẩu hiện tại không đúng.";
-        } else {
-            $profiles[$username] = array_merge($stored, [
-                'fullname' => $user['fullname'],
-                'email' => $user['email'],
-                'phone' => $user['phone'],
-                'password' => $newPass,
-            ]);
-            if (admin_local_store_write('admin-profiles.json', $profiles)) {
-                $msg = "Đổi mật khẩu thành công! Lần đăng nhập sau sẽ dùng mật khẩu mới.";
-            } else {
-                $error = "Không thể lưu mật khẩu mới.";
-            }
-        }
     }
 }
 ?>
@@ -135,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label>Vai trò hệ thống</label>
                             <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(10, 42, 102, 0.05); border-radius: 10px;">
                                 <span class="role-badge role-admin">Quản trị viên (Admin)</span>
-                                <small style="color: #64748b;">(Tài khoản quản trị tạm thời)</small>
+                                <small style="color: #64748b;">(Tài khoản quản trị dùng chung)</small>
                             </div>
                         </div>
                     </div>
@@ -149,40 +124,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <aside>
-                <div class="admin-card" style="border-top: 4px solid #d9534f;">
+                <div class="admin-card" style="border-top: 4px solid #ff7a00;">
                     <div class="admin-card-header">
-                        <h3><i class="fa-solid fa-shield-halved"></i> Đổi mật khẩu</h3>
+                        <h3><i class="fa-solid fa-shield-halved"></i> Bảo mật đăng nhập</h3>
                     </div>
-                    
-                    <form method="POST">
-                        <div class="form-grid" style="grid-template-columns: 1fr;">
-                            <div class="form-group">
-                                <label>Mật khẩu hiện tại</label>
-                                <input type="password" name="mat_khau_hien_tai" class="admin-input" required placeholder="••••••••">
-                            </div>
-                            <div class="form-group">
-                                <label>Mật khẩu mới</label>
-                                <input type="password" name="mat_khau_moi" class="admin-input" required placeholder="Tối thiểu 6 ký tự">
-                            </div>
-                            <div class="form-group">
-                                <label>Xác nhận mật khẩu</label>
-                                <input type="password" name="xac_nhan_mat_khau_moi" class="admin-input" required placeholder="Nhập lại mật khẩu mới">
-                            </div>
+                    <div style="display: flex; align-items: flex-start; gap: 15px;">
+                        <div style="font-size: 30px; color: #ff7a00;"><i class="fa-solid fa-lock"></i></div>
+                        <div style="font-size: 13px; color: #64748b; line-height: 1.6;">
+                            Mật khẩu admin đang được quản lý bởi trang đăng nhập chung của hệ thống. Nếu cần đổi mật khẩu, hãy cập nhật tài khoản trong bảng admin chung.
                         </div>
-                        
-                        <div style="margin-top: 25px;">
-                            <button type="submit" name="change_password" class="btn-primary" style="width: 100%; justify-content: center; background: #d9534f;">
-                                <i class="fa-solid fa-key"></i> Đổi mật khẩu bảo mật
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
                 
                 <div class="admin-card" style="margin-top: 20px; background: #f8f9fa;">
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="font-size: 30px; color: #ff7a00;"><i class="fa-solid fa-circle-info"></i></div>
                         <div style="font-size: 13px; color: #64748b; line-height: 1.5;">
-                            Hồ sơ admin tạm thời đang lưu ở JSON nội bộ, không còn phụ thuộc MySQL cũ.
+                            Thông tin hiển thị của hồ sơ admin vẫn lưu ở JSON nội bộ của phân hệ giao hàng nhanh.
                         </div>
                     </div>
                 </div>

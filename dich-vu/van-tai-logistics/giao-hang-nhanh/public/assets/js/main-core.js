@@ -605,7 +605,7 @@
 
     if (type === "shipper") {
       return {
-        home: "../../index.html",
+        home: "../../../index.html",
         login: sharedLoginUrl,
         logout: sharedLoginUrl,
         dashboard: "dashboard-giaohang.html",
