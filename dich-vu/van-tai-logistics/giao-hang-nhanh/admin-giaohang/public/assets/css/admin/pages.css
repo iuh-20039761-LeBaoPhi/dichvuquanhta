@@ -315,7 +315,7 @@ body {
   }
   
   .admin-container {
-    padding: 15px;
+    padding: 15px; /* Giảm padding trên mobile cực nhỏ */
   }
   
   .page-header {
@@ -457,6 +457,10 @@ body {
 @media (max-width: 1024px) {
   .dashboard-layout {
     grid-template-columns: 1fr;
+  }
+
+  .admin-container {
+    padding: 20px; /* Thêm quy tắc padding cho tablet */
   }
 
   .filter-sidebar {

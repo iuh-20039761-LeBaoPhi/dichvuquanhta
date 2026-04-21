@@ -1420,16 +1420,37 @@ const customerInvoiceDetailModule = (function (window, document) {
           const videoFiles = collectFiles(
             form.querySelector('input[name="customer_feedback_video"]'),
           );
-          const uploadedImageLinks = imageFiles.length
-            ? (await core.uploadFilesToDrive(imageFiles)).map((item) =>
-                normalizeText(item?.url || item?.download_url || ""),
-              )
-            : [];
-          const uploadedVideoLinks = videoFiles.length
-            ? (await core.uploadFilesToDrive(videoFiles)).map((item) =>
-                normalizeText(item?.url || item?.download_url || ""),
-              )
-            : [];
+          let mediaWarning = "";
+          let uploadedImageLinks = [];
+          let uploadedVideoLinks = [];
+          if (imageFiles.length) {
+            try {
+              uploadedImageLinks = (await core.uploadFilesToDrive(imageFiles))
+                .map((item) =>
+                  normalizeText(item?.url || item?.download_url || ""),
+                )
+                .filter(Boolean);
+            } catch (error) {
+              console.error("Cannot upload customer feedback images:", error);
+              mediaWarning =
+                "Ảnh đánh giá chưa được tải lên Google Drive; nội dung đánh giá vẫn được lưu.";
+            }
+          }
+          if (videoFiles.length) {
+            try {
+              uploadedVideoLinks = (await core.uploadFilesToDrive(videoFiles))
+                .map((item) =>
+                  normalizeText(item?.url || item?.download_url || ""),
+                )
+                .filter(Boolean);
+            } catch (error) {
+              console.error("Cannot upload customer feedback videos:", error);
+              mediaWarning = [
+                mediaWarning,
+                "Video đánh giá chưa được tải lên Google Drive; nội dung đánh giá vẫn được lưu.",
+              ].filter(Boolean).join(" ");
+            }
+          }
           const mergedImageAttachments = mergeAttachmentValues(
             invoice?.customer_feedback_image_attachments,
             uploadedImageLinks,
@@ -1438,17 +1459,31 @@ const customerInvoiceDetailModule = (function (window, document) {
             invoice?.customer_feedback_video_attachments,
             uploadedVideoLinks,
           );
-          const result = await store.saveBookingFeedback?.({
-            id: invoice.remote_id || "",
-            code: invoice.code || "",
-          }, {
-            customer_rating: formData.get("customer_rating") || 0,
-            customer_feedback: formData.get("customer_feedback") || "",
-            customer_feedback_image_attachments: mergedImageAttachments,
-            customer_feedback_video_attachments: mergedVideoAttachments,
-          });
+          let result = null;
+          try {
+            result = await store.saveBookingFeedback?.({
+              id: invoice.remote_id || "",
+              code: invoice.code || "",
+            }, {
+              customer_rating: formData.get("customer_rating") || 0,
+              customer_feedback: formData.get("customer_feedback") || "",
+              customer_feedback_image_attachments: mergedImageAttachments,
+              customer_feedback_video_attachments: mergedVideoAttachments,
+            });
+          } catch (krudError) {
+            console.error("Cannot save customer feedback to KRUD:", krudError);
+            throw new Error(
+              uploadedImageLinks.length || uploadedVideoLinks.length
+                ? "Ảnh/video có thể đã tải lên Google Drive, nhưng đánh giá chưa được lưu vào hệ thống."
+                : krudError?.message ||
+                    "Không thể lưu đánh giá vào hệ thống lúc này.",
+            );
+          }
           renderInvoice(result || null);
-          core.notify("Đã lưu đánh giá khách hàng.", "success");
+          core.notify(
+            mediaWarning || "Đã lưu đánh giá khách hàng.",
+            mediaWarning ? "warning" : "success",
+          );
         } catch (error) {
           core.notify(error?.message || "Không thể lưu đánh giá ở thời điểm hiện tại.", "error");
         } finally {

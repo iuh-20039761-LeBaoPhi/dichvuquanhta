@@ -45,11 +45,6 @@
   const PARTIAL_ACTION_TABLES = {
     save_services: ["ghn_goi_dich_vu", "ghn_gia_goi_theo_vung"],
     save_instant_service: ["ghn_goi_dich_vu", "ghn_cau_hinh_khoang_cach"],
-    save_service_fees: [
-      "ghn_cau_hinh_phi_dich_vu",
-      "ghn_khung_gio_dich_vu",
-      "ghn_dieu_kien_giao",
-    ],
     add_service_time: ["ghn_khung_gio_dich_vu"],
     save_service_time_row: ["ghn_khung_gio_dich_vu"],
     delete_service_time: ["ghn_khung_gio_dich_vu"],
@@ -57,11 +52,9 @@
     save_weather_row: ["ghn_dieu_kien_giao"],
     delete_weather: ["ghn_dieu_kien_giao"],
     save_cod_insurance: ["ghn_cau_hinh_tai_chinh"],
-    save_vehicles: ["ghn_phuong_tien"],
     add_vehicle: ["ghn_phuong_tien"],
     delete_vehicle: ["ghn_phuong_tien"],
     save_vehicle_row: ["ghn_phuong_tien"],
-    save_goods_fees: ["ghn_loai_hang"],
     add_goods_fee: ["ghn_loai_hang"],
     delete_goods_fee: ["ghn_loai_hang"],
     save_goods_fee_row: ["ghn_loai_hang"],
@@ -69,7 +62,6 @@
   const ACTION_SECTION_IDS = {
     save_services: "section-vung",
     save_instant_service: "section-instant",
-    save_service_fees: "section-service-fee",
     add_service_time: "section-service-fee",
     save_service_time_row: "section-service-fee",
     delete_service_time: "section-service-fee",
@@ -77,11 +69,9 @@
     save_weather_row: "section-service-fee",
     delete_weather: "section-service-fee",
     save_cod_insurance: "section-cod",
-    save_vehicles: "section-vehicle",
     add_vehicle: "section-vehicle",
     delete_vehicle: "section-vehicle",
     save_vehicle_row: "section-vehicle",
-    save_goods_fees: "section-goods",
     add_goods_fee: "section-goods",
     delete_goods_fee: "section-goods",
     save_goods_fee_row: "section-goods",
@@ -186,12 +176,18 @@
     return [];
   }
 
-  function ensureKrudMeta(pricingData) {
-    if (!pricingData || typeof pricingData !== "object") return {};
-    if (!pricingData._krud_meta || typeof pricingData._krud_meta !== "object") {
-      pricingData._krud_meta = {};
+  function readNonNegativeFormNumber(formData, fieldName, fallback, label) {
+    const value = Math.round(toNumber(formData.get(fieldName), fallback));
+    if (value < 0) {
+      throw new Error(`${label} không được âm.`);
     }
-    return pricingData._krud_meta;
+    return value;
+  }
+
+  function readFormString(formData, fieldName, fallback = "") {
+    return String(
+      formData.has(fieldName) ? formData.get(fieldName) : fallback,
+    ).trim();
   }
 
   function applyDirectFormUpdate(action, formData, basePricingData) {
@@ -214,9 +210,48 @@
       serviceConfig.ten = nextLabel;
       serviceConfig.coban = {
         ...(serviceConfig.coban || {}),
-        cungquan: Math.round(toNumber(formData.get(`services[${serviceKey}][cungquan]`), serviceConfig?.coban?.cungquan || 0)),
-        khacquan: Math.round(toNumber(formData.get(`services[${serviceKey}][khacquan]`), serviceConfig?.coban?.khacquan || 0)),
-        lientinh: Math.round(toNumber(formData.get(`services[${serviceKey}][lientinh]`), serviceConfig?.coban?.lientinh || 0)),
+        cungquan: readNonNegativeFormNumber(
+          formData,
+          `services[${serviceKey}][cungquan]`,
+          serviceConfig?.coban?.cungquan || 0,
+          `Giá cùng quận của ${nextLabel}`,
+        ),
+        khacquan: readNonNegativeFormNumber(
+          formData,
+          `services[${serviceKey}][khacquan]`,
+          serviceConfig?.coban?.khacquan || 0,
+          `Giá nội thành của ${nextLabel}`,
+        ),
+        lientinh: readNonNegativeFormNumber(
+          formData,
+          `services[${serviceKey}][lientinh]`,
+          serviceConfig?.coban?.lientinh || 0,
+          `Giá liên tỉnh của ${nextLabel}`,
+        ),
+      };
+      serviceConfig.buoctiep = readNonNegativeFormNumber(
+        formData,
+        `services[${serviceKey}][buoctiep]`,
+        serviceConfig?.buoctiep || 0,
+        `Giá bước tiếp của ${nextLabel}`,
+      );
+      serviceConfig.thoigian = {
+        ...(serviceConfig.thoigian || {}),
+        cung_quan: readFormString(
+          formData,
+          `services[${serviceKey}][thoigian][cung_quan]`,
+          serviceConfig?.thoigian?.cung_quan || "",
+        ),
+        noi_thanh: readFormString(
+          formData,
+          `services[${serviceKey}][thoigian][noi_thanh]`,
+          serviceConfig?.thoigian?.noi_thanh || "",
+        ),
+        lien_tinh: readFormString(
+          formData,
+          `services[${serviceKey}][thoigian][lien_tinh]`,
+          serviceConfig?.thoigian?.lien_tinh || "",
+        ),
       };
       delete serviceConfig.heso_dichvu;
       return pricingData;
@@ -620,59 +655,36 @@
     return "fa-truck-pickup";
   }
 
-  function canPatchDomDirectly(action, formData) {
-    if (
-      action === "save_services" ||
-      action === "save_instant_service" ||
-      action === "save_cod_insurance"
-    ) {
-      return true;
-    }
+  function keepsSameRowKey(formData, originalName, nextName, normalize = sanitizePriceKey) {
+    const originalKey = normalize(formData.get(originalName));
+    const nextKey = normalize(formData.get(nextName) || originalKey);
+    return originalKey !== "" && originalKey === nextKey;
+  }
 
-    if (action === "save_weather_row") {
-      const originalKey = sanitizePriceKey(formData.get("original_weather_key"));
-      const nextKey = sanitizePriceKey(formData.get("weather_row[key]") || originalKey);
-      return originalKey !== "" && originalKey === nextKey;
-    }
+  function keepsSameServiceTimeRange(formData) {
+    const originalKey = sanitizePriceKey(formData.get("original_time_key"));
+    const nextKey = sanitizePriceKey(formData.get("time_row[key]") || originalKey);
+    if (!originalKey || originalKey !== nextKey) return false;
 
-    if (action === "save_goods_fee_row") {
-      const originalKey = sanitizePriceKey(formData.get("original_goods_key"));
-      const nextKey = sanitizePriceKey(formData.get("goods_row[key]") || originalKey);
-      return originalKey !== "" && originalKey === nextKey;
-    }
+    const currentTime =
+      currentPricingSnapshot?.BAOGIACHITIET?.noidia?.phidichvu?.giaongaylaptuc?.thoigian?.[
+        originalKey
+      ] || null;
+    if (!currentTime) return false;
 
-    if (action === "save_vehicle_row") {
-      const originalKey = String(formData.get("original_vehicle_key") || "").trim();
-      const nextKey = String(formData.get("vehicle_row[key]") || originalKey).trim();
-      return originalKey !== "" && originalKey === nextKey;
-    }
-
-    if (action === "save_service_time_row") {
-      const originalKey = sanitizePriceKey(formData.get("original_time_key"));
-      const nextKey = sanitizePriceKey(formData.get("time_row[key]") || originalKey);
-      if (!originalKey || originalKey !== nextKey) return false;
-
-      const currentTime =
-        currentPricingSnapshot?.BAOGIACHITIET?.noidia?.phidichvu?.giaongaylaptuc?.thoigian?.[
-          originalKey
-        ] || null;
-      if (!currentTime) return false;
-
-      return (
-        String(formData.get("time_row[batdau]") || currentTime.batdau || "") ===
-          String(currentTime.batdau || "") &&
-        String(formData.get("time_row[ketthuc]") || currentTime.ketthuc || "") ===
-          String(currentTime.ketthuc || "")
-      );
-    }
-
-    return false;
+    return (
+      String(formData.get("time_row[batdau]") || currentTime.batdau || "") ===
+        String(currentTime.batdau || "") &&
+      String(formData.get("time_row[ketthuc]") || currentTime.ketthuc || "") ===
+        String(currentTime.ketthuc || "")
+    );
   }
 
   function patchServiceRow(pricingData, serviceKey) {
     const row = findPricingRow("service", serviceKey);
     const service =
       pricingData?.BAOGIACHITIET?.noidia?.dichvu?.[serviceKey] || null;
+    const regionLabels = pricingData?.BAOGIACHITIET?.noidia?.tenvung || {};
     if (!row || !service) return false;
 
     row.children[1].textContent = String(service.ten || serviceKey);
@@ -684,6 +696,9 @@
     );
     row.children[4].querySelector(".pricing-value").textContent = formatMoneyPreview(
       service?.coban?.lientinh || 0,
+    );
+    row.children[5].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      service?.buoctiep || 0,
     );
     return true;
   }
@@ -772,16 +787,12 @@
     const labelNode = row.querySelector('[data-cell="label"]');
     const keyNode = row.querySelector('[data-cell="key"]');
     const weightNode = row.querySelector('[data-cell="weight"]');
-    const basePriceNode = row.querySelector('[data-cell="base-price"]');
-    const factorNode = row.querySelector('[data-cell="factor"]');
     const perKmNode = row.querySelector('[data-cell="per-km"]');
     const minFeeNode = row.querySelector('[data-cell="min-fee"]');
 
     if (labelNode) labelNode.textContent = String(vehicle.label || vehicleKey);
     if (keyNode) keyNode.textContent = String(vehicleKey);
     if (weightNode) weightNode.textContent = String(vehicle.trong_luong_toi_da ?? 0);
-    if (basePriceNode) basePriceNode.textContent = formatMoneyPreview(vehicle.gia_co_ban || 0);
-    if (factorNode) factorNode.textContent = `x ${vehicle.he_so_xe ?? 1}`;
     if (perKmNode) perKmNode.textContent = formatMoneyPreview(perKm);
     if (minFeeNode) minFeeNode.textContent = formatMoneyPreview(vehicle.phi_toi_thieu || 0);
     return true;
@@ -798,89 +809,70 @@
       domestic?.philoaihang?.[goodsKey] || 0,
     );
     row.children[3].textContent = String(domestic?.hesoloaihang?.[goodsKey] ?? 1);
-    row.children[4].textContent = String(
-      domestic?.motaloaihang?.[goodsKey] || "Chưa có mô tả",
-    );
     return true;
   }
 
+  const DIRECT_ACTION_RULES = {
+    save_services: {
+      key: (formData) => extractBracketKey(formData, "services"),
+      canDirect: (formData, rule) => Boolean(rule.key(formData)),
+      patch: patchServiceRow,
+    },
+    save_instant_service: {
+      canDirect: () => true,
+      patch: patchInstantRow,
+    },
+    save_cod_insurance: {
+      canDirect: () => true,
+      patch: patchCodRows,
+    },
+    save_service_time_row: {
+      key: (formData) => sanitizePriceKey(formData.get("original_time_key")),
+      canDirect: keepsSameServiceTimeRange,
+      patch: patchServiceTimeRow,
+    },
+    save_weather_row: {
+      key: (formData) => sanitizePriceKey(formData.get("original_weather_key")),
+      canDirect: (formData) =>
+        keepsSameRowKey(formData, "original_weather_key", "weather_row[key]"),
+      patch: patchWeatherRow,
+    },
+    save_vehicle_row: {
+      key: (formData) => String(formData.get("original_vehicle_key") || "").trim(),
+      canDirect: (formData) =>
+        keepsSameRowKey(
+          formData,
+          "original_vehicle_key",
+          "vehicle_row[key]",
+          (value) => String(value || "").trim(),
+        ),
+      patch: patchVehicleRow,
+    },
+    save_goods_fee_row: {
+      key: (formData) => sanitizePriceKey(formData.get("original_goods_key")),
+      canDirect: (formData) =>
+        keepsSameRowKey(formData, "original_goods_key", "goods_row[key]"),
+      patch: patchGoodsRow,
+    },
+  };
+
+  function canPatchDomDirectly(action, formData) {
+    const rule = DIRECT_ACTION_RULES[action];
+    return Boolean(rule?.canDirect?.(formData, rule));
+  }
+
   function patchDomAfterSave(action, formData, pricingData) {
-    if (action === "save_services") {
-      const serviceKey = extractBracketKey(formData, "services");
-      return serviceKey ? patchServiceRow(pricingData, serviceKey) : false;
-    }
-    if (action === "save_instant_service") {
-      return patchInstantRow(pricingData);
-    }
-    if (action === "save_cod_insurance") {
-      return patchCodRows(pricingData);
-    }
-    if (action === "save_service_time_row") {
-      const timeKey = sanitizePriceKey(formData.get("original_time_key"));
-      return timeKey ? patchServiceTimeRow(pricingData, timeKey) : false;
-    }
-    if (action === "save_weather_row") {
-      const weatherKey = sanitizePriceKey(formData.get("original_weather_key"));
-      return weatherKey ? patchWeatherRow(pricingData, weatherKey) : false;
-    }
-    if (action === "save_vehicle_row") {
-      const vehicleKey = String(formData.get("original_vehicle_key") || "").trim();
-      return vehicleKey ? patchVehicleRow(pricingData, vehicleKey) : false;
-    }
-    if (action === "save_goods_fee_row") {
-      const goodsKey = sanitizePriceKey(formData.get("original_goods_key"));
-      return goodsKey ? patchGoodsRow(pricingData, goodsKey) : false;
-    }
-    return false;
+    const rule = DIRECT_ACTION_RULES[action];
+    if (!rule) return false;
+    if (!rule.key) return rule.patch(pricingData);
+
+    const rowKey = rule.key(formData);
+    return rowKey ? rule.patch(pricingData, rowKey) : false;
   }
 
   function canPersistRowLevel(action, formData) {
     if (activeVersionId <= 0) return false;
-
-    if (action === "save_services") {
-      return Boolean(extractBracketKey(formData, "services"));
-    }
-
-    if (action === "save_instant_service" || action === "save_cod_insurance") {
-      return true;
-    }
-
-    if (action === "save_service_time_row") {
-      const originalKey = sanitizePriceKey(formData.get("original_time_key"));
-      const nextKey = sanitizePriceKey(formData.get("time_row[key]") || originalKey);
-      const currentTime =
-        currentPricingSnapshot?.BAOGIACHITIET?.noidia?.phidichvu?.giaongaylaptuc?.thoigian?.[
-          originalKey
-        ] || null;
-      if (!currentTime || !originalKey || originalKey !== nextKey) return false;
-
-      return (
-        String(formData.get("time_row[batdau]") || currentTime.batdau || "") ===
-          String(currentTime.batdau || "") &&
-        String(formData.get("time_row[ketthuc]") || currentTime.ketthuc || "") ===
-          String(currentTime.ketthuc || "")
-      );
-    }
-
-    if (action === "save_weather_row") {
-      const originalKey = sanitizePriceKey(formData.get("original_weather_key"));
-      const nextKey = sanitizePriceKey(formData.get("weather_row[key]") || originalKey);
-      return Boolean(originalKey) && originalKey === nextKey;
-    }
-
-    if (action === "save_vehicle_row") {
-      const originalKey = String(formData.get("original_vehicle_key") || "").trim();
-      const nextKey = String(formData.get("vehicle_row[key]") || originalKey).trim();
-      return Boolean(originalKey) && originalKey === nextKey;
-    }
-
-    if (action === "save_goods_fee_row") {
-      const originalKey = sanitizePriceKey(formData.get("original_goods_key"));
-      const nextKey = sanitizePriceKey(formData.get("goods_row[key]") || originalKey);
-      return Boolean(originalKey) && originalKey === nextKey;
-    }
-
-    return false;
+    return canPatchDomDirectly(action, formData);
   }
 
   function showAlert(type, message, options = {}) {
@@ -997,7 +989,9 @@
     return String(window.location.hash || "").replace(/^#/, "");
   }
 
-  function activateSection(root, id, syncHash = true) {
+
+
+  function activateSection(root, id, syncHash = true, expandActive = false) {
     const shell = getPricingShell(root);
     if (!shell) return;
     const tabs = Array.from(shell.querySelectorAll("[data-pricing-tab]"));
@@ -2073,30 +2067,39 @@
     if (shell.dataset.pricingUiBound !== "1") {
       shell.dataset.pricingUiBound = "1";
 
-      shell.querySelectorAll("[data-pricing-tab]").forEach((tab) => {
-        tab.addEventListener("click", (event) => {
+      shell.addEventListener("click", (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target) return;
+
+        const tab = target.closest("[data-pricing-tab]");
+        if (tab && shell.contains(tab)) {
           event.preventDefault();
-          activateSection(root, tab.dataset.pricingTab || "");
-        });
-      });
+          activateSection(root, tab.dataset.pricingTab || "", true, true);
+          return;
+        }
 
-      shell.querySelectorAll("[data-open-modal]").forEach((button) => {
-        button.addEventListener("click", () => {
-          openModal(root, button.dataset.openModal || "");
-        });
-      });
 
-      shell.querySelectorAll("[data-close-modal]").forEach((button) => {
-        button.addEventListener("click", () => {
-          closeModal(button.closest("[data-modal]"));
-        });
-      });
 
-      shell.querySelector("[data-pricing-sync-check]")?.addEventListener("click", () => {
-        checkPublicJsonSync();
-      });
-      shell.querySelector("[data-pricing-sync-export]")?.addEventListener("click", () => {
-        exportActivePricingJson();
+        const openButton = target.closest("[data-open-modal]");
+        if (openButton && shell.contains(openButton)) {
+          openModal(root, openButton.dataset.openModal || "");
+          return;
+        }
+
+        const closeButton = target.closest("[data-close-modal]");
+        if (closeButton && shell.contains(closeButton)) {
+          closeModal(closeButton.closest("[data-modal]"));
+          return;
+        }
+
+        if (target.closest("[data-pricing-sync-check]")) {
+          checkPublicJsonSync();
+          return;
+        }
+
+        if (target.closest("[data-pricing-sync-export]")) {
+          exportActivePricingJson();
+        }
       });
     }
 

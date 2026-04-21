@@ -1258,16 +1258,37 @@ const providerOrderDetailModule = (function (window, document) {
         const videoFiles = collectFiles(
           form.querySelector('input[name="provider_note_video"]'),
         );
-        const uploadedImageLinks = imageFiles.length
-          ? (await core.uploadFilesToDrive(imageFiles)).map((item) =>
-              normalizeText(item?.url || item?.download_url || ""),
-            )
-          : [];
-        const uploadedVideoLinks = videoFiles.length
-          ? (await core.uploadFilesToDrive(videoFiles)).map((item) =>
-              normalizeText(item?.url || item?.download_url || ""),
-            )
-          : [];
+        let mediaWarning = "";
+        let uploadedImageLinks = [];
+        let uploadedVideoLinks = [];
+        if (imageFiles.length) {
+          try {
+            uploadedImageLinks = (await core.uploadFilesToDrive(imageFiles))
+              .map((item) =>
+                normalizeText(item?.url || item?.download_url || ""),
+              )
+              .filter(Boolean);
+          } catch (error) {
+            console.error("Cannot upload provider report images:", error);
+            mediaWarning =
+              "Ảnh báo cáo chưa được tải lên Google Drive; ghi chú vẫn được lưu.";
+          }
+        }
+        if (videoFiles.length) {
+          try {
+            uploadedVideoLinks = (await core.uploadFilesToDrive(videoFiles))
+              .map((item) =>
+                normalizeText(item?.url || item?.download_url || ""),
+              )
+              .filter(Boolean);
+          } catch (error) {
+            console.error("Cannot upload provider report videos:", error);
+            mediaWarning = [
+              mediaWarning,
+              "Video báo cáo chưa được tải lên Google Drive; ghi chú vẫn được lưu.",
+            ].filter(Boolean).join(" ");
+          }
+        }
         const mergedImageAttachments = mergeAttachmentValues(
           detail?.order?.provider_report_image_attachments,
           uploadedImageLinks,
@@ -1277,18 +1298,31 @@ const providerOrderDetailModule = (function (window, document) {
           uploadedVideoLinks,
         );
 
-        await saveProviderNote(detail, formData.get("provider_note") || "", {
-          provider_report_anh_dinh_kem: joinPipeValues(mergedImageAttachments),
-          provider_report_video_dinh_kem: joinPipeValues(
-            mergedVideoAttachments,
-          ),
-        });
+        try {
+          await saveProviderNote(detail, formData.get("provider_note") || "", {
+            provider_report_anh_dinh_kem: joinPipeValues(mergedImageAttachments),
+            provider_report_video_dinh_kem: joinPipeValues(
+              mergedVideoAttachments,
+            ),
+          });
+        } catch (krudError) {
+          console.error("Cannot save provider note to KRUD:", krudError);
+          throw new Error(
+            uploadedImageLinks.length || uploadedVideoLinks.length
+              ? "Ảnh/video có thể đã tải lên Google Drive, nhưng ghi chú chưa được lưu vào hệ thống."
+              : krudError?.message ||
+                  "Không thể lưu ghi chú nhà cung cấp vào hệ thống lúc này.",
+          );
+        }
         const nextRow = await fetchBookingRowByCode(order.code || "");
         if (!nextRow) {
           throw new Error("Không thể tải lại đơn hàng sau khi lưu ghi chú.");
         }
         render(normalizeDetail(nextRow));
-        core.notify("Đã lưu báo cáo nhà cung cấp.", "success");
+        core.notify(
+          mediaWarning || "Đã lưu báo cáo nhà cung cấp.",
+          mediaWarning ? "warning" : "success",
+        );
       } catch (error) {
         console.error("Cannot save provider note:", error);
         core.notify(error?.message || "Không thể lưu ghi chú nhà cung cấp lúc này.", "error");

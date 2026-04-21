@@ -1726,38 +1726,54 @@ const customerPortalStoreModule = (function (window) {
   async function updateProfile(payload) {
     const currentIdentity = readIdentity();
     const mediaPayload = {};
+    const warnings = [];
     const avatarFile = payload?.avatar_file;
     const cccdFrontFile = payload?.cccd_front_file;
     const cccdBackFile = payload?.cccd_back_file;
 
     if (avatarFile instanceof File && avatarFile.size) {
-      const uploadedAvatar = await core.uploadFileToDrive(avatarFile, {
-        name: avatarFile.name,
-      });
-      mediaPayload.link_avatar = normalizeText(
-        uploadedAvatar?.fileId || uploadedAvatar?.id || "",
-      );
+      try {
+        const uploadedAvatar = await core.uploadFileToDrive(avatarFile, {
+          name: avatarFile.name,
+        });
+        mediaPayload.link_avatar = normalizeText(
+          uploadedAvatar?.fileId || uploadedAvatar?.id || "",
+        );
+      } catch (error) {
+        console.error("Cannot upload profile avatar to Drive:", error);
+        warnings.push("Ảnh đại diện chưa được tải lên Google Drive.");
+      }
     }
 
     if (cccdFrontFile instanceof File && cccdFrontFile.size) {
-      const uploadedFront = await core.uploadFileToDrive(cccdFrontFile, {
-        name: cccdFrontFile.name,
-      });
-      mediaPayload.link_cccd_truoc = normalizeText(
-        uploadedFront?.fileId || uploadedFront?.id || "",
-      );
+      try {
+        const uploadedFront = await core.uploadFileToDrive(cccdFrontFile, {
+          name: cccdFrontFile.name,
+        });
+        mediaPayload.link_cccd_truoc = normalizeText(
+          uploadedFront?.fileId || uploadedFront?.id || "",
+        );
+      } catch (error) {
+        console.error("Cannot upload front ID card to Drive:", error);
+        warnings.push("CCCD mặt trước chưa được tải lên Google Drive.");
+      }
     }
 
     if (cccdBackFile instanceof File && cccdBackFile.size) {
-      const uploadedBack = await core.uploadFileToDrive(cccdBackFile, {
-        name: cccdBackFile.name,
-      });
-      mediaPayload.link_cccd_sau = normalizeText(
-        uploadedBack?.fileId || uploadedBack?.id || "",
-      );
+      try {
+        const uploadedBack = await core.uploadFileToDrive(cccdBackFile, {
+          name: cccdBackFile.name,
+        });
+        mediaPayload.link_cccd_sau = normalizeText(
+          uploadedBack?.fileId || uploadedBack?.id || "",
+        );
+      } catch (error) {
+        console.error("Cannot upload back ID card to Drive:", error);
+        warnings.push("CCCD mặt sau chưa được tải lên Google Drive.");
+      }
     }
 
-    const nextProfile = syncIdentityFromProfile({
+    const nextProfilePayload = {
       ...currentIdentity,
       ...(payload && typeof payload === "object"
         ? {
@@ -1766,7 +1782,7 @@ const customerPortalStoreModule = (function (window) {
           }
         : {}),
       ...mediaPayload,
-    });
+    };
     const updateFn = getKrudUpdateFn();
     const tableName = getAuthTableName(getSavedRole() || "khach-hang");
     const remoteId = normalizeText(currentIdentity.id || "");
@@ -1777,54 +1793,72 @@ const customerPortalStoreModule = (function (window) {
       );
     }
 
-    await Promise.resolve(
-      updateFn(tableName, {
-        id: remoteId,
-        hovaten: normalizeText(
-          nextProfile.hovaten || currentIdentity.hovaten || "",
-        ),
-        email: normalizeText(
-          nextProfile.email || currentIdentity.email || "",
-        ).toLowerCase(),
-        sodienthoai: normalizeText(currentIdentity.sodienthoai || ""),
-        diachi: normalizeText(
-          nextProfile.diachi ||
-            nextProfile.dia_chi ||
-            currentIdentity.diachi ||
-            "",
-        ),
-        ten_cong_ty: normalizeText(
-          nextProfile.ten_cong_ty ||
-            nextProfile.company_name ||
-            currentIdentity.ten_cong_ty ||
-            "",
-        ),
-        ma_so_thue: normalizeText(
-          nextProfile.ma_so_thue ||
-            nextProfile.tax_code ||
-            currentIdentity.ma_so_thue ||
-            "",
-        ),
-        loai_phuong_tien: normalizeText(
-          nextProfile.loai_phuong_tien ||
-            nextProfile.vehicle_type ||
-            currentIdentity.loai_phuong_tien ||
-            "",
-        ),
-        link_avatar: normalizeText(
-          nextProfile.link_avatar || currentIdentity.link_avatar || "",
-        ),
-        link_cccd_truoc: normalizeText(
-          nextProfile.link_cccd_truoc || currentIdentity.link_cccd_truoc || "",
-        ),
-        link_cccd_sau: normalizeText(
-          nextProfile.link_cccd_sau || currentIdentity.link_cccd_sau || "",
-        ),
-        updated_at: new Date().toISOString(),
-      }),
-    );
+    try {
+      await Promise.resolve(
+        updateFn(tableName, {
+          id: remoteId,
+          hovaten: normalizeText(
+            nextProfilePayload.hovaten || currentIdentity.hovaten || "",
+          ),
+          email: normalizeText(
+            nextProfilePayload.email || currentIdentity.email || "",
+          ).toLowerCase(),
+          sodienthoai: normalizeText(currentIdentity.sodienthoai || ""),
+          diachi: normalizeText(
+            nextProfilePayload.diachi ||
+              nextProfilePayload.dia_chi ||
+              currentIdentity.diachi ||
+              "",
+          ),
+          ten_cong_ty: normalizeText(
+            nextProfilePayload.ten_cong_ty ||
+              nextProfilePayload.company_name ||
+              currentIdentity.ten_cong_ty ||
+              "",
+          ),
+          ma_so_thue: normalizeText(
+            nextProfilePayload.ma_so_thue ||
+              nextProfilePayload.tax_code ||
+              currentIdentity.ma_so_thue ||
+              "",
+          ),
+          loai_phuong_tien: normalizeText(
+            nextProfilePayload.loai_phuong_tien ||
+              nextProfilePayload.vehicle_type ||
+              currentIdentity.loai_phuong_tien ||
+              "",
+          ),
+          link_avatar: normalizeText(
+            nextProfilePayload.link_avatar || currentIdentity.link_avatar || "",
+          ),
+          link_cccd_truoc: normalizeText(
+            nextProfilePayload.link_cccd_truoc ||
+              currentIdentity.link_cccd_truoc ||
+              "",
+          ),
+          link_cccd_sau: normalizeText(
+            nextProfilePayload.link_cccd_sau ||
+              currentIdentity.link_cccd_sau ||
+              "",
+          ),
+          updated_at: new Date().toISOString(),
+        }),
+      );
+    } catch (error) {
+      console.error("Cannot update profile in KRUD:", error);
+      const uploadedMediaBeforeKrudError = Object.keys(mediaPayload).length > 0;
+      throw new Error(
+        uploadedMediaBeforeKrudError
+          ? "Ảnh hồ sơ/CCCD có thể đã tải lên Google Drive, nhưng hồ sơ chưa cập nhật hệ thống."
+          : error?.message || "Không thể cập nhật hồ sơ vào hệ thống.",
+      );
+    }
 
-    return nextProfile;
+    const nextProfile = syncIdentityFromProfile(nextProfilePayload);
+    return {
+      ...nextProfile,
+      warning: warnings.join(" "),
+    };
   }
 
   async function changePassword(payload) {

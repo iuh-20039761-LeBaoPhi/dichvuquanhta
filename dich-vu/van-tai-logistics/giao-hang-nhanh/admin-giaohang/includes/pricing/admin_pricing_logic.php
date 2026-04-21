@@ -13,7 +13,6 @@ $scheduledServiceMeta = [
 ];
 $instantServiceKey = 'laptuc';
 
-$successMsg = '';
 $errorMsg = '';
 $pricingStorageSource = 'file';
 $pricingActiveVersionId = 0;
@@ -39,6 +38,15 @@ function sanitize_price_key($value)
 function to_int_price($value)
 {
     return (int) round((float) str_replace(',', '', (string) $value));
+}
+
+function to_non_negative_int_price($value, $label)
+{
+    $price = to_int_price($value);
+    if ($price < 0) {
+        return [false, 0, $label . ' không được âm.'];
+    }
+    return [true, $price, ''];
 }
 
 function to_float_number($value, $precision = 2)
@@ -227,13 +235,36 @@ function handle_save_services_action(array $pricingData, array $submittedService
         }
 
         $base = $current['coban'] ?? [];
-        $base['cungquan'] = to_int_price($input['cungquan'] ?? ($base['cungquan'] ?? 0));
-        $base['khacquan'] = to_int_price($input['khacquan'] ?? ($base['khacquan'] ?? 0));
-        $base['lientinh'] = to_int_price($input['lientinh'] ?? ($base['lientinh'] ?? 0));
+        [$ok, $cungQuan, $message] = to_non_negative_int_price($input['cungquan'] ?? ($base['cungquan'] ?? 0), 'Giá cùng quận của ' . $ten);
+        if (!$ok) {
+            return action_result(false, $message);
+        }
+        [$ok, $khacQuan, $message] = to_non_negative_int_price($input['khacquan'] ?? ($base['khacquan'] ?? 0), 'Giá nội thành của ' . $ten);
+        if (!$ok) {
+            return action_result(false, $message);
+        }
+        [$ok, $lienTinh, $message] = to_non_negative_int_price($input['lientinh'] ?? ($base['lientinh'] ?? 0), 'Giá liên tỉnh của ' . $ten);
+        if (!$ok) {
+            return action_result(false, $message);
+        }
+        [$ok, $buocTiep, $message] = to_non_negative_int_price($input['buoctiep'] ?? ($current['buoctiep'] ?? 0), 'Giá bước tiếp của ' . $ten);
+        if (!$ok) {
+            return action_result(false, $message);
+        }
+
+        $base['cungquan'] = $cungQuan;
+        $base['khacquan'] = $khacQuan;
+        $base['lientinh'] = $lienTinh;
 
         $current['ten'] = $ten;
         $current['coban'] = $base;
-        $current['buoctiep'] = to_int_price($input['buoctiep'] ?? ($current['buoctiep'] ?? 0));
+        $current['buoctiep'] = $buocTiep;
+        $currentTime = (array) ($current['thoigian'] ?? []);
+        $submittedTime = (array) ($input['thoigian'] ?? []);
+        foreach (['cung_quan', 'noi_thanh', 'lien_tinh'] as $regionKey) {
+            $currentTime[$regionKey] = trim((string) ($submittedTime[$regionKey] ?? ($currentTime[$regionKey] ?? '')));
+        }
+        $current['thoigian'] = $currentTime;
         unset($current['heso_dichvu']);
         $serviceConfigs[$serviceKey] = $current;
     }
@@ -282,63 +313,6 @@ function handle_save_instant_service_action(array $pricingData, array $input, ar
     $pricingData['BAOGIACHITIET']['noidia'] = $domestic;
 
     return action_result(true, 'Đã cập nhật cấu hình Giao ngay.', $pricingData, 'Không thể lưu cấu hình Giao ngay.');
-}
-
-function build_goods_payload_from_rows(array $submittedGoods)
-{
-    $nextFees = [];
-    $nextLabels = [];
-    $nextDescriptions = [];
-    $nextMultipliers = [];
-
-    foreach ($submittedGoods as $row) {
-        $key = sanitize_price_key($row['key'] ?? '');
-        if ($key === '') {
-            return ['error' => 'Mã loại hàng không được để trống.'];
-        }
-        if (isset($nextFees[$key])) {
-            return ['error' => 'Mã loại hàng bị trùng, vui lòng kiểm tra lại.'];
-        }
-
-        $label = trim((string) ($row['label'] ?? $key));
-        if ($label === '') {
-            return ['error' => 'Tên hiển thị của loại hàng không được để trống.'];
-        }
-
-        $heSo = to_float_number($row['he_so'] ?? 1, 3);
-        if ($heSo < 1) {
-            return ['error' => 'Hệ số loại hàng phải từ 1 trở lên.'];
-        }
-
-        $nextFees[$key] = to_int_price($row['fee'] ?? 0);
-        $nextLabels[$key] = $label;
-        $nextDescriptions[$key] = trim((string) ($row['description'] ?? ''));
-        $nextMultipliers[$key] = $heSo;
-    }
-
-    return [
-        'fees' => $nextFees,
-        'labels' => $nextLabels,
-        'descriptions' => $nextDescriptions,
-        'multipliers' => $nextMultipliers,
-    ];
-}
-
-function handle_save_goods_fees_action(array $pricingData, array $submittedGoods)
-{
-    $payload = build_goods_payload_from_rows($submittedGoods);
-    if (isset($payload['error'])) {
-        return action_result(false, $payload['error']);
-    }
-
-    $domestic = $pricingData['BAOGIACHITIET']['noidia'] ?? [];
-    $domestic['philoaihang'] = $payload['fees'];
-    $domestic['tenloaihang'] = $payload['labels'];
-    $domestic['motaloaihang'] = $payload['descriptions'];
-    $domestic['hesoloaihang'] = $payload['multipliers'];
-    $pricingData['BAOGIACHITIET']['noidia'] = $domestic;
-
-    return action_result(true, 'Đã cập nhật danh sách phụ phí loại hàng.', $pricingData, 'Không thể lưu danh sách phụ phí loại hàng.');
 }
 
 function handle_add_goods_fee_action(array $pricingData, array $post)
@@ -398,69 +372,6 @@ function handle_delete_goods_fee_action(array $pricingData, $deleteKey)
     $pricingData['BAOGIACHITIET']['noidia'] = $domestic;
 
     return action_result(true, 'Đã xóa loại phụ phí.', $pricingData, 'Không thể xóa loại phụ phí.');
-}
-
-function handle_save_service_fees_action(array $pricingData, array $submittedTime, array $submittedWeather)
-{
-    $domestic = $pricingData['BAOGIACHITIET']['noidia'] ?? [];
-    $currentServiceFeeConfig = (($domestic['phidichvu'] ?? [])['giaongaylaptuc'] ?? []);
-    $currentTime = $currentServiceFeeConfig['thoigian'] ?? [];
-    $currentWeather = $currentServiceFeeConfig['thoitiet'] ?? [];
-    $nextTime = [];
-    $nextWeather = [];
-
-    foreach ($currentTime as $timeKey => $timeConfig) {
-        $input = $submittedTime[$timeKey] ?? [];
-        if (!isset($submittedTime[$timeKey])) {
-            continue;
-        }
-        $ten = trim((string) ($input['ten'] ?? ($timeConfig['ten'] ?? $timeKey)));
-        $batDau = trim((string) ($input['batdau'] ?? ($timeConfig['batdau'] ?? '00:00')));
-        $ketThuc = trim((string) ($input['ketthuc'] ?? ($timeConfig['ketthuc'] ?? '23:59')));
-        $heSo = to_float_number($input['heso'] ?? ($timeConfig['heso'] ?? 1), 3);
-
-        if ($ten === '' || !is_valid_time_text($batDau) || !is_valid_time_text($ketThuc)) {
-            return action_result(false, 'Khung giờ phải có tên, giờ bắt đầu và giờ kết thúc hợp lệ theo định dạng HH:MM.');
-        }
-        if ($heSo < 1) {
-            return action_result(false, 'Hệ số phụ phí thời gian phải từ 1 trở lên.');
-        }
-
-        $timeConfig['ten'] = $ten;
-        $timeConfig['batdau'] = $batDau;
-        $timeConfig['ketthuc'] = $ketThuc;
-        $timeConfig['phicodinh'] = to_int_price($input['phicodinh'] ?? ($timeConfig['phicodinh'] ?? 0));
-        $timeConfig['heso'] = $heSo;
-        $nextTime[$timeKey] = $timeConfig;
-    }
-
-    foreach ($currentWeather as $weatherKey => $weatherConfig) {
-        $input = $submittedWeather[$weatherKey] ?? [];
-        if (!isset($submittedWeather[$weatherKey])) {
-            continue;
-        }
-        $ten = trim((string) ($input['ten'] ?? ($weatherConfig['ten'] ?? $weatherKey)));
-        $heSo = to_float_number($input['heso'] ?? ($weatherConfig['heso'] ?? 1), 3);
-
-        if ($ten === '') {
-            return action_result(false, 'Tên điều kiện giao không được để trống.');
-        }
-        if ($heSo < 1) {
-            return action_result(false, 'Hệ số điều kiện giao phải từ 1 trở lên.');
-        }
-
-        $weatherConfig['ten'] = $ten;
-        $weatherConfig['phicodinh'] = to_int_price($input['phicodinh'] ?? ($weatherConfig['phicodinh'] ?? 0));
-        $weatherConfig['heso'] = $heSo;
-        $nextWeather[$weatherKey] = $weatherConfig;
-    }
-
-    $currentServiceFeeConfig['thoigian'] = $nextTime;
-    $currentServiceFeeConfig['thoitiet'] = $nextWeather;
-    $domestic['phidichvu']['giaongaylaptuc'] = $currentServiceFeeConfig;
-    $pricingData['BAOGIACHITIET']['noidia'] = $domestic;
-
-    return action_result(true, 'Đã cập nhật phụ phí dịch vụ.', $pricingData, 'Không thể lưu phụ phí dịch vụ.');
 }
 
 function handle_add_service_time_action(array $pricingData, array $post)
@@ -683,56 +594,6 @@ function handle_save_cod_insurance_action(array $pricingData, array $submitted)
     return action_result(true, 'Đã cập nhật COD và bảo hiểm.', $pricingData, 'Không thể lưu COD và bảo hiểm.');
 }
 
-function handle_save_vehicles_action(array $pricingData, array $submittedVehicles)
-{
-    $nextVehicles = [];
-    $seenKeys = [];
-
-    foreach ($submittedVehicles as $vehicle) {
-        $key = trim((string) ($vehicle['key'] ?? ''));
-        if ($key === '') {
-            return action_result(false, 'Mã phương tiện không được để trống.');
-        }
-        if (isset($seenKeys[$key])) {
-            return action_result(false, 'Mã phương tiện bị trùng, vui lòng kiểm tra lại.');
-        }
-
-        $label = trim((string) ($vehicle['label'] ?? $key));
-        $heSoXe = to_float_number($vehicle['he_so_xe'] ?? 1, 2);
-        $giaCoBan = to_int_price($vehicle['gia_co_ban'] ?? 0);
-        $phiToiThieu = to_int_price($vehicle['phi_toi_thieu'] ?? 0);
-        $trongLuong = to_float_number($vehicle['trong_luong_toi_da'] ?? 0, 2);
-
-        if ($label === '') {
-            return action_result(false, 'Tên hiển thị phương tiện không được để trống.');
-        }
-        if ($heSoXe < 1) {
-            return action_result(false, 'Hệ số xe phải từ 1 trở lên.');
-        }
-        if ($giaCoBan <= 0 || $phiToiThieu < 0 || $trongLuong <= 0) {
-            return action_result(false, 'Giá cơ bản, phí tối thiểu và tải trọng tối đa của phương tiện phải hợp lệ.');
-        }
-
-        $seenKeys[$key] = true;
-        $nextVehicles[] = [
-            'key' => $key,
-            'label' => $label,
-            'he_so_xe' => $heSoXe,
-            'gia_co_ban' => $giaCoBan,
-            'phi_toi_thieu' => $phiToiThieu,
-            'trong_luong_toi_da' => $trongLuong,
-            'description' => trim((string) ($vehicle['description'] ?? '')),
-        ];
-    }
-
-    if (!isset($seenKeys['xe_may'])) {
-        return action_result(false, 'Cần giữ lại cấu hình xe_may để tính Giao ngay.');
-    }
-
-    $pricingData['phuong_tien'] = $nextVehicles;
-    return action_result(true, 'Đã cập nhật cấu hình phương tiện.', $pricingData, 'Không thể lưu cấu hình phương tiện.');
-}
-
 function handle_add_vehicle_action(array $pricingData, array $post)
 {
     $vehicles = normalize_vehicle_configs($pricingData['phuong_tien'] ?? []);
@@ -916,14 +777,10 @@ function dispatch_pricing_action($action, array $post, array $pricingData, array
             return handle_save_services_action($pricingData, $post['services'] ?? [], $scheduledServiceMeta);
         case 'save_instant_service':
             return handle_save_instant_service_action($pricingData, $post['instant_service'] ?? [], $post['instant_distance'] ?? [], $serviceMeta, $instantServiceKey);
-        case 'save_goods_fees':
-            return handle_save_goods_fees_action($pricingData, $post['goods'] ?? []);
         case 'add_goods_fee':
             return handle_add_goods_fee_action($pricingData, $post);
         case 'delete_goods_fee':
             return handle_delete_goods_fee_action($pricingData, $post['delete_key'] ?? '');
-        case 'save_service_fees':
-            return handle_save_service_fees_action($pricingData, $post['service_time'] ?? [], $post['service_weather'] ?? []);
         case 'add_service_time':
             return handle_add_service_time_action($pricingData, $post);
         case 'delete_service_time':
@@ -934,8 +791,6 @@ function dispatch_pricing_action($action, array $post, array $pricingData, array
             return handle_delete_weather_action($pricingData, $post['delete_key'] ?? '');
         case 'save_cod_insurance':
             return handle_save_cod_insurance_action($pricingData, $post['cod_insurance'] ?? []);
-        case 'save_vehicles':
-            return handle_save_vehicles_action($pricingData, $post['vehicles'] ?? []);
         case 'add_vehicle':
             return handle_add_vehicle_action($pricingData, $post);
         case 'delete_vehicle':

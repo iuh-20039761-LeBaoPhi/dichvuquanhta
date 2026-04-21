@@ -82,9 +82,21 @@
           )
             ? nextDetail.provider.feedback_media
             : [];
-          const uploadedFeedbackMedia = files.length
-            ? await uploadOrderMedia(orderRef, files, "feedback")
-            : [];
+          let mediaWarning = "";
+          let uploadedFeedbackMedia = [];
+          if (files.length) {
+            try {
+              uploadedFeedbackMedia = await uploadOrderMedia(
+                orderRef,
+                files,
+                "feedback",
+              );
+            } catch (uploadError) {
+              console.warn("Cannot upload feedback media:", uploadError);
+              mediaWarning =
+                "Ảnh/video phản hồi chưa được tải lên Drive; phần đánh giá vẫn được lưu.";
+            }
+          }
           const nextFeedbackMedia = uploadedFeedbackMedia.length
             ? [...existingFeedbackMedia, ...uploadedFeedbackMedia]
             : existingFeedbackMedia;
@@ -96,8 +108,20 @@
             feedback_media: nextFeedbackMedia,
           };
 
-          setCurrentDetail(await persistDetail(nextDetail));
-          showToast("Đã lưu phản hồi khách hàng.", "success");
+          try {
+            setCurrentDetail(await persistDetail(nextDetail));
+          } catch (persistError) {
+            console.warn("Cannot persist feedback detail:", persistError);
+            throw new Error(
+              mediaWarning
+                ? `${mediaWarning} Đồng thời chưa lưu được phản hồi vào hệ thống.`
+                : "Không thể lưu phản hồi khách hàng vào hệ thống lúc này.",
+            );
+          }
+          showToast(
+            mediaWarning || "Đã lưu phản hồi khách hàng.",
+            mediaWarning ? "warning" : "success",
+          );
           rerender(getCurrentDetail(), getCurrentViewer(), getCurrentSession());
         } catch (error) {
           console.error("Cannot save feedback:", error);
@@ -143,9 +167,21 @@
           )
             ? nextDetail.provider.shipper_reports
             : [];
-          const uploadedReports = files.length
-            ? await uploadOrderMedia(orderRef, files, "shipper")
-            : [];
+          let mediaWarning = "";
+          let uploadedReports = [];
+          if (files.length) {
+            try {
+              uploadedReports = await uploadOrderMedia(
+                orderRef,
+                files,
+                "shipper",
+              );
+            } catch (uploadError) {
+              console.warn("Cannot upload shipper report media:", uploadError);
+              mediaWarning =
+                "Ảnh/video báo cáo chưa được tải lên Drive; phần ghi chú vẫn được lưu.";
+            }
+          }
 
           nextDetail.order.shipper_note = shipperNote;
           nextDetail.provider = {
@@ -156,8 +192,20 @@
               : existingReports,
           };
 
-          setCurrentDetail(await persistDetail(nextDetail));
-          showToast("Đã lưu ghi chú nhà cung cấp.", "success");
+          try {
+            setCurrentDetail(await persistDetail(nextDetail));
+          } catch (persistError) {
+            console.warn("Cannot persist shipper note detail:", persistError);
+            throw new Error(
+              mediaWarning
+                ? `${mediaWarning} Đồng thời chưa lưu được ghi chú vào hệ thống.`
+                : "Không thể lưu ghi chú nhà cung cấp vào hệ thống lúc này.",
+            );
+          }
+          showToast(
+            mediaWarning || "Đã lưu ghi chú nhà cung cấp.",
+            mediaWarning ? "warning" : "success",
+          );
           rerender(getCurrentDetail(), getCurrentViewer(), getCurrentSession());
         } catch (error) {
           console.error("Cannot save shipper note:", error);
