@@ -63,6 +63,11 @@ window.BookingAuthHelper = (function() {
             if (serviceIds.includes("11")) {
                 throw new Error("Tài khoản nhà cung cấp không được phép đặt lịch dịch vụ này.");
             }
+
+            // Kiểm tra trạng thái tài khoản (nếu trangthai = 1 thì không cho đăng nhập)
+            if (String(user.trangthai) === '1') {
+                throw new Error("Tài khoản của bạn đã bị khóa hoặc không đủ quyền truy cập.");
+            }
             
             // Tự động ghi nhớ phiên đăng nhập nếu chưa có
             if (!getCookie('dvqt_u')) {
