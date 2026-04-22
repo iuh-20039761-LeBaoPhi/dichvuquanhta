@@ -541,25 +541,175 @@
         .booking-standalone .booking-section {
           padding: 0;
         }
+      }
 
-        /* #bookingModal .modal-footer {
-          margin-top: -11px;
-          padding: 10px 12px;
-        } */
+      /* Premium Collapsible Section */
+      .form-section-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        background: #ffffff;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      }
 
-        .booking-standalone #bookingModal .modal-footer {
-          margin-top: 0;
+      .form-section-header {
+        padding: 18px 24px;
+        background: #ffffff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: all 0.25s ease;
+        border-bottom: 1px solid #f1f5f9;
+        border-left: 4px solid #2563eb;
+      }
+
+      .form-section-header:hover {
+        background: #f8fafc;
+      }
+
+      .form-section-header[aria-expanded="false"] {
+        border-bottom-color: transparent;
+      }
+
+      .form-section-title {
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        font-size: 1.15rem;
+        letter-spacing: -0.01em;
+      }
+
+      .form-section-title i:first-child {
+        color: #2563eb;
+        margin-right: 12px;
+        font-size: 1.3rem;
+      }
+
+      .section-arrow {
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-left: 12px;
+        background: #f1f5f9;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid #e2e8f0;
+        transform: rotate(0deg);
+      }
+
+      .form-section-header:hover .section-arrow {
+        background: #e2e8f0;
+        color: #1e293b;
+        transform: scale(1.1);
+      }
+
+      .form-section-header:not(.collapsed) .section-arrow {
+        transform: rotate(180deg);
+        background: #2563eb;
+        color: #ffffff;
+        border-color: #1d4ed8;
+      }
+
+      .form-section-header:not(.collapsed):hover .section-arrow {
+        transform: rotate(180deg) scale(1.1);
+      }
+
+      .form-section-body {
+        padding: 24px;
+        background: #ffffff;
+      }
+
+      /* =============================================
+         MOBILE: < 740px
+         ============================================= */
+      @media only screen and (max-width: 739px) {
+        .form-section-body {
+          padding: 15px;
+        }
+        #bookingModal .modal-dialog,
+        #bookingConfirmModal .modal-dialog {
+          margin: 0;
+          max-width: 100%;
+          min-height: 100vh;
         }
 
-        #bookingModal .btn, 
-        #bookingConfirmModal .btn {
-          padding: 10px 12px;
-          font-size: 14px;
-          white-space: nowrap;
+        #bookingModal .modal-content,
+        #bookingConfirmModal .modal-content {
+          min-height: 100vh;
+          border-radius: 18px 18px 0 0;
         }
 
-        .modal-footer .btn {
-          padding: 12px 10px;
+        #bookingModal .modal-body,
+        #bookingConfirmModal .modal-body {
+          max-height: calc(100vh - 130px);
+          overflow-y: auto;
+        }
+
+        #bookingModal .row {
+          --bs-gutter-x: 10px;
+        }
+
+        #bookingModal
+          .form-group
+          input:not([type="checkbox"]):not([type="radio"]),
+        #bookingModal .form-group select,
+        #bookingModal .form-group textarea {
+          font-size: 16px;
+        }
+
+        #bookingModal .modal-header {
+          padding: 14px 12px;
+        }
+
+        .modal-header .booking-header-brand img {
+          width: 38px;
+          height: 28px;
+        }
+
+        #bookingModal .modal-title {
+          font-size: 1.45rem;
+        }
+
+        body.booking-standalone #bookingModal .modal-content {
+          min-height: auto;
+          border-radius: 18px;
+        }
+
+        body.booking-standalone #bookingModal .modal-header {
+          position: static;
+        }
+
+        body.booking-standalone #bookingModal .modal-body {
+          max-height: none;
+          overflow: visible;
+        }
+
+        body.booking-standalone #bookingModal .modal-footer {
+          position: sticky;
+        }
+
+        #bookingModal .media-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .booking-section {
+          padding: 0;
+        }
+
+        .booking-section .booking-shell {
+          max-width: 100%;
+          padding: 5px 0;
+        }
+
+        .booking-standalone .booking-section {
+          padding: 0;
         }
       }
     </style>
@@ -746,62 +896,75 @@
                 <div class="modal-body">
                   <input type="hidden" name="anh_id" id="anh_id" value="" />
                   <input type="hidden" name="video_id" id="video_id" value="" />
-                  <div class="form-group">
-                    <label for="hotenkhachhang">Họ và tên *</label>
-                    <input type="text" id="hotenkhachhang" name="hoten" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="sodienthoaikhachhang">Số điện thoại *</label>
-                    <input
-                      type="number"
-                      id="sodienthoaikhachhang"
-                      name="sodienthoai"
-                      required
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="diachi">Địa chỉ</label>
-                    <div class="input-group">
-                      <input
-                        type="text"
-                        id="diachi"
-                        name="diachi"
-                        placeholder="Nhập địa chỉ của bạn"
-                      />
+                  <div class="form-section-card">
+                    <div class="form-section-header" data-bs-toggle="collapse" data-bs-target="#customerInfoCollapse" aria-expanded="true">
+                      <h5 class="form-section-title">
+                        <i class="fas fa-user-circle"></i>
+                        Thông tin khách hàng
+                        <i class="fas fa-chevron-down section-arrow"></i>
+                      </h5>
                     </div>
-                    <div id="toaDoHienThi" class="mt-2 text-muted fw-medium d-flex align-items-center flex-wrap" style="font-size: 0.9rem;"></div>
-                  </div>
-                  <div class="form-group">
-                    <div class="d-flex gap-2">
-                      <button
-                        class="btn btn-info text-white flex-grow-1"
-                        type="button"
-                        id="nutbando"
-                      >
-                        <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
-                      </button>
-                      <button
-                        class="btn btn-purple flex-grow-1"
-                        type="button"
-                        id="nutvitrihientai"
-                      >
-                        <i class="fas fa-location-arrow me-1"></i> Vị trí hiện tại
-                      </button>
+                    <div class="collapse show" id="customerInfoCollapse">
+                      <div class="form-section-body">
+                        <div class="form-group">
+                          <label for="hotenkhachhang">Họ và tên *</label>
+                          <input type="text" id="hotenkhachhang" name="hoten" required />
+                        </div>
+      
+                        <div class="form-group">
+                          <label for="sodienthoaikhachhang">Số điện thoại *</label>
+                          <input
+                            type="number"
+                            id="sodienthoaikhachhang"
+                            name="sodienthoai"
+                            required
+                          />
+                        </div>
+      
+                        <div class="form-group">
+                          <label for="diachi">Địa chỉ</label>
+                          <div class="input-group">
+                            <input
+                              type="text"
+                              id="diachi"
+                              name="diachi"
+                              placeholder="Nhập địa chỉ của bạn"
+                            />
+                          </div>
+                          <div id="toaDoHienThi" class="mt-2 text-muted fw-medium d-flex align-items-center flex-wrap" style="font-size: 0.9rem;"></div>
+                        </div>
+                        <div class="form-group">
+                          <div class="d-flex gap-2">
+                            <button
+                              class="btn btn-info text-white flex-grow-1"
+                              type="button"
+                              id="nutbando"
+                            >
+                              <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                            </button>
+                            <button
+                              class="btn btn-purple flex-grow-1"
+                              type="button"
+                              id="nutvitrihientai"
+                            >
+                              <i class="fas fa-location-arrow me-1"></i> Vị trí hiện tại
+                            </button>
+                          </div>
+                        </div>
+      
+                        <div
+                          class="form-group map-wrapper"
+                          id="khungbando"
+                          style="display: none"
+                        >
+                          <label>Chọn vị trí trên bản đồ</label>
+                          <div
+                            id="bando"
+                            style="height: 320px; border-radius: 12px"
+                          ></div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-
-                  <div
-                    class="form-group map-wrapper"
-                    id="khungbando"
-                    style="display: none"
-                  >
-                    <label>Chọn vị trí trên bản đồ</label>
-                    <div
-                      id="bando"
-                      style="height: 320px; border-radius: 12px"
-                    ></div>
                   </div>
 
                   <div class="row">
@@ -1270,6 +1433,9 @@
                 <a href="../../../thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
               </li>
               <li>
+                <a href="../../../dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html">Lái Xe Hộ</a>
+              </li>
+              <li>
                 <a href="../../../dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html">Sửa xe lưu động</a>
               </li>
               <li>
@@ -1407,92 +1573,6 @@
           sessionStorage.fonts = true;
         },
       });
-    </script>
-    <script>
-      // (function () {
-      //   function redirectToIndex() {
-      //     window.location.href = "index.html";
-      //   }
-
-      //   function normalizePhone(value) {
-      //     const phone = String(value || "")
-      //       .replace(/\s+/g, "")
-      //       .trim();
-
-      //     if (phone.indexOf("+84") === 0) {
-      //       return "0" + phone.slice(3);
-      //     }
-
-      //     if (phone.indexOf("84") === 0 && phone.length >= 11) {
-      //       return "0" + phone.slice(2);
-      //     }
-
-      //     return phone;
-      //   }
-
-      //   function guardAndFillSessionUser() {
-      //     return fetch("public/asset/login-page.php", {
-      //       method: "GET",
-      //       credentials: "same-origin",
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //         Accept: "application/json",
-      //       },
-      //     })
-      //       .then(function (response) {
-      //         return response
-      //           .json()
-      //           .catch(function () {
-      //             return null;
-      //           })
-      //           .then(function (result) {
-      //             return {
-      //               ok: response.ok,
-      //               result: result,
-      //             };
-      //           });
-      //       })
-      //       .then(function (payload) {
-      //         const result = payload && payload.result ? payload.result : null;
-
-      //         if (!result || result.loggedIn !== true) {
-      //           const redirectTarget =
-      //             (result && result.redirect) || "index.html";
-      //           window.location.href = redirectTarget;
-      //           return false;
-      //         }
-
-      //         const user = result.user || {};
-      //         const nameInput = document.getElementById("hotenkhachhang");
-      //         const phoneInput = document.getElementById("sodienthoaikhachhang");
-
-      //         if (nameInput && !nameInput.value && user.user_name) {
-      //           nameInput.value = String(user.user_name).trim();
-      //         }
-
-      //         if (phoneInput) {
-      //           const phone = normalizePhone(
-      //             user.user_tel || user.sodienthoai || user.phone,
-      //           );
-      //           if (phone) {
-      //             phoneInput.value = phone;
-      //             phoneInput.dispatchEvent(
-      //               new Event("input", { bubbles: true }),
-      //             );
-      //           }
-      //         }
-
-      //         return true;
-      //       })
-      //       .catch(function () {
-      //         redirectToIndex();
-      //         return false;
-      //       });
-      //   }
-
-      //   guardAndFillSessionUser();
-      // })();
-    
     </script>
   </body>
 </html>

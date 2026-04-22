@@ -544,6 +544,89 @@
         }
       }
 
+      /* Premium Collapsible Section */
+      .form-section-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        background: #ffffff;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      }
+
+      .form-section-header {
+        padding: 18px 24px;
+        background: #ffffff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: all 0.25s ease;
+        border-bottom: 1px solid #f1f5f9;
+        border-left: 4px solid #3b82f6;
+      }
+
+      .form-section-header:hover {
+        background: #f8fafc;
+      }
+
+      .form-section-header[aria-expanded="false"] {
+        border-bottom-color: transparent;
+      }
+
+      .form-section-title {
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        font-size: 1.15rem;
+        letter-spacing: -0.01em;
+      }
+
+      .form-section-title i:first-child {
+        color: #3b82f6;
+        margin-right: 12px;
+        font-size: 1.3rem;
+      }
+
+      .section-arrow {
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-left: 12px;
+        background: #f1f5f9;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid #e2e8f0;
+        transform: rotate(0deg);
+      }
+
+      .form-section-header:hover .section-arrow {
+        background: #e2e8f0;
+        color: #1e293b;
+        transform: scale(1.1);
+      }
+
+      .form-section-header:not(.collapsed) .section-arrow {
+        transform: rotate(180deg);
+        background: #3b82f6;
+        color: #ffffff;
+        border-color: #2563eb;
+      }
+
+      .form-section-header:not(.collapsed):hover .section-arrow {
+        transform: rotate(180deg) scale(1.1);
+      }
+
+      .form-section-body {
+        padding: 24px;
+        background: #ffffff;
+      }
+
       /* =============================================
          MOBILE: < 740px
          ============================================= */
@@ -658,6 +741,10 @@
         }
         .page-header h1 {
             font-size: 1.8rem;
+        }
+
+        .form-section-body {
+          padding: 15px;
         }
       }
     </style>
@@ -850,92 +937,109 @@
                   <!-- <div class="col-md-12">
                     <h3 class="modal-title text-center text-danger">Đặt dịch vụ</h3>
                   </div> -->
-                  <div class="col-md-6">
-                    <label class="form-label"
-                      ><i class="fas fa-user me-2"></i>Họ và tên
-                      <span class="text-danger">*</span></label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="hotenkhachhang"
-                      name="hotenkhachhang"
-                      placeholder="Nhập họ tên của bạn"
-                      required
-                    />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label"
-                      ><i class="fas fa-phone me-2"></i>Số điện thoại
-                      <span class="text-danger">*</span></label
-                    >
-                    <input
-                      type="tel"
-                      class="form-control"
-                      id="sodienthoaikhachhang"
-                      name="sodienthoaikhachhang"
-                      placeholder="Nhập số điện thoại"
-                      required
-                    />
-                  </div>
                   <div class="col-md-12">
-                    <label class="form-label">
-                      Địa chỉ <span class="text-danger">*</span>
-                    </label>
-                    <div class="input-group mb-2">
-                      <span class="input-group-text bg-info bg-opacity-10 text-info border-end-0">
-                        <i class="fas fa-map-marker-alt"></i>
-                      </span>
-                      <input
-                        id="diachi"
-                        name="diachi"
-                        type="text"
-                        class="form-control border-start-0"
-                        placeholder="Nhập địa chỉ của bạn"
-                        required
-                        style="padding-left: 0;"
-                      />
+                    <div class="form-section-card">
+                      <div class="form-section-header" data-bs-toggle="collapse" data-bs-target="#customerInfoCollapse" aria-expanded="true">
+                        <h5 class="form-section-title">
+                          <i class="fas fa-user-circle"></i>
+                          Thông tin khách hàng
+                          <i class="fas fa-chevron-down section-arrow"></i>
+                        </h5>
+                      </div>
+                      <div class="collapse show" id="customerInfoCollapse">
+                        <div class="form-section-body">
+                          <div class="row g-3">
+                            <div class="col-md-6">
+                              <label class="form-label"
+                                ><i class="fas fa-user me-2"></i>Họ và tên
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="hotenkhachhang"
+                                name="hotenkhachhang"
+                                placeholder="Nhập họ tên của bạn"
+                                required
+                              />
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label"
+                                ><i class="fas fa-phone me-2"></i>Số điện thoại
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="tel"
+                                class="form-control"
+                                id="sodienthoaikhachhang"
+                                name="sodienthoaikhachhang"
+                                placeholder="Nhập số điện thoại"
+                                required
+                              />
+                            </div>
+                            <div class="col-md-12">
+                              <label class="form-label">
+                                Địa chỉ <span class="text-danger">*</span>
+                              </label>
+                              <div class="input-group mb-2">
+                                <span class="input-group-text bg-info bg-opacity-10 text-info border-end-0">
+                                  <i class="fas fa-map-marker-alt"></i>
+                                </span>
+                                <input
+                                  id="diachi"
+                                  name="diachi"
+                                  type="text"
+                                  class="form-control border-start-0"
+                                  placeholder="Nhập địa chỉ của bạn"
+                                  required
+                                  style="padding-left: 0;"
+                                />
+                              </div>
+                              <div class="d-flex gap-2 flex-wrap mb-2">
+                                <button
+                                  class="btn btn-info text-white flex-grow-1"
+                                  type="button"
+                                  id="nutmobando"
+                                  name="nutmobando"
+                                >
+                                  <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                                </button>
+                                <button
+                                  class="btn flex-grow-1 text-white"
+                                  style="background-color: #8b5cf6; border-color: #8b5cf6;"
+                                  type="button"
+                                  id="nutvitricuatoi"
+                                  name="nutvitricuatoi"
+                                >
+                                  <i class="fas fa-location-arrow me-1"></i> Vị trí hiện tại
+                                </button>
+                              </div>
+                              <div class="d-flex gap-2" id="toaDoHienThi" style="display: none !important;">
+                                  <span class="badge text-secondary px-2 py-1 fs-6 fw-normal" style="background-color: #f4f5f9;" id="latDisplay">Lat: -</span>
+                                  <span class="badge text-secondary px-2 py-1 fs-6 fw-normal" style="background-color: #f4f5f9;" id="lngDisplay">Lng: -</span>
+                              </div>
+                            </div>
+          
+                            <div
+                              class="col-md-12"
+                              id="osmMapWrapper"
+                              style="display: none"
+                            >
+                              <label class="form-label">Chọn vị trí trên bản đồ</label>
+                              <div
+                                id="osmMap"
+                                style="
+                                  height: 320px;
+                                  border: 1px solid #dee2e6;
+                                  border-radius: 10px;
+                                  z-index: 1;
+                                "
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="d-flex gap-2 flex-wrap mb-2">
-                      <button
-                        class="btn btn-info text-white flex-grow-1"
-                        type="button"
-                        id="nutmobando"
-                        name="nutmobando"
-                      >
-                        <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
-                      </button>
-                      <button
-                        class="btn flex-grow-1 text-white"
-                        style="background-color: #8b5cf6; border-color: #8b5cf6;"
-                        type="button"
-                        id="nutvitricuatoi"
-                        name="nutvitricuatoi"
-                      >
-                        <i class="fas fa-location-arrow me-1"></i> Vị trí hiện tại
-                      </button>
-                    </div>
-                    <div class="d-flex gap-2" id="toaDoHienThi" style="display: none !important;">
-                        <span class="badge text-secondary px-2 py-1 fs-6 fw-normal" style="background-color: #f4f5f9;" id="latDisplay">Lat: -</span>
-                        <span class="badge text-secondary px-2 py-1 fs-6 fw-normal" style="background-color: #f4f5f9;" id="lngDisplay">Lng: -</span>
-                    </div>
-                  </div>
-
-                  <div
-                    class="col-md-12"
-                    id="osmMapWrapper"
-                    style="display: none"
-                  >
-                    <label class="form-label">Chọn vị trí trên bản đồ</label>
-                    <div
-                      id="osmMap"
-                      style="
-                        height: 320px;
-                        border: 1px solid #dee2e6;
-                        border-radius: 10px;
-                        z-index: 1;
-                      "
-                    ></div>
                   </div>
                   <div class="col-md-12">
                     <label class="form-label"
@@ -1350,6 +1454,9 @@
               </li>
               <li>
                 <a href="../../../dich-vu/van-tai-logistics/thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
+              </li>
+              <li>
+                <a href="../../../dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html">Lái Xe Hộ</a>
               </li>
               <li>
                 <a href="dich-vu.html">Sửa xe lưu động</a>

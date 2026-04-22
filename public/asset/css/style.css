@@ -39,13 +39,13 @@ body {
   color: #06b6d4 !important;
 }
 
-.nav-link {
-  color: rgba(255, 255, 255, 0.9);
+.navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
   font-weight: 500;
   margin: 0 10px;
   transition: color 0.3s;
 }
-.nav-link:hover {
+.navbar-nav .nav-link:hover {
   color: #06b6d4 !important;
 }
 .nav-link:focus {
@@ -250,10 +250,11 @@ body {
 
   .dropdown-submenu .fa-chevron-right {
     transition: transform 0.3s ease;
+    transform: rotate(90deg);
   }
 
   .dropdown-submenu.show .fa-chevron-right {
-    transform: rotate(90deg);
+    transform: rotate(270deg);
   }
 }
 
