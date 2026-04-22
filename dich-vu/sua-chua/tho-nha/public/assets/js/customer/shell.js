@@ -40,7 +40,8 @@
                 if (dvqtIdx !== -1) root = '/' + parts.slice(1, dvqtIdx + 1).join('/');
             }
             // Nếu không có session, chuyển về trang logout hoặc login
-            window.location.href = root + '/public/dang-nhap.html?service=thonha';
+            const currentUrl = encodeURIComponent(window.location.href);
+            window.location.href = root + '/public/dang-nhap.html?service=thonha&redirect=' + currentUrl;
             return;
         }
 
@@ -218,9 +219,8 @@
                 } else {
                     localStorage.clear();
                 }
-                // Chuyển hướng về trang chủ
-                const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : (window.location.pathname.includes('/tho-nha/') ? window.location.pathname.split('/tho-nha/')[0] : '');
-                window.location.href = root + '/tho-nha/index.html';
+                // Chuyển hướng về trang chủ dịch vụ
+                window.location.href = '../index.html';
             }
         });
     };

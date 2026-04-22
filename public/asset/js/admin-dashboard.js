@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const adminP = getCookie('admin_p');
 
     if (!adminE || !adminP) {
-        alert("Bạn chưa đăng nhập hoặc cookie không hợp lệ!");
+        showWarning("Bạn chưa đăng nhập hoặc cookie không hợp lệ!");
         window.location.href = "admin-login.html";
         return;
     }
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const isValidAdmin = adminListData.find(x => x.email === adminE && x.matkhau === adminP);
 
         if (!isValidAdmin) {
-            alert("Thông tin đăng nhập không chính xác hoặc tài khoản đã bị thay đổi!");
+            showError("Thông tin đăng nhập không chính xác hoặc tài khoản đã bị thay đổi!");
             document.cookie = "admin_e=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             document.cookie = "admin_p=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             window.location.href = "admin-login.html";
@@ -456,17 +456,40 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
+        // Lấy giá trị lọc hiện tại để ưu tiên hiển thị
+        const currentFilterSvc = document.getElementById('filterAccountService').value;
+
         const html = data.map(u => {
             // Lọc bỏ id=0 hoặc chuỗi rỗng để xác định có phải NCC hay không
-            const svcIds = String(u.id_dichvu || "").split(',').map(x => x.trim()).filter(x => x !== "" && x !== "0");
+            let svcIds = String(u.id_dichvu || "").split(',').map(x => x.trim()).filter(x => x !== "" && x !== "0");
             const isNCC = svcIds.length > 0;
-            const svcNames = svcIds.map(id => `<span class="badge bg-info text-dark me-1" style="font-size:10px;">${servicesMap[id] || 'ID:'+id}</span>`).join('');
+
+            // Ưu tiên đưa dịch vụ đang được lọc lên đầu danh sách hiển thị
+            if (currentFilterSvc && currentFilterSvc !== "0" && svcIds.includes(currentFilterSvc)) {
+                svcIds = [currentFilterSvc, ...svcIds.filter(id => id !== currentFilterSvc)];
+            }
+            
+            // Làm đẹp phần hiển thị dịch vụ: Giới hạn hiện 3 cái, còn lại hiện +X
+            const displayLimit = 3;
+            let svcNames = svcIds.slice(0, displayLimit).map(id => 
+                `<span class="badge rounded-pill bg-indigo-subtle text-indigo border border-indigo-subtle me-1 mb-1" style="font-size:10px; font-weight: 600; padding: 4px 8px;">${servicesMap[id] || 'ID:'+id}</span>`
+            ).join('');
+            
+            if (svcIds.length > displayLimit) {
+                svcNames += `<span class="badge rounded-pill bg-light text-muted border mb-1" style="font-size:10px; font-weight: 600; padding: 4px 8px;">+${svcIds.length - displayLimit} thêm</span>`;
+            }
             
             // Quy ước chuẩn: 0 = Hoạt động, 1 = Khóa
             const isLocked = String(u.trangthai) === '1';
             let statusBadge = isLocked 
                 ? '<span class="badge bg-danger">Bị khóa</span>' 
-                : '<span class="badge bg-success">Hoạt động</span>';
+                : '<span class="badge bg-success">Đang mở</span>';
+            
+            // Trạng thái bật/tắt phục vụ (hoatdong)
+            const isOnline = String(u.hoatdong) === '1';
+            const onlineStatus = isOnline 
+                ? '<div class="small text-success fw-bold mt-1"><i class="fas fa-circle me-1" style="font-size:8px;"></i>Online</div>'
+                : '<div class="small text-muted fw-bold mt-1"><i class="fas fa-circle me-1" style="font-size:8px;"></i>Offline</div>';
 
             return `
                 <tr>
@@ -478,7 +501,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         <div class="small fw-600 mb-1">${isNCC ? 'Nhà cung cấp' : 'Khách hàng'}</div>
                         <div class="d-flex flex-wrap" style="max-width:200px;">${svcNames}</div>
                     </td>
-                    <td>${statusBadge}</td>
+                    <td>
+                        ${statusBadge}
+                        ${onlineStatus}
+                    </td>
                     <td class="text-end">
                         <button class="btn btn-sm btn-light text-primary handle-view-account" data-id="${u.id}" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
                         <button class="btn btn-sm ${isLocked ? 'btn-outline-success' : 'btn-outline-warning'} handle-lock-account" data-id="${u.id}" data-status="${isLocked ? '0' : '1'}" title="${isLocked ? 'Mở khóa' : 'Khóa tài khoản'}">
@@ -497,9 +523,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return `
                     <div class="mobile-data-card">
                         <div class="card-top">
-                            <span class="card-name">${u.hovaten || 'N/A'}</span>
-                            <span class="badge ${isLocked ? 'bg-danger' : 'bg-success'}">${isLocked ? 'Bị khóa' : 'Hoạt động'}</span>
-                        </div>
+                             <span class="card-name">${u.hovaten || 'N/A'}</span>
+                             <div class="d-flex gap-2 align-items-center">
+                                <span class="badge ${isLocked ? 'bg-danger' : 'bg-success'}">${isLocked ? 'Bị khóa' : 'Đang mở'}</span>
+                                ${String(u.hoatdong) === '1' ? '<span class="badge bg-success" style="font-size:10px;">Online</span>' : '<span class="badge bg-secondary" style="font-size:10px;">Offline</span>'}
+                             </div>
+                         </div>
                         <div class="small mb-1">SĐT: ${u.sodienthoai}</div>
                         <div class="card-actions">
                              <button class="btn btn-sm btn-light text-primary handle-view-account" data-id="${u.id}"><i class="fas fa-eye me-1"></i>Xem</button>
@@ -588,9 +617,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                         <h4 class="fw-bold mb-1">${u.hovaten || 'N/A'}</h4>
                         <p class="text-muted small mb-3">ID: #${u.id}</p>
                         
-                        <div class="status-box p-2 rounded ${isLocked ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'} fw-bold small mb-3">
-                            <i class="fas ${isLocked ? 'fa-user-slash' : 'fa-user-check'} me-1"></i>
-                            ${isLocked ? 'TÀI KHOẢN ĐANG KHÓA' : 'TÀI KHOẢN HOẠT ĐỘNG'}
+                        <div class="system-status-group p-3 rounded-3 bg-light border mb-4 text-start">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas ${isLocked ? 'fa-user-slash text-danger' : 'fa-user-check text-success'} me-2" style="width:20px;"></i>
+                                <span class="small fw-bold text-uppercase text-muted" style="font-size: 10px; flex: 1;">Tài khoản:</span>
+                                <span class="badge ${isLocked ? 'bg-danger' : 'bg-success'}">${isLocked ? 'Đã khóa' : 'Đang mở'}</span>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-signal ${String(u.hoatdong) === '1' ? 'text-success' : 'text-muted'} me-2" style="width:20px;"></i>
+                                <span class="small fw-bold text-uppercase text-muted" style="font-size: 10px; flex: 1;">Kết nối:</span>
+                                <span class="badge ${String(u.hoatdong) === '1' ? 'bg-success' : 'bg-secondary'}">${String(u.hoatdong) === '1' ? 'Online' : 'Offline'}</span>
+                            </div>
+
+                            ${svcIds.length > 0 ? `
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-bolt ${String(u.tudongnhandon) === '1' ? 'text-warning' : 'text-muted'} me-2" style="width:20px;"></i>
+                                <span class="small fw-bold text-uppercase text-muted" style="font-size: 10px; flex: 1;">Tự nhận đơn:</span>
+                                <span class="badge ${String(u.tudongnhandon) === '1' ? 'bg-warning text-dark' : 'bg-light text-muted border'}">${String(u.tudongnhandon) === '1' ? 'Đang bật' : 'Đang tắt'}</span>
+                            </div>
+                            ` : ''}
                         </div>
 
                         <div class="identity-info text-start px-2">

@@ -1,3 +1,9 @@
+<script>
+    // Ngăn chặn truy cập trực tiếp vào file partial
+    if (window.location.pathname.endsWith('dashboard.html')) {
+        window.location.href = 'trang-ca-nhan.html';
+    }
+</script>
 <!-- Stat Summary -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
@@ -98,16 +104,16 @@
 <style>
     /* Dashboard responsive */
     @media (max-width: 768px) {
-        .row.g-4.mb-4 .col-6.col-md-3 .card {
+        .row.g-3.mb-4 .col-6.col-md-3 .card {
             padding: 12px !important;
             border-radius: 12px !important;
         }
 
-        .row.g-4.mb-4 .h4 {
+        .row.g-3.mb-4 .h4 {
             font-size: 1.2rem;
         }
 
-        .row.g-4.mb-4 .small {
+        .row.g-3.mb-4 .small {
             font-size: 0.7rem;
         }
 
@@ -136,11 +142,11 @@
     }
 
     @media (max-width: 480px) {
-        .row.g-4.mb-4 .p-3 {
+        .row.g-3.mb-4 .p-3 {
             padding: 8px !important;
         }
 
-        .row.g-4.mb-4 .h4 {
+        .row.g-3.mb-4 .h4 {
             font-size: 1rem;
         }
 

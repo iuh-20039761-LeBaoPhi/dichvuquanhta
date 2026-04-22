@@ -34,7 +34,8 @@
     async function verifySession(requiredRole) {
         const session = await DVQTApp.checkSession();
         if (!session || !session.logged_in) {
-            window.location.href = ROOT + '/public/dang-nhap.html?service=thuexe';
+            const currentUrl = encodeURIComponent(window.location.href);
+            window.location.href = ROOT + '/public/dang-nhap.html?service=thuexe&redirect=' + currentUrl;
             return;
         }
 
@@ -223,7 +224,7 @@
 
         if (confirm.isConfirmed) {
             await DVQTApp.logout();
-            window.location.href = ROOT + '/index.html';
+            window.location.href = '../index.html';
         }
     }
 

@@ -16,7 +16,13 @@
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --radius: 16px;
     --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --indigo: #6366f1;
+    --indigo-subtle: #eef2ff;
 }
+
+.bg-indigo-subtle { background-color: var(--indigo-subtle) !important; }
+.text-indigo { color: var(--indigo) !important; }
+.border-indigo-subtle { border-color: #c7d2fe !important; }
 
 body.dvqt-admin {
     font-family: 'Public Sans', sans-serif;

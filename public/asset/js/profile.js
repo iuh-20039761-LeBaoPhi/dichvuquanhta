@@ -7,28 +7,33 @@
     const krud = window.DVQTKrud;
     const app = window.DVQTApp;
     let currentUser = null;
+    let DYNAMIC_SERVICES = [];
 
-    // 1. SERVICES CONFIGURATION (Synced with registration.js)
-    const SERVICES = [
-        { id: '1',  name: 'Mẹ & Bé',        icon: 'baby',           color: '#ec4899' },
-        { id: '2',  name: 'Người bệnh',     icon: 'hospital-user',  color: '#ef4444' },
-        { id: '3',  name: 'Người già',      icon: 'person-cane',    color: '#f97316' },
-        { id: '4',  name: 'Làm vườn',        icon: 'leaf',           color: '#22c55e' },
-        { id: '5',  name: 'Vệ sinh',        icon: 'broom',          color: '#14b8a6' },
-        { id: '6',  name: 'Lái xe hộ',      icon: 'car',            color: '#3b82f6' },
-        { id: '7',  name: 'Giao hàng',      icon: 'truck-fast',     color: '#6366f1' },
-        { id: '8',  name: 'Sửa xe',         icon: 'motorcycle',     color: '#8b5cf6' },
-        { id: '9',  name: 'Thợ nhà',        icon: 'tools',          color: '#11998e' },
-        { id: '10', name: 'Thuê xe',        icon: 'key',            color: '#0ea5e9' },
-        { id: '11', name: 'Giặt ủi',        icon: 'tshirt',         color: '#f43f5e' }
-    ];
+    // Helper to map icons and colors based on service name
+    function getSvcMeta(name) {
+        const n = name.toLowerCase();
+        if (n.includes('mẹ') || n.includes('bé')) return { icon: 'baby', color: '#ec4899' };
+        if (n.includes('bệnh')) return { icon: 'hospital-user', color: '#ef4444' };
+        if (n.includes('già')) return { icon: 'person-cane', color: '#f97316' };
+        if (n.includes('vườn')) return { icon: 'leaf', color: '#22c55e' };
+        if (n.includes('chuyển dọn')) return { icon: 'truck-loading', color: '#1b4332' }; 
+        if (n.includes('vệ sinh') || n.includes('dọn')) return { icon: 'broom', color: '#14b8a6' };
+        if (n.includes('lái xe')) return { icon: 'car', color: '#3b82f6' };
+        if (n.includes('giao hàng')) return { icon: 'truck-fast', color: '#6366f1' };
+        if (n.includes('sửa xe')) return { icon: 'motorcycle', color: '#8b5cf6' };
+        if (n.includes('thợ')) return { icon: 'tools', color: '#11998e' };
+        if (n.includes('thuê xe')) return { icon: 'key', color: '#0ea5e9' };
+        if (n.includes('giặt')) return { icon: 'tshirt', color: '#f43f5e' };
+        return { icon: 'concierge-bell', color: '#6b7280' };
+    }
 
     // 2. INITIALIZATION
     async function init() {
         try {
             const session = await app.checkSession();
             if (!session || !session.logged_in) {
-                window.location.href = 'dang-nhap.html?service=profile';
+                const currentUrl = encodeURIComponent(window.location.href);
+                window.location.href = `dang-nhap.html?service=profile&redirect=${currentUrl}`;
                 return;
             }
 
@@ -37,6 +42,38 @@
             currentUser = users.find(u => String(u.id) === String(session.id));
 
             if (!currentUser) throw new Error('Không tìm thấy tài khoản trong hệ thống.');
+
+            // Fetch dynamic services from DB
+            const svcData = await krud.listTable('dichvucungcap', { limit: 100 });
+            
+            // Homepage Sort Order Weights (priority mapping)
+            const getWeight = (name) => {
+                const n = name.toLowerCase();
+                if (n.includes('mẹ') || n.includes('bé')) return 1;
+                if (n.includes('già')) return 2;
+                if (n.includes('bệnh')) return 3;
+                if (n.includes('vệ sinh') || n.includes('dọn')) return 4;
+                if (n.includes('vườn')) return 5;
+                if (n.includes('giặt')) return 6;
+                if (n.includes('giao hàng')) return 7;
+                if (n.includes('chuyển dọn')) return 8;
+                if (n.includes('thuê xe')) return 9;
+                if (n.includes('lái xe')) return 10;
+                if (n.includes('sửa xe')) return 11;
+                if (n.includes('thợ')) return 12;
+                return 99; // Default for others
+            };
+
+            DYNAMIC_SERVICES = (svcData || []).map(s => {
+                const meta = getSvcMeta(s.dichvu);
+                return {
+                    id: String(s.id),
+                    name: s.dichvu,
+                    icon: meta.icon,
+                    color: meta.color,
+                    weight: getWeight(s.dichvu)
+                };
+            }).sort((a, b) => a.weight - b.weight);
 
             renderProfileHeader();
             renderInfoTab();
@@ -142,6 +179,38 @@
             document.getElementById('reg_lat').value = currentUser.maplat;
             document.getElementById('reg_lng').value = currentUser.maplng;
         }
+
+        // Initialize Work Status Toggle
+        const toggle = document.getElementById('hoatdongToggle');
+        const statusText = document.getElementById('statusText');
+        if (toggle) {
+            const isOnline = String(currentUser.hoatdong) === '1';
+            toggle.checked = isOnline;
+            if (statusText) {
+                statusText.textContent = isOnline ? 'Online' : 'Offline';
+            }
+        }
+
+        // Initialize Auto Accept Toggle (Only for Providers)
+        const isProvider = String(currentUser.id_dichvu || '0') !== '0';
+        const autoWrapper = document.getElementById('autoAcceptWrapper');
+        const autoDivider = document.getElementById('autoAcceptDivider');
+        if (isProvider && autoWrapper) {
+            autoWrapper.style.display = 'block';
+            if (autoDivider) autoDivider.style.display = 'block';
+            const autoToggle = document.getElementById('autoAcceptToggle');
+            const autoText = document.getElementById('autoAcceptText');
+            if (autoToggle) {
+                const isOnline = String(currentUser.hoatdong) === '1';
+                const isAuto = String(currentUser.tudongnhandon) === '1' && isOnline; // Chỉ bật nếu online
+                
+                autoToggle.checked = isAuto;
+                
+                if (autoText) {
+                    autoText.textContent = isAuto ? 'Tự nhận đơn: Bật' : 'Tự nhận đơn: Tắt';
+                }
+            }
+        }
     }
 
     function renderServiceTab() {
@@ -149,7 +218,7 @@
         if (!container) return;
         const currentIds = String(currentUser.id_dichvu || '').split(',').filter(s => s.trim()).map(s => s.trim());
         
-        container.innerHTML = SERVICES.map(svc => {
+        container.innerHTML = DYNAMIC_SERVICES.map(svc => {
             const isSelected = currentIds.includes(svc.id);
             return `
                 <div class="service-item ${isSelected ? 'selected' : ''}" data-id="${svc.id}" onclick="toggleService(this)">
@@ -198,6 +267,106 @@
     }
 
     function setupEvents() {
+        // Toggle Hoạt động
+        const toggle = document.getElementById('hoatdongToggle');
+        if (toggle) {
+            toggle.addEventListener('change', async function() {
+                const isOnline = this.checked;
+                const statusValue = isOnline ? '1' : '0';
+                const statusText = document.getElementById('statusText');
+                
+                // Cập nhật text ngay lập tức cho mượt
+                if (statusText) {
+                    statusText.textContent = isOnline ? 'Online' : 'Offline';
+                }
+
+                try {
+                    await krud.updateRow('nguoidung', currentUser.id, { hoatdong: statusValue });
+                    // Cập nhật biến local để không bị sync ngược khi render lại
+                    currentUser.hoatdong = statusValue;
+
+                    // Xử lý ràng buộc Tự nhận đơn
+                    const autoToggle = document.getElementById('autoAcceptToggle');
+                    const autoText = document.getElementById('autoAcceptText');
+                    if (autoToggle) {
+                        // autoToggle.disabled = !isOnline; // Remove disabled so we can click and show alert
+                        if (!isOnline && autoToggle.checked) {
+                            autoToggle.checked = false;
+                            await krud.updateRow('nguoidung', currentUser.id, { tudongnhandon: '0' });
+                            currentUser.tudongnhandon = '0';
+                            if (autoText) {
+                                autoText.textContent = 'Tự nhận đơn: Tắt';
+                            }
+                        } else if (isOnline && autoText) {
+                            autoText.textContent = 'Tự nhận đơn: Tắt';
+                        }
+                    }
+                } catch (err) {
+                    console.error('Lỗi cập nhật trạng thái:', err);
+                    Swal.fire('Lỗi', 'Không thể cập nhật trạng thái hoạt động.', 'error');
+                    // Reset lại toggle nếu lỗi
+                    this.checked = !isOnline;
+                    if (statusText) {
+                        statusText.textContent = !isOnline ? 'Online' : 'Offline';
+                    }
+                }
+            });
+        }
+
+        // Toggle Tự động nhận đơn
+        const autoToggle = document.getElementById('autoAcceptToggle');
+        if (autoToggle) {
+            autoToggle.addEventListener('change', async function() {
+                // Kiểm tra ràng buộc Online
+                const isOnline = String(currentUser.hoatdong) === '1';
+                if (!isOnline) {
+                    this.checked = false;
+                    Swal.fire({
+                        title: 'Thông báo',
+                        text: 'Vui lòng chuyển trạng thái sang "Đang hoạt động" (Online) trước khi bật chế độ tự nhận đơn.',
+                        icon: 'info',
+                        confirmButtonText: 'Đã hiểu'
+                    });
+                    return;
+                }
+
+                const isAuto = this.checked;
+                const statusValue = isAuto ? '1' : '0';
+                const autoText = document.getElementById('autoAcceptText');
+
+                if (autoText) {
+                    autoText.textContent = isAuto ? 'Tự nhận đơn: Bật' : 'Tự nhận đơn: Tắt';
+                }
+
+                try {
+                    await krud.updateRow('nguoidung', currentUser.id, { tudongnhandon: statusValue });
+                    currentUser.tudongnhandon = statusValue;
+                } catch (err) {
+                    console.error('Lỗi cập nhật tự nhận đơn:', err);
+                    Swal.fire('Lỗi', 'Không thể cập nhật cấu hình tự nhận đơn.', 'error');
+                    this.checked = !isAuto;
+                    if (autoText) {
+                        autoText.textContent = !isAuto ? 'Tự nhận đơn: Bật' : 'Tự nhận đơn: Tắt';
+                    }
+                }
+            });
+        }
+
+        // Click vào khung để bật toggle
+        document.querySelectorAll('.status-item').forEach(item => {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', function(e) {
+                // Nếu click vào chính INPUT hoặc LABEL có thuộc tính "for"
+                // thì để trình duyệt tự xử lý (tránh bị double click gây mất tác dụng)
+                if (e.target.closest('input') || e.target.closest('label')) return;
+                
+                const input = this.querySelector('input[type="checkbox"]');
+                if (input) {
+                    input.click(); // Kích hoạt sự kiện change của input
+                }
+            });
+        });
+
         // Setup Image Previews
         setupImagePreview('avatarUpload', 'avatarImage');
         setupImagePreview('cccdTruoc', 'previewTruoc');
@@ -272,7 +441,18 @@
                 
                 if (confirm.isConfirmed) {
                     await app.logout();
-                    window.location.href = '../index.html';
+                    
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const service = urlParams.get('service');
+                    let target = '../index.html';
+                    
+                    if (service === 'thonha') {
+                        target = '../dich-vu/sua-chua/tho-nha/index.html';
+                    } else if (service === 'thuexe') {
+                        target = '../dich-vu/van-tai-logistics/thue-xe/index.html';
+                    }
+                    
+                    window.location.href = target;
                 }
             };
         }

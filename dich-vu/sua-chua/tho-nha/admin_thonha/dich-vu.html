@@ -1,3 +1,9 @@
+<script>
+    // Ngăn chặn truy cập trực tiếp vào file partial
+    if (window.location.pathname.endsWith('dich-vu.html')) {
+        window.location.href = 'quan-tri.html';
+    }
+</script>
 <style>
     .service-filter-bar {
         background: #f8f9fa; border-radius: 12px; padding: 16px; margin-bottom: 20px;

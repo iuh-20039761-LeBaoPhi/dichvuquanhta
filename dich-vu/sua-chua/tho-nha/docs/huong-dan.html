@@ -72,37 +72,181 @@
         .detail-step { margin-bottom: 60px; padding-left: 20px; border-left: 3px solid var(--primary-light); }
         .detail-step:last-child { margin-bottom: 0; }
         .step-label { color: var(--primary); font-weight: 800; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; margin-bottom: 8px; display: block; }
-        .step-heading { font-weight: 700; font-size: 1.25rem; margin-bottom: 15px; }
+        .step-heading { font-weight: 700; font-size: 1.25rem; marg        /* Tabs Styling */
+        .nav-pills .nav-link {
+            margin: 0 8px;
+            border: 1px solid #e9ecef;
+            color: #495057;
+            border-radius: 30px;
+            padding: 8px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .nav-pills .nav-link:hover {
+            background-color: #f8f9fa;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
 
-        /* DEVICE GALLERY - THE CORE REQUEST */
-        .device-gallery {
-            background: #f1f5f9;
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-top: 20px;
+        /* Device Mockups Container */
+        .device-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2.5rem 1.5rem;
+            background: #f8f9fa;
+            border-radius: 16px;
+            margin-top: 1rem;
+            border: 1px dashed #ced4da;
+            min-height: 400px;
         }
-        .frame-label {
-            font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;
-            margin-bottom: 8px; display: block; text-align: center;
-        }
-        
-        .mockup {
-            background: white; border: 1px solid #cbd5e1; border-radius: 8px;
-            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-        
-        .pc-mockup { width: 100%; height: 220px; border-top: 20px solid #e2e8f0; }
-        .pc-mockup::before { content: ""; position: absolute; top: -14px; left: 8px; width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; box-shadow: 10px 0 #94a3b8, 20px 0 #94a3b8; }
-        
-        .tablet-mockup { width: 100%; height: 220px; border: 6px solid #1e293b; border-radius: 12px; }
-        
-        .mobile-mockup { width: 120px; height: 220px; border: 6px solid #1e293b; border-radius: 20px; margin: 0 auto; }
 
-        .placeholder-content {
-            flex-direction: column; color: #94a3b8; text-align: center; padding: 10px; font-size: 11px; font-weight: 500;
+        /* PC Mockup */
+        .mockup-pc {
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            border-bottom: 30px solid #d1d5db;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s;
         }
-        .placeholder-content i { font-size: 1.8rem; margin-bottom: 5px; color: #cbd5e1; }
+        .mockup-pc:hover { transform: translateY(-5px); }
+        .mockup-pc .header {
+            background: #f1f3f5;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .mockup-pc .header .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .mockup-pc .header .dot.red { background: #ff5f56; }
+        .mockup-pc .header .dot.yellow { background: #ffbd2e; }
+        .mockup-pc .header .dot.green { background: #27c93f; }
+        .mockup-pc .screen {
+            height: 400px;
+            background: #e9ecef;
+            position: relative;
+        }
+        .mockup-pc::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 6px;
+            background: #adb5bd;
+            border-radius: 6px 6px 0 0;
+        }
+
+        /* Tablet Mockup */
+        .mockup-tablet {
+            width: 100%;
+            max-width: 450px;
+            height: 580px;
+            background: #fff;
+            border: 18px solid #1a1a1a;
+            border-radius: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            transition: transform 0.3s;
+        }
+        .mockup-tablet:hover { transform: translateY(-5px); }
+        .mockup-tablet .camera {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #333;
+            border-radius: 50%;
+        }
+        .mockup-tablet .screen {
+            width: 100%;
+            height: 100%;
+            background: #e9ecef;
+            position: relative;
+        }
+
+        /* Mobile Mockup */
+        .mockup-mobile {
+            width: 100%;
+            max-width: 280px;
+            height: 580px;
+            background: #fff;
+            border: 12px solid #1a1a1a;
+            border-radius: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            transition: transform 0.3s;
+        }
+        .mockup-mobile:hover { transform: translateY(-5px); }
+        .mockup-mobile .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 24px;
+            background: #1a1a1a;
+            border-radius: 0 0 14px 14px;
+            z-index: 2;
+        }
+        .mockup-mobile .screen {
+            width: 100%;
+            height: 100%;
+            background: #e9ecef;
+            position: relative;
+        }
+
+        /* UI Wireframe elements */
+        .ui-wire-header { background: #dee2e6; height: 50px; width: 100%; position: absolute; top:0; left:0; display:flex; align-items:center; padding: 0 15px; }
+        .ui-wire-logo { width: 30px; height: 30px; background: #adb5bd; border-radius: 6px; }
+        .ui-wire-nav { display:flex; gap:8px; margin-left:auto;}
+        .ui-wire-nav-item { width: 25px; height: 8px; background: #adb5bd; border-radius: 4px; }
+        .ui-wire-body { padding-top: 70px; text-align: center; padding-inline: 15px; height: 100%; overflow-y: auto;}
+        .ui-wire-title { font-weight: 700; color: #475569; margin-bottom: 20px; }
+        .ui-wire-img-placeholder { 
+            background: #cbd5e1; 
+            border-radius: 12px; 
+            margin: 0 auto 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 2rem;
+        }
+        .ui-wire-line { background: #e2e8f0; height: 10px; width: 80%; border-radius: 5px; margin: 8px auto;}
+        .ui-wire-line.short { width: 50%; }
+        .ui-wire-btn { 
+            background: var(--primary); 
+            height: 40px; 
+            width: 60%; 
+            border-radius: 8px; 
+            margin: 25px auto;
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+        }
+; color: #cbd5e1; }
 
         /* Tip Box */
         .note-box {
@@ -155,22 +299,7 @@
                         <h3 class="step-heading">Vào menu tài khoản</h3>
                         <p>Từ Header chính, click chọn "Tài khoản" để bắt đầu truy cập hệ thống.</p>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Ảnh Header PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Ảnh Header Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Ảnh Header Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Header Website" data-icon="fa-desktop" data-img-height="120" data-btn-text="Vào Tài Khoản"></div>
                     </div>
 
                     <!-- Step 1.2 -->
@@ -179,22 +308,7 @@
                         <h3 class="step-heading">Điền form Đăng ký</h3>
                         <p>Nhập đầy đủ Họ tên, SĐT, Email và đặc biệt là chọn vai trò: <strong>Khách hàng</strong> hoặc <strong>Thợ</strong>.</p>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Ảnh Form Đăng ký PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Ảnh Form Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Ảnh Form Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Form Đăng Ký Người Dùng" data-icon="fa-user-edit" data-img-height="150" data-btn-text="Đăng Ký Ngay"></div>
                     </div>
                 </section>
 
@@ -208,22 +322,7 @@
                         <h3 class="step-heading">Chọn dịch vụ sửa chữa</h3>
                         <p>Duyệt qua danh mục (Máy lạnh, Điện nước...) và click vào nút chi tiết hoặc đặt lịch.</p>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Danh sách dịch vụ PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Danh sách Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Danh sách Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Danh Sách Dịch Vụ Sửa Chữa" data-icon="fa-tools" data-img-height="160" data-btn-text="Đặt Lịch"></div>
                     </div>
 
                     <!-- Step 2.2 -->
@@ -232,22 +331,7 @@
                         <h3 class="step-heading">Hoàn tất Form Đặt lịch</h3>
                         <p>Nhập địa chỉ và mô tả sự cố. Chú ý kiểm tra chính xác số điện thoại để Thợ liên hệ.</p>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Form Đặt lịch PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Form Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Form Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Thông Tin Đặt Lịch Sửa Chữa" data-icon="fa-map-marker-alt" data-img-height="0" data-btn-text="Xác Nhận Đặt"></div>
                     </div>
                 </section>
 
@@ -261,22 +345,7 @@
                         <h3 class="step-heading">Quản lý Đơn hàng cá nhân</h3>
                         <p>Theo dõi trạng thái đơn từ lúc Chờ xác nhận đến khi Thợ hoàn thành công việc.</p>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Dashboard KH PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Dashboard Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Dashboard Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Dashboard Khách Hàng" data-icon="fa-user-cog" data-img-height="140" data-btn-text="Quản Lý Đơn"></div>
                     </div>
 
                     <!-- Step 3.2 -->
@@ -288,22 +357,7 @@
                             <strong>Quyền lợi:</strong> Hệ thống sẽ tính toán khoản trợ giá 5% dựa trên số tiền này để tri ân khách hàng và hỗ trợ phí dịch vụ.
                         </div>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-hand-holding-usd"></i><span>Modal nhập giá PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Modal nhập giá Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Modal nhập giá Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Nhập Giá Thực Tế Thương Lượng" data-icon="fa-hand-holding-usd" data-img-height="80" data-btn-text="Gửi Xác Nhận"></div>
                     </div>
                 </section>
 
@@ -317,22 +371,7 @@
                         <h3 class="step-heading">Tiếp nhận đơn hàng mới</h3>
                         <p>Xem thông tin khách hàng, vị trí và sự cố cần xử lý để nhận đơn.</p>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Đơn hàng NCC PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Đơn hàng Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Đơn hàng Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Danh Sách Đơn Hàng Mới" data-icon="fa-tasks" data-img-height="130" data-btn-text="Nhận Đơn"></div>
                     </div>
 
                     <!-- Step 4.2 -->
@@ -341,22 +380,7 @@
                         <h3 class="step-heading">Thực hiện và Cập nhật trạng thái</h3>
                         <p>Thợ thực hiện sửa chữa và cập nhật trạng thái đơn hàng sang "Đang thực hiện" và "Hoàn thành" trên dashboard của mình.</p>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-check-double"></i><span>Màn hình trạng thái PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Màn hình trạng thái Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Màn hình trạng thái Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Tiến Độ Sửa Chữa" data-icon="fa-check-double" data-img-height="110" data-btn-text="Hoàn Thành"></div>
                     </div>
                 </section>
 
@@ -370,22 +394,7 @@
                         <h3 class="step-heading">Quản trị toàn hệ thống</h3>
                         <p>Theo dõi biểu đồ doanh thu và quản lý danh sách Thợ, Khách hàng toàn quốc.</p>
                         
-                        <div class="device-gallery">
-                            <div class="row g-3">
-                                <div class="col-lg-7">
-                                    <span class="frame-label">Desktop (PC)</span>
-                                    <div class="mockup pc-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-desktop"></i><span>Admin Dashboard PC</span></div></div>
-                                </div>
-                                <div class="col-lg-3 col-6">
-                                    <span class="frame-label">Tablet</span>
-                                    <div class="mockup tablet-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-tablet-alt"></i><span>Admin Tablet</span></div></div>
-                                </div>
-                                <div class="col-lg-2 col-6">
-                                    <span class="frame-label">Điện thoại</span>
-                                    <div class="mockup mobile-mockup"><div class="placeholder-content d-flex w-100 h-100"><i class="fas fa-mobile-alt"></i><span>Admin Mobile</span></div></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="setup-mockup" data-title="Admin Dashboard Quản Trị" data-icon="fa-chart-line" data-img-height="180" data-btn-text="Xem Thống Kê"></div>
                     </div>
                 </section>
 
@@ -403,5 +412,48 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Mockup Generator Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const mockups = document.querySelectorAll('.setup-mockup');
+            
+            mockups.forEach((el, index) => {
+                const id = 'mock-thm-' + index;
+                const title = el.getAttribute('data-title') || 'Giao diện hệ thống';
+                const icon = el.getAttribute('data-icon') || 'fa-image';
+                const btnText = el.getAttribute('data-btn-text') || 'Tiếp tục';
+                const imgHeight = parseInt(el.getAttribute('data-img-height')) || 0;
+                
+                const renderUI = (label) => {
+                    let imgBlock = imgHeight > 0 ? `<div class="ui-wire-img-placeholder" style="height:${imgHeight}px; width:90%;"><i class="fas ${icon}"></i></div>` : '';
+                    return `
+                        <div class="ui-wire-header"><div class="ui-wire-logo"></div><div class="ui-wire-nav"><div class="ui-wire-nav-item"></div><div class="ui-wire-nav-item"></div></div></div>
+                        <div class="ui-wire-body">
+                            <h4 class="ui-wire-title" style="font-size: ${label === 'Mobile' ? '1rem' : '1.15rem'};">${title} <br><small class="text-muted" style="font-size:70%">(${label})</small></h4>
+                            ${imgBlock}
+                            <div class="ui-wire-line"></div><div class="ui-wire-line"></div><div class="ui-wire-line short"></div>
+                            <div class="ui-wire-btn"><i class="fas fa-check-circle me-2"></i> ${btnText}</div>
+                        </div>
+                    `;
+                };
+
+                el.innerHTML = `
+                    <div class="mt-4 border-top pt-4">
+                        <ul class="nav nav-pills justify-content-center mb-4" id="tab-${id}">
+                            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pc-${id}"><i class="fas fa-desktop me-2"></i> PC</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-${id}"><i class="fas fa-tablet-alt me-2"></i> Tablet</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#mob-${id}"><i class="fas fa-mobile-alt me-2"></i> Mobile</button></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="pc-${id}"><div class="device-container"><div class="mockup-pc"><div class="header"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div><div class="screen">${renderUI('Desktop')}</div></div></div></div>
+                            <div class="tab-pane fade" id="tab-${id}"><div class="device-container"><div class="mockup-tablet"><div class="camera"></div><div class="screen">${renderUI('Tablet')}</div></div></div></div>
+                            <div class="tab-pane fade" id="mob-${id}"><div class="device-container"><div class="mockup-mobile"><div class="notch"></div><div class="screen">${renderUI('Mobile')}</div></div></div></div>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    </script>
 </body>
 </html>

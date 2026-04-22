@@ -1,3 +1,9 @@
+<script>
+    // Ngăn chặn truy cập trực tiếp vào file partial
+    if (window.location.pathname.endsWith('aside.html')) {
+        window.location.href = 'quan-tri.html';
+    }
+</script>
 <aside
   class="offcanvas-lg offcanvas-start sidebar-shell"
   tabindex="-1"
