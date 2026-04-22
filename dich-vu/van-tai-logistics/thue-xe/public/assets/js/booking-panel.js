@@ -117,7 +117,7 @@
                         confirmButtonColor: '#0ea5e9'
                     });
                 } else {
-                    alert('Tài khoản Nhà cung cấp không thể thực hiện chức năng đặt xe này.');
+                    Utils.showToast('Tài khoản Nhà cung cấp không thể thực hiện chức năng đặt xe này.', 'danger');
                 }
                 return;
             }

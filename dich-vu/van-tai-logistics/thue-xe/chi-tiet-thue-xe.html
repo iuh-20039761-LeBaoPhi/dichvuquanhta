@@ -666,7 +666,7 @@
 
                     const all = await DVQTKrud.listTable(TABLE_ORDERS, { limit: 1000 });
                     currentOrder = all.find(o => String(o.id) === String(id));
-                    if(!currentOrder) { alert('Không tìm thấy đơn hàng #'+id); return; }
+                    if(!currentOrder) { Swal.fire('Không tìm thấy', 'Đơn hàng #'+id+' không tồn tại.', 'error'); return; }
 
                     let hasAccess = false;
                     if(session && session.id) {

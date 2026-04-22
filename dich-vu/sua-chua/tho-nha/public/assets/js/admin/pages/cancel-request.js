@@ -1,3 +1,13 @@
+function _tnToast(msg, type) {
+    if (typeof type === 'undefined') type = 'success';
+    var d = document.createElement('div');
+    d.className = 'alert alert-' + type + ' shadow-lg position-fixed top-0 start-50 translate-middle-x mt-4';
+    d.style.cssText = 'z-index:99999;border-radius:30px;padding:12px 30px;min-width:280px;max-width:90vw;text-align:center;animation:fadeInDown .3s ease;';
+    var icon = type === 'success' ? 'fa-check-circle' : (type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle');
+    d.innerHTML = '<i class="fas ' + icon + ' me-2"></i>' + msg;
+    document.body.appendChild(d);
+    setTimeout(function() { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(function() { d.remove(); }, 500); }, 3500);
+}
 window.initCancelRequests = function() {
     if (window.cancelRequestsInitialized) return;
     window.cancelRequestsInitialized = true;
@@ -64,7 +74,7 @@ window.approveCancelRequest = function(requestId) {
     })
     .then(res => res.json())
     .then(res => {
-        alert(res.message);
+        _tnToast(res.message, res.status === 'success' ? 'success' : 'danger');
         if (res.status === 'success') {
             loadAllCancelRequests().then(requests => displayCancelRequests(requests));
             loadAllOrders();
@@ -72,7 +82,7 @@ window.approveCancelRequest = function(requestId) {
     })
     .catch(err => {
         console.error('Error:', err);
-        alert('Lỗi kết nối server');
+        _tnToast('Lỗi kết nối server', 'danger');
     });
 }
 
@@ -86,13 +96,13 @@ window.rejectCancelRequest = function(requestId) {
     })
     .then(res => res.json())
     .then(res => {
-        alert(res.message);
+        _tnToast(res.message, res.status === 'success' ? 'success' : 'danger');
         if (res.status === 'success') {
             loadAllCancelRequests().then(requests => displayCancelRequests(requests));
         }
     })
     .catch(err => {
         console.error('Error:', err);
-        alert('Lỗi kết nối server');
+        _tnToast('Lỗi kết nối server', 'danger');
     });
 }

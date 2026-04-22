@@ -1,6 +1,16 @@
 /**
  * Khởi tạo dữ liệu và sự kiện cho trang Đơn hàng Đối tác (Thợ Nhà)
  */
+function _tnToast(msg, type) {
+    if (typeof type === 'undefined') type = 'success';
+    var d = document.createElement('div');
+    d.className = 'alert alert-' + type + ' shadow-lg position-fixed top-0 start-50 translate-middle-x mt-4';
+    d.style.cssText = 'z-index:99999;border-radius:30px;padding:12px 30px;min-width:280px;max-width:90vw;text-align:center;animation:fadeInDown .3s ease;';
+    var icon = type === 'success' ? 'fa-check-circle' : (type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle');
+    d.innerHTML = '<i class="fas ' + icon + ' me-2"></i>' + msg;
+    document.body.appendChild(d);
+    setTimeout(function() { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(function() { d.remove(); }, 500); }, 3500);
+}
 window.initProviderOrders = function() {
     'use strict';
 
@@ -49,7 +59,7 @@ window.initProviderOrders = function() {
             store.setOrders(orders);
         } catch (err) {
             console.error('[provider-order] API Error:', err);
-            if (showErrorAlert) alert('Không tải được danh sách công việc.');
+            if (showErrorAlert) _tnToast('Không tải được danh sách công việc.', 'danger');
         } finally {
             state.isLoading = false;
             render();
@@ -135,10 +145,10 @@ window.initProviderOrders = function() {
 
         try {
             await DVQTApp.updateOrder(id, payload, 'datlich_thonha');
-            alert('Cập nhật thành công!');
+            _tnToast('Cập nhật thành công!', 'success');
             loadOrdersFromApi(false);
         } catch (err) {
-            alert('Lỗi cập nhật: ' + err.message);
+            _tnToast('Lỗi cập nhật: ' + err.message, 'danger');
         }
     }
 

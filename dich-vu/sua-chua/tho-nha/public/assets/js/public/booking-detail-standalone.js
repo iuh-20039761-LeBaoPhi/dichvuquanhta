@@ -42,8 +42,8 @@ async function _bdInitStandalone() {
         const subSel  = document.getElementById('dichvucuthe');
         const service = (subSel?.value || '').trim();
 
-        if (!mainSel?.value) { alert('Vui lòng chọn loại dịch vụ!'); return; }
-        if (!service)        { alert('Vui lòng chọn dịch vụ cụ thể!'); return; }
+        if (!mainSel?.value) { _tnToast('Vui lòng chọn loại dịch vụ!', 'danger'); return; }
+        if (!service)        { _tnToast('Vui lòng chọn dịch vụ cụ thể!', 'danger'); return; }
 
         const data = _bdBuildPendingData(service);
         if (!_bdValidateCommon(data)) return;

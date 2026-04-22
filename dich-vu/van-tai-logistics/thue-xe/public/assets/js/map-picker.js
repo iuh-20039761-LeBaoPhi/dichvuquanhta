@@ -92,7 +92,7 @@ const CarMapPicker = (() => {
     }
 
     function gps(key) {
-        if (!navigator.geolocation) { alert('Trình duyệt của bạn không hỗ trợ định vị GPS.'); return; }
+        if (!navigator.geolocation) { Utils.showToast('Trình duyệt của bạn không hỗ trợ định vị GPS.', 'danger'); return; }
         const cfg = config[key];
         if (!cfg) return;
         const input = document.getElementById(cfg.inputId);
@@ -114,8 +114,8 @@ const CarMapPicker = (() => {
             },
             err => {
                 input.placeholder = orig;
-                if (err.code === 1) alert('Vui lòng cho phép truy cập vị trí trong trình duyệt.');
-                else alert('Không thể xác định vị trí. Vui lòng thử lại.');
+                if (err.code === 1) Utils.showToast('Vui lòng cho phép truy cập vị trí trong trình duyệt.', 'danger');
+                else Utils.showToast('Không thể xác định vị trí. Vui lòng thử lại.', 'danger');
             },
             { timeout: 10000, enableHighAccuracy: true }
         );

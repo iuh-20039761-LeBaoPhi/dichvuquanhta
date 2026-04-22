@@ -5,6 +5,17 @@
 (function() {
     'use strict';
 
+    function _tnToast(msg, type) {
+        if (typeof type === 'undefined') type = 'success';
+        var d = document.createElement('div');
+        d.className = 'alert alert-' + type + ' shadow-lg position-fixed top-0 start-50 translate-middle-x mt-4';
+        d.style.cssText = 'z-index:99999;border-radius:30px;padding:12px 30px;min-width:280px;max-width:90vw;text-align:center;animation:fadeInDown .3s ease;';
+        var icon = type === 'success' ? 'fa-check-circle' : (type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle');
+        d.innerHTML = '<i class="fas ' + icon + ' me-2"></i>' + msg;
+        document.body.appendChild(d);
+        setTimeout(function() { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(function() { d.remove(); }, 500); }, 3500);
+    }
+
     const PROVIDER_TABLE = 'nguoidung';
     let providersData = [];
     let currentStatusFilter = '';
@@ -191,7 +202,7 @@
             await krud.updateRow(PROVIDER_TABLE, id, data);
             await loadProviders();
         } catch (err) {
-            alert('Lỗi: ' + err.message);
+            _tnToast('Lỗi: ' + err.message, 'danger');
         }
     };
 

@@ -2,7 +2,20 @@
  * booking-detail-shared.js
  * ═══════════════════════════════════════════════════════════════════
  * Logic chia sẻ cho luồng đặt lịch (booking flow).
- *
+ */
+if (typeof _tnToast === 'undefined') {
+    function _tnToast(msg, type) {
+        if (typeof type === 'undefined') type = 'success';
+        var d = document.createElement('div');
+        d.className = 'alert alert-' + type + ' shadow-lg position-fixed top-0 start-50 translate-middle-x mt-4';
+        d.style.cssText = 'z-index:99999;border-radius:30px;padding:12px 30px;min-width:280px;max-width:90vw;text-align:center;animation:fadeInDown .3s ease;';
+        var icon = type === 'success' ? 'fa-check-circle' : (type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle');
+        d.innerHTML = '<i class="fas ' + icon + ' me-2"></i>' + msg;
+        document.body.appendChild(d);
+        setTimeout(function() { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(function() { d.remove(); }, 500); }, 3500);
+    }
+}
+/**
  * ┌─────────────────────────────────────────────────────────────────┐
  * │  DATA FLOW KHI ĐẶT LỊCH:                                      │
  * │                                                                 │
@@ -1040,11 +1053,11 @@ function _bdBuildPendingData(service) {
 // Kiểm tra các trường bắt buộc và định dạng số điện thoại.
 function _bdValidateCommon(data) {
     if (!data.name || !data.phone || !data.service_id || !data.address) {
-        alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+        _tnToast('Vui lòng điền đầy đủ thông tin bắt buộc!', 'danger');
         return false;
     }
     if (!/^(0|\+84)[0-9]{9}$/.test(data.phone)) {
-        alert('Số điện thoại không hợp lệ!');
+        _tnToast('Số điện thoại không hợp lệ!', 'danger');
         return false;
     }
     return true;

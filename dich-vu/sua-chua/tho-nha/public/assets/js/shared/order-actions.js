@@ -2,6 +2,18 @@
  * Tho Nha Order Actions - Xử lý tập trung các hành động trên đơn hàng (Chấp nhận, Báo giá, Hoàn thành...)
  * Dùng chung cho cả trang Standalone và Dashboard (SPA).
  */
+if (typeof _tnToast === 'undefined') {
+    function _tnToast(msg, type) {
+        if (typeof type === 'undefined') type = 'success';
+        var d = document.createElement('div');
+        d.className = 'alert alert-' + type + ' shadow-lg position-fixed top-0 start-50 translate-middle-x mt-4';
+        d.style.cssText = 'z-index:99999;border-radius:30px;padding:12px 30px;min-width:280px;max-width:90vw;text-align:center;animation:fadeInDown .3s ease;';
+        var icon = type === 'success' ? 'fa-check-circle' : (type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle');
+        d.innerHTML = '<i class="fas ' + icon + ' me-2"></i>' + msg;
+        document.body.appendChild(d);
+        setTimeout(function() { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(function() { d.remove(); }, 500); }, 3500);
+    }
+}
 const ThoNhaOrderActions = (() => {
     'use strict';
 
@@ -52,7 +64,7 @@ const ThoNhaOrderActions = (() => {
                     return;
                 } else if (action === 'submit-actual-price') {
                     const price = Number(document.getElementById('inputActualPriceModal').value);
-                    if (!price || price <= 0) return alert('Vui lòng nhập giá thực tế.');
+                    if (!price || price <= 0) return _tnToast('Vui lòng nhập giá thực tế.', 'danger');
                     const sub = Math.round(price * 0.05);
                     payload = { chiphithucte: price, sotientrogia: sub, khachthanhtoan: price - sub };
                 } else if (action === 'cancel-order') {
@@ -62,7 +74,7 @@ const ThoNhaOrderActions = (() => {
                 } else if (action === 'submit-customer-feedback') {
                     const text = document.getElementById('inputCustFeedback')?.value;
                     const fileInput = document.getElementById('fileCustEvidence');
-                    if (!text) return alert('Vui lòng nhập cảm nhận của bạn.');
+                    if (!text) return _tnToast('Vui lòng nhập cảm nhận của bạn.', 'danger');
                     
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -76,7 +88,7 @@ const ThoNhaOrderActions = (() => {
                 } else if (action === 'submit-provider-feedback') {
                     const text = document.getElementById('inputProviderFeedback')?.value;
                     const fileInput = document.getElementById('fileProviderEvidence');
-                    if (!text) return alert('Vui lòng nhập báo cáo công việc.');
+                    if (!text) return _tnToast('Vui lòng nhập báo cáo công việc.', 'danger');
                     
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -96,7 +108,7 @@ const ThoNhaOrderActions = (() => {
                     }
                     
                     await DVQTApp.updateOrder(id, payload, 'datlich_thonha');
-                    alert('Gửi thông tin thành công!');
+                    _tnToast('Gửi thông tin thành công!', 'success');
 
                     // Đóng modal nếu đang mở
                     const modalEl = document.getElementById('pricingModal');
@@ -112,7 +124,7 @@ const ThoNhaOrderActions = (() => {
                     }
                 }
             } catch (err) {
-                alert('Lỗi: ' + err.message);
+                _tnToast('Lỗi: ' + err.message, 'danger');
                 btn.disabled = false;
             }
         };

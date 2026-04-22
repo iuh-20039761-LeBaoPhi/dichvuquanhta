@@ -139,7 +139,7 @@
                 <td>${statusBadge}</td>
                 <td><div class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</div></td>
                 <td class="pe-4 text-end">
-                    <button class="btn btn-sm btn-light text-primary py-1 px-3 rounded-pill" onclick="alert('Xem hóa đơn: ' + ${o.id})">Hóa đơn</button>
+                    <button class="btn btn-sm btn-light text-primary py-1 px-3 rounded-pill" onclick="viewOrderAdmin(${o.id})">Hóa đơn</button>
                 </td>
             </tr>`;
         }).join('');
@@ -165,7 +165,7 @@
                             <div class="mobile-row text-primary"><span>Tổng phí</span><strong>${Number(o.tong_tien).toLocaleString()}đ</strong></div>
                         </div>
                         <div class="mobile-actions">
-                            <button class="btn btn-sm btn-light border w-100 fw-bold" onclick="alert('Xem đơn: ' + ${o.id})">Chi tiết</button>
+                            <button class="btn btn-sm btn-light border w-100 fw-bold" onclick="viewOrderAdmin(${o.id})">Chi tiết</button>
                         </div>
                     </div>
                 `;

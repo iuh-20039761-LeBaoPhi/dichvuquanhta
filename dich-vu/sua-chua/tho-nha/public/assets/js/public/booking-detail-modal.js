@@ -100,7 +100,7 @@ async function _bdInitModalHandlers() {
             const sdSub  = document.getElementById('dichvucuthenav');
             service = sdSub ? sdSub.value.trim() : '';
             if (!sdMain?.value || !service) {
-                alert('Vui lòng chọn loại dịch vụ và dịch vụ cụ thể!');
+                _tnToast('Vui lòng chọn loại dịch vụ và dịch vụ cụ thể!', 'danger');
                 return;
             }
         } else {
@@ -129,7 +129,7 @@ async function _bdInitModalHandlers() {
         if (!_bdPendingData) return;
         if (!(await _bdRequireCustomerLogin())) return;
         await _bdSubmitApi(_bdPendingData, this, (orderCode) => {
-            alert(orderCode ? `✅ Đặt lịch thành công! Mã đơn: ${orderCode}` : '✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại sớm nhất.');
+            _tnToast(orderCode ? `✅ Đặt lịch thành công! Mã đơn: ${orderCode}` : '✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại sớm nhất.', 'success');
             const inst = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
             if (inst) inst.hide();
         });

@@ -1,6 +1,16 @@
 /**
  * Khởi tạo dữ liệu và sự kiện cho quản lý đơn hàng khách hàng (Thợ Nhà)
  */
+function _tnToast(msg, type) {
+    if (typeof type === 'undefined') type = 'success';
+    var d = document.createElement('div');
+    d.className = 'alert alert-' + type + ' shadow-lg position-fixed top-0 start-50 translate-middle-x mt-4';
+    d.style.cssText = 'z-index:99999;border-radius:30px;padding:12px 30px;min-width:280px;max-width:90vw;text-align:center;animation:fadeInDown .3s ease;';
+    var icon = type === 'success' ? 'fa-check-circle' : (type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle');
+    d.innerHTML = '<i class="fas ' + icon + ' me-2"></i>' + msg;
+    document.body.appendChild(d);
+    setTimeout(function() { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(function() { d.remove(); }, 500); }, 3500);
+}
 window.initCustomerOrders = function() {
     'use strict';
 
@@ -48,7 +58,7 @@ window.initCustomerOrders = function() {
             store.setOrders(orders);
         } catch (err) {
             console.error('[customer-order] API Error:', err);
-            if (showErrorAlert) alert('Không tải được danh sách đơn hàng.');
+            if (showErrorAlert) _tnToast('Không tải được danh sách đơn hàng.', 'danger');
         } finally {
             state.isLoading = false;
             render();
@@ -105,12 +115,12 @@ window.initCustomerOrders = function() {
             const now = `${vnDate.getFullYear()}-${pad(vnDate.getMonth() + 1)}-${pad(vnDate.getDate())} ${pad(vnDate.getHours())}:${pad(vnDate.getMinutes())}:${pad(vnDate.getSeconds())}`;
             
             await DVQTApp.updateOrder(id, { ngayhuy: now }, 'datlich_thonha');
-            alert('Hủy đơn hàng thành công!');
+            _tnToast('Hủy đơn hàng thành công!', 'success');
             loadOrdersFromApi(false);
             state.selectedOrderId = null;
             render();
         } catch (err) {
-            alert('Lỗi: ' + err.message);
+            _tnToast('Lỗi: ' + err.message, 'danger');
         }
     }
 
