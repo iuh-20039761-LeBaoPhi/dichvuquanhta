@@ -3,18 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sửa Xe Lưu Động - Admin - Chi tiết đơn hàng</title>
-    <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
-    <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
+    <title>Giặt Ủi Nhanh - Chi tiết hóa đơn</title>
+    <link rel="shortcut icon" type="image/x-icon" href="public/asset/image/thuong-hieu-favicon-giat-ui-nhanh.png" />
+    <link rel="stylesheet" href="public/asset/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="public/asset/css/admin-dashboard.css" />
+    <link rel="stylesheet" href="public/asset/css/order-panel.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
   </head>
-  <body data-role="admin" data-page="detail">
+  <body data-role="customer" data-page="detail">
     <div class="admin-shell">
       <div
         id="asideMount"
-        data-aside-src="partials/aside.html"
-        data-logo-src="../public/asset/image/logo-sua-xe-luu-dong.png"
-        data-logout-href="../../../../public/admin-login.html"
+        data-aside-src=""
+        data-logo-src="public/asset/image/logo-giat-ui-nhanh.png"
+        data-logout-href="index.html"
       ></div>
 
       <main class="content-shell">
@@ -30,13 +32,13 @@
             >
               <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
-            <h2>Chi tiết đơn hàng</h2>
+            <h2 id="pageRoleTitle">Chi tiết hóa đơn</h2>
           </div>
 
           <div class="topbar-actions">
             <div class="admin-chip">
-              <span class="admin-avatar">A</span>
-              <span class="admin-email">admin@suaxeluudong.vn</span>
+              <span class="admin-avatar">U</span>
+              <span class="admin-email">đang tải...</span>
             </div>
           </div>
         </header>
@@ -47,25 +49,17 @@
           >
             <div>
               <nav aria-label="breadcrumb">
-                <ol class="breadcrumb panel-breadcrumb">
-                  <li class="breadcrumb-item">
-                    <a href="index.html">Trang quản trị</a>
-                  </li>
-                  <li class="breadcrumb-item">
-                    <a href="danh-sach-don-hang.html">Danh sách đơn hàng</a>
-                  </li>
-                  <li class="breadcrumb-item active" aria-current="page">
-                    Chi tiết đơn hàng
-                  </li>
+                <ol class="breadcrumb panel-breadcrumb" id="sharedBreadcrumb">
+                   <!-- Populated by script below -->
                 </ol>
               </nav>
-              <h1 class="page-title">Thông tin chi tiết đơn hàng</h1>
-              <p class="page-subtitle">
+              <h1 class="page-title">Thông tin chi tiết hóa đơn</h1>
+              <p class="page-subtitle" id="pageSubtitle">
                 Theo dõi tiến trình xử lý, thanh toán và thông tin liên hệ.
               </p>
             </div>
 
-            <a href="danh-sach-don-hang.html" class="btn btn-outline-secondary">
+            <a href="khachhang/danh-sach-don-hang.html" id="backToListBtn" class="btn btn-outline-secondary">
               <i class="fas fa-arrow-left" aria-hidden="true"></i>
               Quay lại danh sách
             </a>
@@ -98,7 +92,7 @@
                     >
                   </div>
                   <h4 class="hero-service-title" id="heroServiceName">
-                    Dịch vụ sửa xe lưu động
+                    Dịch vụ giặt ủi nhanh
                   </h4>
                 </div>
 
@@ -107,11 +101,24 @@
                   <div class="hero-total-amount" id="heroTotalAmount">
                     0 VND
                   </div>
-                  <!-- <span class="hero-total-sub">Phí di chuyển + Giá dịch vụ</span> -->
                 </div>
 
                 <div class="hero-header-right">
-                  <div id="detailActionBar" class="d-none me-2 me-lg-3"></div>
+                  <div id="detailActionBar" class="d-none me-2 me-lg-3">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-light fw-bold shadow-sm"
+                      id="detailActionBtn"
+                      style="border-radius: 8px; padding: 8px 16px"
+                    >
+                      Cập nhật trạng thái
+                    </button>
+                    <p
+                      class="standalone-action-meta mb-0 d-none"
+                      id="detailActionHint"
+                    ></p>
+                  </div>
+
                   <div class="hero-progress-ring" id="heroProgressRing">
                     <div class="hero-progress-content">
                       <strong id="heroProgressPercent">0%</strong>
@@ -121,33 +128,31 @@
                 </div>
               </div>
 
-              <!-- <div class="invoice-hero-mid">
-                <h4 class="hero-service-title" id="heroServiceName">
-                  Dịch vụ sửa xe lưu động
-                </h4>
-              </div> -->
-
               <div class="invoice-hero-bottom">
                 <div class="hero-card">
                   <div class="hero-card-label">CHI PHÍ CHI TIẾT</div>
                   <div class="hero-card-costs">
                     <div class="cost-item">
-                      <span>Phí di chuyển</span>
+                      <span>Giá dịch vụ</span>
+                      <strong id="heroServiceFee">0 VND</strong>
+                    </div>
+                    <div class="cost-item">
+                      <span>Phí giao nhận</span>
                       <strong id="heroTransportFee">0 VND</strong>
                     </div>
                     <div class="cost-item">
-                      <span>Phí khảo sát</span>
+                      <span>Phụ phí</span>
                       <strong id="heroSurchargeFee">0 VND</strong>
                     </div>
-                    <div class="cost-item">
-                      <span>Số tiền giảm</span>
-                      <strong id="heroDiscountFee">0 VND</strong>
+                    <div class="cost-item pt-2 mt-2 border-top">
+                      <span>Thanh toán</span>
+                      <strong id="heroPaymentStatus">---</strong>
                     </div>
                   </div>
                 </div>
 
                 <div class="hero-card">
-                  <div class="hero-card-label">THANH TOÁN</div>
+                  <div class="hero-card-label">GIAO NHẬN</div>
                   <div class="hero-card-value" id="heroTimeRange">---</div>
                 </div>
 
@@ -161,29 +166,21 @@
             <div class="invoice-main-grid">
               <article class="invoice-panel">
                 <div class="invoice-panel-head">
-                  <h3 class="invoice-panel-title">Dòng xe cần sửa</h3>
+                  <h3 class="invoice-panel-title">Công việc cần thực hiện</h3>
                 </div>
                 <div class="invoice-panel-body">
-                  <div class="vehicle-info-grid mb-3">
-                    <p class="mb-1">
-                      Loại xe: <strong id="detailVehicleType">---</strong>
-                    </p>
-                    <p class="mb-1">
-                      Hãng xe: <strong id="detailVehicleBrand">---</strong>
-                    </p>
-                    <p class="mb-1">
-                      Mẫu xe: <strong id="detailVehicleModel">---</strong>
-                    </p>
-                  </div>
-                  <hr />
+                  <ol class="task-list" id="detailTasksList"></ol>
+
                   <div class="task-note-grid">
-                    <article class="task-note-box w-100 mb-2">
-                      <p class="task-note-label">Mô tả chi tiết vấn đề</p>
-                      <p class="task-note-value" id="detailNote" style="font-size: 1.1rem; color: #2d3748;">---</p>
+                    <article class="task-note-box">
+                      <p class="task-note-label">Ghi chú</p>
+                      <p class="task-note-value" id="detailNote">---</p>
                     </article>
-                    <article class="task-note-box w-100">
-                      <p class="task-note-label">Yêu cầu gấp</p>
-                      <p class="task-note-value fw-bold text-danger" id="detailUrgent" style="font-size: 1.1rem;">---</p>
+                    <article class="task-note-box">
+                      <p class="task-note-label">Hóa chất sử dụng</p>
+                      <p class="task-note-value" id="detailChemicals">
+                        Không sử dụng
+                      </p>
                     </article>
                   </div>
                 </div>
@@ -304,6 +301,29 @@
                 </div>
               </article>
             </div>
+            
+            <article class="invoice-panel d-none" id="detailMediaSection">
+              <div class="invoice-panel-head">
+                <h3 class="invoice-panel-title">Hình ảnh & Video hiện trường</h3>
+                <span class="panel-chip">Dữ liệu gốc</span>
+              </div>
+              <div class="invoice-panel-body">
+                <div class="row">
+                  <div class="col-md-7 border-end">
+                    <p class="review-label">Hình ảnh hiện trường</p>
+                    <div id="detailMediaImages" class="mb-3">
+                      <p class="text-muted small">Đang tải ảnh...</p>
+                    </div>
+                  </div>
+                  <div class="col-md-5">
+                    <p class="review-label">Video hiện trường</p>
+                    <div id="detailMediaVideos">
+                      <p class="text-muted small">Đang tải video...</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
 
             <article class="invoice-panel">
               <div class="invoice-panel-head">
@@ -330,6 +350,38 @@
                       <div class="review-file" id="reviewCustomerFile">
                         Chưa có tệp
                       </div>
+                      <div
+                        class="review-editor d-none"
+                        id="reviewCustomerEditor"
+                      >
+                        <textarea
+                          class="form-control form-control-sm"
+                          id="reviewCustomerInput"
+                          rows="3"
+                          placeholder="Nhập đánh giá của khách hàng..."
+                        ></textarea>
+                        <input
+                          class="form-control form-control-sm"
+                          id="reviewCustomerUpload"
+                          type="file"
+                          accept="image/*,video/*"
+                          multiple
+                        />
+                        <div class="review-editor-actions">
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-primary"
+                            id="reviewCustomerSubmit"
+                          >
+                            Gửi đánh giá
+                          </button>
+                          <span
+                            class="review-editor-note"
+                            id="reviewCustomerHint"
+                            >Chi gui 1 lan. Toi da 30MB moi tep.</span
+                          >
+                        </div>
+                      </div>
                     </div>
                   </article>
 
@@ -351,6 +403,38 @@
                       <div class="review-file" id="reviewProviderFile">
                         Chưa có tệp
                       </div>
+                      <div
+                        class="review-editor d-none"
+                        id="reviewProviderEditor"
+                      >
+                        <textarea
+                          class="form-control form-control-sm"
+                          id="reviewProviderInput"
+                          rows="3"
+                          placeholder="Nhập đánh giá của nhà cung cấp..."
+                        ></textarea>
+                        <input
+                          class="form-control form-control-sm"
+                          id="reviewProviderUpload"
+                          type="file"
+                          accept="image/*,video/*"
+                          multiple
+                        />
+                        <div class="review-editor-actions">
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-primary"
+                            id="reviewProviderSubmit"
+                          >
+                            Gửi đánh giá
+                          </button>
+                          <span
+                            class="review-editor-note"
+                            id="reviewProviderHint"
+                            >Chi gui 1 lan. Toi da 30MB moi tep.</span
+                          >
+                        </div>
+                      </div>
                     </div>
                   </article>
                 </div>
@@ -361,32 +445,75 @@
       </main>
     </div>
 
+    <!-- UI Initialization -->
+    <script>
+      (function() {
+        const params = new URLSearchParams(window.location.search);
+        const role = params.get('role') || 'customer';
+        document.body.setAttribute('data-role', role);
+        
+        const roleNames = { 'admin': 'Admin', 'provider': 'Nhà cung cấp', 'customer': 'Khách hàng' };
+        const roleTitle = roleNames[role] || 'Thành viên';
+        document.title = "Giặt Ủi Nhanh - " + roleTitle + " - Chi tiết hóa đơn";
+        
+        const mount = document.getElementById('asideMount');
+        const breadcrumb = document.getElementById('sharedBreadcrumb');
+        const backBtn = document.getElementById('backToListBtn');
+
+        if (role === 'admin') {
+          mount.setAttribute('data-aside-src', 'admin/partials/aside.html');
+          mount.setAttribute('data-logout-href', '../../../public/admin-login.html');
+          mount.setAttribute('data-link-prefix', 'admin/');
+          breadcrumb.innerHTML = `
+            <li class="breadcrumb-item"><a href="admin/index.html">Trang quản trị</a></li>
+            <li class="breadcrumb-item"><a href="admin/danh-sach-don-hang.html">Danh sách hóa đơn</a></li>
+            <li class="breadcrumb-item active">Chi tiết hóa đơn</li>
+          `;
+          backBtn.setAttribute('href', 'admin/danh-sach-don-hang.html');
+        } else if (role === 'provider') {
+          mount.setAttribute('data-aside-src', 'nhacungcap/partials/aside.html');
+          mount.setAttribute('data-logout-href', 'index.html');
+          mount.setAttribute('data-link-prefix', 'nhacungcap/');
+          breadcrumb.innerHTML = `
+            <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="nhacungcap/danh-sach-don-hang.html">Danh sách hóa đơn</a></li>
+            <li class="breadcrumb-item active">Chi tiết hóa đơn</li>
+          `;
+          backBtn.setAttribute('href', 'nhacungcap/danh-sach-don-hang.html');
+        } else {
+          mount.setAttribute('data-aside-src', 'khachhang/partials/aside.html');
+          mount.setAttribute('data-logout-href', 'index.html');
+          mount.setAttribute('data-link-prefix', 'khachhang/');
+          breadcrumb.innerHTML = `
+            <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="khachhang/danh-sach-don-hang.html">Danh sách hóa đơn</a></li>
+            <li class="breadcrumb-item active">Chi tiết hóa đơn</li>
+          `;
+          backBtn.setAttribute('href', 'khachhang/danh-sach-don-hang.html');
+        }
+      })();
+    </script>
+
+    <!-- Essential Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../public/asset/js/bootstrap.bundle.min.js"></script>
-    <script src="../public/asset/js/admin-layout.js"></script>
+    <script src="public/asset/js/bootstrap.bundle.min.js"></script>
+    <script src="public/asset/js/admin-layout.js"></script>
     <script src="https://api.dvqt.vn/js/krud.js"></script>
-    <script src="../../../../public/asset/js/order-shared-utils.js"></script>
-    <script src="../public/asset/js/shared-order-utils.js"></script>
-    <script src="../../../../public/asset/js/sweetalert-utils.js"></script>
-    <script src="../public/asset/js/order-panel-pages.js"></script>
-    <script src="../public/asset/js/plugin/webfont/webfont.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script src="../../../public/asset/js/order-shared-utils.js"></script>
+    <script src="../../../public/asset/js/sweetalert-utils.js"></script>
+    <script src="public/asset/js/shared-order-utils.js"></script>
+    <script src="public/asset/js/provider-order-accept.js"></script>
+    <script src="public/asset/js/order-panel-pages.js"></script>
+    <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
     <script>
       WebFont.load({
-        google: {
-          families: ["Public Sans:300,400,500,600,700"],
-        },
+        google: { families: ["Public Sans:300,400,500,600,700"] },
         custom: {
-          families: [
-            "Font Awesome 5 Solid",
-            "Font Awesome 5 Regular",
-            "Font Awesome 5 Brands",
-            "simple-line-icons",
-          ],
-          urls: ["../public/asset/css/fonts.min.css"],
+          families: ["Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"],
+          urls: ["public/asset/css/fonts.min.css"]
         },
-        active: function () {
-          sessionStorage.fonts = true;
-        },
+        active: function () { sessionStorage.fonts = true; }
       });
     </script>
   </body>

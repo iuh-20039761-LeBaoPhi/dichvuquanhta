@@ -230,7 +230,7 @@
             <td data-label="Trạng thái"><span class="status-pill ${status.className}">${status.label}</span></td>
             <td data-label="Tổng tiền">${formatCurrency(order.total)}</td>
             <td data-label="Thao tác">
-              <a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=${order.id}">
+              <a class="btn btn-sm btn-outline-secondary btn-view-detail" href="../chi-tiet-don-hang.html?role=admin&id=${order.id}">
                 Xem chi tiết
               </a>
             </td>

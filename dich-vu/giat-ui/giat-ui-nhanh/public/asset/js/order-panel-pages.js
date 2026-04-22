@@ -1376,7 +1376,9 @@
         .map(function (order) {
           var meta = statusMeta(order.status);
           var actionHtml =
-            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
+            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="../chi-tiet-don-hang.html?role=' +
+            getRole() +
+            "&id=" +
             order.id +
             '">Xem chi tiết</a>';
 
@@ -1434,7 +1436,9 @@
         .map(function (order) {
           var meta = statusMeta(order.status);
           var actionHtml =
-            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
+            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="../chi-tiet-don-hang.html?role=' +
+            getRole() +
+            "&id=" +
             order.id +
             '">Xem chi tiết</a>';
 

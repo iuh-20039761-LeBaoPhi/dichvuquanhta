@@ -37,8 +37,18 @@
             name + "=; Max-Age=0; path=" + path + domainPart + ";";
         });
       }
-      del("dvqt_u");
-      del("dvqt_p");
+
+      var params = new URLSearchParams(window.location.search);
+      var role = params.get("role") || document.body.getAttribute("data-role");
+
+      if (role === "admin" || !role) {
+        del("admin_e");
+        del("admin_p");
+      } else {
+        del("dvqt_u");
+        del("dvqt_p");
+      }
+
       var href =
         (config && config.logoutHref) ||
         (document.querySelector("[data-logout]") &&
@@ -62,6 +72,22 @@
     }
   }
 
+  function fixLinks(aside, prefix) {
+    if (!aside || !prefix) return;
+    var navItems = aside.querySelectorAll(".sidebar-nav .nav-item");
+    navItems.forEach(function (item) {
+      var href = item.getAttribute("href");
+      if (
+        href &&
+        href !== "#" &&
+        href.indexOf("http") !== 0 &&
+        href.indexOf("/") !== 0
+      ) {
+        item.setAttribute("href", prefix + href);
+      }
+    });
+  }
+
   function markActiveNav(aside) {
     if (!aside) return;
 
@@ -80,7 +106,8 @@
         .toLowerCase();
       if (!href || href === "#") return;
 
-      if (href === activePath) {
+      // Match filename or full path
+      if (href === activePath || href.endsWith("/" + activePath)) {
         item.classList.add("active");
       }
     });
@@ -96,8 +123,11 @@
     var config = {
       logoSrc: mount.getAttribute("data-logo-src") || "",
       logoutHref: mount.getAttribute("data-logout-href") || "#",
-      logoutApi: mount.getAttribute("data-logout-api") || "",
+      linkPrefix: mount.getAttribute("data-link-prefix") || "",
     };
+
+    // Save config globally so other scripts can access it after mount is replaced
+    window._asideConfig = config;
 
     fetch(asideSrc, { cache: "no-store" })
       .then(function (response) {
@@ -111,6 +141,7 @@
 
         var aside = document.getElementById("sidebar");
         applyAsideConfig(aside, config);
+        fixLinks(aside, config.linkPrefix);
         bindLogout(aside, config);
         markActiveNav(aside);
       })

@@ -28,8 +28,24 @@
   }
 
   async function checkAdminLogin() {
-    const e = getCookie("admin_e"), p = getCookie("admin_p");
-    if (!e || !p) return (location.href = "../../../../public/admin-login.html");
+    const params = new URLSearchParams(window.location.search);
+    const role = params.get("role") || document.body.getAttribute("data-role");
+
+    // Nếu role là customer hoặc provider thì bỏ qua kiểm tra admin login
+    // Điều này cho phép khách hàng và nhà cung cấp truy cập vào trang chi tiết chung
+    if (role && role !== "admin") {
+      return;
+    }
+
+    const e = getCookie("admin_e"),
+      p = getCookie("admin_p");
+    
+    const mount = document.getElementById("asideMount");
+    const asideConfig = window._asideConfig || {};
+    const fallbackLogout = asideConfig.logoutHref || (mount ? mount.getAttribute("data-logout-href") : null);
+    const adminLoginPath = fallbackLogout || "../../../../public/admin-login.html";
+
+    if (!e || !p) return (location.href = adminLoginPath);
 
     if (typeof window.krudList !== "function") {
        console.warn("krudList is not defined. Authentication skipped or delayed.");
@@ -47,17 +63,41 @@
       });
 
       const rows = extractRows(res);
-      if (!rows.length) return (location.href = "../../../../public/admin-login.html");
+      if (!rows.length) return (location.href = adminLoginPath);
       renderAdminLoginInfo(rows[0]);
     } catch (err) {
       console.error("Auth check failed:", err);
     }
   }
 
-  function adminLogout() {
-    document.cookie = "admin_e=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-    document.cookie = "admin_p=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-    location.href = "../../../../public/admin-login.html";
+  function adminLogout(config) {
+    const del = (name) => {
+      document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const role = params.get("role") || document.body.getAttribute("data-role");
+
+    if (role === "admin" || !role) {
+      del("admin_e");
+      del("admin_p");
+    } else {
+      del("dvqt_u");
+      del("dvqt_p");
+    }
+
+    const mount = document.getElementById("asideMount");
+    const asideConfig = window._asideConfig || {};
+    const asideLogout =
+      asideConfig.logoutHref ||
+      (mount ? mount.getAttribute("data-logout-href") : null);
+
+    const href =
+      (config && config.logoutHref) ||
+      asideLogout ||
+      "../../../../public/admin-login.html";
+
+    location.href = href;
   }
 
   // Export to global scope

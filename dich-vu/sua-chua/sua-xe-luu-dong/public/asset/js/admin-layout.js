@@ -9,11 +9,7 @@
     logoutNode.addEventListener("click", function (event) {
       event.preventDefault();
       if (typeof window.adminLogout === "function") {
-        try {
-          window.adminLogout(config);
-        } catch (e) {
-          window.adminLogout();
-        }
+        window.adminLogout(config);
       } else {
         window.location.href =
           config.logoutHref || "../../../../public/admin-login.html";
@@ -21,31 +17,57 @@
     });
   }
 
-  // Default logout handler for customers/suppliers: remove dvqt cookies
-  if (typeof window.adminLogout !== "function") {
-    window.adminLogout = function (config) {
-      function del(name) {
-        var path = "/";
-        var expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        var host = location.hostname;
-        var variants = ["", "domain=" + host, "domain=." + host];
-        variants.forEach(function (domainAttr) {
-          var domainPart = domainAttr ? "; " + domainAttr : "";
-          document.cookie =
-            name + "=; " + expires + "; path=" + path + domainPart + ";";
-          document.cookie =
-            name + "=; Max-Age=0; path=" + path + domainPart + ";";
-        });
-      }
+  // Improved logout handler with role awareness
+  window.adminLogout = function (config) {
+    function del(name) {
+      var path = "/";
+      var expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      var host = location.hostname;
+      var variants = ["", "domain=" + host, "domain=." + host];
+      variants.forEach(function (domainAttr) {
+        var domainPart = domainAttr ? "; " + domainAttr : "";
+        document.cookie =
+          name + "=; " + expires + "; path=" + path + domainPart + ";";
+        document.cookie =
+          name + "=; Max-Age=0; path=" + path + domainPart + ";";
+      });
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var role = params.get("role") || document.body.getAttribute("data-role");
+
+    if (role === "admin" || !role) {
+      del("admin_e");
+      del("admin_p");
+    } else {
       del("dvqt_u");
       del("dvqt_p");
-      var href =
-        (config && config.logoutHref) ||
-        (document.querySelector("[data-logout]") &&
-          document.querySelector("[data-logout]").getAttribute("href")) ||
-        "../../../../public/admin-login.html";
-      window.location.href = href;
-    };
+    }
+
+    var href =
+      (config && config.logoutHref) ||
+      (window._asideConfig && window._asideConfig.logoutHref) ||
+      "../../../../public/admin-login.html";
+    window.location.href = href;
+  };
+
+  function fixLinks(aside, prefix) {
+    if (!aside || !prefix) return;
+    var links = aside.querySelectorAll("a[href]");
+    links.forEach(function (a) {
+      var href = a.getAttribute("href");
+      if (
+        !href ||
+        href === "#" ||
+        href.indexOf("http") === 0 ||
+        href.indexOf("/") === 0 ||
+        href.indexOf("mailto:") === 0 ||
+        href.indexOf("tel:") === 0
+      ) {
+        return;
+      }
+      a.setAttribute("href", prefix + href);
+    });
   }
 
   function applyAsideConfig(aside, config) {
@@ -96,8 +118,9 @@
     var config = {
       logoSrc: mount.getAttribute("data-logo-src") || "",
       logoutHref: mount.getAttribute("data-logout-href") || "#",
-      logoutApi: mount.getAttribute("data-logout-api") || "",
+      linkPrefix: mount.getAttribute("data-link-prefix") || "",
     };
+    window._asideConfig = config;
 
     fetch(asideSrc, { cache: "no-store" })
       .then(function (response) {
@@ -111,6 +134,7 @@
 
         var aside = document.getElementById("sidebar");
         applyAsideConfig(aside, config);
+        fixLinks(aside, config.linkPrefix);
         bindLogout(aside, config);
         markActiveNav(aside);
       })
