@@ -6,7 +6,14 @@
   const storageKeys = {
     role: "fastgo-auth-role",
     identity: "fastgo-auth-identity",
+    access: "fastgo-auth-access",
   };
+  const urlAuthQueryKeys = Object.freeze([
+    "username",
+    "sodienthoai",
+    "password",
+    "pass",
+  ]);
   const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
   const currentPathLower = currentPath.toLowerCase();
   const inPublicDir = currentPathLower.includes("/public/");
@@ -192,18 +199,49 @@
   }
 
   function resolveAccountLinks(role) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlUsername = urlParams.get("username");
-    const urlPassword = urlParams.get("password");
+    function readAccessCookie(name) {
+      const escapedName = String(name || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const match = String(document.cookie || "").match(
+        new RegExp(`(?:^|;\\s*)${escapedName}=([^;]*)`),
+      );
+      return match ? decodeURIComponent(match[1] || "") : "";
+    }
+
+    let storedAccess = {};
+    try {
+      storedAccess = safeParse(window.localStorage.getItem(storageKeys.access), {});
+    } catch (error) {
+      storedAccess = {};
+    }
+
+    const currentUrl = new URL(window.location.href);
+    const urlLoginIdentifier = String(
+      currentUrl.searchParams.get("sodienthoai") || "",
+    ).trim();
+    const urlPassword = String(currentUrl.searchParams.get("password") || "").trim();
+    const loginIdentifier =
+      urlLoginIdentifier ||
+      String(storedAccess?.loginIdentifier || storedAccess?.username || "").trim() ||
+      readAccessCookie("dvqt_u").trim();
+    const password =
+      urlPassword ||
+      String(storedAccess?.password || "").trim() ||
+      readAccessCookie("dvqt_p").trim();
 
     function withAuthParams(url) {
-      if (!urlUsername || !urlPassword) return url;
       try {
-        const u = new URL(url, window.location.href);
-        u.searchParams.set("username", urlUsername);
-        u.searchParams.set("password", urlPassword);
-        return u.toString();
-      } catch (e) { return url; }
+        const nextUrl = new URL(url, window.location.href);
+        urlAuthQueryKeys.forEach((key) => {
+          nextUrl.searchParams.delete(key);
+        });
+        if (loginIdentifier && password) {
+          nextUrl.searchParams.set("sodienthoai", loginIdentifier);
+          nextUrl.searchParams.set("password", password);
+        }
+        return nextUrl.toString();
+      } catch (error) {
+        return url;
+      }
     }
 
     if (role === "nha-cung-cap") {
@@ -229,15 +267,17 @@
         "dvqt_p=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
       window.localStorage.removeItem(storageKeys.identity);
       window.localStorage.removeItem(storageKeys.role);
+      window.localStorage.removeItem(storageKeys.access);
     } catch (error) {
       console.error("Cannot clear auth session:", error);
     }
 
-    // Xóa username và password khỏi URL hiện tại để tránh auto-login lại
+    // Xóa thông tin đăng nhập khỏi URL hiện tại để tránh auto-login lại.
     try {
       const cleanUrl = new URL(window.location.href);
-      cleanUrl.searchParams.delete("username");
-      cleanUrl.searchParams.delete("password");
+      urlAuthQueryKeys.forEach((key) => {
+        cleanUrl.searchParams.delete(key);
+      });
       window.history.replaceState(null, "", cleanUrl.toString());
     } catch (e) { /* skip */ }
 
@@ -396,7 +436,7 @@
 
   window.addEventListener("storage", function (event) {
     if (!headerHost) return;
-    if (![storageKeys.role, storageKeys.identity].includes(event.key || "")) return;
+    if (![storageKeys.role, storageKeys.identity, storageKeys.access].includes(event.key || "")) return;
     syncAuthNav(headerHost);
     applyActiveNav(headerHost);
   });

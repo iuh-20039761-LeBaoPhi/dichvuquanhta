@@ -267,32 +267,43 @@
     return session && typeof session === "object" ? session : null;
   }
 
+  const URL_ACCESS_QUERY_KEYS = Object.freeze([
+    "username",
+    "sodienthoai",
+    "password",
+    "pass",
+  ]);
+
   async function ensureUrlAuth() {
-    const session = getSession();
-    if (session) return session;
-
-    if (!localAuth || typeof localAuth.login !== "function") {
-      return null;
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    const username = normalizeText(params.get("username") || "");
-    const password = String(params.get("password") || "");
-    if (!username || !password) return null;
-
-    try {
-      const result = await localAuth.login({
-        loginIdentifier: username,
-        password,
-      });
-      if (result && result.status === "success") {
-        return result.user || getSession();
-      }
-    } catch (error) {
-      console.error("URL auth failed:", error);
+    if (localAuth && typeof localAuth.loginFromUrl === "function") {
+      const urlSession = await localAuth.loginFromUrl();
+      if (urlSession) return urlSession;
     }
 
     return getSession();
+  }
+
+  function getAccessCredentials(sessionOverride = null) {
+    const params = new URLSearchParams(window.location.search);
+    const urlLoginIdentifier = normalizeText(params.get("sodienthoai") || "");
+    const urlPassword = String(params.get("password") || "");
+    if (urlLoginIdentifier && urlPassword) {
+      return {
+        loginIdentifier: urlLoginIdentifier,
+        password: urlPassword,
+      };
+    }
+
+    const session = sessionOverride || getSession();
+    const loginIdentifier = normalizeText(
+      session?.phone || session?.so_dien_thoai || session?.username || "",
+    );
+    const password = String(session?.password || session?.mat_khau || "");
+    if (!loginIdentifier || !password) return null;
+    return {
+      loginIdentifier,
+      password,
+    };
   }
 
   function getMilestones(order) {
@@ -1288,16 +1299,6 @@
     );
   }
 
-  function getUrlAccessParams() {
-    const params = new URLSearchParams(window.location.search);
-    const username = normalizeText(params.get("username") || "");
-    const password = String(params.get("password") || "");
-    return {
-      username,
-      password,
-    };
-  }
-
   function getViewer(session) {
     const params = new URLSearchParams(window.location.search);
     if (session && session.role === "shipper") return "shipper";
@@ -1313,7 +1314,6 @@
       return;
     }
 
-    const access = getUrlAccessParams();
     let targetUrl = null;
     if (viewer === "customer") {
       targetUrl = new URL(
@@ -1333,12 +1333,13 @@
     targetUrl.searchParams.delete("viewer");
     targetUrl.searchParams.delete("code");
     targetUrl.searchParams.delete("id");
-    if (access.username && access.password) {
-      targetUrl.searchParams.set("username", access.username);
+    const access = getAccessCredentials();
+    URL_ACCESS_QUERY_KEYS.forEach((key) => {
+      targetUrl.searchParams.delete(key);
+    });
+    if (access?.loginIdentifier && access?.password) {
+      targetUrl.searchParams.set("sodienthoai", access.loginIdentifier);
       targetUrl.searchParams.set("password", access.password);
-    } else {
-      targetUrl.searchParams.delete("username");
-      targetUrl.searchParams.delete("password");
     }
 
     const nextUrl = targetUrl.toString();
@@ -1371,7 +1372,6 @@
   }
 
   function buildBackListUrl(viewer) {
-    const access = getUrlAccessParams();
     let targetUrl = null;
     if (viewer === "customer") {
       targetUrl = new URL(
@@ -1387,8 +1387,12 @@
       targetUrl = new URL("tra-don-hang-giaohang.html", window.location.href);
     }
 
-    if (access.username && access.password) {
-      targetUrl.searchParams.set("username", access.username);
+    const access = getAccessCredentials();
+    URL_ACCESS_QUERY_KEYS.forEach((key) => {
+      targetUrl.searchParams.delete(key);
+    });
+    if (access?.loginIdentifier && access?.password) {
+      targetUrl.searchParams.set("sodienthoai", access.loginIdentifier);
       targetUrl.searchParams.set("password", access.password);
     }
 

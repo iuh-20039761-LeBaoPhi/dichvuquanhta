@@ -270,11 +270,12 @@
       clearCookie("dvqt_p");
     }
 
-    // Xóa username và password khỏi URL hiện tại để tránh auto-login lại
+    // Xóa thông tin đăng nhập khỏi URL hiện tại để tránh auto-login lại.
     try {
       const cleanUrl = new URL(window.location.href);
-      cleanUrl.searchParams.delete("username");
-      cleanUrl.searchParams.delete("password");
+      URL_ACCESS_QUERY_KEYS.forEach((key) => {
+        cleanUrl.searchParams.delete(key);
+      });
       window.history.replaceState(null, "", cleanUrl.toString());
     } catch (e) { /* skip */ }
 
@@ -282,6 +283,75 @@
     if (target) {
       window.location.href = target;
     }
+  }
+
+  const URL_ACCESS_QUERY_KEYS = Object.freeze([
+    "username",
+    "sodienthoai",
+    "password",
+    "pass",
+  ]);
+
+  function getUrlAccessCredentials() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const loginIdentifier = normalizeLoginIdentifier(
+        params.get("sodienthoai") || "",
+      );
+      const password = String(params.get("password") || "").trim();
+      if (!loginIdentifier || !password) return null;
+      return { loginIdentifier, password };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function cleanUrlAccessCredentials() {
+    try {
+      const cleanUrl = new URL(window.location.href);
+      URL_ACCESS_QUERY_KEYS.forEach((key) => {
+        cleanUrl.searchParams.delete(key);
+      });
+      window.history.replaceState(window.history.state, "", cleanUrl.toString());
+    } catch (error) {
+      /* skip */
+    }
+  }
+
+  function hasUrlAccessKeys() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return URL_ACCESS_QUERY_KEYS.some((key) => params.has(key));
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function loginFromUrl(options = {}) {
+    const credentials = getUrlAccessCredentials();
+    if (!credentials) {
+      if (options.cleanUrl !== false && hasUrlAccessKeys()) {
+        cleanUrlAccessCredentials();
+      }
+      return null;
+    }
+
+    clearSession();
+    const result = await login({
+      loginIdentifier: credentials.loginIdentifier,
+      password: credentials.password,
+    });
+
+    if (options.cleanUrl === true) {
+      cleanUrlAccessCredentials();
+    }
+
+    if (result && result.status === "success") {
+      return result.user || getSession();
+    }
+
+    clearSession();
+    return null;
   }
 
 
@@ -924,6 +994,9 @@
     deleteKrudUser,
     register,
     login,
+    loginFromUrl,
+    getUrlAccessCredentials,
+    cleanUrlAccessCredentials,
     bootstrapSession,
     ensureCustomerAccountForBooking,
     authChangeEventName,

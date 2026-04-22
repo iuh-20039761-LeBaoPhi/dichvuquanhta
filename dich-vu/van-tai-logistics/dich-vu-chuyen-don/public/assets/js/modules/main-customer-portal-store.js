@@ -415,23 +415,70 @@ const customerPortalStoreModule = (function (window) {
   }
 
   function syncStoredAccessFromCookies() {
-    const username = normalizeText(readCookie("dvqt_u"));
+    const loginIdentifier = normalizeText(readCookie("dvqt_u"));
     const password = String(readCookie("dvqt_p") || "").trim();
-    if (!username || !password) return null;
-    return saveStoredAccess({ username, password });
+    if (!loginIdentifier || !password) return null;
+    return saveStoredAccess({ loginIdentifier, password });
   }
 
   function syncStoredAccessFromCurrentUrl() {
     try {
       const params = new URLSearchParams(window.location.search || "");
-      const username = normalizeText(params.get("username") || "");
+      const loginIdentifier = normalizeText(params.get("sodienthoai") || "");
       const password = String(params.get("password") || "").trim();
-      if (!username || !password) return null;
-      return saveStoredAccess({ username, password });
+      if (!loginIdentifier || !password) return null;
+      return saveStoredAccess({ loginIdentifier, password });
     } catch (error) {
       console.error("Cannot sync auth access from current URL:", error);
       return null;
     }
+  }
+
+  const URL_AUTH_QUERY_KEYS = Object.freeze([
+    "username",
+    "sodienthoai",
+    "password",
+    "pass",
+  ]);
+
+  function cleanCurrentUrlAuthParams() {
+    if (
+      !window.history ||
+      typeof window.history.replaceState !== "function"
+    ) {
+      return;
+    }
+
+    try {
+      const cleanUrl = new URL(window.location.href);
+      URL_AUTH_QUERY_KEYS.forEach((key) => {
+        cleanUrl.searchParams.delete(key);
+      });
+
+      if (cleanUrl.toString() !== window.location.href) {
+        window.history.replaceState(window.history.state, "", cleanUrl.toString());
+      }
+    } catch (error) {
+      console.error("Cannot clean moving auth params from URL:", error);
+    }
+  }
+
+  function hasCurrentUrlAuthParams() {
+    try {
+      const params = new URLSearchParams(window.location.search || "");
+      return URL_AUTH_QUERY_KEYS.some((key) => params.has(key));
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function hasAccessCredentials(access) {
+    return !!(
+      normalizeText(
+        access?.loginIdentifier || access?.username || access?.sodienthoai || "",
+      ) &&
+      String(access?.password || "").trim()
+    );
   }
 
   function syncIdentityFromProfile(profile) {
@@ -773,7 +820,14 @@ const customerPortalStoreModule = (function (window) {
   }
 
   async function hydrateAuthSessionFromDvqtCookie() {
-    syncStoredAccessFromCurrentUrl();
+    const urlAccess = syncStoredAccessFromCurrentUrl();
+    if (hasAccessCredentials(urlAccess)) {
+      const urlIdentity = await autoAuthFromUrlCredentials(urlAccess);
+      if (urlIdentity) return urlIdentity;
+      clearAuthSession();
+      return null;
+    }
+
     syncStoredAccessFromCookies();
 
     const identity = readIdentity();
@@ -842,7 +896,17 @@ const customerPortalStoreModule = (function (window) {
   }
 
   async function bootstrapAuthSession() {
-    syncStoredAccessFromCurrentUrl();
+    const urlAccess = syncStoredAccessFromCurrentUrl();
+    if (hasAccessCredentials(urlAccess)) {
+      const urlIdentity = await autoAuthFromUrlCredentials(urlAccess);
+      if (urlIdentity) {
+        notifyAuthSessionChanged();
+        return urlIdentity;
+      }
+      clearAuthSession();
+      return null;
+    }
+
     const cookiePhone = normalizePhone(readCookie("dvqt_u"));
     syncStoredAccessFromCookies();
     if (!cookiePhone) return null;
@@ -878,8 +942,8 @@ const customerPortalStoreModule = (function (window) {
 
   async function autoAuthFromUrlCredentials(credentials = {}) {
     const loginIdentifier = normalizeText(
-      credentials?.username ||
-        credentials?.loginIdentifier ||
+      credentials?.loginIdentifier ||
+        credentials?.username ||
         credentials?.sodienthoai ||
         "",
     );
@@ -936,7 +1000,7 @@ const customerPortalStoreModule = (function (window) {
 
       if (matchedRow) {
         saveStoredAccess({
-          username: loginIdentifier,
+          loginIdentifier,
           password,
         });
         return syncIdentityFromProfile(normalizeAuthProfileRow(matchedRow));
@@ -1912,12 +1976,16 @@ const customerPortalStoreModule = (function (window) {
     );
 
     const storedAccess = readStoredAccess();
-    const nextUsername = normalizeText(
-      storedAccess.username || identity.sodienthoai || readCookie("dvqt_u") || "",
+    const nextLoginIdentifier = normalizeText(
+      storedAccess.loginIdentifier ||
+        storedAccess.username ||
+        identity.sodienthoai ||
+        readCookie("dvqt_u") ||
+        "",
     );
-    if (nextUsername) {
+    if (nextLoginIdentifier) {
       saveStoredAccess({
-        username: nextUsername,
+        loginIdentifier: nextLoginIdentifier,
         password: newPassword,
       });
     }

@@ -19,6 +19,7 @@ require_once __DIR__ . '/../lib/pricing_config_service.php';
 $raw = file_get_contents('php://input');
 $decoded = json_decode((string) $raw, true);
 $versionId = (int) ($decoded['versionId'] ?? 0);
+$submittedPricingData = is_array($decoded['pricingData'] ?? null) ? $decoded['pricingData'] : null;
 
 if ($versionId <= 0) {
     http_response_code(400);
@@ -29,17 +30,26 @@ if ($versionId <= 0) {
     exit;
 }
 
-$built = pricing_service_export_config_from_version($versionId);
-if (empty($built['success']) || !is_array($built['data'] ?? null)) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => (string) ($built['message'] ?? 'Không dựng được dữ liệu export từ KRUD.'),
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    exit;
-}
+$exportSource = 'krud';
+if ($submittedPricingData !== null) {
+    // Fast path: JS vừa lưu KRUD xong gửi snapshot hiện tại, tránh PHP gọi lại nhiều bảng KRUD chỉ để dựng JSON cache.
+    $pricingData = pricing_service_strip_krud_meta(
+        pricing_service_normalize_display_labels($submittedPricingData)
+    );
+    $exportSource = 'request_snapshot';
+} else {
+    $built = pricing_service_export_config_from_version($versionId);
+    if (empty($built['success']) || !is_array($built['data'] ?? null)) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => (string) ($built['message'] ?? 'Không dựng được dữ liệu export từ KRUD.'),
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
 
-$pricingData = $built['data'];
+    $pricingData = $built['data'];
+}
 
 $targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'pricing-data.json';
 $encoded = json_encode(
@@ -95,4 +105,5 @@ echo json_encode([
     'message' => 'Đã export lại pricing-data.json.',
     'verified' => $verified,
     'checksum_sha1' => $checksum,
+    'export_source' => $exportSource,
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

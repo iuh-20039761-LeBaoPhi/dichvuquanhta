@@ -71,6 +71,38 @@ const customerInvoiceDetailModule = (function (window, document) {
     });
   }
 
+  function redirectToMatchingDetail(role, orderCode) {
+    const normalizedRole = normalizeText(role).toLowerCase();
+    const targetOrderCode =
+      normalizeText(orderCode) || normalizeText(core.getOrderIdentifierFromUrl?.() || "");
+    if (!targetOrderCode) {
+      redirectToLogin();
+      return;
+    }
+
+    const targetPath =
+      normalizedRole === "nha-cung-cap"
+        ? "nha-cung-cap/chi-tiet-don-hang-chuyendon.html"
+        : "chi-tiet-hoa-don-chuyendon.html";
+    const auth = core.getOrderDetailAccessCredentials?.() ||
+      core.getUrlAuthCredentials?.() || {
+        loginIdentifier: "",
+        username: "",
+        password: "",
+      };
+    const targetUrl =
+      typeof core.buildOrderDetailUrl === "function"
+        ? core.buildOrderDetailUrl(targetPath, targetOrderCode, auth)
+        : getProjectUrl(targetPath);
+
+    if (targetUrl && targetUrl !== window.location.href) {
+      window.location.replace(targetUrl);
+      return;
+    }
+
+    redirectToLogin();
+  }
+
   function formatCurrency(value) {
     const amount = Number(value || 0);
     if (!Number.isFinite(amount) || amount <= 0) return "Chờ báo giá chốt";
@@ -1066,6 +1098,10 @@ const customerInvoiceDetailModule = (function (window, document) {
   function renderInvoice(data) {
     const role = store.getSavedRole();
     if (!role || role !== "khach-hang") {
+      if (role === "nha-cung-cap") {
+        redirectToMatchingDetail(role, data?.invoice?.remote_id || data?.invoice?.raw_row?.id || "");
+        return;
+      }
       redirectToLogin();
       return;
     }

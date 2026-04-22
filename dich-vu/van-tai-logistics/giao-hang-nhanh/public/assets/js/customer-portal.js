@@ -16,25 +16,6 @@
           profile: "ho-so-giaohang.html",
         };
 
-  (function applyAuthToRoutes() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get("username");
-    const password = urlParams.get("password");
-    if (!username || !password) return;
-    const keysToInject = ["dashboard", "orders", "profile", "booking"];
-    keysToInject.forEach(function (key) {
-      if (!routes[key]) return;
-      try {
-        const u = new URL(routes[key], window.location.href);
-        u.searchParams.set("username", username);
-        u.searchParams.set("password", password);
-        routes[key] = u.toString();
-      } catch (e) {
-        /* skip */
-      }
-    });
-  })();
-
   const storageKeys = {
     orders: "ghn-customer-orders",
     addresses: "ghn-customer-addresses",
@@ -93,40 +74,21 @@
     );
   }
 
-  function getUrlAccessCredentials() {
-    const params = getDetailQueryParams();
-    const username = normalizeText(params.get("username") || "");
-    const password = String(params.get("password") || "");
-    if (!username || !password) return null;
-    return { username, password };
-  }
-
   async function ensureUrlAccessSession() {
-    const session = getCurrentSessionUser();
-    if (session) return session;
-
-    if (!localAuth || typeof localAuth.login !== "function") {
-      return null;
-    }
-
-    const params = getDetailQueryParams();
-    const username = normalizeText(params.get("username") || "");
-    const password = String(params.get("password") || "");
-    if (!username || !password) return null;
-
-    try {
-      const result = await localAuth.login({
-        loginIdentifier: username,
-        password,
-      });
-      if (result && result.status === "success") {
-        return result.user || getCurrentSessionUser();
-      }
-    } catch (error) {
-      console.error("Customer portal URL auth failed:", error);
+    if (localAuth && typeof localAuth.loginFromUrl === "function") {
+      const urlSession = await localAuth.loginFromUrl();
+      if (urlSession) return urlSession;
     }
 
     return getCurrentSessionUser();
+  }
+
+  function getUrlAccessCredentials() {
+    const params = getDetailQueryParams();
+    const loginIdentifier = normalizeText(params.get("sodienthoai") || "");
+    const password = String(params.get("password") || "");
+    if (!loginIdentifier || !password) return null;
+    return { loginIdentifier, password };
   }
 
   function normalizeText(value) {
@@ -175,31 +137,6 @@
     );
   }
 
-  function getAccessCredentials(sessionOverride = null) {
-    const fromUrl = getUrlAccessCredentials();
-    if (fromUrl) return fromUrl;
-
-    const session = sessionOverride || getCurrentSessionUser();
-    if (!session) return null;
-
-    const storedUser = findStoredAuthUser(session);
-    const username = normalizeText(
-      session.username ||
-        session.phone ||
-        session.so_dien_thoai ||
-        storedUser?.username ||
-        storedUser?.phone ||
-        storedUser?.so_dien_thoai ||
-        "",
-    );
-    const password = String(
-      session.password || storedUser?.password || storedUser?.mat_khau || "",
-    );
-
-    if (!username || !password) return null;
-    return { username, password };
-  }
-
   function buildOrderDetailUrl(order, sessionOverride = null) {
     const detailUrl = new URL(routes.detail, window.location.href);
     const identifier = normalizeText(
@@ -209,10 +146,31 @@
       detailUrl.searchParams.set("madonhang", identifier);
     }
 
-    const access = getAccessCredentials(sessionOverride);
-    if (access) {
-      detailUrl.searchParams.set("username", access.username);
-      detailUrl.searchParams.set("password", access.password);
+    const urlAccess = getUrlAccessCredentials();
+    const session = sessionOverride || getCurrentSessionUser();
+    const storedUser = findStoredAuthUser(session);
+    const loginIdentifier =
+      urlAccess?.loginIdentifier ||
+      normalizeText(
+        session?.phone ||
+          session?.so_dien_thoai ||
+          session?.username ||
+          storedUser?.phone ||
+          storedUser?.so_dien_thoai ||
+          storedUser?.username ||
+          "",
+      );
+    const password = String(
+      urlAccess?.password ||
+        session?.password ||
+        session?.mat_khau ||
+        storedUser?.password ||
+        storedUser?.mat_khau ||
+        "",
+    );
+    if (loginIdentifier && password) {
+      detailUrl.searchParams.set("sodienthoai", loginIdentifier);
+      detailUrl.searchParams.set("password", password);
     }
 
     return detailUrl.toString();
@@ -3566,7 +3524,10 @@
       return;
     }
 
-    const sessionData = await getSessionData();
+    const urlSession = await ensureUrlAccessSession();
+    const sessionData = urlSession
+      ? { status: "success", user: urlSession }
+      : await getSessionData();
     if (redirectNonCustomer(sessionData.user, page)) return;
     syncPublicHeader(sessionData.user || {});
     renderShell(sessionData.user || {}, page);

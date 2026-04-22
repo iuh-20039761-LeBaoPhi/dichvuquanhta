@@ -563,15 +563,33 @@
     return `${window.location.pathname}${window.location.search}`;
   }
 
+  const URL_ACCESS_QUERY_KEYS = Object.freeze([
+    "username",
+    "sodienthoai",
+    "password",
+    "pass",
+  ]);
+
   function appendAuthParamsToUrl(urlStr, session = null) {
     if (!urlStr) return urlStr;
     const authSession = session || window.GiaoHangNhanhLocalAuth?.getSession();
-    if (!authSession || !authSession.username || !authSession.password) return urlStr;
+    const loginIdentifier = String(
+      authSession?.phone ||
+        authSession?.so_dien_thoai ||
+        authSession?.username ||
+        "",
+    ).trim();
+    const password = String(authSession?.password || authSession?.mat_khau || "").trim();
     
     try {
       const url = new URL(urlStr, window.location.href);
-      url.searchParams.set("username", authSession.username);
-      url.searchParams.set("password", authSession.password);
+      URL_ACCESS_QUERY_KEYS.forEach((key) => {
+        url.searchParams.delete(key);
+      });
+      if (loginIdentifier && password) {
+        url.searchParams.set("sodienthoai", loginIdentifier);
+        url.searchParams.set("password", password);
+      }
       return url.toString();
     } catch {
       return urlStr;

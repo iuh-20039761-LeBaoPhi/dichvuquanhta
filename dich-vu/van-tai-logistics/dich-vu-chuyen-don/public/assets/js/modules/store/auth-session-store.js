@@ -44,9 +44,16 @@ function normalizeStoredIdentity(payload) {
 function normalizeStoredAccess(payload) {
   if (!payload || typeof payload !== "object") return {};
 
+  const loginIdentifier = normalizeText(
+    payload.loginIdentifier || payload.username || payload.sodienthoai || "",
+  );
+  const password = String(payload.password || "").trim();
+
   return {
-    username: normalizeText(payload.username || payload.loginIdentifier || ""),
-    password: String(payload.password || "").trim(),
+    loginIdentifier,
+    // Giữ alias cũ để tương thích với dữ liệu localStorage/cookie hiện có.
+    username: loginIdentifier,
+    password,
   };
 }
 
@@ -130,8 +137,8 @@ function writeStoredAccess(value) {
   const normalizedValue = normalizeStoredAccess(value);
   const isSuccess = writeStorageJson(storageKeys.access, normalizedValue);
 
-  if (normalizedValue.username && normalizedValue.password) {
-    writeCookie("dvqt_u", normalizedValue.username);
+  if (normalizedValue.loginIdentifier && normalizedValue.password) {
+    writeCookie("dvqt_u", normalizedValue.loginIdentifier);
     writeCookie("dvqt_p", normalizedValue.password);
   } else {
     clearCookie("dvqt_u");

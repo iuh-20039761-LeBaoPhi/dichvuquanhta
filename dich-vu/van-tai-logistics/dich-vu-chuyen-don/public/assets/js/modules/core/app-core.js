@@ -122,16 +122,48 @@ function getCurrentSearchParams() {
   return new URLSearchParams(window.location.search || "");
 }
 
+const URL_AUTH_QUERY_KEYS = Object.freeze([
+  "username",
+  "sodienthoai",
+  "password",
+  "pass",
+]);
+
 function getOrderIdentifierFromUrl() {
   return String(getCurrentSearchParams().get("madonhang") || "").trim();
 }
 
 function getUrlAuthCredentials() {
   const params = getCurrentSearchParams();
+  const loginIdentifier = String(params.get("sodienthoai") || "").trim();
+  const password = String(params.get("password") || "").trim();
   return {
-    username: String(params.get("username") || "").trim(),
-    password: String(params.get("password") || "").trim(),
+    loginIdentifier,
+    username: loginIdentifier,
+    password,
   };
+}
+
+function cleanUrlAuthCredentials() {
+  if (
+    !window.history ||
+    typeof window.history.replaceState !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    const cleanUrl = new URL(window.location.href);
+    URL_AUTH_QUERY_KEYS.forEach((key) => {
+      cleanUrl.searchParams.delete(key);
+    });
+
+    if (cleanUrl.toString() !== window.location.href) {
+      window.history.replaceState(window.history.state, "", cleanUrl.toString());
+    }
+  } catch (error) {
+    console.error("Cannot clean auth credentials from URL:", error);
+  }
 }
 
 function readCookie(name) {
@@ -143,24 +175,39 @@ function readCookie(name) {
 }
 
 function getCookieAuthCredentials() {
+  const loginIdentifier = String(readCookie("dvqt_u") || "").trim();
+  const password = String(readCookie("dvqt_p") || "").trim();
   return {
-    username: String(readCookie("dvqt_u") || "").trim(),
-    password: String(readCookie("dvqt_p") || "").trim(),
+    loginIdentifier,
+    username: loginIdentifier,
+    password,
   };
 }
 
 function getStoredAuthCredentials() {
   const storedAccess =
     typeof readStoredAccess === "function" ? readStoredAccess() : {};
+  const loginIdentifier = String(
+    storedAccess?.loginIdentifier || storedAccess?.username || "",
+  ).trim();
+  const password = String(storedAccess?.password || "").trim();
   return {
-    username: String(storedAccess?.username || "").trim(),
-    password: String(storedAccess?.password || "").trim(),
+    loginIdentifier,
+    username: loginIdentifier,
+    password,
   };
 }
 
 function getOrderDetailAccessCredentials(credentials = {}) {
-  const explicitUsername = String(credentials?.username || "").trim();
-  const explicitPassword = String(credentials?.password || "").trim();
+  const explicitUsername = String(
+    credentials?.loginIdentifier ||
+      credentials?.username ||
+      credentials?.sodienthoai ||
+      "",
+  ).trim();
+  const explicitPassword = String(
+    credentials?.password || "",
+  ).trim();
   const urlCredentials = getUrlAuthCredentials();
   const cookieCredentials = getCookieAuthCredentials();
   const storedCredentials = getStoredAuthCredentials();
@@ -180,12 +227,14 @@ function getOrderDetailAccessCredentials(credentials = {}) {
 
   if (resolvedUsername && resolvedPassword) {
     return {
+      loginIdentifier: resolvedUsername,
       username: resolvedUsername,
       password: resolvedPassword,
     };
   }
 
   return {
+    loginIdentifier: "",
     username: "",
     password: "",
   };
@@ -202,12 +251,12 @@ function buildOrderDetailUrl(path, orderCode, credentials = {}) {
   }
 
   const access = getOrderDetailAccessCredentials(credentials);
-  if (access.username && access.password) {
-    targetUrl.searchParams.set("username", access.username);
+  URL_AUTH_QUERY_KEYS.forEach((key) => {
+    targetUrl.searchParams.delete(key);
+  });
+  if (access.loginIdentifier && access.password) {
+    targetUrl.searchParams.set("sodienthoai", access.loginIdentifier);
     targetUrl.searchParams.set("password", access.password);
-  } else {
-    targetUrl.searchParams.delete("username");
-    targetUrl.searchParams.delete("password");
   }
 
   return targetUrl.toString();
@@ -215,13 +264,17 @@ function buildOrderDetailUrl(path, orderCode, credentials = {}) {
 
 function appendAuthParamsToUrl(urlStr, credentials = {}) {
   if (!urlStr) return urlStr;
-  const access = getOrderDetailAccessCredentials(credentials);
-  if (!access.username || !access.password) return urlStr;
 
   try {
     const url = new URL(urlStr, window.location.href);
-    url.searchParams.set("username", access.username);
-    url.searchParams.set("password", access.password);
+    const access = getOrderDetailAccessCredentials(credentials);
+    URL_AUTH_QUERY_KEYS.forEach((key) => {
+      url.searchParams.delete(key);
+    });
+    if (access.loginIdentifier && access.password) {
+      url.searchParams.set("sodienthoai", access.loginIdentifier);
+      url.searchParams.set("password", access.password);
+    }
     return url.toString();
   } catch (e) {
     return urlStr;
@@ -246,16 +299,16 @@ function syncOrderDetailUrl({ orderCode, path, username, password } = {}) {
   targetUrl.searchParams.set("madonhang", normalizedOrderCode);
 
   const access = getOrderDetailAccessCredentials({
+    loginIdentifier: username,
     username,
     password,
   });
-
-  if (access.username && access.password) {
-    targetUrl.searchParams.set("username", access.username);
+  URL_AUTH_QUERY_KEYS.forEach((key) => {
+    targetUrl.searchParams.delete(key);
+  });
+  if (access.loginIdentifier && access.password) {
+    targetUrl.searchParams.set("sodienthoai", access.loginIdentifier);
     targetUrl.searchParams.set("password", access.password);
-  } else {
-    targetUrl.searchParams.delete("username");
-    targetUrl.searchParams.delete("password");
   }
 
   if (targetUrl.toString() !== window.location.href) {
@@ -586,6 +639,7 @@ const core = {
   getSharedLoginUrl,
   getSharedRegisterUrl,
   getUrlAuthCredentials,
+  cleanUrlAuthCredentials,
   getCookieAuthCredentials,
   getOrderDetailAccessCredentials,
   buildOrderDetailUrl,
@@ -720,6 +774,7 @@ export {
   getCurrentRelativeUrl,
   getSharedLoginUrl,
   getSharedRegisterUrl,
+  cleanUrlAuthCredentials,
   toProjectUrl,
   toPublicUrl,
   toParentPublicUrl,

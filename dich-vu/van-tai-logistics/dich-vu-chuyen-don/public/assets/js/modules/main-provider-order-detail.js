@@ -216,6 +216,42 @@ const providerOrderDetailModule = (function (window, document) {
       : path;
   }
 
+  function redirectToMatchingDetail(role, orderCode) {
+    const normalizedRole = normalizeText(role).toLowerCase();
+    const targetOrderCode =
+      normalizeText(orderCode) || normalizeText(core.getOrderIdentifierFromUrl?.() || "");
+    if (!targetOrderCode) {
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
+      return;
+    }
+
+    const targetPath =
+      normalizedRole === "khach-hang"
+        ? "chi-tiet-hoa-don-chuyendon.html"
+        : "nha-cung-cap/chi-tiet-don-hang-chuyendon.html";
+    const auth = core.getOrderDetailAccessCredentials?.() ||
+      core.getUrlAuthCredentials?.() || {
+        loginIdentifier: "",
+        username: "",
+        password: "",
+      };
+    const targetUrl =
+      typeof core.buildOrderDetailUrl === "function"
+        ? core.buildOrderDetailUrl(targetPath, targetOrderCode, auth)
+        : getProjectUrl(targetPath);
+
+    if (targetUrl && targetUrl !== window.location.href) {
+      window.location.replace(targetUrl);
+      return;
+    }
+
+    window.location.href = core.getSharedLoginUrl({
+      redirect: core.getCurrentRelativeUrl(),
+    });
+  }
+
   function resolveBookingRowCode(row) {
     return store.resolveBookingRowCode?.(row) || normalizeText(row?.id || row?.remote_id || "");
   }
@@ -1376,9 +1412,7 @@ const providerOrderDetailModule = (function (window, document) {
 
     const role = store.getSavedRole();
     if (role && role !== "nha-cung-cap") {
-      window.location.href = core.getSharedLoginUrl({
-        redirect: core.getCurrentRelativeUrl(),
-      });
+      redirectToMatchingDetail(role, core.getOrderIdentifierFromUrl?.() || "");
       return;
     }
 

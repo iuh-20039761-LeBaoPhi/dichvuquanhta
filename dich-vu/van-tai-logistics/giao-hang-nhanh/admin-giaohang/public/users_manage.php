@@ -5,8 +5,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     header('Location: login.php');
     exit;
 }
-
-$legacyUserFormNotice = isset($_GET['legacy_user_form']);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -99,6 +97,14 @@ $legacyUserFormNotice = isset($_GET['legacy_user_form']);
             margin: 4px 0 0;
             color: #64748b;
             font-size: 13px;
+        }
+
+        .users-card-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .users-toolbar-badge {
@@ -272,6 +278,85 @@ $legacyUserFormNotice = isset($_GET['legacy_user_form']);
             border: 1px solid #fecaca;
         }
 
+        .users-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.52);
+        }
+
+        .users-modal[hidden] {
+            display: none;
+        }
+
+        .users-modal__dialog {
+            width: min(720px, 100%);
+            max-height: min(86vh, 760px);
+            overflow: auto;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+        }
+
+        .users-modal__head,
+        .users-modal__foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 18px 22px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .users-modal__foot {
+            border-top: 1px solid #edf2f7;
+            border-bottom: 0;
+            justify-content: flex-end;
+        }
+
+        .users-modal__head h3 {
+            margin: 0;
+            color: #0a2a66;
+            font-size: 20px;
+        }
+
+        .users-modal__body {
+            padding: 22px;
+        }
+
+        .users-modal__grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .users-modal__grid .form-group--full {
+            grid-column: 1 / -1;
+        }
+
+        .users-modal__close {
+            width: 38px;
+            height: 38px;
+            border: 0;
+            border-radius: 999px;
+            cursor: pointer;
+            background: #f1f5f9;
+            color: #0f172a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .users-modal-help {
+            margin: 8px 0 0;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
         @media (max-width: 1200px) {
             .users-shell {
                 grid-template-columns: 1fr;
@@ -306,6 +391,10 @@ $legacyUserFormNotice = isset($_GET['legacy_user_form']);
                 flex-direction: column;
             }
 
+            .users-card-actions {
+                width: 100%;
+            }
+
             .users-toolbar-badge {
                 width: 100%;
                 justify-content: center;
@@ -325,6 +414,19 @@ $legacyUserFormNotice = isset($_GET['legacy_user_form']);
                 min-width: 0;
                 max-width: none;
             }
+
+            .users-modal {
+                padding: 12px;
+            }
+
+            .users-modal__grid {
+                grid-template-columns: 1fr;
+            }
+
+            .users-modal__foot {
+                align-items: stretch;
+                flex-direction: column-reverse;
+            }
         }
     </style>
 </head>
@@ -333,18 +435,16 @@ $legacyUserFormNotice = isset($_GET['legacy_user_form']);
     <main class="admin-container">
         <div class="page-header">
             <h2 class="page-title">Quản lý người dùng</h2>
-            <span class="users-toolbar-badge">
-                <i class="fa-solid fa-database"></i>
-                <span>Đang dùng chung bảng nguoidung</span>
-            </span>
-        </div>
-
-        <?php if ($legacyUserFormNotice): ?>
-            <div class="status-badge status-pending" style="width:100%; margin-bottom: 20px; padding: 14px 16px;">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                Form thêm/sửa PHP cũ đã tạm ẩn vì còn ghi vào bảng `nguoi_dung` riêng, chưa đồng bộ với `nguoidung`.
+            <div class="users-card-actions">
+                <span class="users-toolbar-badge">
+                    <i class="fa-solid fa-database"></i>
+                    <span>Đang dùng chung bảng nguoidung</span>
+                </span>
+                <button type="button" class="btn-primary" id="users-open-create">
+                    <i class="fa-solid fa-user-plus"></i> Thêm người dùng
+                </button>
             </div>
-        <?php endif; ?>
+        </div>
 
         <section class="users-hero">
             <h3>Quản lý khách hàng, shipper và tài khoản quản trị</h3>
@@ -439,345 +539,84 @@ $legacyUserFormNotice = isset($_GET['legacy_user_form']);
 
     <?php include __DIR__ . '/../includes/footer.php'; ?>
 
+    <div class="users-modal" id="users-editor-modal" hidden>
+        <div class="users-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="users-editor-title">
+            <form id="users-editor-form">
+                <div class="users-modal__head">
+                    <h3 id="users-editor-title">Thêm người dùng</h3>
+                    <button type="button" class="users-modal__close" data-users-modal-close aria-label="Đóng">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="users-modal__body">
+                    <input type="hidden" name="mode" value="create">
+                    <input type="hidden" name="user_id" value="">
+                    <div class="users-modal__grid">
+                        <div class="form-group">
+                            <label for="user-fullname">Họ tên</label>
+                            <input id="user-fullname" name="fullname" type="text" class="admin-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-phone">Số điện thoại</label>
+                            <input id="user-phone" name="phone" type="tel" class="admin-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-email">Email</label>
+                            <input id="user-email" name="email" type="email" class="admin-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="user-role">Vai trò</label>
+                            <select id="user-role" name="role" class="admin-select" required>
+                                <option value="customer">Khách hàng</option>
+                                <option value="shipper">Shipper</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-group--full">
+                            <label for="user-address">Địa chỉ</label>
+                            <input id="user-address" name="address" type="text" class="admin-input">
+                        </div>
+                        <div class="form-group" data-shipper-field>
+                            <label for="user-vehicle">Phương tiện shipper</label>
+                            <input id="user-vehicle" name="vehicle_type" type="text" class="admin-input" placeholder="Xe máy, ô tô tải...">
+                        </div>
+                        <div class="form-group">
+                            <label for="user-status">Trạng thái</label>
+                            <select id="user-status" name="status" class="admin-select">
+                                <option value="active">Hoạt động</option>
+                                <option value="locked">Đã khóa</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-group--full">
+                            <label for="user-password">Mật khẩu</label>
+                            <input id="user-password" name="password" type="password" class="admin-input" autocomplete="new-password">
+                            <p class="users-modal-help" id="user-password-help">Tạo mới bắt buộc nhập mật khẩu. Khi sửa, để trống nếu không đổi mật khẩu.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="users-modal__foot">
+                    <button type="button" class="btn-secondary" data-users-modal-close>Hủy</button>
+                    <button type="submit" class="btn-primary" id="users-editor-submit">
+                        <i class="fa-solid fa-floppy-disk"></i> Lưu người dùng
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="users-toast" class="users-toast"></div>
 
     <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script src="../../public/assets/js/local-auth.js"></script>
     <script>
-        (function () {
-            const localAuth = window.GiaoHangNhanhLocalAuth || null;
-            const currentAdminId = <?php echo (int) $_SESSION['user_id']; ?>;
-            const currentAdminUsername = <?php echo json_encode((string) ($_SESSION['username'] ?? 'admin01')); ?>;
-            const currentAdminName = <?php echo json_encode((string) ($_SESSION['fullname'] ?? 'Admin')); ?>;
-            const currentAdminEmail = <?php echo json_encode((string) ($_SESSION['email'] ?? '')); ?>;
-            const currentAdminPhone = <?php echo json_encode((string) ($_SESSION['phone'] ?? '')); ?>;
-            const tbody = document.getElementById("users-table-body");
-            const summary = document.getElementById("users-summary");
-            const pagination = document.getElementById("users-pagination");
-            const form = document.getElementById("users-filter-form");
-            const resetBtn = document.getElementById("users-reset-btn");
-            const toast = document.getElementById("users-toast");
-            const statTotal = document.getElementById("users-stat-total");
-            const statCustomers = document.getElementById("users-stat-customers");
-            const statShippers = document.getElementById("users-stat-shippers");
-            const statLockedUsers = document.getElementById("users-stat-locked-users");
-            let lastParams = null;
-
-            function escapeHtml(value) {
-                return String(value ?? "")
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/\"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-
-            function formatDate(value) {
-                if (!value) return "N/A";
-                const date = new Date(value);
-                if (Number.isNaN(date.getTime())) return escapeHtml(value);
-                return date.toLocaleDateString("vi-VN");
-            }
-
-            function showToast(message, type) {
-                toast.textContent = message;
-                toast.className = `users-toast is-${type}`;
-                window.clearTimeout(showToast._timer);
-                showToast._timer = window.setTimeout(() => {
-                    toast.className = "users-toast";
-                }, 3200);
-            }
-
-            function getRoleBadge(user) {
-                const role = user.role || "";
-                const roleMap = {
-                    admin: { label: "Admin", className: "is-admin" },
-                    customer: { label: "Khách hàng", className: "is-customer" },
-                    shipper: { label: "Shipper", className: "is-shipper" },
-                };
-                const meta = roleMap[role] || { label: role, className: "is-customer" };
-                return `<span class="role-badge-inline ${meta.className}">${escapeHtml(meta.label)}</span>`;
-            }
-
-            function getStatusBadge(user) {
-                if (user.is_locked) {
-                    return '<span class="users-status-pill is-locked">Đã khóa</span>';
-                }
-                return '<span class="users-status-pill is-active">Hoạt động</span>';
-            }
-
-            function updateStats(users) {
-                const list = Array.isArray(users) ? users : [];
-                const total = list.length;
-                const customers = list.filter((user) => user.role === "customer").length;
-                const shippers = list.filter((user) => user.role === "shipper").length;
-                const lockedUsers = list.filter((user) => user.is_locked).length;
-
-                statTotal.textContent = total.toLocaleString("vi-VN");
-                statCustomers.textContent = customers.toLocaleString("vi-VN");
-                statShippers.textContent = shippers.toLocaleString("vi-VN");
-                statLockedUsers.textContent = lockedUsers.toLocaleString("vi-VN");
-            }
-
-            function buildSyntheticAdminUser() {
-                return {
-                    id: currentAdminId,
-                    username: currentAdminUsername || "admin01",
-                    fullname: currentAdminName || "Admin",
-                    phone: currentAdminPhone || "",
-                    email: currentAdminEmail || "",
-                    role: "admin",
-                    vehicle_type: "",
-                    created_at: "",
-                    is_locked: false,
-                    lock_reason: "",
-                    status_label: "Hoạt động",
-                    source: "session",
-                };
-            }
-
-            async function listUsersFromKrud() {
-                const adminUser = buildSyntheticAdminUser();
-                if (!localAuth || typeof localAuth.listAllKrudUsers !== "function") {
-                    return [adminUser];
-                }
-
-                const users = await localAuth.listAllKrudUsers();
-                return [adminUser, ...users];
-            }
-
-            function getParamsFromLocation() {
-                const params = new URLSearchParams(window.location.search);
-                return {
-                    search: params.get("search") || "",
-                    role: params.get("role") || "",
-                    page: Math.max(1, Number.parseInt(params.get("page") || "1", 10) || 1),
-                };
-            }
-
-            function syncForm(params) {
-                form.search.value = params.search;
-                form.role.value = params.role;
-            }
-
-            function updateUrl(params) {
-                const url = new URL(window.location.href);
-                url.searchParams.set("page", String(params.page || 1));
-                if (params.search) url.searchParams.set("search", params.search);
-                else url.searchParams.delete("search");
-                if (params.role) url.searchParams.set("role", params.role);
-                else url.searchParams.delete("role");
-                window.history.replaceState({}, "", url.toString());
-            }
-
-            function renderUsers(users) {
-                if (!Array.isArray(users) || !users.length) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="users-empty">Không tìm thấy người dùng nào.</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = users.map((user) => {
-                    const canMutate = Number(user.id) !== currentAdminId;
-                    const avatar = escapeHtml((user.username || "U").charAt(0).toUpperCase());
-                    const actionButtons = [];
-
-                    if (canMutate) {
-                        if (user.is_locked) {
-                            actionButtons.push(`<button type="button" class="btn-sm btn-view-site-pill" data-user-action="unlock" data-user-id="${user.id}" title="Mở khóa" style="color:#2e7d32; background:rgba(46,125,50,0.1);"><i class="fa-solid fa-lock-open"></i></button>`);
-                        } else {
-                            actionButtons.push(`<button type="button" class="btn-sm btn-view-site-pill" data-user-action="lock" data-user-id="${user.id}" title="Khóa" style="color:#d9534f; background:rgba(217,83,79,0.1);"><i class="fa-solid fa-lock"></i></button>`);
-                        }
-                        actionButtons.push(`<button type="button" class="btn-sm btn-view-site-pill" data-user-action="delete" data-user-id="${user.id}" title="Xóa" style="color:#1a1a1a; background:rgba(0,0,0,0.05);"><i class="fa-solid fa-trash-can"></i></button>`);
-                    }
-
-                    return `
-                        <tr>
-                            <td data-label="ID"><span style="font-weight:700; color:#64748b;">#${Number(user.id || 0).toLocaleString("vi-VN")}</span></td>
-                            <td data-label="Tài khoản">
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <div class="users-avatar">${avatar}</div>
-                                    <strong>${escapeHtml(user.username)}</strong>
-                                </div>
-                            </td>
-                            <td data-label="Thông tin liên hệ">
-                                <div style="line-height:1.4;">
-                                    <div style="font-weight:600;">${escapeHtml(user.fullname)}</div>
-                                    <div style="font-size:12px; color:#64748b;">
-                                        <i class="fa-regular fa-envelope" style="width:14px;"></i> ${escapeHtml(user.email)}<br>
-                                        <i class="fa-solid fa-phone" style="width:14px;"></i> ${escapeHtml(user.phone)}
-                                        ${user.vehicle_type ? `<br><i class="fa-solid fa-motorcycle" style="width:14px;"></i> ${escapeHtml(user.vehicle_type)}` : ""}
-                                    </div>
-                                </div>
-                            </td>
-                            <td data-label="Vai trò">${getRoleBadge(user)}</td>
-                            <td data-label="Trạng thái">${getStatusBadge(user)}</td>
-                            <td data-label="Ngày tham gia"><span style="color:#64748b; font-size:13px;">${formatDate(user.created_at)}</span></td>
-                            <td data-label="Hành động" style="text-align:right;">
-                                <div class="users-inline-actions">${actionButtons.join("")}</div>
-                            </td>
-                        </tr>
-                    `;
-                }).join("");
-            }
-
-            function renderPagination(meta, currentParams) {
-                pagination.innerHTML = "";
-                const totalPages = Number(meta.total_pages || 0);
-                if (totalPages <= 1) {
-                    pagination.hidden = true;
-                    return;
-                }
-
-                pagination.hidden = false;
-                const currentPage = Number(meta.page || 1);
-                const start = Math.max(1, currentPage - 2);
-                const end = Math.min(totalPages, currentPage + 2);
-
-                function createButton(label, page, active, disabled) {
-                    const button = document.createElement("button");
-                    button.type = "button";
-                    button.className = `users-page-btn${active ? " is-active" : ""}`;
-                    button.textContent = label;
-                    button.disabled = !!disabled || active;
-                    if (!button.disabled) {
-                        button.addEventListener("click", () => loadUsers({ ...currentParams, page }));
-                    }
-                    return button;
-                }
-
-                pagination.appendChild(createButton("‹", Math.max(1, currentPage - 1), false, currentPage === 1));
-                for (let page = start; page <= end; page += 1) {
-                    pagination.appendChild(createButton(String(page), page, page === currentPage, false));
-                }
-                pagination.appendChild(createButton("›", Math.min(totalPages, currentPage + 1), false, currentPage === totalPages));
-            }
-
-            async function sendAction(action, userId, userRole) {
-                if (!localAuth) {
-                    showToast("Không khởi tạo được local auth admin helpers.", "error");
-                    return;
-                }
-
-                let reason = "";
-                if (action === "lock") {
-                    const promptValue = window.prompt("Nhập lý do khóa tài khoản này:", "Vi phạm quy định");
-                    if (promptValue === null) return;
-                    reason = promptValue.trim() || "Vi phạm quy định";
-                }
-
-                const confirmMessages = {
-                    unlock: "Mở khóa tài khoản này?",
-                    delete: "Xóa tài khoản này?",
-                };
-
-                if (confirmMessages[action] && !window.confirm(confirmMessages[action])) {
-                    return;
-                }
-
-                try {
-                    let result = null;
-
-                    if (action === "lock") {
-                        result = await localAuth.updateKrudUser(userId, userRole, {
-                            is_locked: 1,
-                            bi_khoa: 1,
-                            lock_reason: reason,
-                            ly_do_khoa: reason,
-                        });
-                    } else if (action === "unlock") {
-                        result = await localAuth.updateKrudUser(userId, userRole, {
-                            is_locked: 0,
-                            bi_khoa: 0,
-                            lock_reason: "",
-                            ly_do_khoa: "",
-                        });
-                    } else if (action === "delete") {
-                        result = await localAuth.deleteKrudUser(userId, userRole);
-                    } else {
-                        throw new Error("Hành động không hợp lệ.");
-                    }
-
-                    showToast(result.message || "Thao tác thành công.", "success");
-                    if (lastParams) {
-                        loadUsers(lastParams);
-                    }
-                } catch (error) {
-                    showToast(error.message || "Không thể cập nhật người dùng.", "error");
-                }
-            }
-
-            async function loadUsers(params) {
-                lastParams = { ...params };
-                syncForm(params);
-                updateUrl(params);
-                summary.textContent = "Đang tải dữ liệu người dùng từ KRUD...";
-                tbody.innerHTML = '<tr><td colspan="7" class="users-loading">Đang tải danh sách người dùng...</td></tr>';
-                pagination.hidden = true;
-
-                try {
-                    const allUsers = await listUsersFromKrud();
-                    const search = String(params.search || "").trim().toLowerCase();
-                    const filteredUsers = allUsers.filter((user) => {
-                        if (params.role && user.role !== params.role) return false;
-                        if (!search) return true;
-
-                        const haystack = [
-                            user.username,
-                            user.fullname,
-                            user.email,
-                            user.phone,
-                        ]
-                            .map((value) => String(value || "").toLowerCase())
-                            .join(" ");
-                        return haystack.includes(search);
-                    });
-                    const page = Math.max(1, Number(params.page || 1));
-                    const limit = 10;
-                    const totalRecords = filteredUsers.length;
-                    const totalPages = Math.max(1, Math.ceil(totalRecords / limit));
-                    const safePage = Math.min(page, totalPages);
-                    const start = (safePage - 1) * limit;
-                    const users = filteredUsers.slice(start, start + limit);
-
-                    renderUsers(users);
-                    renderPagination({
-                        page: safePage,
-                        total_pages: totalPages,
-                    }, { ...params, page: safePage });
-                    updateStats(filteredUsers);
-                    summary.textContent = `Hiển thị ${users.length} người dùng trên tổng ${totalRecords.toLocaleString("vi-VN")} bản ghi. Trang ${safePage}/${totalPages}.`;
-                } catch (error) {
-                    summary.textContent = "Không tải được dữ liệu.";
-                    tbody.innerHTML = `<tr><td colspan="7" class="users-empty">${escapeHtml(error.message || "Không thể tải dữ liệu người dùng.")}</td></tr>`;
-                    pagination.hidden = true;
-                    updateStats([]);
-                }
-            }
-
-            form.addEventListener("submit", (event) => {
-                event.preventDefault();
-                loadUsers({
-                    search: form.search.value.trim(),
-                    role: form.role.value,
-                    page: 1,
-                });
-            });
-
-            resetBtn.addEventListener("click", () => {
-                loadUsers({ search: "", role: "", page: 1 });
-            });
-
-            tbody.addEventListener("click", (event) => {
-                const button = event.target.closest("[data-user-action]");
-                if (!button) return;
-                const row = button.closest("tr");
-                const userRole = row?.querySelector("[data-user-role]")?.getAttribute("data-user-role") || button.dataset.userRole || "";
-                sendAction(button.dataset.userAction, Number(button.dataset.userId), userRole);
-            });
-
-            loadUsers(getParamsFromLocation());
-        })();
+        window.GHNAdminUsersConfig = {
+            currentAdminId: <?php echo (int) $_SESSION['user_id']; ?>,
+            currentAdminUsername: <?php echo json_encode((string) ($_SESSION['username'] ?? 'admin01')); ?>,
+            currentAdminName: <?php echo json_encode((string) ($_SESSION['fullname'] ?? 'Admin')); ?>,
+            currentAdminEmail: <?php echo json_encode((string) ($_SESSION['email'] ?? '')); ?>,
+            currentAdminPhone: <?php echo json_encode((string) ($_SESSION['phone'] ?? '')); ?>
+        };
     </script>
+    <script src="assets/js/admin-users-manage.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
 

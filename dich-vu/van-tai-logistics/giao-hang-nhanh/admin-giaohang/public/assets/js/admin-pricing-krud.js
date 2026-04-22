@@ -1,9 +1,21 @@
 (function (window, document) {
+  // Bản đồ bảo trì: ../../../includes/pricing/README-pricing-admin.md
+  // Trách nhiệm chính: nhận form admin, lưu KRUD, export JSON cache, rồi patch lại DOM.
   const config = window.GHNAdminPricing || {};
   if (!config.pageUrl || !config.exportUrl) return;
   const pricingUtils = window.GHNAdminPricingUtils || null;
   if (!pricingUtils) {
     console.error("Thiếu admin-pricing-utils.js trước admin-pricing-krud.js.");
+    return;
+  }
+  const krudClient = window.GHNAdminPricingKrudClient || null;
+  if (!krudClient) {
+    console.error("Thiếu admin-pricing-krud-client.js trước admin-pricing-krud.js.");
+    return;
+  }
+  const pricingFeedback = window.GHNAdminPricingFeedback || null;
+  if (!pricingFeedback) {
+    console.error("Thiếu admin-pricing-feedback.js trước admin-pricing-krud.js.");
     return;
   }
   const {
@@ -18,6 +30,37 @@
     stripKrudMeta,
     isValidTimeText,
   } = pricingUtils;
+  const {
+    getInsertFn,
+    getUpdateFn,
+    getListFn,
+    getDeleteFn,
+    extractRows,
+    chunkArray,
+    runWithConcurrency,
+  } = krudClient;
+  const {
+    showAlert,
+    showProgress,
+    hideProgress,
+  } = pricingFeedback;
+  if (
+    [
+      getInsertFn,
+      getUpdateFn,
+      getListFn,
+      getDeleteFn,
+      extractRows,
+      chunkArray,
+      runWithConcurrency,
+      showAlert,
+      showProgress,
+      hideProgress,
+    ].some((fn) => typeof fn !== "function")
+  ) {
+    console.error("Thiếu helper bắt buộc cho admin-pricing-krud.js.");
+    return;
+  }
 
   const SERVICE_ORDER = {
     tieuchuan: 10,
@@ -42,39 +85,68 @@
     "so_sanh_dich_vu",
   ];
   const ACTIVE_VERSION_META_KEY = "active_pricing_version_id";
-  const PARTIAL_ACTION_TABLES = {
-    save_services: ["ghn_goi_dich_vu", "ghn_gia_goi_theo_vung"],
-    save_instant_service: ["ghn_goi_dich_vu", "ghn_cau_hinh_khoang_cach"],
-    add_service_time: ["ghn_khung_gio_dich_vu"],
-    save_service_time_row: ["ghn_khung_gio_dich_vu"],
-    delete_service_time: ["ghn_khung_gio_dich_vu"],
-    add_weather: ["ghn_dieu_kien_giao"],
-    save_weather_row: ["ghn_dieu_kien_giao"],
-    delete_weather: ["ghn_dieu_kien_giao"],
-    save_cod_insurance: ["ghn_cau_hinh_tai_chinh"],
-    add_vehicle: ["ghn_phuong_tien"],
-    delete_vehicle: ["ghn_phuong_tien"],
-    save_vehicle_row: ["ghn_phuong_tien"],
-    add_goods_fee: ["ghn_loai_hang"],
-    delete_goods_fee: ["ghn_loai_hang"],
-    save_goods_fee_row: ["ghn_loai_hang"],
-  };
-  const ACTION_SECTION_IDS = {
-    save_services: "section-vung",
-    save_instant_service: "section-instant",
-    add_service_time: "section-service-fee",
-    save_service_time_row: "section-service-fee",
-    delete_service_time: "section-service-fee",
-    add_weather: "section-service-fee",
-    save_weather_row: "section-service-fee",
-    delete_weather: "section-service-fee",
-    save_cod_insurance: "section-cod",
-    add_vehicle: "section-vehicle",
-    delete_vehicle: "section-vehicle",
-    save_vehicle_row: "section-vehicle",
-    add_goods_fee: "section-goods",
-    delete_goods_fee: "section-goods",
-    save_goods_fee_row: "section-goods",
+  // Một action cần biết 2 thứ: section để render lại và các bảng KRUD có thể sync hẹp.
+  const ACTION_CONFIG = {
+    save_services: {
+      sectionId: "section-vung",
+      partialTables: ["ghn_goi_dich_vu", "ghn_gia_goi_theo_vung"],
+    },
+    save_instant_service: {
+      sectionId: "section-instant",
+      partialTables: ["ghn_goi_dich_vu", "ghn_cau_hinh_khoang_cach"],
+    },
+    add_service_time: {
+      sectionId: "section-service-fee",
+      partialTables: ["ghn_khung_gio_dich_vu"],
+    },
+    save_service_time_row: {
+      sectionId: "section-service-fee",
+      partialTables: ["ghn_khung_gio_dich_vu"],
+    },
+    delete_service_time: {
+      sectionId: "section-service-fee",
+      partialTables: ["ghn_khung_gio_dich_vu"],
+    },
+    add_weather: {
+      sectionId: "section-service-fee",
+      partialTables: ["ghn_dieu_kien_giao"],
+    },
+    save_weather_row: {
+      sectionId: "section-service-fee",
+      partialTables: ["ghn_dieu_kien_giao"],
+    },
+    delete_weather: {
+      sectionId: "section-service-fee",
+      partialTables: ["ghn_dieu_kien_giao"],
+    },
+    save_cod_insurance: {
+      sectionId: "section-cod",
+      partialTables: ["ghn_cau_hinh_tai_chinh"],
+    },
+    add_vehicle: {
+      sectionId: "section-vehicle",
+      partialTables: ["ghn_phuong_tien"],
+    },
+    delete_vehicle: {
+      sectionId: "section-vehicle",
+      partialTables: ["ghn_phuong_tien"],
+    },
+    save_vehicle_row: {
+      sectionId: "section-vehicle",
+      partialTables: ["ghn_phuong_tien"],
+    },
+    add_goods_fee: {
+      sectionId: "section-goods",
+      partialTables: ["ghn_loai_hang"],
+    },
+    delete_goods_fee: {
+      sectionId: "section-goods",
+      partialTables: ["ghn_loai_hang"],
+    },
+    save_goods_fee_row: {
+      sectionId: "section-goods",
+      partialTables: ["ghn_loai_hang"],
+    },
   };
   const TABLE_KEY_FIELDS = {
     ghn_vung_giao_hang: ["region_key"],
@@ -94,86 +166,13 @@
   };
   let currentPricingSnapshot = config.currentPricingData || null;
   let activeVersionId = Number(config.activeVersionId || 0);
-  let progressTimer = 0;
-  let pendingProgressMessage = "";
-  let progressContainer = null;
-  let progressToast = null;
 
-  function getInsertFn() {
-    if (typeof window.crud === "function") {
-      return (tableName, data) => window.crud("insert", tableName, data);
-    }
-    if (typeof window.krud === "function") {
-      return (tableName, data) => window.krud("insert", tableName, data);
-    }
-    return null;
+  function getActionSectionId(action) {
+    return ACTION_CONFIG[action]?.sectionId || "";
   }
 
-  function getUpdateFn() {
-    if (typeof window.crud === "function") {
-      return (tableName, data, id) => window.crud("update", tableName, data, id);
-    }
-    if (typeof window.krud === "function") {
-      return (tableName, data, id) => window.krud("update", tableName, data, id);
-    }
-    return null;
-  }
-
-  function getListFn() {
-    if (typeof window.krudList === "function") {
-      return (payload) => window.krudList(payload);
-    }
-    if (typeof window.crud === "function") {
-      return (payload) => {
-        const options = {
-          ...payload,
-          p: payload.page || payload.p || 1,
-          limit: payload.limit || 100,
-        };
-        delete options.table;
-        delete options.page;
-        return window.crud("list", payload.table, options);
-      };
-    }
-    if (typeof window.krud === "function") {
-      return (payload) => {
-        const options = {
-          ...payload,
-          p: payload.page || payload.p || 1,
-          limit: payload.limit || 100,
-        };
-        delete options.table;
-        delete options.page;
-        return window.krud("list", payload.table, options);
-      };
-    }
-    return null;
-  }
-
-  function getDeleteFn() {
-    if (typeof window.crud === "function") {
-      return (tableName, id) => window.crud("delete", tableName, { id });
-    }
-    if (typeof window.krud === "function") {
-      return (tableName, id) => window.krud("delete", tableName, { id });
-    }
-    return null;
-  }
-
-  function extractRows(payload, depth = 0) {
-    if (depth > 4 || payload == null) return [];
-    if (Array.isArray(payload)) return payload;
-    if (typeof payload !== "object") return [];
-
-    const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
-    for (const key of candidateKeys) {
-      const value = payload[key];
-      if (Array.isArray(value)) return value;
-      const nested = extractRows(value, depth + 1);
-      if (nested.length) return nested;
-    }
-
-    return [];
+  function getActionPartialTables(action) {
+    return ACTION_CONFIG[action]?.partialTables || null;
   }
 
   function readNonNegativeFormNumber(formData, fieldName, fallback, label) {
@@ -597,7 +596,7 @@
 
     try {
       normalizePricingDisplayLabels(currentPricingSnapshot);
-      await exportPricingDataFile(activeVersionId);
+      await exportPricingDataFile(activeVersionId, currentPricingSnapshot);
       setSyncStatus(
         "synced",
         `KRUD active #${activeVersionId || "?"}. Đã export lại JSON cache pricing-data.json từ dữ liệu active KRUD.`,
@@ -875,96 +874,6 @@
     return canPatchDomDirectly(action, formData);
   }
 
-  function showAlert(type, message, options = {}) {
-    const durationMs = Number(options.durationMs || 0);
-    if (!durationMs && window.core && typeof window.core.notify === "function") {
-      window.core.notify(message, type);
-      return;
-    }
-    if (durationMs > 0) {
-      let container = document.querySelector(".core-toast-container");
-      if (!container) {
-        container = document.createElement("div");
-        container.className = "core-toast-container";
-        document.body.appendChild(container);
-      }
-
-      const iconByType = {
-        error: "fa-circle-xmark",
-        warning: "fa-triangle-exclamation",
-        info: "fa-circle-info",
-        success: "fa-check-circle",
-      };
-      const toast = document.createElement("div");
-      toast.className = `core-toast ${type}`;
-
-      const icon = document.createElement("div");
-      icon.className = "core-toast-icon";
-      icon.innerHTML = `<i class="fa-solid ${iconByType[type] || iconByType.success}"></i>`;
-
-      const content = document.createElement("div");
-      content.className = "core-toast-message";
-      content.textContent = message;
-
-      toast.append(icon, content);
-      container.appendChild(toast);
-      setTimeout(() => toast.classList.add("show"), 10);
-      setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => toast.remove(), 500);
-      }, durationMs);
-      return;
-    }
-    // Fallback nếu core chưa load
-    console.log(`[Pricing Alert ${type}]: ${message}`);
-  }
-
-  function showProgress(message) {
-    if (!progressContainer) {
-      progressContainer = document.querySelector(".core-toast-container");
-      if (!progressContainer) {
-        progressContainer = document.createElement("div");
-        progressContainer.className = "core-toast-container";
-        document.body.appendChild(progressContainer);
-      }
-    }
-
-    if (!progressToast) {
-      progressToast = document.createElement("div");
-      progressToast.className = "core-toast info";
-      progressToast.innerHTML = `
-        <div class="core-toast-icon"><i class="fa-solid fa-circle-info"></i></div>
-        <div class="core-toast-message"></div>
-      `;
-      progressContainer.appendChild(progressToast);
-      window.setTimeout(() => {
-        progressToast?.classList.add("show");
-      }, 10);
-    }
-
-    const messageNode = progressToast.querySelector(".core-toast-message");
-    if (messageNode) {
-      messageNode.textContent = message;
-    }
-  }
-
-  function hideProgress() {
-    if (!progressToast) return;
-    progressToast.classList.remove("show");
-    const toastToRemove = progressToast;
-    progressToast = null;
-    window.setTimeout(() => {
-      toastToRemove.remove();
-      if (
-        progressContainer &&
-        !progressContainer.querySelector(".core-toast")
-      ) {
-        progressContainer.remove();
-        progressContainer = null;
-      }
-    }, 300);
-  }
-
   function clearPendingFormState(form) {
     if (!(form instanceof HTMLFormElement)) return;
     delete form.dataset.pendingAction;
@@ -1043,28 +952,6 @@
     }
   }
 
-  function chunkArray(list, size) {
-    const result = [];
-    for (let i = 0; i < list.length; i += size) {
-      result.push(list.slice(i, i + size));
-    }
-    return result;
-  }
-
-  async function runWithConcurrency(tasks, limit) {
-    const results = [];
-    let index = 0;
-    const workers = Array.from({ length: Math.min(limit, tasks.length) }, async () => {
-      while (index < tasks.length) {
-        const current = index;
-        index += 1;
-        results[current] = await tasks[current]();
-      }
-    });
-    await Promise.all(workers);
-    return results;
-  }
-
   function toggleSubmitting(form, isSubmitting) {
     form.querySelectorAll("button, input, select, textarea").forEach((field) => {
       if (
@@ -1118,7 +1005,7 @@
     const parsed = new DOMParser().parseFromString(html, "text/html");
     const nextShell = getPricingShell(parsed);
     const currentShell = getPricingShell(document);
-    const nextSectionId = ACTION_SECTION_IDS[action] || preferredSectionId || getActiveSectionId(document);
+    const nextSectionId = getActionSectionId(action) || preferredSectionId || getActiveSectionId(document);
 
     if (!nextShell || !currentShell) {
       throw new Error("Không tìm thấy khối pricing-shell để cập nhật giao diện.");
@@ -1228,10 +1115,14 @@
     return upsertVersionRow(table, versionId, extraWhere, data);
   }
 
-  async function exportPricingDataFile(versionId = activeVersionId) {
+  async function exportPricingDataFile(versionId = activeVersionId, pricingData = null) {
     const exportVersionId = Number(versionId || 0);
     if (exportVersionId <= 0) {
       throw new Error("Thiếu KRUD versionId để export pricing-data.json.");
+    }
+    const body = { versionId: exportVersionId };
+    if (pricingData && typeof pricingData === "object") {
+      body.pricingData = stripKrudMeta(pricingData);
     }
     await fetch(config.exportUrl, {
       method: "POST",
@@ -1240,7 +1131,7 @@
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ versionId: exportVersionId }),
+      body: JSON.stringify(body),
     }).then(async (response) => {
       const payload = await response.json();
       if (!response.ok || !payload.success) {
@@ -1863,7 +1754,7 @@
       if (persisted) {
         showProgress("Đang export pricing-data.json...");
         try {
-          await exportPricingDataFile(versionId);
+          await exportPricingDataFile(versionId, pricingData);
         } catch (error) {
           throw createPartialExportError(error);
         }
@@ -1872,9 +1763,10 @@
     }
 
     const rows = buildPersistenceRows(pricingData, versionId);
+    const partialTables = getActionPartialTables(action);
     const targetTables =
-      current.versionId > 0 && PARTIAL_ACTION_TABLES[action]
-        ? PARTIAL_ACTION_TABLES[action]
+      current.versionId > 0 && partialTables
+        ? partialTables
         : Object.keys(rows);
     const tables = targetTables
       .map((table) => [table, rows[table] || []])
@@ -1919,7 +1811,7 @@
 
     showProgress("Đang export pricing-data.json...");
     try {
-      await exportPricingDataFile(versionId);
+      await exportPricingDataFile(versionId, pricingData);
     } catch (error) {
       throw createPartialExportError(error);
     }
@@ -1985,10 +1877,6 @@
       } else {
         await refreshPricingSection(action, activeSectionId);
       }
-      if (progressTimer) {
-        window.clearTimeout(progressTimer);
-        progressTimer = 0;
-      }
       hideProgress();
       toggleSubmitting(form, false);
       clearPendingFormState(form);
@@ -2001,10 +1889,6 @@
         `Đã lưu bảng giá. Phiên bản active hiện tại: #${versionId}.`,
       );
     } catch (error) {
-      if (progressTimer) {
-        window.clearTimeout(progressTimer);
-        progressTimer = 0;
-      }
       hideProgress();
       const isPartialSave = Boolean(error && error.partialSave);
       showAlert(

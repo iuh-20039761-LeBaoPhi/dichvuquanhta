@@ -16,23 +16,6 @@
           profile: "ho-so-giaohang.html",
         };
 
-  (function applyAuthToRoutes() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get("username");
-    const password = urlParams.get("password");
-    if (!username || !password) return;
-    const keysToInject = ["dashboard", "orders", "profile"];
-    keysToInject.forEach(function (key) {
-      if (!routes[key]) return;
-      try {
-        const u = new URL(routes[key], window.location.href);
-        u.searchParams.set("username", username);
-        u.searchParams.set("password", password);
-        routes[key] = u.toString();
-      } catch (e) { /* skip */ }
-    });
-  })();
-
   const storageKeys = {
     orders: "ghn-customer-orders",
   };
@@ -79,6 +62,15 @@
     return session && typeof session === "object" ? session : null;
   }
 
+  async function ensureUrlAccessSession() {
+    if (localAuth && typeof localAuth.loginFromUrl === "function") {
+      const urlSession = await localAuth.loginFromUrl();
+      if (urlSession) return urlSession;
+    }
+
+    return getCurrentSessionUser();
+  }
+
   function normalizeText(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
   }
@@ -111,9 +103,10 @@
       detailUrl.searchParams.set("madonhang", identifier);
     }
 
-    const access = getAccessCredentials(sessionOverride);
-    if (access) {
-      detailUrl.searchParams.set("username", access.username);
+    const session = sessionOverride || getCurrentSessionUser();
+    const access = getAccessCredentials(session);
+    if (access?.username && access?.password) {
+      detailUrl.searchParams.set("sodienthoai", access.username);
       detailUrl.searchParams.set("password", access.password);
     }
 
@@ -2229,7 +2222,10 @@
       return;
     }
 
-    const sessionData = await portalApiRequest("session");
+    const urlSession = await ensureUrlAccessSession();
+    const sessionData = urlSession
+      ? { status: "success", user: urlSession }
+      : await portalApiRequest("session");
     if (redirectNonShipper(sessionData.user, page)) {
       return;
     }
