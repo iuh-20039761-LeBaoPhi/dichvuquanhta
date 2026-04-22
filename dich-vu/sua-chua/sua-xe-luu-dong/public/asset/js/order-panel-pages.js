@@ -641,14 +641,14 @@
           (row && row.khachhang && row.khachhang.diachi) ||
           "",
         avatar: pickFirstValue([
-          row && row.link_avatar,
-          row && (row.khachhang && row.khachhang.link_avatar),
           row && row.avatar_kh,
+          row && (row.khachhang && row.khachhang.link_avatar),
+          row && (row.khachhang && row.khachhang.avatar),
+          row && (row.khachhang && row.khachhang.avatar_kh),
+          row && row.link_avatar,
           row && row.avatar_khachhang,
           row && row.avatar_customer,
           row && row.customer_avatar,
-          row && (row.khachhang && row.khachhang.avatar),
-          row && (row.khachhang && row.khachhang.avatar_kh),
         ]),
         maplat: row && row.lat_kh,
         maplng: row && row.lng_kh,
@@ -692,13 +692,13 @@
           : "",
         avatar: hasAssignedProvider
           ? pickFirstValue([
-              row && row.link_avatar,
-              row && (row.nhacungcap && row.nhacungcap.link_avatar),
               row && row.avatar_ncc,
+              row && (row.nhacungcap && row.nhacungcap.link_avatar),
+              row && (row.nhacungcap && row.nhacungcap.avatar),
+              row && (row.nhacungcap && row.nhacungcap.avatar_ncc),
+              row && row.link_avatar,
               row && row.avatar_nhacungcap,
               row && row.provider_avatar,
-              row && row.nhacungcap && row.nhacungcap.avatar,
-              row && row.nhacungcap && row.nhacungcap.avatar_ncc,
             ])
           : "",
         maplat: hasAssignedProvider

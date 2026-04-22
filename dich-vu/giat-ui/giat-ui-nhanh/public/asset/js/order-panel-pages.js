@@ -281,7 +281,7 @@
     return Boolean(providerName || providerPhone || providerEmail);
   }
 
-  function normalizeAvatarCandidates(rawValue, kind) {
+  function normalizeAvatarCandidates(rawValue) {
     var text = String(rawValue == null ? "" : rawValue).trim();
     if (!text) return [];
 
@@ -302,44 +302,18 @@
       return candidates;
     }
 
-    if (text.charAt(0) === "/") {
-      candidates.push(encodedText);
-      return candidates;
-    }
-
-    if (text.indexOf("../") === 0 || text.indexOf("./") === 0) {
+    if (
+      text.charAt(0) === "/" ||
+      text.indexOf("./") === 0 ||
+      text.indexOf("../") === 0
+    ) {
       candidates.push(encodedText);
       return candidates;
     }
 
     candidates.push(encodedText);
 
-    if (
-      text.indexOf("public/") === 0 ||
-      text.indexOf("asset/") === 0 ||
-      text.indexOf("uploads/") === 0
-    ) {
-      candidates.push("../" + encodedText);
-    }
-
-    if (text.indexOf("/") < 0) {
-      if (kind === "provider") {
-        candidates.push(
-          "../public/asset/image/upload/nhacungcap/" + encodeURIComponent(text),
-        );
-      }
-      if (kind === "customer") {
-        candidates.push(
-          "../public/asset/image/upload/khachhang/" + encodeURIComponent(text),
-        );
-      }
-      candidates.push("../uploads/" + encodeURIComponent(text));
-      candidates.push("../public/uploads/" + encodeURIComponent(text));
-    }
-
-    return candidates.filter(function (value, index, list) {
-      return value && list.indexOf(value) === index;
-    });
+    return candidates;
   }
 
   function renderAvatarBadge(id, avatarValue, fallbackText, kind) {
@@ -347,11 +321,32 @@
     if (!node) return;
 
     var fallback = String(fallbackText || "--").trim() || "--";
-    var candidates = normalizeAvatarCandidates(avatarValue, kind);
+    
+    // Kiểm tra nếu là ID Google Drive (thường không có dấu gạch chéo hoặc dấu chấm)
+    var textValue = String(avatarValue || "").trim();
+    var isGDrive = textValue.length > 10 && textValue.indexOf("/") === -1 && textValue.indexOf(".") === -1;
 
     node.classList.remove("has-image");
     node.textContent = fallback;
 
+    if (!textValue) return;
+
+    if (isGDrive) {
+      var iframe = document.createElement("iframe");
+      iframe.src = "https://drive.google.com/file/d/" + textValue + "/preview";
+      iframe.setAttribute("allow", "autoplay");
+      iframe.style.border = "0";
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.display = "block";
+      
+      node.textContent = "";
+      node.appendChild(iframe);
+      node.classList.add("has-image");
+      return;
+    }
+
+    var candidates = normalizeAvatarCandidates(textValue);
     if (!candidates.length) return;
 
     var probe = new Image();
@@ -649,13 +644,13 @@
           "",
         avatar: pickFirstValue([
           row && row.avatar_kh,
+          row && (row.khachhang && row.khachhang.link_avatar),
+          row && (row.khachhang && row.khachhang.avatar),
+          row && (row.khachhang && row.khachhang.avatar_kh),
+          row && row.link_avatar,
           row && row.avatar_khachhang,
           row && row.avatar_customer,
           row && row.customer_avatar,
-          row && row.avatartenfile,
-          row && row.khachhang && row.khachhang.avatar,
-          row && row.khachhang && row.khachhang.avatar_kh,
-          row && row.khachhang && row.khachhang.avatartenfile,
         ]),
         maplat: row && row.lat_kh,
         maplng: row && row.lng_kh,
@@ -700,11 +695,11 @@
         avatar: hasAssignedProvider
           ? pickFirstValue([
               row && row.avatar_ncc,
+              row && (row.nhacungcap && row.nhacungcap.link_avatar),
+              row && (row.nhacungcap && row.nhacungcap.avatar),
+              row && (row.nhacungcap && row.nhacungcap.avatar_ncc),
               row && row.avatar_nhacungcap,
               row && row.provider_avatar,
-              row && row.nhacungcap && row.nhacungcap.avatar,
-              row && row.nhacungcap && row.nhacungcap.avatar_ncc,
-              row && row.nhacungcap && row.nhacungcap.avatartenfile,
             ])
           : "",
         maplat: hasAssignedProvider
@@ -742,6 +737,171 @@
       video_id: (row && row.video_id) || "",
       timeline: buildTimelineFromDbRow(row, status, createdAt),
     };
+  }
+
+  /**
+   * Chuẩn hóa ID (loại bỏ khoảng trắng và chuyển về chuỗi).
+   * @param {any} id ID cần chuẩn hóa.
+   * @returns {string} ID đã chuẩn hóa.
+   */
+  function normalizeId(id) {
+    return String(id == null ? "" : id).trim();
+  }
+
+  /**
+   * Tìm kiếm một bản ghi theo điều kiện cụ thể dùng KRUD.
+   * @param {string} table Tên bảng.
+   * @param {Array} where Các điều kiện lọc.
+   * @returns {Promise<Object|null>}
+   */
+  async function queryByWhere(table, where) {
+    if (typeof window.krudList !== "function") {
+      return Promise.resolve(null);
+    }
+
+    var result = await Promise.resolve(
+      window.krudList({
+        table: table,
+        where: where,
+        page: 1,
+        limit: 1,
+      }),
+    );
+
+    var rows = extractRows(result);
+    return rows.length ? rows[0] : null;
+  }
+
+  /**
+   * Thử tìm kiếm bản ghi qua một danh sách các field tiềm năng.
+   * @param {string} table Tên bảng.
+   * @param {Array} candidates Các trường và giá trị ứng viên.
+   * @returns {Promise<Object|null>}
+   */
+  async function queryFirstByCandidates(table, candidates) {
+    var list = Array.isArray(candidates) ? candidates : [];
+
+    for (var i = 0; i < list.length; i += 1) {
+      var item = list[i] || {};
+      var field = String(item.field || "").trim();
+      var value = String(item.value == null ? "" : item.value).trim();
+      if (!field || !value) continue;
+
+      var row = null;
+      try {
+        row = await queryByWhere(table, [
+          {
+            field: field,
+            operator: "=",
+            value: value,
+          },
+        ]);
+      } catch (_) {
+        row = null;
+      }
+
+      if (row) return row;
+    }
+
+    return null;
+  }
+
+  /**
+   * Tải thông tin khách hàng từ đơn hàng hiện tại.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object|null>}
+   */
+  function loadCustomerRecord(order) {
+    var orderPhone = normalizePhone(order.sodienthoai);
+    if (!orderPhone) return Promise.resolve(null);
+
+    return queryFirstByCandidates(USER_TABLE, [
+      { field: "sodienthoai", value: orderPhone },
+      { field: "user_tel", value: orderPhone },
+      { field: "phone", value: orderPhone },
+    ]);
+  }
+
+  /**
+   * Tải thông tin nhà cung cấp phục vụ đơn hàng.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object|null>}
+   */
+  function loadProviderRecord(order) {
+    var providerId = normalizeId(order.idnhacungcap);
+    var providerPhone = normalizePhone(order.sdt_ncc);
+    var providerEmail = String(order.email_ncc || "").trim();
+
+    var candidates = [];
+    if (providerId && providerId !== "0") {
+      candidates.push({ field: "id", value: providerId });
+    }
+    if (providerPhone) {
+      candidates.push({ field: "sodienthoai", value: providerPhone });
+      candidates.push({ field: "user_tel", value: providerPhone });
+    }
+    if (providerEmail) {
+      candidates.push({ field: "email", value: providerEmail });
+      candidates.push({ field: "user_email", value: providerEmail });
+    }
+
+    if (!candidates.length) return Promise.resolve(null);
+
+    return queryFirstByCandidates(USER_TABLE, candidates);
+  }
+
+  /**
+   * Tải đồng thời tất cả các bản ghi liên quan (Khách hàng, NCC).
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object>}
+   */
+  function loadRelatedRecords(order) {
+    return Promise.all([
+      loadCustomerRecord(order),
+      loadProviderRecord(order),
+    ]).then(function (results) {
+      return {
+        customer: results[0],
+        provider: results[1],
+      };
+    });
+  }
+
+  /**
+   * Kết hợp dữ liệu đơn hàng và thông tin chi tiết của người dùng/NCC.
+   * @param {Object} order Đơn hàng thô.
+   * @param {Object} related Các bản ghi liên quan.
+   * @returns {Object} Đơn hàng đã được làm giàu dữ liệu.
+   */
+  function mergeOrderWithRelated(order, related) {
+    var row = Object.assign({}, order);
+    var customer = related && related.customer ? related.customer : null;
+    var provider = related && related.provider ? related.provider : null;
+
+    if (customer) {
+      row.khachhang = customer;
+      row.hovaten = row.hovaten || customer.hovaten || customer.user_name || "";
+      row.sodienthoai =
+        row.sodienthoai || customer.sodienthoai || customer.user_tel || "";
+      row.email = row.email || customer.email || customer.user_email || "";
+      row.diachi = row.diachi || customer.diachi || "";
+      row.avatar_kh = customer.link_avatar || customer.avatar || "";
+    }
+
+    if (provider) {
+      row.nhacungcap = provider;
+      row.idnhacungcap = row.idnhacungcap || provider.id || "";
+      row.tennhacungcap =
+        row.tennhacungcap || provider.hovaten || provider.user_name || "";
+      row.sdt_ncc =
+        row.sdt_ncc || provider.sodienthoai || provider.user_tel || "";
+      row.email_ncc =
+        row.email_ncc || provider.email || provider.user_email || "";
+      row.diachi_ncc = row.diachi_ncc || provider.diachi || "";
+      row.avatar_ncc = provider.link_avatar || provider.avatar || "";
+    }
+
+    return row;
   }
 
   function getSessionUser() {
@@ -1875,6 +2035,41 @@
       showNotFound(orderId);
       return;
     }
+
+    // Làm giàu dữ liệu từ DB nếu có thể
+    loadRelatedRecords(order.raw || order).then(function (related) {
+      var enrichedRaw = mergeOrderWithRelated(order.raw || order, related);
+      var enrichedMapped = mapDbOrderToPanelOrder(enrichedRaw);
+      
+      // Cập nhật lại các thuộc tính quan trọng
+      order.customer = enrichedMapped.customer;
+      order.provider = enrichedMapped.provider;
+      if (enrichedMapped.raw) order.raw = enrichedMapped.raw;
+
+      // Re-render các phần liên quan đến thông tin người dùng
+      setText("detailCustomerName", order.customer.name);
+      setText("detailCustomerPhone", order.customer.phone);
+      setText("detailCustomerEmail", order.customer.email);
+      setText("detailCustomerAddress", order.customer.address);
+      
+      setText("detailProviderName", order.provider.name);
+      setText("detailProviderPhone", order.provider.phone);
+      setText("detailProviderEmail", order.provider.email);
+      setText("detailProviderAddress", order.provider.address);
+
+      renderAvatarBadge(
+        "customerAvatarBadge",
+        order.customer && order.customer.avatar,
+        initialsOf(order.customer && order.customer.name, "KH"),
+        "customer",
+      );
+      renderAvatarBadge(
+        "providerAvatarBadge",
+        hasAssignedProviderRow(order.raw || order) ? order.provider && order.provider.avatar : "",
+        initialsOf(order.provider && order.provider.name, "NCC"),
+        "provider",
+      );
+    });
     if (!order.raw || typeof order.raw !== "object") {
       order.raw = {};
     }

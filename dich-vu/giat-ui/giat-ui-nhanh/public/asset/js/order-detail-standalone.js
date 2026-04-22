@@ -760,11 +760,11 @@
       row.email = row.email || customer.email || customer.user_email || "";
       row.diachi = row.diachi || customer.diachi || "";
       row.avatar_kh = pickFirstValue([
+        row.link_avatar,
         row.avatar_kh,
-        row.avatartenfile,
+        customer.link_avatar,
         customer.avatar,
         customer.avatar_kh,
-        customer.avatartenfile,
       ]);
     }
 
@@ -784,12 +784,13 @@
         row.email_ncc || provider.email || provider.user_email || "";
       row.diachi_ncc = row.diachi_ncc || provider.diachi || "";
       row.avatar_ncc = pickFirstValue([
+        row.link_avatar,
         row.avatar_ncc,
         row.avatar_nhacungcap,
         row.provider_avatar,
+        provider.link_avatar,
         provider.avatar,
         provider.avatar_ncc,
-        provider.avatartenfile,
       ]);
     }
 
@@ -909,14 +910,14 @@
           "",
         address: row.diachi || (row.khachhang && row.khachhang.diachi) || "",
         avatar: pickFirstValue([
+          row.link_avatar,
           row.avatar_kh,
           row.avatar_khachhang,
           row.avatar_customer,
           row.customer_avatar,
-          row.avatartenfile,
+          row.khachhang && row.khachhang.link_avatar,
           row.khachhang && row.khachhang.avatar,
           row.khachhang && row.khachhang.avatar_kh,
-          row.khachhang && row.khachhang.avatartenfile,
         ]),
       },
       provider: {
@@ -952,12 +953,13 @@
           : "",
         avatar: hasAssignedProvider
           ? pickFirstValue([
+              row.link_avatar,
               row.avatar_ncc,
               row.avatar_nhacungcap,
               row.provider_avatar,
+              row.nhacungcap && row.nhacungcap.link_avatar,
               row.nhacungcap && row.nhacungcap.avatar,
               row.nhacungcap && row.nhacungcap.avatar_ncc,
-              row.nhacungcap && row.nhacungcap.avatartenfile,
             ])
           : "",
       },
@@ -978,7 +980,7 @@
    * @param {string} kind Loại người dùng (customer/provider).
    * @returns {string[]} Mảng các URL khả thi.
    */
-  function normalizeAvatarCandidates(rawValue, kind) {
+  function normalizeAvatarCandidates(rawValue) {
     var text = String(rawValue == null ? "" : rawValue).trim();
     if (!text) return [];
 
@@ -999,43 +1001,18 @@
       return candidates;
     }
 
-    if (text.charAt(0) === "/") {
-      candidates.push(encodedText);
-      return candidates;
-    }
-
-    if (text.indexOf("../") === 0 || text.indexOf("./") === 0) {
+    if (
+      text.charAt(0) === "/" ||
+      text.indexOf("./") === 0 ||
+      text.indexOf("../") === 0
+    ) {
       candidates.push(encodedText);
       return candidates;
     }
 
     candidates.push(encodedText);
-    if (
-      text.indexOf("public/") === 0 ||
-      text.indexOf("asset/") === 0 ||
-      text.indexOf("uploads/") === 0
-    ) {
-      candidates.push(encodedText);
-    }
 
-    if (text.indexOf("/") < 0) {
-      if (kind === "provider") {
-        candidates.push(
-          "public/asset/image/upload/nhacungcap/" + encodeURIComponent(text),
-        );
-      }
-      if (kind === "customer") {
-        candidates.push(
-          "public/asset/image/upload/khachhang/" + encodeURIComponent(text),
-        );
-      }
-      candidates.push("uploads/" + encodeURIComponent(text));
-      candidates.push("public/uploads/" + encodeURIComponent(text));
-    }
-
-    return candidates.filter(function (item, index, list) {
-      return item && list.indexOf(item) === index;
-    });
+    return candidates;
   }
 
   /**
@@ -1050,11 +1027,32 @@
     if (!node) return;
 
     var fallback = String(fallbackText || "--").trim() || "--";
-    var candidates = normalizeAvatarCandidates(avatarValue, kind);
+    
+    // Kiểm tra nếu là ID Google Drive (thường không có dấu gạch chéo hoặc dấu chấm)
+    var textValue = String(avatarValue || "").trim();
+    var isGDrive = textValue.length > 10 && textValue.indexOf("/") === -1 && textValue.indexOf(".") === -1;
 
     node.classList.remove("has-image");
     node.textContent = fallback;
 
+    if (!textValue) return;
+
+    if (isGDrive) {
+      var iframe = document.createElement("iframe");
+      iframe.src = "https://drive.google.com/file/d/" + textValue + "/preview";
+      iframe.setAttribute("allow", "autoplay");
+      iframe.style.border = "0";
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.display = "block";
+      
+      node.textContent = "";
+      node.appendChild(iframe);
+      node.classList.add("has-image");
+      return;
+    }
+
+    var candidates = normalizeAvatarCandidates(textValue);
     if (!candidates.length) return;
 
     var probe = new Image();
