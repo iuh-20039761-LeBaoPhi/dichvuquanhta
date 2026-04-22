@@ -159,7 +159,7 @@ window.mapPicker = (function () {
      * Lấy tọa độ GPS thực tế của thiết bị người dùng.
      */
     function gps() {
-        if (!navigator.geolocation) return alert('Trình duyệt của bạn không hỗ trợ định vị GPS.');
+        if (!navigator.geolocation) return showError('Trình duyệt của bạn không hỗ trợ định vị GPS.');
         const { addr } = getEls();
         const oldP = addr ? addr.placeholder : '';
         if (addr) addr.placeholder = 'Đang định vị...';
@@ -178,7 +178,7 @@ window.mapPicker = (function () {
             },
             err => {
                 if (addr) addr.placeholder = oldP;
-                alert('Vui lòng cho phép quyền truy cập vị trí trong cài đặt trình duyệt.');
+                showError('Vui lòng cho phép quyền truy cập vị trí trong cài đặt trình duyệt.');
             },
             { enableHighAccuracy: true, timeout: 5000 }
         );

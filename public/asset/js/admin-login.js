@@ -18,7 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('txtEmail').value.trim();
         const matkhau = document.getElementById('txtPassword').value.trim();
 
-        if(!email || !matkhau) return alert('Vui lòng nhập đầy đủ email và mật khẩu');
+        if(!email || !matkhau) {
+            showError('Vui lòng nhập đầy đủ email và mật khẩu');
+            return;
+        }
         
         btnLogin.disabled = true;
         btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang kiểm tra...';

@@ -474,3 +474,109 @@ body {
 @media (max-width: 576px) {
     .cccd-upload-group { grid-template-columns: 1fr; }
 }
+/* Profile Status Controls - Premium Design */
+.profile-status-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.status-item {
+    background: #f8fafc;
+    padding: 6px 12px;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.status-item:hover {
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.status-item .form-check {
+    padding-left: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+    min-height: auto;
+}
+
+.status-item .form-check-input {
+    float: none;
+    margin-left: 0;
+    width: 2.8em;
+    height: 1.4em;
+    cursor: pointer;
+    background-color: #cbd5e1;
+    border: none;
+    box-shadow: none;
+}
+
+.status-item .form-check-input:checked {
+    background-color: var(--primary);
+}
+
+.status-item .form-check-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-sub);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.status-divider {
+    height: 24px;
+    width: 1px;
+    background: var(--border);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .card-title {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    
+    .profile-status-controls {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-status-controls {
+        flex-direction: row; /* Force same row */
+        flex-wrap: nowrap;
+        gap: 6px;
+        width: 100%;
+        overflow-x: auto; /* Fallback if way too wide */
+        padding-bottom: 4px;
+    }
+    
+    .status-item {
+        padding: 4px 8px;
+        flex: 1; /* Stretch to fill */
+        min-width: fit-content;
+    }
+    
+    .status-item .form-check {
+        gap: 6px;
+    }
+    
+    .status-item .form-check-input {
+        width: 2.2em;
+        height: 1.1em;
+    }
+    
+    .status-item .form-check-label {
+        font-size: 11px;
+    }
+    
+    .status-divider {
+        display: none !important;
+    }
+}
