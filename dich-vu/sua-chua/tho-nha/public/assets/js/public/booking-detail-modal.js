@@ -132,6 +132,9 @@ async function _bdInitModalHandlers() {
             _tnToast(orderCode ? `✅ Đặt lịch thành công! Mã đơn: ${orderCode}` : '✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại sớm nhất.', 'success');
             const inst = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
             if (inst) inst.hide();
+            setTimeout(() => {
+                window.location.href = 'nguoidung/trang-ca-nhan.html';
+            }, 800);
         });
     });
 
