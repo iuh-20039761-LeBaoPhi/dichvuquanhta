@@ -32,7 +32,6 @@ function xoa_hang_hoa(idx) {
 
 function xu_ly_thay_doi_loai_hang(idx, val) {
   orderItems[idx].loai_hang = val;
-  orderItems[idx].ten_hang = "";
   hien_thi_danh_sach_hang_hoa();
 }
 
@@ -51,49 +50,47 @@ function hien_thi_danh_sach_hang_hoa() {
   const container = document.getElementById("danh_sach_hang_hoa");
   container.innerHTML = "";
   orderItems.forEach((item, idx) => {
-    const names = ITEM_NAMES_BY_TYPE[item.loai_hang] || [];
-    const hasCustomName = item.ten_hang && !names.includes(item.ten_hang);
-    const nameOpts = [
-      hasCustomName
-        ? `<option value="${escapeHtml(item.ten_hang)}" selected>${escapeHtml(item.ten_hang)}</option>`
-        : "",
-      ...names.map(
-        (n) =>
-          `<option value="${escapeHtml(n)}" ${item.ten_hang === n ? "selected" : ""}>${escapeHtml(n)}</option>`,
-      ),
-    ].join("");
     const typeOptions = ITEM_TYPES.map(
       (type) => `
       <option value="${escapeHtml(type.key)}" ${item.loai_hang === type.key ? "selected" : ""}>${escapeHtml(type.label)}</option>
     `,
     ).join("");
-    const isTypeChosen = Boolean(item.loai_hang);
+    const isTypeKnown = ITEM_TYPES.some((type) => type.key === item.loai_hang);
+    const currentTypeOption =
+      item.loai_hang && !isTypeKnown
+        ? `<option value="${escapeHtml(item.loai_hang)}" selected>${escapeHtml(
+            ITEM_TYPE_LABELS[item.loai_hang] || item.loai_hang,
+          )}</option>`
+        : "";
+    const typePlaceholder =
+      itemTypesLoadState === "loading" && !ITEM_TYPES.length
+        ? "Đang tải loại hàng..."
+        : "Chọn loại hàng...";
+    const typeDisabled =
+      itemTypesLoadState === "loading" && !ITEM_TYPES.length ? "disabled" : "";
     const div = document.createElement("div");
     div.className = "item-row";
     div.dataset.itemIndex = String(idx);
     div.innerHTML = `
-      <div class="item-row-num">Món hàng #${idx + 1}</div>
+      <div class="item-row-num">Kiện hàng #${idx + 1}</div>
       <button class="item-delete-btn" onclick="xoa_hang_hoa(${idx})" title="Xóa"><i class="fas fa-times"></i></button>
       <div class="form-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">Loại hàng</label>
-          <select class="form-control loai_hang" name="mat_hang[${idx}][loai_hang]" onchange="xu_ly_thay_doi_loai_hang(${idx}, this.value)">
-            <option value="">Chọn loại hàng...</option>
-            ${typeOptions}
+          <select class="form-control loai_hang" name="mat_hang[${idx}][loai_hang]" onchange="xu_ly_thay_doi_loai_hang(${idx}, this.value)" ${typeDisabled}>
+            <option value="">${escapeHtml(typePlaceholder)}</option>
+            ${currentTypeOption}${typeOptions}
           </select>
         </div>
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">Tên hàng cụ thể</label>
-          <select class="form-control ten_hang" name="mat_hang[${idx}][ten_hang]" onchange="cap_nhat_truong_hang_hoa(${idx}, 'ten_hang', this.value)" ${isTypeChosen ? "" : "disabled"}>
-            <option value="">${isTypeChosen ? "Chọn tên hàng..." : "Chọn loại hàng trước"}</option>
-            ${nameOpts}
-          </select>
+          <input type="text" class="form-control ten_hang" name="mat_hang[${idx}][ten_hang]" value="${escapeHtml(item.ten_hang || "")}" placeholder="Nhập tên hàng cụ thể" oninput="cap_nhat_truong_hang_hoa(${idx}, 'ten_hang', this.value)" />
         </div>
       </div>
-      <div class="item-grid item-grid-2">
+      <div class="item-grid item-grid-declared">
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">
-            Khai báo giá trị (₫)
+            Khai giá dòng hàng (₫)
             ${buildInfoToggleMarkup(
               DECLARED_VALUE_HELP,
               "Giải thích khai báo giá trị",
@@ -102,16 +99,18 @@ function hien_thi_danh_sach_hang_hoa() {
           </label>
           <input type="number" class="form-control gia_tri_khai_bao" name="mat_hang[${idx}][gia_tri_khai_bao]" value="${item.gia_tri_khai_bao}" onchange="cap_nhat_truong_hang_hoa(${idx},'gia_tri_khai_bao',this.value)" />
         </div>
+      </div>
+      <div class="item-grid item-grid-quantity-weight">
         <div class="form-group" style="margin:0;">
-          <label style="font-size:12px;">Số lượng</label>
+          <label style="font-size:12px;">Số lượng kiện</label>
           <input type="number" class="form-control so_luong" name="mat_hang[${idx}][so_luong]" min="1" step="1" value="${item.so_luong || 1}" onchange="cap_nhat_truong_hang_hoa(${idx},'so_luong',this.value)" />
         </div>
-      </div>
-      <div class="item-grid item-grid-4">
         <div class="form-group" style="margin:0;">
-          <label style="font-size:11px;">Cân nặng / kiện (kg)</label>
+          <label style="font-size:11px;">Cân nặng mỗi kiện (kg)</label>
           <input type="number" class="form-control can_nang" name="mat_hang[${idx}][can_nang]" step="0.1" value="${item.can_nang}" onchange="cap_nhat_truong_hang_hoa(${idx},'can_nang',this.value)" />
         </div>
+      </div>
+      <div class="item-grid item-grid-dimensions">
         <div class="form-group" style="margin:0;">
           <label style="font-size:11px;">Dài (cm)</label>
           <input type="number" class="form-control chieu_dai" name="mat_hang[${idx}][chieu_dai]" value="${item.chieu_dai}" onchange="cap_nhat_truong_hang_hoa(${idx},'chieu_dai',this.value)" />
@@ -152,8 +151,14 @@ function getPrimaryItemMeta() {
     "gia-tri-cao",
     "thuong",
   ];
+  const normalizeType =
+    typeof window.normalizeItemTypeKey === "function"
+      ? window.normalizeItemTypeKey
+      : (value) => String(value || "").trim().toLowerCase();
   for (const type of priority) {
-    const found = orderItems.find((item) => item.loai_hang === type);
+    const found = orderItems.find(
+      (item) => normalizeType(item.loai_hang) === type,
+    );
     if (found) return found;
   }
   const firstSelected = orderItems.find((item) => item.loai_hang);
@@ -172,7 +177,7 @@ function tao_du_lieu_tinh_cuoc() {
   orderItems.forEach((it) => {
     const itemQty = Math.max(1, parseInt(it.so_luong, 10) || 1);
     totalCanNang += it.can_nang * itemQty;
-    totalKhaiGia += it.gia_tri_khai_bao * itemQty;
+    totalKhaiGia += it.gia_tri_khai_bao;
     maxDai = Math.max(maxDai, it.chieu_dai);
     maxRong = Math.max(maxRong, it.chieu_rong);
     maxCao = Math.max(maxCao, it.chieu_cao);
@@ -194,6 +199,16 @@ function tao_du_lieu_tinh_cuoc() {
     khoang_cach_km: khoang_cach_km,
     loai_hang: primaryItem.loai_hang,
     ten_hang: primaryItem.ten_hang,
+    mat_hang: orderItems.map((item) => ({
+      loai_hang: item.loai_hang,
+      ten_hang: item.ten_hang,
+      so_luong: Math.max(1, parseInt(item.so_luong, 10) || 1),
+      gia_tri_khai_bao: parseFloat(item.gia_tri_khai_bao) || 0,
+      can_nang: parseFloat(item.can_nang) || 0,
+      chieu_dai: parseFloat(item.chieu_dai) || 0,
+      chieu_rong: parseFloat(item.chieu_rong) || 0,
+      chieu_cao: parseFloat(item.chieu_cao) || 0,
+    })),
     can_nang: totalCanNang,
     tong_can_nang: totalCanNang,
     chieu_dai: maxDai,

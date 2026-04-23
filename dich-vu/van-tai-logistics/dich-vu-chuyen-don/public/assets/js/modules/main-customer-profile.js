@@ -97,6 +97,17 @@ const customerProfileModule = (function (window, document) {
     const emptyState = root.querySelector(`#${emptyId}`);
     if (!input || !preview) return;
 
+    const showEmptyState = () => {
+      preview.hidden = true;
+      if (emptyState) emptyState.hidden = false;
+    };
+
+    preview.addEventListener("error", showEmptyState);
+
+    if (preview.complete && preview.getAttribute("src") && !preview.naturalWidth) {
+      showEmptyState();
+    }
+
     input.addEventListener("change", () => {
       const file = input.files && input.files[0];
       if (!file) return;
@@ -142,9 +153,9 @@ const customerProfileModule = (function (window, document) {
     const address = String(identity.diachi || identity.dia_chi || "").trim();
     const companyName = String(identity.ten_cong_ty || identity.company_name || "").trim();
     const taxCode = String(identity.ma_so_thue || identity.tax_code || "").trim();
-    const avatarUrl = resolveMediaUrl(identity.link_avatar || identity.avatartenfile);
-    const cccdFrontUrl = resolveMediaUrl(identity.link_cccd_truoc || identity.cccdmattruoctenfile);
-    const cccdBackUrl = resolveMediaUrl(identity.link_cccd_sau || identity.cccdmatsautenfile);
+    const avatarUrl = resolveMediaUrl(identity.link_avatar);
+    const cccdFrontUrl = resolveMediaUrl(identity.link_cccd_truoc);
+    const cccdBackUrl = resolveMediaUrl(identity.link_cccd_sau);
     const businessAddress = identity.dia_chi_doanh_nghiep || identity.diachidonvi || "";
 
     const statusMeta = getStatusMeta(identity);
@@ -171,22 +182,18 @@ const customerProfileModule = (function (window, document) {
               <span class="moving-profile-status-badge ${escapeHtml(statusMeta.className)}">${escapeHtml(statusMeta.label)}</span>
               <p>${escapeHtml(statusMeta.note)}</p>
               <small><i class="fas fa-clock"></i> Cập nhật: ${escapeHtml(formatDateTime(identity.updated_at || identity.created_at))}</small>
+              <button class="customer-btn customer-btn-primary moving-profile-hero-save" type="submit" form="customer-profile-form" id="customer-profile-submit-btn">
+                <i class="fas fa-floppy-disk"></i> Lưu thay đổi
+              </button>
             </div>
           </div>
 
-          <div class="moving-profile-summary">
-            <article><span>Tổng yêu cầu</span><strong>${escapeHtml(stats.total || 0)}</strong></article>
-            <article><span>Hoàn tất</span><strong>${escapeHtml(stats.confirmed_count || stats.completed_count || 0)}</strong></article>
-            <article><span>Tỷ lệ</span><strong>${stats.total ? Math.round(((stats.confirmed_count || stats.completed_count || 0) / stats.total) * 100) : 0}%</strong></article>
-          </div>
-
-          <div class="moving-profile-grid-container">
-            <div class="moving-profile-col-main">
-              <form id="customer-profile-form" class="customer-form-stack" enctype="multipart/form-data">
-                <div class="customer-profile-card">
+          <div class="moving-profile-dashboard-grid">
+              <form id="customer-profile-form" class="customer-form-stack moving-profile-main" enctype="multipart/form-data">
+                <div class="customer-profile-card moving-profile-card">
                   <div class="moving-profile-section-title">
                     <i class="fas fa-address-card"></i>
-                    <h3>Thông tin định danh & Liên hệ</h3>
+                    <h3>Thông tin cá nhân</h3>
                   </div>
                   <div id="customer-profile-feedback" style="margin-top: 16px;"></div>
                   
@@ -224,100 +231,60 @@ const customerProfileModule = (function (window, document) {
                   </div>
                 </div>
 
-                <div class="moving-profile-accordion" style="margin-top: 24px;">
-                  <div class="moving-profile-accordion-item js-accordion-item">
-                    <button type="button" class="moving-profile-accordion-header js-accordion-toggle">
-                      <div class="moving-profile-accordion-title">
-                        <i class="fas fa-briefcase"></i>
-                        <strong>Thông tin doanh nghiệp</strong>
-                      </div>
-                      <i class="fas fa-chevron-down moving-profile-accordion-icon"></i>
-                    </button>
-                    <div class="moving-profile-accordion-body">
-                      <div class="customer-form-row">
-                        <label class="customer-form-group">
-                          <span>Tên công ty</span>
-                          <div class="customer-form-field">
-                            <i class="fas fa-building"></i>
-                            <input name="ten_cong_ty" value="${escapeHtml(companyName)}" />
-                          </div>
-                        </label>
-                        <label class="customer-form-group">
-                          <span>Mã số thuế</span>
-                          <div class="customer-form-field">
-                            <i class="fas fa-receipt"></i>
-                            <input name="ma_so_thue" value="${escapeHtml(taxCode)}" />
-                          </div>
-                        </label>
-                      </div>
-                      <label class="customer-form-group">
-                        <span>Địa chỉ doanh nghiệp</span>
-                        <div class="customer-form-field">
-                          <i class="fas fa-map-location"></i>
-                          <input name="dia_chi_doanh_nghiep" value="${escapeHtml(businessAddress)}" />
-                        </div>
-                      </label>
+                  <div class="customer-profile-card moving-profile-card moving-profile-media-section">
+                    <div class="moving-profile-section-title">
+                      <i class="fas fa-fingerprint"></i>
+                      <h3>Xác thực hồ sơ & CCCD</h3>
                     </div>
-                  </div>
-
-                  <div class="moving-profile-accordion-item js-accordion-item" style="margin-top: 16px;">
-                    <button type="button" class="moving-profile-accordion-header js-accordion-toggle">
-                      <div class="moving-profile-accordion-title">
-                        <i class="fas fa-images"></i>
-                        <strong>Xác thực hồ sơ & Media</strong>
-                      </div>
-                      <i class="fas fa-chevron-down moving-profile-accordion-icon"></i>
-                    </button>
-                    <div class="moving-profile-accordion-body">
                       <div class="moving-profile-media-grid">
-                        <article class="moving-profile-media-card">
-                          <div class="moving-profile-media-head"><strong>Ảnh đại diện</strong></div>
-                          <div class="moving-profile-media-preview">
+                        <article class="moving-profile-media-card moving-profile-media-card-avatar">
+                          <div class="moving-profile-media-head"><strong>Ảnh đại diện</strong><span>JPG, PNG</span></div>
+                          <div class="moving-profile-media-preview moving-profile-media-preview-avatar">
                             <img id="customer-avatar-preview" src="${escapeHtml(avatarUrl || "")}" alt="Avatar" ${avatarUrl ? "" : "hidden"} />
-                            <div id="customer-avatar-empty" class="moving-media-empty" ${avatarUrl ? "hidden" : ""}>Trống</div>
+                            <div id="customer-avatar-empty" class="moving-media-empty" ${avatarUrl ? "hidden" : ""}>Chưa có ảnh đại diện</div>
                           </div>
-                          <label class="customer-btn customer-btn-ghost customer-btn-wide" style="margin-top: 10px; height: 36px;">
+                          <label class="customer-btn customer-btn-ghost moving-upload-btn">
                             <input id="customer-avatar-file" name="avatar_file" type="file" accept="image/*" hidden />
-                            <i class="fas fa-camera"></i> Chọn ảnh
+                            <i class="fas fa-camera"></i> Thay đổi ảnh
                           </label>
                         </article>
                         <article class="moving-profile-media-card">
-                          <div class="moving-profile-media-head"><strong>CCCD mặt trước</strong></div>
+                          <div class="moving-profile-media-head"><strong>CCCD mặt trước</strong><span>Xác minh</span></div>
                           <div class="moving-profile-media-preview">
                             <img id="customer-cccd-front-preview" src="${escapeHtml(cccdFrontUrl || "")}" alt="CCCD Front" ${cccdFrontUrl ? "" : "hidden"} />
-                            <div id="customer-cccd-front-empty" class="moving-media-empty" ${cccdFrontUrl ? "hidden" : ""}>Trống</div>
+                            <div id="customer-cccd-front-empty" class="moving-media-empty" ${cccdFrontUrl ? "hidden" : ""}><i class="fas fa-cloud-arrow-up"></i><span>Tải lên mặt trước</span></div>
                           </div>
-                          <label class="customer-btn customer-btn-ghost customer-btn-wide" style="margin-top: 10px; height: 36px;">
+                          <label class="customer-btn customer-btn-ghost moving-upload-btn">
                             <input id="customer-cccd-front-file" name="cccd_front_file" type="file" accept="image/*" hidden />
                             <i class="fas fa-id-card"></i> Chọn ảnh
                           </label>
                         </article>
                         <article class="moving-profile-media-card">
-                          <div class="moving-profile-media-head"><strong>CCCD mặt sau</strong></div>
+                          <div class="moving-profile-media-head"><strong>CCCD mặt sau</strong><span>Xác minh</span></div>
                           <div class="moving-profile-media-preview">
                             <img id="customer-cccd-back-preview" src="${escapeHtml(cccdBackUrl || "")}" alt="CCCD Back" ${cccdBackUrl ? "" : "hidden"} />
-                            <div id="customer-cccd-back-empty" class="moving-media-empty" ${cccdBackUrl ? "hidden" : ""}>Trống</div>
+                            <div id="customer-cccd-back-empty" class="moving-media-empty" ${cccdBackUrl ? "hidden" : ""}><i class="fas fa-cloud-arrow-up"></i><span>Tải lên mặt sau</span></div>
                           </div>
-                          <label class="customer-btn customer-btn-ghost customer-btn-wide" style="margin-top: 10px; height: 36px;">
+                          <label class="customer-btn customer-btn-ghost moving-upload-btn">
                             <input id="customer-cccd-back-file" name="cccd_back_file" type="file" accept="image/*" hidden />
                             <i class="fas fa-id-card-clip"></i> Chọn ảnh
                           </label>
                         </article>
                       </div>
-                    </div>
                   </div>
-                </div>
-
-                <div class="customer-profile-card moving-profile-save-card" style="margin-top: 24px; text-align: center;">
-                  <button class="customer-btn customer-btn-primary" type="submit" id="customer-profile-submit-btn" style="min-width: 220px;">
-                    <i class="fas fa-floppy-disk"></i> Lưu tất cả thay đổi
-                  </button>
-                </div>
               </form>
-            </div>
 
-            <div class="moving-profile-col-side">
-              <div class="customer-profile-card">
+              <aside class="moving-profile-side">
+              <div class="moving-profile-stat-card">
+                <h3>Thống kê vận hành</h3>
+                <div class="moving-profile-stat-list">
+                  <div><span><i class="fas fa-box"></i> Tổng yêu cầu</span><strong>${escapeHtml(stats.total || 0)}</strong></div>
+                  <div><span><i class="fas fa-circle-check"></i> Hoàn tất</span><strong>${escapeHtml(stats.confirmed_count || stats.completed_count || 0)}</strong></div>
+                  <div><span><i class="fas fa-chart-line"></i> Tỷ lệ</span><strong>${stats.total ? Math.round(((stats.confirmed_count || stats.completed_count || 0) / stats.total) * 100) : 0}%</strong></div>
+                </div>
+              </div>
+
+              <div class="customer-profile-card moving-profile-card moving-profile-security-card">
                 <div class="moving-profile-section-title">
                   <i class="fas fa-shield-halved"></i>
                   <h3>Bảo mật</h3>
@@ -350,7 +317,37 @@ const customerProfileModule = (function (window, document) {
                   </button>
                 </form>
               </div>
-            </div>
+
+              <div class="customer-profile-card moving-profile-card moving-profile-business-card">
+                <div class="moving-profile-section-title">
+                  <i class="fas fa-building"></i>
+                  <h3>Hóa đơn / Doanh nghiệp</h3>
+                </div>
+                <div class="customer-form-stack">
+                  <label class="customer-form-group">
+                    <span>Tên công ty</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-building"></i>
+                      <input form="customer-profile-form" name="ten_cong_ty" value="${escapeHtml(companyName)}" placeholder="Tên công ty xuất hóa đơn" />
+                    </div>
+                  </label>
+                  <label class="customer-form-group">
+                    <span>Mã số thuế</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-receipt"></i>
+                      <input form="customer-profile-form" name="ma_so_thue" value="${escapeHtml(taxCode)}" placeholder="Mã số thuế" />
+                    </div>
+                  </label>
+                  <label class="customer-form-group">
+                    <span>Địa chỉ doanh nghiệp</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-map-location-dot"></i>
+                      <input form="customer-profile-form" name="dia_chi_doanh_nghiep" value="${escapeHtml(businessAddress)}" placeholder="Địa chỉ xuất hóa đơn" />
+                    </div>
+                  </label>
+                </div>
+              </div>
+              </aside>
           </div>
         </section>
       </div>
@@ -403,7 +400,7 @@ const customerProfileModule = (function (window, document) {
       } finally {
         if (submitButton) {
           submitButton.disabled = false;
-          submitButton.innerHTML = '<i class="fas fa-floppy-disk"></i> Cập nhật hồ sơ';
+          submitButton.innerHTML = '<i class="fas fa-floppy-disk"></i> Lưu thay đổi';
         }
       }
     });

@@ -40,10 +40,12 @@
         ? value || "--"
         : escapeHtml(value || "--");
       const valueTag = options.valueTag || "strong";
+      const className = normalizeText(options.className || "");
+      const valueClassName = normalizeText(options.valueClassName || "");
       return `
-      <div class="standalone-order-info-row">
+      <div class="standalone-order-info-row ${escapeHtml(className)}">
         <span>${safeLabel}</span>
-        <${valueTag} class="standalone-order-info-value">${safeValue}</${valueTag}>
+        <${valueTag} class="standalone-order-info-value ${escapeHtml(valueClassName)}">${safeValue}</${valueTag}>
       </div>
     `;
     }
@@ -205,12 +207,12 @@
             <i class="fa-solid fa-calendar-check"></i>
           </span>
           <div>
-            <span class="standalone-order-hero-support-label">Lấy hàng và giao dự kiến</span>
+            <span class="standalone-order-hero-support-label">Khung lấy hàng</span>
             <strong>${escapeHtml(pickupSlotLabel || "Chờ xác nhận khung giờ")}</strong>
           </div>
         </div>
         <p class="standalone-order-hero-support-note">${escapeHtml(
-          estimatedDelivery || "Thời gian giao dự kiến sẽ được cập nhật khi có shipper nhận đơn.",
+          estimatedDelivery || "Thời gian giao sẽ được cập nhật khi có shipper nhận đơn.",
         )}</p>
       </article>
     `;
@@ -224,8 +226,8 @@
             <i class="fa-solid fa-route"></i>
           </span>
           <div>
-            <span class="standalone-order-hero-support-label">Lộ trình giao nhận</span>
-            <strong>Tuyến đường dự kiến</strong>
+            <span class="standalone-order-hero-support-label">Lộ trình</span>
+            <strong>Tuyến giao nhận</strong>
           </div>
         </div>
         <div class="standalone-order-hero-route-list">
@@ -234,7 +236,7 @@
               <i class="fa-solid fa-location-dot"></i>
             </span>
             <div class="standalone-order-hero-route-copy">
-              <small>Điểm lấy hàng</small>
+              <small>Gửi</small>
               <strong>${escapeHtml(order?.pickup_address || "--")}</strong>
             </div>
           </div>
@@ -243,7 +245,7 @@
               <i class="fa-solid fa-flag-checkered"></i>
             </span>
             <div class="standalone-order-hero-route-copy">
-              <small>Điểm giao hàng</small>
+              <small>Nhận</small>
               <strong>${escapeHtml(order?.delivery_address || "--")}</strong>
             </div>
           </div>
@@ -252,7 +254,7 @@
     `;
     }
 
-    function renderOverviewStat(icon, label, value, hint) {
+    function renderOverviewStat(icon, label, value) {
       return `
       <article class="standalone-order-overview-stat">
         <div class="standalone-order-overview-stat-icon">
@@ -261,15 +263,29 @@
         <div class="standalone-order-overview-stat-copy">
           <span>${escapeHtml(label)}</span>
           <strong>${escapeHtml(value || "--")}</strong>
-          <small>${escapeHtml(hint || "--")}</small>
         </div>
       </article>
     `;
     }
 
-    function renderContactCard(icon, title, chip, rows) {
+    function resolveAvatarUrl(value) {
+      const raw = normalizeText(value || "");
+      if (!raw) return "";
+      const driveMatch = raw.match(/\/file\/d\/([^/?#]+)/i) ||
+        raw.match(/[?&]id=([^&#]+)/i);
+      const fileId = driveMatch ? driveMatch[1] : raw;
+      if (/^[A-Za-z0-9_-]{20,}$/.test(fileId) && !/[./\\:]/.test(fileId)) {
+        return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w400`;
+      }
+      return raw;
+    }
+
+    function renderContactCard(icon, title, chip, rows, options = {}) {
+      const phone = normalizeText(options.phone || "");
+      const address = normalizeText(options.address || "");
+      const toneClass = options.tone === "receiver" ? " is-receiver" : " is-sender";
       return `
-      <article class="standalone-order-contact-card">
+      <article class="standalone-order-contact-card standalone-order-contact-person-card${toneClass}">
         <div class="standalone-order-contact-card-head">
           <div class="standalone-order-contact-card-title">
             <span class="standalone-order-contact-card-icon">
@@ -277,13 +293,23 @@
             </span>
             <div>
               <strong>${escapeHtml(title)}</strong>
-              <p>Thông tin liên hệ phục vụ giao nhận.</p>
             </div>
           </div>
-          <span class="standalone-order-chip">${escapeHtml(chip)}</span>
+          ${
+            phone
+              ? `<a class="standalone-order-contact-call" href="tel:${escapeHtml(phone)}" aria-label="Gọi ${escapeHtml(title)}"><i class="fa-solid fa-phone"></i></a>`
+              : ""
+          }
         </div>
-        <div class="standalone-order-info-list">
+        <div class="standalone-order-info-list standalone-order-contact-person-list">
           ${rows.join("")}
+          <div class="standalone-order-contact-address-row">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <span>Địa chỉ</span>
+              <strong>${escapeHtml(address || "--")}</strong>
+            </div>
+          </div>
         </div>
       </article>
     `;
@@ -419,9 +445,9 @@
                   <div class="standalone-order-muted">${escapeHtml(item.loai_hang || "Hàng hóa tổng hợp")}</div>
                 </div>
                 <div class="standalone-order-item-meta">
-                  <span>SL: ${escapeHtml(item.so_luong)}</span>
-                  <span>${formatWeight(item.can_nang)}</span>
-                  <span>${formatCurrency(item.gia_tri_khai_bao)}</span>
+                  <span><b>Số kiện</b><strong>${escapeHtml(item.so_luong || 1)}</strong></span>
+                  <span><b>Cân nặng (kg/kiện)</b><strong>${formatWeight(item.can_nang)}</strong></span>
+                  <span class="standalone-order-item-meta-declared"><b>Khai giá dòng</b><strong>${formatCurrency(item.gia_tri_khai_bao)}</strong></span>
                 </div>
               </div>
               <div class="standalone-order-item-note">
@@ -454,14 +480,22 @@
         .join("")}</div>`;
     }
 
-    function renderAttachmentGallery(items, emptyMessage) {
+    function renderAttachmentGallery(items, emptyMessage, options = {}) {
       const mediaItems = Array.isArray(items) ? items : [];
+      if (!mediaItems.length && options.hideEmpty) return "";
       if (!mediaItems.length) {
         return `<div class="standalone-order-muted">${escapeHtml(emptyMessage)}</div>`;
       }
+      const removable = options.removable === true;
+      const removeName = options.removeName || "remove_feedback_media_indexes[]";
+      const removeButtonLabel = options.removeButtonLabel || "Xóa media phản hồi";
+      const removedLabel = options.removedLabel || "Sẽ xóa khi lưu";
 
       return `<div class="standalone-order-media-grid">${mediaItems
-        .map((item) => {
+        .map((item, index) => {
+          const mediaIndex = Number.isInteger(item.__mediaIndex)
+            ? item.__mediaIndex
+            : index;
           const extension = String(item.extension || "").toLowerCase();
           const rawTargetUrl = normalizeText(
             item.view_url || item.viewUrl || item.url || item.download_url || "",
@@ -476,40 +510,64 @@
           );
           const url = escapeHtml(rawTargetUrl || "#");
           const previewUrl = escapeHtml(rawPreviewUrl || rawTargetUrl || "#");
-          const name = escapeHtml(item.name || "Tệp đính kèm");
           const canPreview = hasPreviewableUrl(rawPreviewUrl || rawTargetUrl);
-
+          let content = "";
           if (isImageExtension(extension) && canPreview) {
-            return `
-            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <img src="${previewUrl}" alt="${name}" />
-              <strong>${name}</strong>
-              <span>Ảnh đính kèm</span>
-            </a>
-          `;
-          }
-
-          if (isVideoExtension(extension) && canPreview) {
-            return `
-            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
+            content = `
+              <img src="${previewUrl}" alt="Ảnh" />
+              <span>Ảnh</span>
+            `;
+          } else if (isVideoExtension(extension) && canPreview) {
+            content = `
               <video src="${previewUrl}" controls preload="metadata"></video>
-              <strong>${name}</strong>
-              <span>Video đính kèm</span>
+              <span>Video</span>
+            `;
+          } else {
+            content = `
+              <div class="standalone-order-item-icon">
+                <i class="fa-solid fa-file-lines"></i>
+              </div>
+              <span>${escapeHtml(extension || "Tệp")}</span>
+            `;
+          }
+          if (!removable) {
+            return `
+            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
+              ${content}
             </a>
           `;
           }
-
           return `
-          <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-            <div class="standalone-order-item-icon">
-              <i class="fa-solid fa-file-lines"></i>
+            <div class="standalone-order-media-item standalone-order-media-item-removable" data-removable-media-index="${mediaIndex}" data-removed-label="${escapeHtml(removedLabel)}">
+              <a class="standalone-order-media-preview-link" href="${url}" target="_blank" rel="noreferrer">
+                ${content}
+              </a>
+              <button type="button" class="standalone-order-media-remove" data-remove-media aria-label="${escapeHtml(removeButtonLabel)}" title="${escapeHtml(removeButtonLabel)}">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              <input type="hidden" name="${escapeHtml(removeName)}" value="${mediaIndex}" disabled />
             </div>
-            <strong>${name}</strong>
-            <span>${escapeHtml(extension || "Tệp đính kèm")}</span>
-          </a>
-        `;
+          `;
         })
         .join("")}</div>`;
+    }
+
+    function groupMediaByKind(items) {
+      return (Array.isArray(items) ? items : []).reduce(
+        (groups, item, index) => {
+          const mediaItem = { ...item, __mediaIndex: index };
+          const extension = String(item?.extension || "").toLowerCase();
+          if (isImageExtension(extension)) {
+            groups.images.push(mediaItem);
+          } else if (isVideoExtension(extension)) {
+            groups.videos.push(mediaItem);
+          } else {
+            groups.other.push(mediaItem);
+          }
+          return groups;
+        },
+        { images: [], videos: [], other: [] },
+      );
     }
 
     function hasFeedbackContent(detail) {
@@ -582,25 +640,18 @@
       const feedbackMedia = Array.isArray(provider.feedback_media)
         ? provider.feedback_media
         : [];
+      const feedbackMediaGroups = groupMediaByKind(feedbackMedia);
 
       return `
       <section class="standalone-order-block">
         <div class="standalone-order-block-header">
           <h2>Phản hồi khách hàng</h2>
         </div>
-        <div class="standalone-order-side-stack standalone-order-review-layout">
+        <div class="standalone-order-side-stack standalone-order-review-layout standalone-order-review-layout-inline">
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Tóm tắt phản hồi</strong>
-              ${Number(order.rating || 0) > 0 ? renderRatingStars(order.rating) : '<span class="standalone-order-chip">Chưa có sao</span>'}
-            </div>
-            <p class="standalone-order-note-text">${escapeHtml(order.feedback || (canSubmit ? "Khách hàng có thể nhập phản hồi và đính kèm hình ảnh/video thực tế." : "Chưa có phản hồi từ khách hàng."))}</p>
-            ${renderAttachmentGallery(feedbackMedia, "Chưa có media phản hồi từ khách hàng.")}
-          </article>
-          <article class="standalone-order-subcard">
-            <div class="standalone-order-subcard-head">
-              <strong>Thao tác phản hồi</strong>
-              <span class="standalone-order-chip">${escapeHtml(viewer === "customer" ? "Khách hàng" : "Chỉ xem")}</span>
+              <strong>${canSubmit ? "Đánh giá dịch vụ" : "Phản hồi khách hàng"}</strong>
+              ${Number(order.rating || 0) > 0 ? renderRatingStars(order.rating) : '<span class="standalone-order-chip">Chưa đánh giá</span>'}
             </div>
             ${
               canSubmit
@@ -622,33 +673,33 @@
                       <textarea name="feedback" rows="5" placeholder="Mô tả chất lượng phục vụ hoặc vấn đề phát sinh.">${escapeHtml(order.feedback || "")}</textarea>
                     </label>
                     <div class="standalone-order-upload-grid">
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-image">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
-                        <strong>Chụp hoặc gửi ảnh phản hồi</strong>
-                        <span class="standalone-order-upload-copy">Dùng để gửi ảnh thực tế, hiện trạng đơn hàng và chất lượng phục vụ.</span>
-                        <input type="file" name="feedback_media_image" accept="image/*" capture="environment" multiple hidden />
-                        <span id="standalone-feedback-image-files" class="standalone-order-upload-meta">Chưa chọn ảnh phản hồi.</span>
-                      </label>
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-video">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
-                        <strong>Gửi video phản hồi</strong>
-                        <span class="standalone-order-upload-copy">Dùng để quay rõ quá trình giao hàng hoặc vấn đề phát sinh thực tế.</span>
-                        <input type="file" name="feedback_media_video" accept="video/*" capture="environment" multiple hidden />
-                        <span id="standalone-feedback-video-files" class="standalone-order-upload-meta">Chưa chọn video phản hồi.</span>
-                      </label>
+                      <div class="standalone-order-upload-zone standalone-order-upload-zone-image">
+                        <label class="standalone-order-upload-picker">
+                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
+                          <strong>Chụp hoặc gửi ảnh phản hồi</strong>
+                          <input type="file" name="feedback_media_image" accept="image/*" capture="environment" multiple hidden />
+                          <span id="standalone-feedback-image-files" class="standalone-order-upload-meta">Chưa chọn ảnh</span>
+                        </label>
+                        ${renderAttachmentGallery(feedbackMediaGroups.images, "", { removable: true, hideEmpty: true })}
+                      </div>
+                      <div class="standalone-order-upload-zone standalone-order-upload-zone-video">
+                        <label class="standalone-order-upload-picker">
+                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
+                          <strong>Gửi video phản hồi</strong>
+                          <input type="file" name="feedback_media_video" accept="video/*" capture="environment" multiple hidden />
+                          <span id="standalone-feedback-video-files" class="standalone-order-upload-meta">Chưa chọn video</span>
+                        </label>
+                        ${renderAttachmentGallery(feedbackMediaGroups.videos, "", { removable: true, hideEmpty: true })}
+                      </div>
                     </div>
+                    ${renderAttachmentGallery(feedbackMediaGroups.other, "", { removable: true, hideEmpty: true })}
                     <div class="standalone-order-inline-actions">
                       <button class="customer-btn customer-btn-primary" type="submit">Lưu phản hồi</button>
                     </div>
                   </form>`
                 : `<div class="standalone-order-note-panel">
-                    <p>${escapeHtml(
-                      viewer === "customer"
-                        ? "Chỉ có thể gửi phản hồi khi đơn hàng đã hoàn thành."
-                        : hasFeedback
-                          ? "Phản hồi của khách đang ở chế độ chỉ xem."
-                          : "Chưa có phản hồi khách hàng cho đơn này.",
-                    )}</p>
+                    <p>${escapeHtml(order.feedback || (hasFeedback ? "" : "Chưa đánh giá"))}</p>
+                    ${renderAttachmentGallery(feedbackMedia, "Chưa có ảnh/video phản hồi.")}
                   </div>`
             }
           </article>
@@ -666,25 +717,24 @@
       const reports = Array.isArray(provider.shipper_reports)
         ? provider.shipper_reports
         : [];
+      const reportMediaGroups = groupMediaByKind(reports);
 
       return `
       <section class="standalone-order-block">
         <div class="standalone-order-block-header">
-          <h2>Ghi chú nhà cung cấp</h2>
+          <h2>Ghi chú NCC</h2>
         </div>
         <div class="standalone-order-side-stack standalone-order-review-layout">
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Ghi chú hiện có</strong>
-              <span class="standalone-order-chip">${escapeHtml(viewer === "shipper" ? "Có thể cập nhật" : "Chỉ xem")}</span>
+              <strong>Ghi chú</strong>
             </div>
-            <p class="standalone-order-note-text">${escapeHtml(order.shipper_note || "Nhà cung cấp chưa cập nhật ghi chú xử lý cho đơn hàng này.")}</p>
-            ${renderAttachmentGallery(reports, "Chưa có media báo cáo từ nhà cung cấp.")}
+            <p class="standalone-order-note-text">${escapeHtml(order.shipper_note || "Chưa có ghi chú")}</p>
+            ${canSubmit ? "" : renderAttachmentGallery(reports, "Chưa có ảnh/video.")}
           </article>
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Thao tác ghi chú</strong>
-              <span class="standalone-order-chip">${escapeHtml(viewer === "shipper" ? "Nhà cung cấp" : "Bị khóa")}</span>
+              <strong>Cập nhật</strong>
             </div>
             ${
               canSubmit
@@ -694,21 +744,26 @@
                       <textarea name="shipper_note" rows="5" placeholder="Cập nhật tiến độ, vấn đề hiện trường hoặc lưu ý khi giao hàng.">${escapeHtml(order.shipper_note || "")}</textarea>
                     </label>
                     <div class="standalone-order-upload-grid">
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-image">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
-                        <strong>Chụp hoặc gửi ảnh báo cáo</strong>
-                        <span class="standalone-order-upload-copy">Dùng để gửi ảnh hiện trường, tình trạng đơn hàng và xác nhận giao.</span>
-                        <input type="file" name="shipper_media_image" accept="image/*" capture="environment" multiple hidden />
-                        <span id="standalone-shipper-image-files" class="standalone-order-upload-meta">Chưa chọn ảnh báo cáo.</span>
-                      </label>
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-video">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
-                        <strong>Gửi video báo cáo</strong>
-                        <span class="standalone-order-upload-copy">Dùng để quay rõ hiện trạng giao hàng hoặc vấn đề phát sinh thực tế.</span>
-                        <input type="file" name="shipper_media_video" accept="video/*" capture="environment" multiple hidden />
-                        <span id="standalone-shipper-video-files" class="standalone-order-upload-meta">Chưa chọn video báo cáo.</span>
-                      </label>
+                      <div class="standalone-order-upload-zone standalone-order-upload-zone-image">
+                        <label class="standalone-order-upload-picker">
+                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
+                          <strong>Chụp hoặc gửi ảnh báo cáo</strong>
+                          <input type="file" name="shipper_media_image" accept="image/*" capture="environment" multiple hidden />
+                          <span id="standalone-shipper-image-files" class="standalone-order-upload-meta">Chưa chọn ảnh</span>
+                        </label>
+                        ${renderAttachmentGallery(reportMediaGroups.images, "", { removable: true, removeName: "remove_shipper_report_indexes[]", removeButtonLabel: "Xóa media báo cáo", removedLabel: "Sẽ xóa khi lưu", hideEmpty: true })}
+                      </div>
+                      <div class="standalone-order-upload-zone standalone-order-upload-zone-video">
+                        <label class="standalone-order-upload-picker">
+                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
+                          <strong>Gửi video báo cáo</strong>
+                          <input type="file" name="shipper_media_video" accept="video/*" capture="environment" multiple hidden />
+                          <span id="standalone-shipper-video-files" class="standalone-order-upload-meta">Chưa chọn video</span>
+                        </label>
+                        ${renderAttachmentGallery(reportMediaGroups.videos, "", { removable: true, removeName: "remove_shipper_report_indexes[]", removeButtonLabel: "Xóa media báo cáo", removedLabel: "Sẽ xóa khi lưu", hideEmpty: true })}
+                      </div>
                     </div>
+                    ${renderAttachmentGallery(reportMediaGroups.other, "", { removable: true, removeName: "remove_shipper_report_indexes[]", removeButtonLabel: "Xóa media báo cáo", removedLabel: "Sẽ xóa khi lưu", hideEmpty: true })}
                     <div class="standalone-order-inline-actions">
                       <button class="customer-btn customer-btn-primary" type="submit">Lưu ghi chú NCC</button>
                     </div>
@@ -718,8 +773,8 @@
                       viewer === "shipper"
                         ? "Chỉ có thể thêm ghi chú sau khi đơn đã được nhận."
                         : hasShipperNoteContent(detail)
-                          ? "Ghi chú của nhà cung cấp đang ở chế độ chỉ xem."
-                          : "Chưa có ghi chú nào từ nhà cung cấp.",
+                          ? "Chỉ xem"
+                          : "Chưa có ghi chú",
                     )}</p>
                   </div>`
             }
@@ -754,6 +809,17 @@
             })} km`
           : pickFirstText(order.distance_label, serviceMeta.distance_label) ||
             "--";
+      const providerAvatar = pickFirstText(
+        provider.avatar,
+        provider.photo,
+        provider.link_avatar,
+        provider.avatar_link,
+        provider.shipper_avatar,
+        provider.ncc_avatar,
+        viewer === "shipper" ? session?.link_avatar : "",
+        viewer === "shipper" ? session?.avatar_link : "",
+        viewer === "shipper" ? session?.avatar : "",
+      );
       const providerName =
         provider.shipper_name ||
         provider.fullname ||
@@ -777,6 +843,16 @@
         (typeof getFeePayerLabel === "function"
           ? getFeePayerLabel(order.fee_payer || "gui")
           : "Người gửi");
+      const milestones = getMilestones(order);
+      const isCompleted = Boolean(
+        milestones.completedAt ||
+          ["completed", "delivered", "success"].includes(
+            String(order.status || "").trim().toLowerCase(),
+          ),
+      );
+      const completedTimeLabel = isCompleted
+        ? formatDateTime(milestones.completedAt || order.completed_at || order.updated_at)
+        : "";
       const pickupSlotLabel =
         pickFirstText(
           order.pickup_slot_label,
@@ -841,32 +917,23 @@
                     <p class="standalone-order-card-subtitle standalone-order-reference">${escapeHtml(order.order_code || "--")}</p>
                   </div>
 
-                  <div class="standalone-order-hero-summary-grid">
+                  <div class="standalone-order-hero-summary-grid standalone-order-hero-fee-distance-row">
                     ${renderHeroStat(
                       "Tổng phí",
                       totalFeeLabel,
-                      "Cước phí và phụ phí hiện tại",
+                      "Tổng tiền đơn",
                       { className: "standalone-order-hero-stat--amount" },
                     )}
                     ${renderHeroStat(
                       "Khoảng cách",
                       distanceLabel,
-                      "Tuyến giao nhận dự kiến",
-                    )}
-                    ${renderHeroStat(
-                      "Trạng thái đơn",
-                      statusBadge,
-                      "Theo mốc điều phối hiện tại",
-                      {
-                        className: "standalone-order-hero-stat--status",
-                        valueHtml: true,
-                        valueTag: "div",
-                      },
+                      "Tuyến giao nhận",
+                      { className: "standalone-order-hero-stat--distance" },
                     )}
                   </div>
                 </div>
 
-                <div class="standalone-order-hero-frame standalone-order-hero-frame-side">
+                <div class="standalone-order-hero-frame standalone-order-hero-frame-side standalone-order-hero-status-frame">
                   <div class="standalone-order-hero-progress-card">
                     <div class="standalone-order-hero-side-progress">
                       <div class="standalone-order-progress-ring status-${escapeHtml(progressMeta.tone)}"
@@ -878,23 +945,22 @@
                         </div>
                       </div>
                       <div class="standalone-order-progress-info">
-                        <span class="standalone-order-progress-label">${escapeHtml(progressMeta.label)}</span>
-                        <p>${escapeHtml(progressMeta.note)}</p>
+                        <div class="standalone-order-progress-status-row">${statusBadge}</div>
+                        ${completedTimeLabel ? `<time>${escapeHtml(completedTimeLabel)}</time>` : ""}
                       </div>
                     </div>
-                  </div>
-                  <div class="standalone-order-actions-group standalone-order-hero-actions-group">
-                    ${buildActionButtons(detail, viewer)}
                   </div>
                 </div>
               </div>
 
-              <div class="standalone-order-hero-support-grid">
-                ${renderHeroScheduleCard(
-                  pickupSlotLabel,
-                  estimatedDelivery,
-                )}
-                ${renderHeroRouteCard(order)}
+              <div class="standalone-order-hero-support-grid ${isCompleted ? "standalone-order-hero-support-grid--route-only" : ""}">
+                ${isCompleted ? "" : renderHeroScheduleCard(pickupSlotLabel, estimatedDelivery)}
+                <div class="standalone-order-hero-route-stack">
+                  <div class="standalone-order-actions-group standalone-order-hero-actions-group standalone-order-route-actions-group">
+                    ${buildActionButtons(detail, viewer)}
+                  </div>
+                  ${renderHeroRouteCard(order)}
+                </div>
               </div>
             </div>
           </header>
@@ -902,14 +968,13 @@
           <div class="standalone-order-grid">
             <section class="standalone-order-block">
               <div class="standalone-order-block-header">
-                <h2>Tổng quan đơn hàng và cước phí</h2>
+                <h2>Tổng quan đơn hàng</h2>
               </div>
               <div class="standalone-order-summary-grid">
                 <div class="standalone-order-panel standalone-order-panel-overview">
                   <div class="standalone-order-panel-head">
                     <div>
                       <strong>Thông tin điều phối</strong>
-                      <p>Thông tin cần theo dõi khi xử lý đơn.</p>
                     </div>
                     <span class="standalone-order-chip">Điều phối</span>
                   </div>
@@ -923,8 +988,7 @@
                 <div class="standalone-order-panel standalone-order-panel-fees" id="order-summary-fees">
                   <div class="standalone-order-panel-head">
                     <div>
-                      <strong>Chi tiết cước phí</strong>
-                      <p>Chi tiết các khoản phí cấu thành đơn hàng.</p>
+                      <strong>Chi tiết phí</strong>
                     </div>
                     <span class="standalone-order-chip">Tài chính</span>
                   </div>
@@ -937,26 +1001,34 @@
 
             <section class="standalone-order-block">
               <div class="standalone-order-block-header">
-                <h2>Người gửi, người nhận và ghi chú vận chuyển</h2>
+                <h2>Người gửi và người nhận</h2>
               </div>
               <div class="standalone-order-contact-grid">
                 ${renderContactCard(
                   "fa-solid fa-box",
                   "Người gửi",
-                  "Lấy hàng",
+                  "",
                   [
-                    renderInfoRow("Họ tên", senderName),
-                    renderInfoRow("Số điện thoại", senderPhone),
+                    renderInfoRow("Tên", senderName),
                   ],
+                  {
+                    phone: senderPhone,
+                    address: order.pickup_address,
+                    tone: "sender",
+                  },
                 )}
                 ${renderContactCard(
                   "fa-solid fa-hand-holding-heart",
                   "Người nhận",
-                  "Giao hàng",
+                  "",
                   [
-                    renderInfoRow("Họ tên", receiverName),
-                    renderInfoRow("Số điện thoại", receiverPhone),
+                    renderInfoRow("Tên", receiverName),
                   ],
+                  {
+                    phone: receiverPhone,
+                    address: order.delivery_address,
+                    tone: "receiver",
+                  },
                 )}
                 <div class="standalone-order-contact-note">
                   <article class="standalone-order-contact-note-card">
@@ -966,15 +1038,14 @@
                           <i class="fa-solid fa-photo-film"></i>
                         </span>
                         <div>
-                          <strong>Ảnh/video khách đính kèm khi đặt đơn</strong>
+                          <strong>Ảnh/video khi đặt đơn</strong>
                         </div>
                       </div>
-                      <span class="standalone-order-chip">Đính kèm</span>
                     </div>
                     <div class="standalone-order-note-panel standalone-order-contact-note-panel">
                       ${renderAttachmentGallery(
                         provider.attachments,
-                        "Chưa có ảnh hoặc video khách đính kèm khi đặt đơn.",
+                        "Chưa có ảnh hoặc video khi đặt đơn.",
                       )}
                     </div>
                   </article>
@@ -985,13 +1056,12 @@
                           <i class="fa-solid fa-note-sticky"></i>
                         </span>
                         <div>
-                          <strong>Ghi chú vận chuyển</strong>
+                          <strong>Ghi chú</strong>
                         </div>
                       </div>
-                      <span class="standalone-order-chip">Lưu ý</span>
                     </div>
                     <div class="standalone-order-note-panel standalone-order-contact-note-panel">
-                      <p>${escapeHtml(order.clean_note || "Không có ghi chú vận chuyển cho đơn hàng này.")}</p>
+                      <p>${escapeHtml(order.clean_note || "Không có")}</p>
                     </div>
                   </article>
                 </div>
@@ -1004,30 +1074,19 @@
               </div>
               <div class="standalone-order-overview-stats standalone-order-overview-stats-compact">
                 ${renderOverviewStat(
-                  "fa-solid fa-boxes-stacked",
-                  "Số kiện",
-                  String(itemsSummary.count || 0),
-                  itemsSummary.count
-                    ? "Tổng số dòng hàng hóa trong đơn"
-                    : "Chưa có danh sách kiện hàng chi tiết",
-                )}
-                ${renderOverviewStat(
                   "fa-solid fa-layer-group",
-                  "Tổng số lượng",
+                  "Số kiện",
                   String(itemsSummary.quantity || 0),
-                  "Số lượng cộng dồn từ toàn bộ kiện hàng",
                 )}
                 ${renderOverviewStat(
                   "fa-solid fa-weight-hanging",
                   "Tổng cân nặng",
                   formatWeight(itemsSummary.weight),
-                  "Dùng để đối chiếu khi bàn giao và chọn phương tiện",
                 )}
                 ${renderOverviewStat(
                   "fa-solid fa-file-invoice-dollar",
                   "Giá trị khai báo",
                   formatCurrency(itemsSummary.declared || 0),
-                  "Tổng giá trị khai báo hiện có trong đơn",
                 )}
               </div>
               ${renderItems(detail.items || [])}
@@ -1042,8 +1101,8 @@
                   <div class="standalone-order-provider-head">
                     <div class="standalone-order-provider-avatar">
                       ${
-                        normalizeText(provider.avatar || provider.photo || "")
-                          ? `<img src="${escapeHtml(provider.avatar || provider.photo)}" alt="${escapeHtml(providerName)}" />`
+                        providerAvatar
+                          ? `<img src="${escapeHtml(resolveAvatarUrl(providerAvatar))}" alt="${escapeHtml(providerName)}" />`
                           : escapeHtml(providerName.charAt(0) || "N")
                       }
                     </div>
@@ -1058,9 +1117,7 @@
                     <div class="standalone-order-panel-head">
                       <div>
                         <strong>Timeline trạng thái</strong>
-                        <p>Các mốc cập nhật chính của đơn hàng.</p>
                       </div>
-                      <span class="standalone-order-chip">Theo dõi</span>
                     </div>
                     ${buildTimeline(detail)}
                   </article>

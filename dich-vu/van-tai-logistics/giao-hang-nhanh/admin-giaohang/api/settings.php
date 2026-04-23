@@ -14,6 +14,7 @@ $defaults = [
     'company_email' => 'support@giaohangnhanh.local',
     'company_address' => '123 Nguyễn Huệ, TP. HCM',
     'google_sheets_webhook_url' => '',
+    'max_upload_mb' => 25,
 ];
 
 function fetch_settings_map() {
@@ -42,6 +43,11 @@ if (!is_array($settingsData) || empty($settingsData)) {
 
 $settings = fetch_settings_map();
 foreach ($defaults as $key => $defaultValue) {
+    if ($key === 'max_upload_mb') {
+        $settings[$key] = max(1, (int) ($settingsData[$key] ?? $settings[$key] ?? $defaultValue));
+        continue;
+    }
+
     $settings[$key] = trim((string) ($settingsData[$key] ?? $settings[$key] ?? $defaultValue));
 }
 

@@ -148,6 +148,23 @@
       partialTables: ["ghn_loai_hang"],
     },
   };
+  const ROW_LEVEL_PERSIST_ACTIONS = new Set([
+    "save_services",
+    "save_instant_service",
+    "add_service_time",
+    "save_service_time_row",
+    "delete_service_time",
+    "add_weather",
+    "save_weather_row",
+    "delete_weather",
+    "save_cod_insurance",
+    "add_vehicle",
+    "save_vehicle_row",
+    "delete_vehicle",
+    "add_goods_fee",
+    "save_goods_fee_row",
+    "delete_goods_fee",
+  ]);
   const TABLE_KEY_FIELDS = {
     ghn_vung_giao_hang: ["region_key"],
     ghn_goi_dich_vu: ["service_key"],
@@ -860,6 +877,10 @@
     return Boolean(rule?.canDirect?.(formData, rule));
   }
 
+  function canApplyDirectFormUpdate(action, formData) {
+    return canPatchDomDirectly(action, formData);
+  }
+
   function patchDomAfterSave(action, formData, pricingData) {
     const rule = DIRECT_ACTION_RULES[action];
     if (!rule) return false;
@@ -871,7 +892,7 @@
 
   function canPersistRowLevel(action, formData) {
     if (activeVersionId <= 0) return false;
-    return canPatchDomDirectly(action, formData);
+    return ROW_LEVEL_PERSIST_ACTIONS.has(action) || canPatchDomDirectly(action, formData);
   }
 
   function clearPendingFormState(form) {
@@ -1156,10 +1177,33 @@
     return partialError;
   }
 
+  async function deleteVersionRowByIdOrKey(table, versionId, recordId, extraWhere) {
+    const id = Number(recordId || 0);
+    if (id > 0) {
+      await deleteTable(table, id);
+      return true;
+    }
+    const existing = await findVersionRow(table, versionId, extraWhere);
+    if (existing?.id) {
+      await deleteTable(table, Number(existing.id));
+      return true;
+    }
+    return false;
+  }
+
+  function getIndexedSortOrder(items, key, fallback = 999) {
+    const keys = Array.isArray(items)
+      ? items.map((item) => String(item?.key || ""))
+      : Object.keys(items || {});
+    const index = keys.indexOf(String(key || ""));
+    return index >= 0 ? (index + 1) * 10 : fallback;
+  }
+
   async function persistPricingRowLevel(pricingData, action, formData, versionId) {
     const domestic = pricingData?.BAOGIACHITIET?.noidia || {};
     const serviceFeeConfig = domestic?.phidichvu?.giaongaylaptuc || {};
     const krudMeta = getKrudMeta(pricingData);
+    const previousKrudMeta = getKrudMeta(currentPricingSnapshot);
 
     if (action === "save_services") {
       const serviceKey = extractBracketKey(formData, "services");
@@ -1254,6 +1298,31 @@
       return true;
     }
 
+    if (action === "add_service_time") {
+      const slotKey = sanitizePriceKey(formData.get("new_time_key"));
+      const slotConfig = serviceFeeConfig?.thoigian?.[slotKey];
+      if (!slotKey || !slotConfig) return false;
+
+      showProgress("Đang thêm khung giờ lên KRUD...");
+      krudMeta.time_ids = krudMeta.time_ids || {};
+      krudMeta.time_ids[slotKey] = await upsertVersionRow(
+        "ghn_khung_gio_dich_vu",
+        versionId,
+        [{ field: "slot_key", operator: "=", value: slotKey }],
+        {
+          slot_key: slotKey,
+          slot_label: String(slotConfig?.ten || slotKey),
+          start_time: String(slotConfig?.batdau || "00:00"),
+          end_time: String(slotConfig?.ketthuc || "23:59"),
+          fixed_fee: Math.round(toNumber(slotConfig?.phicodinh, 0)),
+          multiplier: formatDecimal(slotConfig?.heso ?? 1, 3),
+          sort_order: getIndexedSortOrder(serviceFeeConfig?.thoigian || {}, slotKey),
+        },
+      );
+
+      return true;
+    }
+
     if (action === "save_service_time_row") {
       const slotKey = sanitizePriceKey(formData.get("original_time_key"));
       const slotConfig = serviceFeeConfig?.thoigian?.[slotKey];
@@ -1277,6 +1346,44 @@
             Object.keys(serviceFeeConfig?.thoigian || {}).indexOf(slotKey) >= 0
               ? (Object.keys(serviceFeeConfig?.thoigian || {}).indexOf(slotKey) + 1) * 10
               : 999,
+        },
+      );
+
+      return true;
+    }
+
+    if (action === "delete_service_time") {
+      const slotKey = sanitizePriceKey(formData.get("delete_key"));
+      if (!slotKey) return false;
+
+      showProgress("Đang xóa khung giờ khỏi KRUD...");
+      const deleted = await deleteVersionRowByIdOrKey(
+        "ghn_khung_gio_dich_vu",
+        versionId,
+        krudMeta?.time_ids?.[slotKey] || previousKrudMeta?.time_ids?.[slotKey] || 0,
+        [{ field: "slot_key", operator: "=", value: slotKey }],
+      );
+      if (krudMeta.time_ids) delete krudMeta.time_ids[slotKey];
+      return deleted;
+    }
+
+    if (action === "add_weather") {
+      const conditionKey = sanitizePriceKey(formData.get("new_weather_key"));
+      const weatherConfig = serviceFeeConfig?.thoitiet?.[conditionKey];
+      if (!conditionKey || !weatherConfig) return false;
+
+      showProgress("Đang thêm điều kiện giao lên KRUD...");
+      krudMeta.condition_ids = krudMeta.condition_ids || {};
+      krudMeta.condition_ids[conditionKey] = await upsertVersionRow(
+        "ghn_dieu_kien_giao",
+        versionId,
+        [{ field: "condition_key", operator: "=", value: conditionKey }],
+        {
+          condition_key: conditionKey,
+          condition_label: String(weatherConfig?.ten || conditionKey),
+          fixed_fee: Math.round(toNumber(weatherConfig?.phicodinh, 0)),
+          multiplier: formatDecimal(weatherConfig?.heso ?? 1, 3),
+          sort_order: getIndexedSortOrder(serviceFeeConfig?.thoitiet || {}, conditionKey),
         },
       );
 
@@ -1310,6 +1417,23 @@
       return true;
     }
 
+    if (action === "delete_weather") {
+      const conditionKey = sanitizePriceKey(formData.get("delete_key"));
+      if (!conditionKey) return false;
+
+      showProgress("Đang xóa điều kiện giao khỏi KRUD...");
+      const deleted = await deleteVersionRowByIdOrKey(
+        "ghn_dieu_kien_giao",
+        versionId,
+        krudMeta?.condition_ids?.[conditionKey] ||
+          previousKrudMeta?.condition_ids?.[conditionKey] ||
+          0,
+        [{ field: "condition_key", operator: "=", value: conditionKey }],
+      );
+      if (krudMeta.condition_ids) delete krudMeta.condition_ids[conditionKey];
+      return deleted;
+    }
+
     if (action === "save_cod_insurance") {
       const feeConfig = pricingData?.BANGGIA?.phuthu || {};
 
@@ -1332,6 +1456,32 @@
         ).then((rowId) => {
           krudMeta.financial_ids[financeKey] = rowId;
         }),
+      );
+
+      return true;
+    }
+
+    if (action === "add_vehicle") {
+      const vehicleKey = String(formData.get("new_vehicle_key") || "").trim();
+      const vehicle = (pricingData?.phuong_tien || []).find((item) => item?.key === vehicleKey);
+      if (!vehicleKey || !vehicle) return false;
+
+      showProgress("Đang thêm phương tiện lên KRUD...");
+      krudMeta.vehicle_ids = krudMeta.vehicle_ids || {};
+      krudMeta.vehicle_ids[vehicleKey] = await upsertVersionRow(
+        "ghn_phuong_tien",
+        versionId,
+        [{ field: "vehicle_key", operator: "=", value: vehicleKey }],
+        {
+          vehicle_key: vehicleKey,
+          vehicle_label: String(vehicle?.label || vehicleKey),
+          vehicle_factor: formatDecimal(vehicle?.he_so_xe ?? 1, 3),
+          base_price: Math.round(toNumber(vehicle?.gia_co_ban, 0)),
+          minimum_fee: Math.round(toNumber(vehicle?.phi_toi_thieu, 0)),
+          max_weight: formatDecimal(vehicle?.trong_luong_toi_da ?? 0, 2),
+          description_text: String(vehicle?.description || ""),
+          sort_order: getIndexedSortOrder(pricingData?.phuong_tien || [], vehicleKey),
+        },
       );
 
       return true;
@@ -1363,6 +1513,44 @@
                   1) *
                 10
               : 999,
+        },
+      );
+
+      return true;
+    }
+
+    if (action === "delete_vehicle") {
+      const vehicleKey = String(formData.get("delete_key") || "").trim();
+      if (!vehicleKey) return false;
+
+      showProgress("Đang xóa phương tiện khỏi KRUD...");
+      const deleted = await deleteVersionRowByIdOrKey(
+        "ghn_phuong_tien",
+        versionId,
+        krudMeta?.vehicle_ids?.[vehicleKey] || previousKrudMeta?.vehicle_ids?.[vehicleKey] || 0,
+        [{ field: "vehicle_key", operator: "=", value: vehicleKey }],
+      );
+      if (krudMeta.vehicle_ids) delete krudMeta.vehicle_ids[vehicleKey];
+      return deleted;
+    }
+
+    if (action === "add_goods_fee") {
+      const goodsKey = sanitizePriceKey(formData.get("new_key"));
+      if (!goodsKey || !(goodsKey in (domestic?.philoaihang || {}))) return false;
+
+      showProgress("Đang thêm loại hàng lên KRUD...");
+      krudMeta.goods_ids = krudMeta.goods_ids || {};
+      krudMeta.goods_ids[goodsKey] = await upsertVersionRow(
+        "ghn_loai_hang",
+        versionId,
+        [{ field: "item_type_key", operator: "=", value: goodsKey }],
+        {
+          item_type_key: goodsKey,
+          item_type_label: String(domestic?.tenloaihang?.[goodsKey] || goodsKey),
+          fee_amount: Math.round(toNumber(domestic?.philoaihang?.[goodsKey], 0)),
+          multiplier: formatDecimal(domestic?.hesoloaihang?.[goodsKey] ?? 1, 3),
+          description_text: String(domestic?.motaloaihang?.[goodsKey] || ""),
+          sort_order: getIndexedSortOrder(domestic?.philoaihang || {}, goodsKey),
         },
       );
 
@@ -1401,6 +1589,21 @@
       );
 
       return true;
+    }
+
+    if (action === "delete_goods_fee") {
+      const goodsKey = sanitizePriceKey(formData.get("delete_key"));
+      if (!goodsKey) return false;
+
+      showProgress("Đang xóa loại hàng khỏi KRUD...");
+      const deleted = await deleteVersionRowByIdOrKey(
+        "ghn_loai_hang",
+        versionId,
+        krudMeta?.goods_ids?.[goodsKey] || previousKrudMeta?.goods_ids?.[goodsKey] || 0,
+        [{ field: "item_type_key", operator: "=", value: goodsKey }],
+      );
+      if (krudMeta.goods_ids) delete krudMeta.goods_ids[goodsKey];
+      return deleted;
     }
 
     return false;
@@ -1858,7 +2061,7 @@
       if (!action) {
         throw new Error("Thiếu action của biểu mẫu bảng giá.");
       }
-      const pricingData = canPersistRowLevel(action, formData)
+      const pricingData = canApplyDirectFormUpdate(action, formData)
         ? applyDirectFormUpdate(action, formData, currentPricingSnapshot)
         : await previewPricingUpdate(formData);
       normalizePricingDisplayLabels(pricingData);

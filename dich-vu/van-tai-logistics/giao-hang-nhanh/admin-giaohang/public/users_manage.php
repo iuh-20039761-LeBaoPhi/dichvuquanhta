@@ -278,85 +278,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             border: 1px solid #fecaca;
         }
 
-        .users-modal {
-            position: fixed;
-            inset: 0;
-            z-index: 9998;
-            display: grid;
-            place-items: center;
-            padding: 24px;
-            background: rgba(15, 23, 42, 0.52);
-        }
-
-        .users-modal[hidden] {
-            display: none;
-        }
-
-        .users-modal__dialog {
-            width: min(720px, 100%);
-            max-height: min(86vh, 760px);
-            overflow: auto;
-            border-radius: 18px;
-            background: #fff;
-            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
-        }
-
-        .users-modal__head,
-        .users-modal__foot {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-            padding: 18px 22px;
-            border-bottom: 1px solid #edf2f7;
-        }
-
-        .users-modal__foot {
-            border-top: 1px solid #edf2f7;
-            border-bottom: 0;
-            justify-content: flex-end;
-        }
-
-        .users-modal__head h3 {
-            margin: 0;
-            color: #0a2a66;
-            font-size: 20px;
-        }
-
-        .users-modal__body {
-            padding: 22px;
-        }
-
-        .users-modal__grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-        }
-
-        .users-modal__grid .form-group--full {
-            grid-column: 1 / -1;
-        }
-
-        .users-modal__close {
-            width: 38px;
-            height: 38px;
-            border: 0;
-            border-radius: 999px;
-            cursor: pointer;
-            background: #f1f5f9;
-            color: #0f172a;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .users-modal-help {
-            margin: 8px 0 0;
-            color: #64748b;
-            font-size: 12px;
-            line-height: 1.45;
-        }
-
         @media (max-width: 1200px) {
             .users-shell {
                 grid-template-columns: 1fr;
@@ -415,18 +336,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 max-width: none;
             }
 
-            .users-modal {
-                padding: 12px;
-            }
-
-            .users-modal__grid {
-                grid-template-columns: 1fr;
-            }
-
-            .users-modal__foot {
-                align-items: stretch;
-                flex-direction: column-reverse;
-            }
         }
     </style>
 </head>
@@ -440,15 +349,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     <i class="fa-solid fa-database"></i>
                     <span>Đang dùng chung bảng nguoidung</span>
                 </span>
-                <button type="button" class="btn-primary" id="users-open-create">
-                    <i class="fa-solid fa-user-plus"></i> Thêm người dùng
-                </button>
             </div>
         </div>
 
         <section class="users-hero">
-            <h3>Quản lý khách hàng, shipper và tài khoản quản trị</h3>
-            <p>Màn này đọc trực tiếp từ bảng dùng chung <strong>nguoidung</strong> để lọc người dùng, khóa tài khoản và theo dõi tình trạng vận hành nhân sự.</p>
+            <h3>Quản lý trạng thái tài khoản giao hàng</h3>
+            <p>Màn này đọc trực tiếp từ bảng dùng chung <strong>nguoidung</strong> để lọc khách hàng, nhà cung cấp và khóa/mở khóa tài khoản khi cần.</p>
             <div class="users-stat-grid">
                 <div class="users-stat-card">
                     <small>Tổng người dùng</small>
@@ -459,7 +365,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     <strong id="users-stat-customers">0</strong>
                 </div>
                 <div class="users-stat-card">
-                    <small>Shipper</small>
+                    <small>Nhà cung cấp</small>
                     <strong id="users-stat-shippers">0</strong>
                 </div>
                 <div class="users-stat-card">
@@ -520,8 +426,16 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         <select id="users-role" name="role" class="admin-select">
                             <option value="">-- Tất cả vai trò --</option>
                             <option value="customer">Khách hàng</option>
-                            <option value="shipper">Shipper</option>
+                            <option value="shipper">Nhà cung cấp</option>
                             <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="users-status">Trạng thái</label>
+                        <select id="users-status" name="status" class="admin-select">
+                            <option value="">-- Tất cả trạng thái --</option>
+                            <option value="active">Hoạt động</option>
+                            <option value="locked">Đã khóa</option>
                         </select>
                     </div>
                     <div class="users-filter-actions">
@@ -538,70 +452,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     </main>
 
     <?php include __DIR__ . '/../includes/footer.php'; ?>
-
-    <div class="users-modal" id="users-editor-modal" hidden>
-        <div class="users-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="users-editor-title">
-            <form id="users-editor-form">
-                <div class="users-modal__head">
-                    <h3 id="users-editor-title">Thêm người dùng</h3>
-                    <button type="button" class="users-modal__close" data-users-modal-close aria-label="Đóng">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="users-modal__body">
-                    <input type="hidden" name="mode" value="create">
-                    <input type="hidden" name="user_id" value="">
-                    <div class="users-modal__grid">
-                        <div class="form-group">
-                            <label for="user-fullname">Họ tên</label>
-                            <input id="user-fullname" name="fullname" type="text" class="admin-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="user-phone">Số điện thoại</label>
-                            <input id="user-phone" name="phone" type="tel" class="admin-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="user-email">Email</label>
-                            <input id="user-email" name="email" type="email" class="admin-input">
-                        </div>
-                        <div class="form-group">
-                            <label for="user-role">Vai trò</label>
-                            <select id="user-role" name="role" class="admin-select" required>
-                                <option value="customer">Khách hàng</option>
-                                <option value="shipper">Shipper</option>
-                            </select>
-                        </div>
-                        <div class="form-group form-group--full">
-                            <label for="user-address">Địa chỉ</label>
-                            <input id="user-address" name="address" type="text" class="admin-input">
-                        </div>
-                        <div class="form-group" data-shipper-field>
-                            <label for="user-vehicle">Phương tiện shipper</label>
-                            <input id="user-vehicle" name="vehicle_type" type="text" class="admin-input" placeholder="Xe máy, ô tô tải...">
-                        </div>
-                        <div class="form-group">
-                            <label for="user-status">Trạng thái</label>
-                            <select id="user-status" name="status" class="admin-select">
-                                <option value="active">Hoạt động</option>
-                                <option value="locked">Đã khóa</option>
-                            </select>
-                        </div>
-                        <div class="form-group form-group--full">
-                            <label for="user-password">Mật khẩu</label>
-                            <input id="user-password" name="password" type="password" class="admin-input" autocomplete="new-password">
-                            <p class="users-modal-help" id="user-password-help">Tạo mới bắt buộc nhập mật khẩu. Khi sửa, để trống nếu không đổi mật khẩu.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="users-modal__foot">
-                    <button type="button" class="btn-secondary" data-users-modal-close>Hủy</button>
-                    <button type="submit" class="btn-primary" id="users-editor-submit">
-                        <i class="fa-solid fa-floppy-disk"></i> Lưu người dùng
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <div id="users-toast" class="users-toast"></div>
 

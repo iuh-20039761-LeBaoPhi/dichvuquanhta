@@ -3,6 +3,8 @@
  * Sử dụng DVQTKrud để tương tác với bảng 'nguoidung'
  */
 const userManager = (function() {
+    const MOVING_SERVICE_ID = '12';
+    const CUSTOMER_SERVICE_ID = '0';
     let allUsers = [];
     let filteredUsers = [];
     let currentSearch = '';
@@ -32,7 +34,7 @@ const userManager = (function() {
 
             // Lấy 1000 bản ghi mới nhất
             const rows = await krud.list('nguoidung', { limit: 1000, sort: 'created_date DESC' });
-            allUsers = rows || [];
+            allUsers = (rows || []).map(normalizeUserRecord);
             applyFilters();
         } catch (err) {
             console.error('Fetch users error:', err);
@@ -201,6 +203,8 @@ const userManager = (function() {
             vaitro: document.getElementById('vaitro').value,
             trangthai: document.getElementById('trangthai').value
         };
+        const existingUser = id ? allUsers.find(user => String(user.id) === String(id)) : null;
+        data.id_dichvu = getServiceIdForRole(data.vaitro, existingUser);
 
         const matkhau = document.getElementById('matkhau').value;
         if (matkhau) data.matkhau = matkhau;
@@ -220,7 +224,6 @@ const userManager = (function() {
                 showToast('Cập nhật người dùng thành công');
             } else {
                 data.created_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-                data.id_dichvu = data.vaitro === 'customer' ? '0' : ''; // Để NCC tự update dịch vụ sau hoặc logic khác
                 await krud.insert('nguoidung', data);
                 showToast('Thêm người dùng mới thành công');
             }
@@ -270,6 +273,55 @@ const userManager = (function() {
     }
 
     // Tiện ích
+    function normalizeText(value) {
+        return String(value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function splitServiceIds(value) {
+        return String(value || '')
+            .split(',')
+            .map(item => normalizeText(item))
+            .filter(Boolean);
+    }
+
+    function hasMovingServiceId(value) {
+        return splitServiceIds(value).includes(MOVING_SERVICE_ID);
+    }
+
+    function resolveMovingRole(user) {
+        if (normalizeText(user?.vaitro).toLowerCase() === 'admin') return 'admin';
+
+        const serviceIds = splitServiceIds(user?.id_dichvu || CUSTOMER_SERVICE_ID);
+        if (hasMovingServiceId(user?.id_dichvu)) return 'provider';
+
+        const hasExplicitOtherService = serviceIds.some(serviceId => serviceId && serviceId !== CUSTOMER_SERVICE_ID);
+        if (hasExplicitOtherService) return 'customer';
+
+        const role = normalizeText(user?.vaitro || user?.role).toLowerCase();
+        return ['provider', 'nha-cung-cap', 'doi-tac'].includes(role) ? 'provider' : 'customer';
+    }
+
+    function normalizeUserRecord(user) {
+        return {
+            ...user,
+            vaitro: resolveMovingRole(user),
+            id_dichvu: normalizeText(user?.id_dichvu || CUSTOMER_SERVICE_ID) || CUSTOMER_SERVICE_ID
+        };
+    }
+
+    function getServiceIdForRole(role, existingUser = null) {
+        const serviceIds = splitServiceIds(existingUser?.id_dichvu || '')
+            .filter(serviceId => serviceId && serviceId !== CUSTOMER_SERVICE_ID);
+
+        if (role === 'provider') {
+            if (!serviceIds.includes(MOVING_SERVICE_ID)) serviceIds.push(MOVING_SERVICE_ID);
+            return serviceIds.join(',') || MOVING_SERVICE_ID;
+        }
+
+        const remainingIds = serviceIds.filter(serviceId => serviceId !== MOVING_SERVICE_ID);
+        return remainingIds.join(',') || CUSTOMER_SERVICE_ID;
+    }
+
     function getRoleLabel(role) {
         const map = {
             'admin': 'Quản trị viên',

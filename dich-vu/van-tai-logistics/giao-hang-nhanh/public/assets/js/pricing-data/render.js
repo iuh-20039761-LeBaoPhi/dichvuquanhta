@@ -132,7 +132,10 @@ function renderDynamicData(data) {
           return `<strong>4 ví dụ trên</strong> lần lượt đi theo đúng thứ tự: <strong>${orderedLabels}</strong>, để bạn đối chiếu nhanh từ gói khẩn cấp nhất đến gói tiết kiệm nhất. Đây vẫn là giá tham khảo để bạn ra quyết định nhanh trước khi tạo đơn.`;
         }
         return replaceKnownServiceNames(text);
-      });
+      }).concat([
+        "Nếu một đơn có nhiều dòng hàng khác loại, hệ thống sẽ cộng phụ phí loại hàng theo <strong>từng dòng</strong>, không lấy một loại đại diện cho toàn đơn.",
+        "<strong>Khai giá dòng hàng</strong> là giá trị của cả dòng hàng; hệ thống cộng tổng khai giá của các dòng để tính bảo hiểm và <strong>không tự nhân thêm theo số kiện</strong>.",
+      ]);
     };
     const buildFinalExampleTitle = (example, service) => {
       const serviceType = example?.service_type || service?.serviceType || "";
@@ -289,7 +292,7 @@ function renderDynamicData(data) {
         const multiplier = goodsTypeMultiplier[key] || 1;
         let feeText =
           fee > 0
-            ? `<strong>+${fee.toLocaleString("vi-VN")}đ</strong>`
+            ? `<strong>+${fee.toLocaleString("vi-VN")}đ/kiện</strong>`
             : multiplier > 1
               ? `<strong>Hệ số ×${multiplier}</strong>`
               : `<strong class="price-zero">0đ</strong>`;
@@ -313,6 +316,8 @@ function renderDynamicData(data) {
         )}</strong></li>
         <li>Phí: <strong>${formatPercent(insuranceRate)}</strong> giá trị khai báo</li>
         <li>Tối thiểu: <strong>${formatMoney(insuranceMin)}</strong></li>
+        <li><strong>Khai giá dòng hàng</strong> là giá trị của cả dòng, không tự nhân thêm theo số kiện</li>
+        <li>Hệ thống cộng tổng khai giá của các dòng để tính phí bảo hiểm</li>
         <li>Bồi thường 100% nếu mất hoặc hỏng theo mức khai báo hợp lệ</li>
       `;
     }
@@ -324,7 +329,7 @@ function renderDynamicData(data) {
           ? Math.max(insuranceValue * insuranceRate, insuranceMin)
           : 0;
       insuranceExample.innerHTML = `
-        <strong>Ví dụ:</strong> Khai giá ${formatMoney(insuranceValue)}<br />
+        <strong>Ví dụ:</strong> Một dòng hàng khai giá ${formatMoney(insuranceValue)}<br />
         Phí bảo hiểm = ${formatPercent(insuranceRate)} × ${formatMoney(
           insuranceValue,
         )} = <strong>${formatMoney(insuranceFee)}</strong>
@@ -506,9 +511,7 @@ function renderDynamicData(data) {
             }
 
             const breakdown = service.breakdown || {};
-            const goodsInfo = getDomesticGoodsTypeInfo(
-              payload.loai_hang || payload.itemType || "thuong",
-            );
+            const goodsFeeDetails = breakdown.goodsFeeDetails || {};
             const serviceLabel =
               buildFinalExampleTitle(example, service);
             const summary =
@@ -530,11 +533,35 @@ function renderDynamicData(data) {
 
             const goodsParts = [];
             if (breakdown.goodsFee > 0) {
-              goodsParts.push(
-                `${escapeHtml(
-                  goodsInfo.name || "Phụ phí loại hàng",
-                )} <strong>${formatMoney(breakdown.goodsFee)}</strong>`,
-              );
+              if (
+                Array.isArray(goodsFeeDetails.lines) &&
+                goodsFeeDetails.lines.length > 1
+              ) {
+                goodsFeeDetails.lines.forEach((line) => {
+                  const lineParts = [];
+                  if (Number(line.fixedFee || 0) > 0) {
+                    lineParts.push(
+                      `${formatMoney(line.fixedFee)}/kiện × ${line.quantity} kiện`,
+                    );
+                  }
+                  if (Number(line.multiplier || 1) > 1) {
+                    lineParts.push(`hệ số ×${line.multiplier}`);
+                  }
+                  goodsParts.push(
+                    `${escapeHtml(line.label || "Phụ phí loại hàng")} <strong>${formatMoney(line.total || 0)}</strong>${lineParts.length ? ` (${lineParts.join(" + ")})` : ""}`,
+                  );
+                });
+              } else {
+                const line =
+                  Array.isArray(goodsFeeDetails.lines) && goodsFeeDetails.lines[0]
+                    ? goodsFeeDetails.lines[0]
+                    : null;
+                goodsParts.push(
+                  `${escapeHtml(
+                    line?.label || "Phụ phí loại hàng",
+                  )} <strong>${formatMoney(breakdown.goodsFee)}</strong>`,
+                );
+              }
             }
             if (breakdown.insuranceFee > 0) {
               goodsParts.push(

@@ -1074,9 +1074,6 @@ function tinh_gia_giao_hang_ngay_lap_tuc(thong_tin = {}) {
     1,
     Math.round(toPositiveNumber(thong_tin.so_luong, 1) || 1),
   );
-  const goods_fee_co_dinh = toPositiveNumber(thong_tin.goodsFeeFixed, 0);
-  const he_so_loai_hang =
-    toPositiveNumber(thong_tin.goodsMultiplier, 1) || 1;
   const phi_cod = toPositiveNumber(thong_tin.codFee, 0);
   const phi_bao_hiem = toPositiveNumber(thong_tin.insuranceFee, 0);
   const ap_dung_phi_dich_vu = thong_tin.appliesServiceFee !== false;
@@ -1150,9 +1147,26 @@ function tinh_gia_giao_hang_ngay_lap_tuc(thong_tin = {}) {
   const bu_phi_toi_thieu = Math.round(
     Math.max(0, tong_gia_van_chuyen - tong_tien_truoc_toi_thieu),
   );
-  const phu_phi_he_so_loai_hang =
-    tong_gia_van_chuyen * Math.max(he_so_loai_hang - 1, 0);
-  const goodsFee = Math.round(goods_fee_co_dinh * so_luong + phu_phi_he_so_loai_hang);
+  const fallbackGoodsType =
+    thong_tin.itemType || thong_tin.loai_hang || "thuong";
+  const fallbackGoodsInfo = getDomesticGoodsTypeInfo(fallbackGoodsType);
+  const goodsFeeDetails = calculateDomesticGoodsFee(
+    tong_gia_van_chuyen,
+    Array.isArray(thong_tin.goodsItems) && thong_tin.goodsItems.length
+      ? thong_tin.goodsItems
+      : [
+          {
+            itemType: fallbackGoodsType,
+            itemName: thong_tin.itemName || thong_tin.ten_hang || "",
+            quantity: so_luong,
+            fixedFee: toPositiveNumber(thong_tin.goodsFeeFixed, 0),
+            multiplier: toPositiveNumber(thong_tin.goodsMultiplier, 1) || 1,
+            label: fallbackGoodsInfo.name,
+            description: fallbackGoodsInfo.description,
+          },
+        ],
+  );
+  const goodsFee = goodsFeeDetails.total;
   const transportSubtotal = tong_gia_van_chuyen + goodsFee;
   const timeFee =
     ap_dung_phi_dich_vu && co_tinh_phi_thoi_gian
@@ -1217,6 +1231,7 @@ function tinh_gia_giao_hang_ngay_lap_tuc(thong_tin = {}) {
       volumeFee: 0,
       weightFee: 0,
       goodsFee: goodsFee,
+      goodsFeeDetails,
       timeFee: timeFee,
       conditionFee: conditionFee,
       serviceFee: serviceFee,
@@ -1372,8 +1387,16 @@ function calculateDomesticQuote(payload, options = {}) {
     (requestedTurnaroundMinutes > 0
       ? formatDurationFromMinutes(requestedTurnaroundMinutes)
       : "");
-
-  const quantity = norm.quantity;
+  const quoteItems = getDomesticQuoteItems(payload, {
+    itemType: norm.itemType,
+    itemName: norm.itemName,
+    quantity: norm.quantity,
+    insuranceValue: norm.insuranceValue,
+  });
+  const quantity = quoteItems.reduce(
+    (sum, item) => sum + Math.max(1, Number(item.quantity || 1)),
+    0,
+  );
   const zoneKey = determineDomesticZone(
     norm.fromCity,
     norm.fromDistrict,
@@ -1398,12 +1421,13 @@ function calculateDomesticQuote(payload, options = {}) {
       ? Math.max(actualWeightTotal / quantity, 0.1)
       : Math.max(norm.weight, 0.1);
   const billableWeight = Math.max(actualWeightTotal, 0.1);
-  const normalizedItemType = normalizeItemTypeKey(norm.itemType);
-  const goodsFixedFee = config.goodsTypeFee[normalizedItemType] || 0;
-  const goodsMultiplier =
-    (config.goodsTypeMultiplier || {})[normalizedItemType] || 1;
   const codValue = norm.codValue;
-  const insuranceValue = norm.insuranceValue;
+  const insuranceValueFromItems = quoteItems.reduce(
+    (sum, item) => sum + toPositiveNumber(item.declaredValue, 0),
+    0,
+  );
+  const insuranceValue =
+    insuranceValueFromItems > 0 ? insuranceValueFromItems : norm.insuranceValue;
   const codFreeThreshold = toPositiveNumber((config.cod || {}).freeThreshold);
   const codFee =
     codValue > codFreeThreshold
@@ -1442,8 +1466,7 @@ function calculateDomesticQuote(payload, options = {}) {
           chieu_dai: norm.length,
           chieu_rong: norm.width,
           chieu_cao: norm.height,
-          goodsFeeFixed: goodsFixedFee,
-          goodsMultiplier: goodsMultiplier,
+          goodsItems: quoteItems,
           codFee: codFee,
           insuranceFee: insuranceFee,
           he_so_xang: norm.heSoXang,
@@ -1481,10 +1504,11 @@ function calculateDomesticQuote(payload, options = {}) {
       const weightFeePerOrder = 0;
       const tong_gia_van_chuyen = tong_gia_van_chuyen_co_ban;
       const weightFee = weightFeePerOrder;
-      const goodsMultiplierFee =
-        (tong_gia_van_chuyen_co_ban + weightFeePerOrder) *
-        Math.max(goodsMultiplier - 1, 0);
-      const goodsFee = goodsFixedFee * quantity + goodsMultiplierFee;
+      const goodsFeeDetails = calculateDomesticGoodsFee(
+        tong_gia_van_chuyen + weightFee,
+        quoteItems,
+      );
+      const goodsFee = goodsFeeDetails.total;
       const transportSubtotal =
         tong_gia_van_chuyen + weightFee + goodsFee;
       // Tất cả 4 gói đều tính phụ phí theo khung giờ lấy hàng
@@ -1563,6 +1587,7 @@ function calculateDomesticQuote(payload, options = {}) {
           volumeFee: roundCurrency(volumeFee),
           weightFee: roundCurrency(weightFee),
           goodsFee: roundCurrency(goodsFee),
+          goodsFeeDetails,
           timeFee: roundCurrency(timeFee),
           conditionFee: roundCurrency(conditionFee),
           serviceFee: roundCurrency(serviceFee),
@@ -1600,6 +1625,7 @@ function calculateDomesticQuote(payload, options = {}) {
     actualWeight: Number(actualWeightTotal.toFixed(2)),
     volumetricWeight: 0,
     quantity,
+    items: quoteItems,
     distanceKm,
     selectedVehicleKey: selectedVehicle.key,
     selectedVehicleLabel: selectedVehicle.label,
@@ -1638,6 +1664,123 @@ function getDomesticGoodsTypeInfo(itemTypeKey) {
   };
 }
 
+function getDomesticQuoteItems(payload = {}, fallback = {}) {
+  const sourceItems = Array.isArray(payload.mat_hang)
+    ? payload.mat_hang
+    : Array.isArray(payload.items)
+      ? payload.items
+      : Array.isArray(payload.orderItems)
+        ? payload.orderItems
+        : [];
+  const defaultItemType =
+    fallback.itemType || payload.loai_hang || payload.itemType || "thuong";
+  const defaultItemName =
+    fallback.itemName || payload.ten_hang || payload.itemName || "";
+
+  if (sourceItems.length) {
+    return sourceItems.map((item) => {
+      const itemType = normalizeItemTypeKey(
+        item?.loai_hang || item?.itemType || item?.item_type || defaultItemType,
+      );
+      const itemInfo = getDomesticGoodsTypeInfo(itemType);
+      return {
+        itemType,
+        itemName: String(item?.ten_hang || item?.itemName || "").trim(),
+        quantity: Math.max(
+          1,
+          Math.round(
+            toPositiveNumber(item?.so_luong || item?.quantity || 1) || 1,
+          ),
+        ),
+        declaredValue: toPositiveNumber(
+          item?.gia_tri_khai_bao ||
+            item?.declared_value ||
+            item?.insuranceValue ||
+            0,
+        ),
+        label: itemInfo.name,
+        fixedFee: itemInfo.surcharge,
+        multiplier:
+          (QUOTE_SHIPPING_DATA.domestic?.goodsTypeMultiplier || {})[itemType] || 1,
+        description: itemInfo.description,
+      };
+    });
+  }
+
+  const itemType = normalizeItemTypeKey(defaultItemType);
+  const itemInfo = getDomesticGoodsTypeInfo(itemType);
+  return [
+    {
+      itemType,
+      itemName: String(defaultItemName || "").trim(),
+      quantity: Math.max(
+        1,
+        Math.round(
+          toPositiveNumber(
+            fallback.quantity || payload.so_luong || payload.quantity || 1,
+          ) || 1,
+        ),
+      ),
+      declaredValue: toPositiveNumber(
+        fallback.insuranceValue ||
+          payload.gia_tri_khai_bao ||
+          payload.insuranceValue ||
+          0,
+      ),
+      label: itemInfo.name,
+      fixedFee: itemInfo.surcharge,
+      multiplier:
+        (QUOTE_SHIPPING_DATA.domestic?.goodsTypeMultiplier || {})[itemType] || 1,
+      description: itemInfo.description,
+    },
+  ];
+}
+
+function calculateDomesticGoodsFee(baseAmount, items = []) {
+  const safeItems = Array.isArray(items) && items.length ? items : [];
+  const totalQuantity = safeItems.reduce(
+    (sum, item) => sum + Math.max(1, Number(item?.quantity || 1)),
+    0,
+  );
+  const divisor = totalQuantity > 0 ? totalQuantity : 1;
+  const lines = safeItems.map((item) => {
+    const quantity = Math.max(1, Number(item?.quantity || 1));
+    const fixedFee = toPositiveNumber(item?.fixedFee, 0);
+    const multiplier = toPositiveNumber(item?.multiplier, 1) || 1;
+    const fixedTotal = fixedFee * quantity;
+    const multiplierFee =
+      toPositiveNumber(baseAmount, 0) *
+      (quantity / divisor) *
+      Math.max(multiplier - 1, 0);
+    return {
+      itemType: item?.itemType || "thuong",
+      itemName: item?.itemName || "",
+      label: item?.label || item?.itemType || "Hàng hóa",
+      description: item?.description || "",
+      quantity,
+      fixedFee,
+      fixedTotal: Math.round(fixedTotal),
+      multiplier,
+      multiplierFee: Math.round(multiplierFee),
+      total: Math.round(fixedTotal + multiplierFee),
+    };
+  });
+
+  const fixedFeeTotal = lines.reduce((sum, line) => sum + line.fixedTotal, 0);
+  const multiplierFeeTotal = lines.reduce(
+    (sum, line) => sum + line.multiplierFee,
+    0,
+  );
+
+  return {
+    lines,
+    totalQuantity: divisor,
+    fixedFeeTotal: Math.round(fixedFeeTotal),
+    multiplierFeeTotal: Math.round(multiplierFeeTotal),
+    total: Math.round(fixedFeeTotal + multiplierFeeTotal),
+  };
+}
+
 /**
  * Xây dựng chuỗi giải thích công thức tính cước nội địa bằng ngôn ngữ đơn giản.
  * Trả về mảng các bước tính để hiển thị trên UI.
@@ -1656,22 +1799,29 @@ function buildDomesticPricingExplanation(payload, result, options = {}) {
   const insuranceFreeThreshold =
     toPositiveNumber((config.insurance || {}).freeThreshold) || 1000000;
 
-  const weight = toPositiveNumber(payload.weight);
-  const length = toPositiveNumber(payload.length);
-  const width = toPositiveNumber(payload.width);
-  const height = toPositiveNumber(payload.height);
+  const weight = toPositiveNumber(
+    payload.weight || payload.can_nang || payload.tong_can_nang,
+  );
+  const length = toPositiveNumber(payload.length || payload.chieu_dai);
+  const width = toPositiveNumber(payload.width || payload.chieu_rong);
+  const height = toPositiveNumber(payload.height || payload.chieu_cao);
   const quantity = Math.max(
     1,
-    Math.round(toPositiveNumber(payload.quantity) || 1),
+    Math.round(toPositiveNumber(payload.quantity || payload.so_luong) || 1),
   );
-  const codValue = toPositiveNumber(payload.codValue);
-  const insuranceValue = toPositiveNumber(payload.insuranceValue);
-
-  const goodsInfo = getDomesticGoodsTypeInfo(payload.itemType);
-  const multiplier =
-    (config.goodsTypeMultiplier || {})[
-      normalizeItemTypeKey(payload.itemType)
-    ] || 1;
+  const codValue = toPositiveNumber(payload.codValue || payload.phi_thu_ho);
+  const quoteItems = getDomesticQuoteItems(payload, {
+    itemType: payload.itemType,
+    itemName: payload.itemName,
+    quantity,
+    insuranceValue: toPositiveNumber(
+      payload.insuranceValue || payload.gia_tri_khai_bao,
+    ),
+  });
+  const insuranceValue = quoteItems.reduce(
+    (sum, item) => sum + toPositiveNumber(item.declaredValue, 0),
+    0,
+  );
 
   const zoneLabels = {
     same_district: "Nội quận/huyện",
@@ -1737,31 +1887,36 @@ function buildDomesticPricingExplanation(payload, result, options = {}) {
   });
 
   // Bước 4: Phụ phí loại hàng
-  if (goodsInfo.surcharge > 0 || multiplier > 1) {
-    let goodsDetail = `Loại hàng: <strong>${goodsInfo.name}</strong>`;
-    if (goodsInfo.surcharge > 0) {
-      goodsDetail += ` → Phụ phí cố định: <strong>+${goodsInfo.surcharge.toLocaleString("vi-VN")}đ/kiện × ${quantity} kiện</strong>`;
-    }
-    if (multiplier > 1) {
-      goodsDetail += ` + Hệ số nhân ${multiplier} (tăng ${((multiplier - 1) * 100).toFixed(0)}% phần phí vận chuyển áp dụng)`;
-    }
-    if (goodsInfo.description) {
-      goodsDetail += `<br><em style="color:#666;font-size:0.88em">Lý do: ${goodsInfo.description}</em>`;
-    }
-    steps.push({
-      step: 4,
-      title: "Phụ phí tính chất hàng hóa",
-      detail: goodsDetail,
-      formula: null,
-    });
-  } else {
-    steps.push({
-      step: 4,
-      title: "Phụ phí tính chất hàng hóa",
-      detail: `Loại hàng: <strong>${goodsInfo.name}</strong> → <strong>Không phụ phí</strong>`,
-      formula: null,
-    });
-  }
+  const goodsDetail = quoteItems
+    .map((item, index) => {
+      const parts = [];
+      if (item.fixedFee > 0) {
+        parts.push(
+          `+${item.fixedFee.toLocaleString("vi-VN")}đ/kiện × ${item.quantity} kiện`,
+        );
+      }
+      if (item.multiplier > 1) {
+        parts.push(
+          `hệ số ×${item.multiplier} trên phần vận chuyển nền phân bổ theo số kiện của dòng này`,
+        );
+      }
+      const description = item.description
+        ? `<br><em style="color:#666;font-size:0.88em">Lý do: ${item.description}</em>`
+        : "";
+      return `Dòng ${index + 1}: <strong>${item.label}</strong> → ${
+        parts.length ? parts.join(" + ") : "<strong>Không phụ phí</strong>"
+      }${description}`;
+    })
+    .join("<br>");
+  steps.push({
+    step: 4,
+    title: "Phụ phí tính chất hàng hóa",
+    detail:
+      quoteItems.length > 1
+        ? `Đơn có nhiều dòng hàng nên hệ thống cộng phụ phí riêng cho từng dòng, sau đó cộng dồn toàn bộ:<br>${goodsDetail}`
+        : goodsDetail,
+    formula: null,
+  });
 
   // Bước 5: Phí COD
   const codFee = result.services[0]

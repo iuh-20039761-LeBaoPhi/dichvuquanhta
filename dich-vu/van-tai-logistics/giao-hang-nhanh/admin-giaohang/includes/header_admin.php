@@ -31,11 +31,12 @@ $unreadCount = 0;
                 <li class="<?php echo $currentPage === 'admin_stats.php' ? 'active' : ''; ?>">
                     <a href="admin_stats.php">Dashboard</a>
                 </li>
-                <li class="has-submenu <?php echo in_array($currentPage, ['orders_manage.php', 'users_manage.php'], true) ? 'active' : ''; ?>">
+                <li class="has-submenu <?php echo in_array($currentPage, ['orders_manage.php', 'users_manage.php', 'articles_manage.php'], true) ? 'active' : ''; ?>">
                     <a href="#" class="submenu-toggle">Quản lý <span class="arrow">▼</span></a>
                     <ul class="submenu">
                         <li class="<?php echo $currentPage === 'orders_manage.php' ? 'active' : ''; ?>"><a href="orders_manage.php">Đơn hàng</a></li>
                         <li class="<?php echo $currentPage === 'users_manage.php' ? 'active' : ''; ?>"><a href="users_manage.php">Người dùng</a></li>
+                        <li class="<?php echo $currentPage === 'articles_manage.php' ? 'active' : ''; ?>"><a href="articles_manage.php">Cẩm nang</a></li>
                     </ul>
                 </li>
                 <li class="<?php echo $currentPage === 'contact_manage.php' ? 'active' : ''; ?>">
@@ -43,6 +44,12 @@ $unreadCount = 0;
                 </li>
                 <li class="<?php echo $currentPage === 'admin_pricing.php' ? 'active' : ''; ?>">
                     <a href="admin_pricing.php">Bảng giá</a>
+                </li>
+                <li class="<?php echo $currentPage === 'pricing_support.php' ? 'active' : ''; ?>">
+                    <a href="pricing_support.php">Dữ liệu giá</a>
+                </li>
+                <li class="<?php echo $currentPage === 'admin_guide.php' ? 'active' : ''; ?>">
+                    <a href="admin_guide.php">Hướng dẫn</a>
                 </li>
             </ul>
         </div>

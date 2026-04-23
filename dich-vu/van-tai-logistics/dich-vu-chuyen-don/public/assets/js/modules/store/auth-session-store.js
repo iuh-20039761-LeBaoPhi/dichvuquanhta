@@ -36,8 +36,24 @@ function normalizeStoredIdentity(payload) {
     hovaten: normalizeText(payload.hovaten || ""),
     email: normalizeText(payload.email || "").toLowerCase(),
     sodienthoai: normalizeText(payload.sodienthoai || ""),
+    diachi: normalizeText(payload.diachi || payload.dia_chi || payload.address || ""),
     id_dichvu: normalizeText(payload.id_dichvu || "0") || "0",
     trangthai: normalizeText(payload.trangthai || "active"),
+    link_avatar: normalizeText(payload.link_avatar || payload.avatar_link || ""),
+    link_cccd_truoc: normalizeText(
+      payload.link_cccd_truoc || payload.cccd_front_link || "",
+    ),
+    link_cccd_sau: normalizeText(
+      payload.link_cccd_sau || payload.cccd_back_link || "",
+    ),
+    ten_cong_ty: normalizeText(payload.ten_cong_ty || payload.company_name || ""),
+    ma_so_thue: normalizeText(payload.ma_so_thue || payload.tax_code || ""),
+    dia_chi_doanh_nghiep: normalizeText(
+      payload.dia_chi_doanh_nghiep || payload.diachidonvi || "",
+    ),
+    loai_phuong_tien: normalizeText(
+      payload.loai_phuong_tien || payload.vehicle_type || "",
+    ),
   };
 }
 

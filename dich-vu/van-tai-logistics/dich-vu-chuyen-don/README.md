@@ -33,7 +33,8 @@ dich-vu-chuyen-don/
 │       ├── login.php
 │       ├── users_manage.php
 │       ├── orders_manage.php
-│       └── admin_pricing.php
+│       ├── admin_pricing.php
+│       └── admin_profile.php
 ├── index.html
 ├── dich-vu-chuyen-don.html
 ├── bang-gia-chuyen-don.html
@@ -44,15 +45,18 @@ dich-vu-chuyen-don/
 │   ├── dashboard-chuyendon.html
 │   ├── danh-sach-don-hang-chuyendon.html
 │   ├── chi-tiet-hoa-don-chuyendon.html
+│   ├── upload.php
 │   └── ho-so-chuyendon.html
 ├── nha-cung-cap/
 │   ├── dashboard-chuyendon.html
 │   ├── cong-viec.html
 │   ├── chi-tiet-don.html
+│   ├── upload.php
 │   └── ho-so-chuyendon.html
 ├── includes/
 │   ├── header.html
 │   └── footer.html
+├── upload.php
 └── public/
     ├── trang/
     │   ├── dich-vu/
@@ -108,6 +112,7 @@ dich-vu-chuyen-don/
 | `admin-chuyendon/public/users_manage.php`      | Quản lý người dùng                                              |
 | `admin-chuyendon/public/orders_manage.php`     | Quản lý đơn hàng                                                |
 | `admin-chuyendon/public/admin_pricing.php`     | Quản lý bảng giá                                                |
+| `admin-chuyendon/public/admin_profile.php`     | Cấu hình dung lượng upload tối đa                               |
 | `khach-hang/dashboard-chuyendon.html`                    | Dashboard khách hàng sau đăng nhập                              |
 | `khach-hang/danh-sach-don-hang-chuyendon.html`           | Danh sách đơn hàng của khách hàng                               |
 | `khach-hang/chi-tiet-hoa-don-chuyendon.html`             | Chi tiết một đơn đặt lịch của khách hàng                        |
@@ -137,6 +142,7 @@ dich-vu-chuyen-don/
   - [users_manage.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\users_manage.php)
   - [orders_manage.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\orders_manage.php)
   - [admin_pricing.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\admin_pricing.php)
+  - [admin_profile.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\admin_profile.php)
 - Tài khoản mặc định:
   - `admin01`
   - `0901234569`
@@ -159,6 +165,20 @@ Hiện đã có:
 Chưa có:
 
 - Tính giá / xác nhận đơn
+
+## Quy ước upload Drive
+
+- `movingServiceId = 12`
+- Theo bảng folder dùng chung đã chốt:
+  - `12` = ảnh dịch vụ web của `chuyển dọn`
+  - `32` = ảnh/video từ form đặt lịch, đánh giá khách hàng, báo cáo/ghi chú của nhà cung cấp trong `chuyển dọn`
+  - `33` = profile/avatar
+- Ảnh/video của form đặt lịch, đánh giá khách hàng và báo cáo/ghi chú của nhà cung cấp đi qua các file `upload.php` riêng theo khu và dùng `folderKey = 32`
+- Avatar khách hàng và nhà cung cấp đi qua `khach-hang/upload.php` hoặc `nha-cung-cap/upload.php` với `upload_kind = avatar`, dùng `folderKey = 33`
+- `CCCD` trước/sau hiện chưa có tuyến upload riêng để map folder riêng; vẫn đi fallback [public/upload_to_drive.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\upload_to_drive.php)
+- Nếu sau này phát sinh luồng upload ảnh dịch vụ riêng cho chuyển dọn thì dùng đúng `folderKey = 12`
+- Không tự ý sửa Apps Script Google Drive / Google Sheet để ép đổi folder cho `CCCD`
+- Dung lượng file upload tối đa được cấu hình từ [admin_profile.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\admin_profile.php) và frontend sẽ chặn file vượt ngưỡng trước khi gửi request
 
 ## Tài khoản / phiên người dùng
 

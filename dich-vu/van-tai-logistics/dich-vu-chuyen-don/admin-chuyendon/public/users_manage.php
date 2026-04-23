@@ -9,7 +9,7 @@ include __DIR__ . '/../includes/header_admin.php';
 <div class="hero-card">
     <div class="hero-content">
         <h1>Quản lý Người dùng</h1>
-        <p>Đồng bộ dữ liệu trực tiếp từ hệ thống <strong>Dịch vụ quanh ta</strong> qua API.</p>
+        <p>Đồng bộ dữ liệu trực tiếp từ hệ thống <strong>Dịch vụ quanh ta</strong> qua API. Nhà cung cấp chuyển dọn dùng mã dịch vụ <strong>12</strong>.</p>
     </div>
     <div class="hero-actions">
         <button class="btn btn-primary" onclick="userManager.showUserModal()">
@@ -36,7 +36,7 @@ include __DIR__ . '/../includes/header_admin.php';
                 <select class="select" id="roleFilter" onchange="userManager.handleFilterChange()">
                     <option value="">Tất cả vai trò</option>
                     <option value="customer">Khách hàng</option>
-                    <option value="provider">Nhà cung cấp</option>
+                    <option value="provider">Nhà cung cấp chuyển dọn</option>
                     <option value="admin">Quản trị viên</option>
                 </select>
             </div>
@@ -101,7 +101,7 @@ include __DIR__ . '/../includes/header_admin.php';
                     <label style="font-weight: 600; font-size: 13px; color: var(--ink);">Vai trò</label>
                     <select id="vaitro" style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line);">
                         <option value="customer">Khách hàng</option>
-                        <option value="provider">Nhà cung cấp</option>
+                        <option value="provider">Nhà cung cấp chuyển dọn</option>
                         <option value="admin">Quản trị viên</option>
                     </select>
                 </div>

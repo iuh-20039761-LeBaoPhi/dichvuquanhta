@@ -83,8 +83,15 @@
             .replace(/href="\.\.\/index\.html"/g, 'href="index.html"');
         }
 
+        function isPublishedArticle(article) {
+          return String(article.status || "published").toLowerCase() !== "hidden";
+        }
+
         function renderArticle(newsData) {
-          const article = newsData.find((p) => p.id === articleId);
+          const publishedArticles = Array.isArray(newsData)
+            ? newsData.filter(isPublishedArticle)
+            : [];
+          const article = publishedArticles.find((p) => p.id === articleId);
 
           if (article) {
           document.title = `${article.title} | Giao Hàng Nhanh`;
@@ -132,7 +139,7 @@
           const currentKeywords = getKeywords(article.title);
 
           // Tính điểm cho từng mục cẩm nang
-          const scoredArticles = newsData
+          const scoredArticles = publishedArticles
             .filter((item) => item.id !== article.id) // Trừ bài hiện tại
             .map((item) => {
               let score = 0;

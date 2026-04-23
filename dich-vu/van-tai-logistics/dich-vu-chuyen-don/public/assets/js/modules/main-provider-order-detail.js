@@ -1299,7 +1299,10 @@ const providerOrderDetailModule = (function (window, document) {
         let uploadedVideoLinks = [];
         if (imageFiles.length) {
           try {
-            uploadedImageLinks = (await core.uploadFilesToDrive(imageFiles))
+            uploadedImageLinks = (await core.uploadFilesToDrive(imageFiles, {
+              proxyFile: "nha-cung-cap/upload.php",
+              uploadKind: "order_media",
+            }))
               .map((item) =>
                 normalizeText(item?.url || item?.download_url || ""),
               )
@@ -1312,7 +1315,10 @@ const providerOrderDetailModule = (function (window, document) {
         }
         if (videoFiles.length) {
           try {
-            uploadedVideoLinks = (await core.uploadFilesToDrive(videoFiles))
+            uploadedVideoLinks = (await core.uploadFilesToDrive(videoFiles, {
+              proxyFile: "nha-cung-cap/upload.php",
+              uploadKind: "order_media",
+            }))
               .map((item) =>
                 normalizeText(item?.url || item?.download_url || ""),
               )

@@ -360,7 +360,10 @@ const partialPaths = {
 
     if (imageFiles.length) {
       try {
-        const uploadedImages = await core.uploadFilesToDrive(imageFiles);
+        const uploadedImages = await core.uploadFilesToDrive(imageFiles, {
+          proxyFile: "upload.php",
+          uploadKind: "order_media",
+        });
         imageLinks.push(
           ...uploadedImages
             .map((item) => String(item?.url || item?.download_url || "").trim())
@@ -374,7 +377,10 @@ const partialPaths = {
 
     if (videoFiles.length) {
       try {
-        const uploadedVideos = await core.uploadFilesToDrive(videoFiles);
+        const uploadedVideos = await core.uploadFilesToDrive(videoFiles, {
+          proxyFile: "upload.php",
+          uploadKind: "order_media",
+        });
         videoLinks.push(
           ...uploadedVideos
             .map((item) => String(item?.url || item?.download_url || "").trim())

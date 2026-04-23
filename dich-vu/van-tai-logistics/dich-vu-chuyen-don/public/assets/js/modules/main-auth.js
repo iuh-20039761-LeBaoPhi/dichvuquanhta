@@ -13,6 +13,7 @@ const authModule = (function (window, document) {
   window.__fastGoAuthInitDone = true;
 
   const dvqtUserTable = "nguoidung";
+  const movingServiceId = "12";
   const vnPhonePattern = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
 
   function normalizeText(value) {
@@ -23,6 +24,32 @@ const authModule = (function (window, document) {
 
   function normalizePhone(value) {
     return String(value || "").replace(/[^\d+]/g, "");
+  }
+
+  function splitServiceIds(value) {
+    return String(value || "")
+      .split(",")
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
+  }
+
+  function hasMovingServiceId(value) {
+    return splitServiceIds(value).includes(movingServiceId);
+  }
+
+  function resolveMovingAuthRole(user) {
+    const serviceIds = splitServiceIds(user?.id_dichvu || "0");
+    if (hasMovingServiceId(user?.id_dichvu)) return "nha-cung-cap";
+
+    const hasExplicitOtherService = serviceIds.some(
+      (serviceId) => serviceId && serviceId !== "0",
+    );
+    if (hasExplicitOtherService) return "khach-hang";
+
+    const role = normalizeText(user?.role || user?.vaitro || "").toLowerCase();
+    return ["nha-cung-cap", "doi-tac", "provider"].includes(role)
+      ? "nha-cung-cap"
+      : "khach-hang";
   }
 
   async function checkUserExistsOnKrud(phone) {
@@ -80,9 +107,7 @@ const authModule = (function (window, document) {
         trangthai: normalizeText(existingUser.trangthai || "active"),
       });
       writeStoredRole(
-        String(existingUser.id_dichvu || "0").trim() && String(existingUser.id_dichvu || "0").trim() !== "0"
-          ? "nha-cung-cap"
-          : "khach-hang",
+        resolveMovingAuthRole(existingUser),
       );
       return {
         status: "existing",

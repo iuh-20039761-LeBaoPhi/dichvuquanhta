@@ -519,6 +519,50 @@
         session.so_dien_thoai ||
         "",
       email: provider.email || session.email || "",
+      avatar: pickFirstText(
+        provider.avatar,
+        provider.photo,
+        provider.link_avatar,
+        provider.avatar_link,
+        provider.shipper_avatar,
+        provider.ncc_avatar,
+        session.link_avatar,
+        session.avatar_link,
+        session.avatar,
+      ),
+      photo: pickFirstText(
+        provider.photo,
+        provider.avatar,
+        provider.link_avatar,
+        provider.avatar_link,
+        provider.shipper_avatar,
+        provider.ncc_avatar,
+        session.link_avatar,
+        session.avatar_link,
+        session.avatar,
+      ),
+      link_avatar: pickFirstText(
+        provider.link_avatar,
+        provider.avatar_link,
+        provider.avatar,
+        provider.photo,
+        provider.shipper_avatar,
+        provider.ncc_avatar,
+        session.link_avatar,
+        session.avatar_link,
+        session.avatar,
+      ),
+      avatar_link: pickFirstText(
+        provider.avatar_link,
+        provider.link_avatar,
+        provider.avatar,
+        provider.photo,
+        provider.shipper_avatar,
+        provider.ncc_avatar,
+        session.avatar_link,
+        session.link_avatar,
+        session.avatar,
+      ),
       shipper_address: pickFirstText(
         provider.shipper_address,
         provider.address,
@@ -698,11 +742,45 @@
       order,
       provider: {
         ...provider,
+        avatar: pickFirstText(
+          provider.avatar,
+          provider.photo,
+          provider.link_avatar,
+          provider.avatar_link,
+          provider.shipper_avatar,
+          provider.ncc_avatar,
+        ),
+        photo: pickFirstText(
+          provider.photo,
+          provider.avatar,
+          provider.link_avatar,
+          provider.avatar_link,
+          provider.shipper_avatar,
+          provider.ncc_avatar,
+        ),
+        link_avatar: pickFirstText(
+          provider.link_avatar,
+          provider.avatar_link,
+          provider.avatar,
+          provider.photo,
+          provider.shipper_avatar,
+          provider.ncc_avatar,
+        ),
+        avatar_link: pickFirstText(
+          provider.avatar_link,
+          provider.link_avatar,
+          provider.avatar,
+          provider.photo,
+          provider.shipper_avatar,
+          provider.ncc_avatar,
+        ),
         attachments,
         feedback_media: feedbackMedia,
         shipper_reports: shipperReports,
       },
-      customer,
+      customer: {
+        ...customer,
+      },
       items,
       logs,
       source: detail?.source || "local",
@@ -1231,6 +1309,38 @@
         shipper_phone:
           record.nha_cung_cap_so_dien_thoai || record.shipper_phone || "",
         email: record.ncc_email || "",
+        avatar: pickFirstText(
+          record.ncc_avatar,
+          record.shipper_avatar,
+          record.nha_cung_cap_avatar,
+          record.avatar_ncc,
+          record.link_avatar_ncc,
+          record.avatar,
+        ),
+        photo: pickFirstText(
+          record.ncc_avatar,
+          record.shipper_avatar,
+          record.nha_cung_cap_avatar,
+          record.avatar_ncc,
+          record.link_avatar_ncc,
+          record.avatar,
+        ),
+        link_avatar: pickFirstText(
+          record.link_avatar_ncc,
+          record.ncc_avatar,
+          record.shipper_avatar,
+          record.nha_cung_cap_avatar,
+          record.avatar_ncc,
+          record.avatar,
+        ),
+        avatar_link: pickFirstText(
+          record.link_avatar_ncc,
+          record.ncc_avatar,
+          record.shipper_avatar,
+          record.nha_cung_cap_avatar,
+          record.avatar_ncc,
+          record.avatar,
+        ),
         shipper_address: pickFirstText(
           record.ncc_dia_chi,
           record.shipper_address,
@@ -1375,7 +1485,7 @@
     let targetUrl = null;
     if (viewer === "customer") {
       targetUrl = new URL(
-        `${projectBase}public/khach-hang/lich-su-don-hang-giaohang.html`,
+        `${projectBase}public/khach-hang/danh-sach-don-hang-giaohang.html`,
         window.location.href,
       );
     } else if (viewer === "shipper") {
@@ -1428,7 +1538,7 @@
 
     const backLabel =
       viewer === "customer"
-        ? "Về lịch sử đơn"
+        ? "Về danh sách đơn"
         : viewer === "shipper"
           ? "Về danh sách đơn"
           : "Về tra đơn hàng";
@@ -1477,7 +1587,10 @@
       throw new Error("Không tìm thấy helper upload Google Drive.");
     }
 
-    return (await core.uploadFilesToDrive(list)).map((item) => ({
+    const uploadOptions =
+      mediaType === "feedback" ? { proxyFile: "upload_feedback_media.php" } : {};
+
+    return (await core.uploadFilesToDrive(list, uploadOptions)).map((item) => ({
       id: normalizeText(item.id || item.fileId || ""),
       name: normalizeText(item.name || "Tệp đính kèm"),
       extension: getMediaExtension(item),
@@ -1745,6 +1858,18 @@
         provider.shipper_phone || provider.phone || "",
       shipper_phone: provider.shipper_phone || provider.phone || "",
       ncc_email: provider.email || "",
+      ncc_avatar:
+        provider.avatar ||
+        provider.photo ||
+        provider.link_avatar ||
+        provider.avatar_link ||
+        "",
+      shipper_avatar:
+        provider.avatar ||
+        provider.photo ||
+        provider.link_avatar ||
+        provider.avatar_link ||
+        "",
       nguoi_tra_cuoc: order.fee_payer || order.nguoi_tra_cuoc || "",
       fee_payer: order.fee_payer || order.nguoi_tra_cuoc || "",
       du_kien_giao_hang: order.estimated_delivery || "",

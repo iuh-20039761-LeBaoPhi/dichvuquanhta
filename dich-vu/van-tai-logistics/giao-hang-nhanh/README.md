@@ -15,9 +15,10 @@ Mục tiêu của tài liệu:
 Nguồn dữ liệu chính:
 
 - KRUD: đọc/ghi dữ liệu đơn hàng và tài khoản
+- KRUD bảng giá: nguồn chính cho cấu hình giá admin; `pricing-data.json` chỉ là cache/export cho public calculator
 - `localStorage` / `sessionStorage`: giữ session cục bộ, fallback tạm, draft form
 
-Không nên hiểu project này là app PHP fullstack duy nhất. Trong thư mục vẫn còn một cụm admin PHP cũ, nhưng phần giao diện khách hàng/shipper hiện tại chủ yếu là frontend tĩnh + KRUD.
+Không nên hiểu project này là app PHP fullstack duy nhất. Phần giao diện khách hàng/shipper hiện tại chủ yếu là frontend tĩnh + KRUD. Riêng cụm `admin-giaohang/...` vẫn dùng PHP để render admin và JavaScript để đồng bộ dữ liệu KRUD.
 
 ## 2. Phạm vi dự án
 
@@ -36,6 +37,9 @@ Lưu ý quan trọng:
 |---|---|
 | Đơn đặt lịch giao hàng | `giaohangnhanh_dat_lich` |
 | Tài khoản dùng chung hệ sinh thái | `nguoidung` |
+| Phiên bản bảng giá nội bộ | `ghn_pricing_versions`, `ghn_pricing_meta` |
+| Cấu hình bảng giá | `ghn_goi_dich_vu`, `ghn_gia_goi_theo_vung`, `ghn_loai_hang`, `ghn_khung_gio_dich_vu`, `ghn_dieu_kien_giao`, `ghn_phuong_tien`, `ghn_cau_hinh_khoang_cach`, `ghn_cau_hinh_tai_chinh` |
+| Dữ liệu phụ trợ bảng giá | `ghn_thanh_pho`, `ghn_quan_huyen`, `ghn_vung_giao_hang`, `ghn_goi_y_phuong_tien`, `ghn_pricing_chunks` |
 
 Một số field quan trọng của đơn:
 
@@ -151,12 +155,19 @@ Module chính của trang chi tiết:
 Entry HTML:
 
 - `public/khach-hang/dashboard-giaohang.html`
-- `public/khach-hang/lich-su-don-hang-giaohang.html`
+- `public/khach-hang/danh-sach-don-hang-giaohang.html`
 - `public/khach-hang/ho-so-giaohang.html`
 
 Logic chính:
 
 - `public/assets/js/customer-portal.js`
+
+Lưu ý upload hồ sơ:
+
+- `avatar` đang có proxy upload riêng với `folderKey = 33`.
+- `CCCD` hiện chưa có proxy upload riêng trong GHN để map `folderKey` theo đúng thư mục dịch vụ.
+- Vì chưa có chỗ/tuyến upload tách riêng cho `CCCD`, không tự ý vá Apps Script Google Drive / Google Sheet chỉ để ép lưu CCCD.
+- Nếu sau này cần bật upload `CCCD`, phải tạo rõ proxy/file đích cho GHN trước rồi mới gắn `folderKey` tương ứng.
 
 ### Portal nhà cung cấp / shipper
 
@@ -169,6 +180,44 @@ Entry HTML:
 Logic chính:
 
 - `public/assets/js/shipper-portal.js`
+
+### Admin bảng giá
+
+Entry PHP:
+
+- `admin-giaohang/public/admin_guide.php`
+- `admin-giaohang/public/admin_pricing.php`
+- `admin-giaohang/public/pricing_support.php`
+
+Logic và partial chính:
+
+- `admin-giaohang/includes/pricing/admin_pricing_logic.php`
+  Đọc dữ liệu bảng giá, validate preview POST, dựng biến cho view.
+
+- `admin-giaohang/includes/pricing/admin_pricing_sections.php`
+  Render các bảng tóm tắt trong từng tab bảng giá.
+
+- `admin-giaohang/includes/pricing/admin_pricing_modals.php`
+  Render modal thêm/sửa/xóa.
+
+- `admin-giaohang/lib/pricing_config_service.php`
+  Dựng cấu trúc pricing từ KRUD theo bảng giá đang áp dụng, fallback JSON khi bootstrap lần đầu.
+
+- `admin-giaohang/api/pricing_export.php`
+  Export lại `public/data/pricing-data.json` cho public calculator.
+
+JS admin:
+
+- `admin-giaohang/public/assets/js/admin-pricing-krud.js`
+  Xử lý submit form, lưu KRUD, export JSON, patch DOM.
+
+- `admin-giaohang/public/assets/js/pricing-support.js`
+  CRUD dữ liệu phụ trợ: thành phố, quận huyện, nhãn vùng. UI phiên bản bảng giá đã được ẩn; `pricing_version_id` vẫn dùng nội bộ để biết bảng giá đang áp dụng.
+
+Tài liệu vận hành:
+
+- `admin-giaohang/public/admin_guide.php`
+  Trang hướng dẫn trong admin, mô tả toàn bộ chức năng quản trị, nguồn dữ liệu và giới hạn hiện tại.
 
 ## 5. Muốn sửa gì thì vào đâu
 
@@ -223,6 +272,36 @@ Sửa form phản hồi / ghi chú / media:
 ### Sửa portal shipper
 
 - `public/assets/js/shipper-portal.js`
+
+### Sửa admin bảng giá
+
+Sửa trang hướng dẫn admin:
+
+- `admin-giaohang/public/admin_guide.php`
+- `admin-giaohang/includes/header_admin.php`
+
+Sửa bảng giá chính:
+
+- `admin-giaohang/public/admin_pricing.php`
+- `admin-giaohang/includes/pricing/admin_pricing_sections.php`
+- `admin-giaohang/includes/pricing/admin_pricing_modals.php`
+- `admin-giaohang/includes/pricing/admin_pricing_logic.php`
+- `admin-giaohang/public/assets/js/admin-pricing-krud.js`
+
+Sửa dữ liệu phụ trợ bảng giá:
+
+- `admin-giaohang/public/pricing_support.php`
+- `admin-giaohang/public/assets/js/pricing-support.js`
+
+Sửa mapping KRUD/JSON export:
+
+- `admin-giaohang/lib/pricing_config_service.php`
+- `admin-giaohang/api/pricing_export.php`
+
+Lưu ý:
+
+- Admin không hiển thị card “Phiên bản bảng giá” nữa.
+- Không xóa `pricing_version_id`, `ghn_pricing_versions` hoặc `active_pricing_version_id` nếu chỉ muốn đơn giản UI. Các field/bảng này vẫn là khóa nội bộ để gom cấu hình giá đang áp dụng.
 
 ### Sửa CSS
 
@@ -292,6 +371,22 @@ Luồng tra đơn đọc từ:
 - KRUD trước
 - local/mock sau, để tránh vỡ UI nếu thiếu dữ liệu
 
+### Bảng giá public
+
+Luồng:
+
+1. Admin chỉnh giá ở `admin_pricing.php` hoặc dữ liệu phụ trợ ở `pricing_support.php`
+2. JS admin lưu thay đổi vào các bảng KRUD theo `pricing_version_id` đang áp dụng
+3. Admin gọi `api/pricing_export.php`
+4. API ghi lại `public/data/pricing-data.json`
+5. Public calculator và form đặt lịch đọc JSON cache để tính nhanh phía client
+
+Ghi nhớ:
+
+- KRUD là nguồn chính.
+- `public/data/pricing-data.json` là cache/export, không phải nguồn chỉnh sửa chính.
+- UI phiên bản bảng giá đã bị ẩn khỏi admin; rollback/kích hoạt version cũ không còn là thao tác trên giao diện.
+
 ## 7. Quy ước trạng thái đang dùng
 
 Trang chi tiết standalone GHN đang suy ra trạng thái chủ yếu từ các mốc:
@@ -335,7 +430,11 @@ Thư mục:
 
 - `admin-giaohang/...`
 
-Đây là cụm admin PHP cũ. Vẫn còn trong repo nhưng không phải trung tâm của flow frontend hiện tại.
+Đây là cụm admin PHP. Nó không phải trung tâm của flow khách hàng/shipper, nhưng vẫn là nơi quản lý bảng giá, dữ liệu phụ trợ, thống kê và hồ sơ admin.
+
+Tài liệu riêng cho bảng giá admin:
+
+- `admin-giaohang/includes/pricing/README-pricing-admin.md`
 
 ### Session / auth
 

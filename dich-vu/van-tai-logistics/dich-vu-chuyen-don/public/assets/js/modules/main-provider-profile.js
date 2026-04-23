@@ -95,6 +95,17 @@ const providerProfileModule = (function (window, document) {
     const emptyState = root.querySelector(`#${emptyId}`);
     if (!input || !preview) return;
 
+    const showEmptyState = () => {
+      preview.hidden = true;
+      if (emptyState) emptyState.hidden = false;
+    };
+
+    preview.addEventListener("error", showEmptyState);
+
+    if (preview.complete && preview.getAttribute("src") && !preview.naturalWidth) {
+      showEmptyState();
+    }
+
     input.addEventListener("change", () => {
       const file = input.files && input.files[0];
       if (!file) return;
@@ -139,12 +150,12 @@ const providerProfileModule = (function (window, document) {
     const email = String(identity.email || "").trim();
     const address = String(identity.diachi || identity.dia_chi || "").trim();
     const vehicleType = String(identity.loai_phuong_tien || identity.vehicle_type || "").trim();
-    const avatarUrl = resolveMediaUrl(identity.link_avatar || identity.avatartenfile);
+    const avatarUrl = resolveMediaUrl(identity.link_avatar);
     const cccdFrontUrl = resolveMediaUrl(
-      identity.link_cccd_truoc || identity.cccdmattruoctenfile,
+      identity.link_cccd_truoc,
     );
     const cccdBackUrl = resolveMediaUrl(
-      identity.link_cccd_sau || identity.cccdmatsautenfile,
+      identity.link_cccd_sau,
     );
     const statusMeta = getStatusMeta(identity);
     const initial = getProfileInitial(displayName);
@@ -174,16 +185,13 @@ const providerProfileModule = (function (window, document) {
               <span class="moving-profile-status-badge ${escapeHtml(statusMeta.className)}">${escapeHtml(statusMeta.label)}</span>
               <p>${escapeHtml(statusMeta.note)}</p>
               <small><i class="fas fa-clock"></i> Cập nhật gần nhất: ${escapeHtml(formatDateTime(identity.updated_at || identity.created_at || ""))}</small>
+              <button class="customer-btn customer-btn-primary moving-profile-hero-save" type="submit" form="provider-profile-form" id="provider-profile-submit-btn">
+                <i class="fas fa-floppy-disk"></i> Lưu thay đổi
+              </button>
             </div>
           </div>
 
-          <div class="moving-profile-summary">
-            <article><span>Tổng yêu cầu</span><strong>${escapeHtml(String(stats.total || 0))}</strong></article>
-            <article><span>Đang xử lý</span><strong>${escapeHtml(String(stats.active_count || stats.open_count || 0))}</strong></article>
-            <article><span>Hoàn tất</span><strong>${escapeHtml(String(stats.confirmed_count || stats.completed_count || 0))}</strong></article>
-          </div>
-
-          <div class="customer-profile-sections moving-profile-layout">
+          <div class="moving-profile-dashboard-grid">
             <form id="provider-profile-form" class="customer-form-stack moving-profile-main" enctype="multipart/form-data">
               <div class="customer-profile-card moving-profile-card">
                 <div class="customer-profile-card-head">
@@ -238,15 +246,8 @@ const providerProfileModule = (function (window, document) {
                 <p class="customer-form-helper customer-form-helper-compact">
                   <i class="fas fa-circle-info"></i> Số điện thoại là định danh tài khoản nhà cung cấp, hiện không chỉnh sửa tại đây.
                 </p>
-                <div class="customer-inline-actions">
-                  <button class="customer-btn customer-btn-primary" type="submit" id="provider-profile-submit-btn">
-                    <i class="fas fa-floppy-disk"></i> Lưu thay đổi
-                  </button>
-                </div>
               </div>
-            </form>
 
-            <div class="moving-profile-side">
               <div class="customer-profile-card moving-profile-card">
                 <div class="customer-profile-card-head">
                   <i class="fas fa-shield-check"></i>
@@ -256,9 +257,9 @@ const providerProfileModule = (function (window, document) {
                   </div>
                 </div>
                 <div class="moving-media-grid">
-                  <article class="moving-media-card">
+                  <article class="moving-media-card moving-media-card-avatar">
                     <div class="moving-media-head"><strong>Ảnh đại diện</strong><span>Nhận diện</span></div>
-                    <div class="moving-media-preview">
+                    <div class="moving-media-preview moving-media-preview-avatar">
                       <img id="provider-avatar-preview" src="${escapeHtml(avatarUrl || "")}" alt="Ảnh đại diện" ${avatarUrl ? "" : "hidden"} />
                       <div id="provider-avatar-empty" class="moving-media-empty" ${avatarUrl ? "hidden" : ""}>Chưa có ảnh đại diện</div>
                     </div>
@@ -272,7 +273,7 @@ const providerProfileModule = (function (window, document) {
                     <div class="moving-media-head"><strong>CCCD mặt trước</strong><span>Xác minh</span></div>
                     <div class="moving-media-preview">
                       <img id="provider-cccd-front-preview" src="${escapeHtml(cccdFrontUrl || "")}" alt="CCCD mặt trước" ${cccdFrontUrl ? "" : "hidden"} />
-                      <div id="provider-cccd-front-empty" class="moving-media-empty" ${cccdFrontUrl ? "hidden" : ""}>Chưa có CCCD mặt trước</div>
+                      <div id="provider-cccd-front-empty" class="moving-media-empty" ${cccdFrontUrl ? "hidden" : ""}><i class="fas fa-cloud-arrow-up"></i><span>Tải lên mặt trước</span></div>
                     </div>
                     <label class="customer-btn customer-btn-ghost moving-upload-btn">
                       <input id="provider-cccd-front-file" name="cccd_front_file" type="file" accept="image/*" hidden />
@@ -284,13 +285,39 @@ const providerProfileModule = (function (window, document) {
                     <div class="moving-media-head"><strong>CCCD mặt sau</strong><span>Xác minh</span></div>
                     <div class="moving-media-preview">
                       <img id="provider-cccd-back-preview" src="${escapeHtml(cccdBackUrl || "")}" alt="CCCD mặt sau" ${cccdBackUrl ? "" : "hidden"} />
-                      <div id="provider-cccd-back-empty" class="moving-media-empty" ${cccdBackUrl ? "hidden" : ""}>Chưa có CCCD mặt sau</div>
+                      <div id="provider-cccd-back-empty" class="moving-media-empty" ${cccdBackUrl ? "hidden" : ""}><i class="fas fa-cloud-arrow-up"></i><span>Tải lên mặt sau</span></div>
                     </div>
                     <label class="customer-btn customer-btn-ghost moving-upload-btn">
                       <input id="provider-cccd-back-file" name="cccd_back_file" type="file" accept="image/*" hidden />
                       <i class="fas fa-id-card-clip"></i> Chọn ảnh
                     </label>
                   </article>
+                </div>
+              </div>
+            </form>
+
+            <aside class="moving-profile-side">
+              <div class="moving-profile-stat-card">
+                <h3>Thống kê vận hành</h3>
+                <div class="moving-profile-stat-list">
+                  <div><span><i class="fas fa-box"></i> Tổng yêu cầu</span><strong>${escapeHtml(String(stats.total || 0))}</strong></div>
+                  <div><span><i class="fas fa-spinner"></i> Đang xử lý</span><strong>${escapeHtml(String(stats.active_count || stats.open_count || 0))}</strong></div>
+                  <div><span><i class="fas fa-circle-check"></i> Hoàn tất</span><strong>${escapeHtml(String(stats.confirmed_count || stats.completed_count || 0))}</strong></div>
+                </div>
+              </div>
+
+              <div class="customer-profile-card moving-profile-card">
+                <div class="customer-profile-card-head">
+                  <i class="fas fa-truck-ramp-box"></i>
+                  <div>
+                    <h3>Tóm tắt phương tiện</h3>
+                    <p class="customer-profile-card-note">Thông tin này lấy từ mục loại phương tiện trong hồ sơ hành nghề.</p>
+                  </div>
+                </div>
+                <div class="moving-profile-fact-list">
+                  <div><span>Loại phương tiện</span><strong>${escapeHtml(vehicleType || "Chưa cập nhật")}</strong></div>
+                  <div><span>Khu vực liên hệ</span><strong>${escapeHtml(address || "Chưa cập nhật")}</strong></div>
+                  <div><span>Số điện thoại</span><strong>${escapeHtml(phone || "Chưa cập nhật")}</strong></div>
                 </div>
               </div>
 
@@ -335,7 +362,7 @@ const providerProfileModule = (function (window, document) {
                   </div>
                 </form>
               </div>
-            </div>
+            </aside>
           </div>
         </section>
       </div>

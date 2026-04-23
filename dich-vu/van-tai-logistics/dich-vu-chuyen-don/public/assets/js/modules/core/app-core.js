@@ -40,15 +40,98 @@ function toPublicUrl(path) {
   return joinUrl(publicBase, path);
 }
 
-function getDriveUploadProxyUrl() {
-  const override = String(
-    window.DICH_VU_CHUYEN_DON_DRIVE_UPLOAD_PROXY_URL || "",
-  ).trim();
+function getDriveUploadProxyUrl(fileName = "public/upload_to_drive.php") {
+  const normalizedFileName = String(fileName || "public/upload_to_drive.php").trim();
+  if (!normalizedFileName) {
+    throw new Error("Thiếu tên file upload proxy.");
+  }
+
+  const overrideMap =
+    window.DICH_VU_CHUYEN_DON_DRIVE_UPLOAD_PROXY_URLS &&
+    typeof window.DICH_VU_CHUYEN_DON_DRIVE_UPLOAD_PROXY_URLS === "object"
+      ? window.DICH_VU_CHUYEN_DON_DRIVE_UPLOAD_PROXY_URLS
+      : null;
+  const override =
+    String(
+      (overrideMap && overrideMap[normalizedFileName]) ||
+        (normalizedFileName === "public/upload_to_drive.php"
+          ? window.DICH_VU_CHUYEN_DON_DRIVE_UPLOAD_PROXY_URL
+          : ""),
+    ).trim();
   if (override) return override;
   return new URL(
-    toProjectUrl("public/upload_to_drive.php"),
+    toProjectUrl(normalizedFileName),
     window.location.origin,
   ).toString();
+}
+
+function getUploadSettingsUrl() {
+  const override = String(window.DICH_VU_CHUYEN_DON_UPLOAD_SETTINGS_URL || "").trim();
+  if (override) return override;
+  return new URL(
+    toProjectUrl("public/upload_settings.php"),
+    window.location.origin,
+  ).toString();
+}
+
+const DEFAULT_MAX_UPLOAD_MB = 25;
+let uploadSettingsPromise = null;
+
+function formatUploadLimitText(maxUploadMb) {
+  const normalized = Number(maxUploadMb || DEFAULT_MAX_UPLOAD_MB);
+  return `${normalized.toLocaleString("vi-VN")} MB`;
+}
+
+async function loadUploadSettings(forceReload = false) {
+  if (!forceReload && uploadSettingsPromise) {
+    return uploadSettingsPromise;
+  }
+
+  uploadSettingsPromise = fetch(getUploadSettingsUrl(), {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((payload) => {
+      const maxUploadMb = Math.max(
+        1,
+        Number(payload?.data?.settings?.max_upload_mb || DEFAULT_MAX_UPLOAD_MB),
+      );
+      return {
+        maxUploadMb,
+        maxUploadBytes: Math.round(maxUploadMb * 1024 * 1024),
+      };
+    })
+    .catch((error) => {
+      console.warn("Không thể tải cấu hình upload, dùng mặc định:", error);
+      return {
+        maxUploadMb: DEFAULT_MAX_UPLOAD_MB,
+        maxUploadBytes: DEFAULT_MAX_UPLOAD_MB * 1024 * 1024,
+      };
+    });
+
+  return uploadSettingsPromise;
+}
+
+async function validateDriveUploadFile(fileObj) {
+  if (!(fileObj instanceof File)) {
+    throw new Error("Không có file hợp lệ để tải lên Google Drive.");
+  }
+
+  const settings = await loadUploadSettings();
+  const maxUploadBytes = Number(settings?.maxUploadBytes || 0);
+  if (maxUploadBytes > 0 && Number(fileObj.size || 0) > maxUploadBytes) {
+    throw new Error(
+      `File "${fileObj.name || "không rõ tên"}" vượt quá dung lượng cho phép (${formatUploadLimitText(settings.maxUploadMb)}).`,
+    );
+  }
 }
 
 function getDriveFileIdFromUrl(value) {
@@ -66,6 +149,10 @@ function getDriveFileIdFromUrl(value) {
   }
 
   return "";
+}
+
+function isDriveFileId(value) {
+  return /^[A-Za-z0-9_-]{20,}$/.test(String(value || "").trim());
 }
 
 function getDriveFileUrls(fileId) {
@@ -90,7 +177,8 @@ function getDriveFileUrls(fileId) {
 
 function getDriveResolvedUrls(value) {
   const normalizedValue = String(value || "").trim();
-  const fileId = getDriveFileIdFromUrl(normalizedValue);
+  const fileId = getDriveFileIdFromUrl(normalizedValue) ||
+    (isDriveFileId(normalizedValue) ? normalizedValue : "");
   if (!fileId) {
     return {
       fileId: "",
@@ -395,18 +483,22 @@ function getFileExtension(fileName, mimeType = "") {
 }
 
 async function uploadFileToDrive(fileObj, options = {}) {
-  if (!(fileObj instanceof File)) {
-    throw new Error("Không có file hợp lệ để tải lên Google Drive.");
-  }
+  await validateDriveUploadFile(fileObj);
 
   const formData = new FormData();
   formData.append("file", fileObj, fileObj.name || "media");
   formData.append("name", options.name || fileObj.name || "media");
+  if (options.uploadKind) {
+    formData.append("upload_kind", String(options.uploadKind).trim());
+  }
 
-  const response = await fetch(getDriveUploadProxyUrl(), {
+  const response = await fetch(
+    getDriveUploadProxyUrl(options.proxyFile || "public/upload_to_drive.php"),
+    {
     method: "POST",
     body: formData,
-  });
+    },
+  );
   const payload = await response.json().catch(() => null);
 
   if (!response.ok || !payload?.success) {

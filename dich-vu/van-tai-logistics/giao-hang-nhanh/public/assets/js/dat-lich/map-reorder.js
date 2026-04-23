@@ -577,13 +577,17 @@ async function restorePendingBookingDraft() {
 
   const ngayLayHang = payload.ngay_lay_hang || payload.pickup_date || "";
   const khungGioLayHang =
-    payload.khung_gio_lay_hang || payload.pickup_slot || "";
+    payload.ten_khung_gio_lay_hang ||
+    payload.pickup_slot_label ||
+    payload.khung_gio_lay_hang ||
+    payload.pickup_slot ||
+    "";
   const phuongTien = payload.phuong_tien || payload.vehicle || "";
 
-  if (preferredMode !== "instant" && pickupDateInput && ngayLayHang) {
+  if (pickupDateInput && ngayLayHang) {
     pickupDateInput.value = ngayLayHang;
   }
-  if (preferredMode !== "instant" && pickupSlotSelect && khungGioLayHang) {
+  if (pickupSlotSelect && khungGioLayHang) {
     pickupSlotSelect.value = khungGioLayHang;
   }
   if (vehicleSelect && phuongTien) {

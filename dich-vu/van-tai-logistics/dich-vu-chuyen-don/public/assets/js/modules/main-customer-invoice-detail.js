@@ -1461,7 +1461,10 @@ const customerInvoiceDetailModule = (function (window, document) {
           let uploadedVideoLinks = [];
           if (imageFiles.length) {
             try {
-              uploadedImageLinks = (await core.uploadFilesToDrive(imageFiles))
+              uploadedImageLinks = (await core.uploadFilesToDrive(imageFiles, {
+                proxyFile: "khach-hang/upload.php",
+                uploadKind: "order_media",
+              }))
                 .map((item) =>
                   normalizeText(item?.url || item?.download_url || ""),
                 )
@@ -1474,7 +1477,10 @@ const customerInvoiceDetailModule = (function (window, document) {
           }
           if (videoFiles.length) {
             try {
-              uploadedVideoLinks = (await core.uploadFilesToDrive(videoFiles))
+              uploadedVideoLinks = (await core.uploadFilesToDrive(videoFiles, {
+                proxyFile: "khach-hang/upload.php",
+                uploadKind: "order_media",
+              }))
                 .map((item) =>
                   normalizeText(item?.url || item?.download_url || ""),
                 )

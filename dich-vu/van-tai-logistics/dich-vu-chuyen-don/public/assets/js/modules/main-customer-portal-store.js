@@ -3,6 +3,7 @@ import {
   getKrudListFn,
   getKrudUpdateFn,
 } from "./api/krud-client.js";
+import core from "./core/app-core.js";
 import {
   ensureBookingVehicleLabelMapLoaded,
   formatBookingScheduleLabel,
@@ -36,6 +37,7 @@ import {
 const customerPortalStoreModule = (function (window) {
   const bookingCrudTableName = "dich_vu_chuyen_don_dat_lich";
   const dvqtUserTable = "nguoidung";
+  const movingServiceId = "12";
   const krudScriptUrl = "https://api.dvqt.vn/js/krud.js";
   const AUTO_CANCEL_PENDING_MINUTES = 120;
   const AUTO_CANCEL_PENDING_MS = AUTO_CANCEL_PENDING_MINUTES * 60 * 1000;
@@ -57,6 +59,17 @@ const customerPortalStoreModule = (function (window) {
 
   function normalizePhone(value) {
     return String(value || "").replace(/[^\d+]/g, "");
+  }
+
+  function splitServiceIds(value) {
+    return String(value || "")
+      .split(",")
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
+  }
+
+  function hasMovingServiceId(value) {
+    return splitServiceIds(value).includes(movingServiceId);
   }
 
   function readCookie(name) {
@@ -103,13 +116,24 @@ const customerPortalStoreModule = (function (window) {
   }
 
   function resolveRoleFromProfile(profile) {
-    const normalizedRole = normalizeLowerText(profile?.role || "");
+    const serviceIds = splitServiceIds(profile?.id_dichvu || "0");
+    if (hasMovingServiceId(profile?.id_dichvu)) {
+      return "nha-cung-cap";
+    }
+
+    const hasExplicitOtherService = serviceIds.some(
+      (serviceId) => serviceId && serviceId !== "0",
+    );
+    if (hasExplicitOtherService) {
+      return "khach-hang";
+    }
+
+    const normalizedRole = normalizeLowerText(profile?.role || profile?.vaitro || "");
     if (["nha-cung-cap", "doi-tac", "provider"].includes(normalizedRole)) {
       return "nha-cung-cap";
     }
 
-    const serviceIds = normalizeText(profile?.id_dichvu || "0");
-    return serviceIds && serviceIds !== "0" ? "nha-cung-cap" : "khach-hang";
+    return "khach-hang";
   }
 
   function parseNumber(value) {
@@ -503,20 +527,14 @@ const customerPortalStoreModule = (function (window) {
       link_avatar: normalizeText(profile.link_avatar || ""),
       link_cccd_truoc: normalizeText(profile.link_cccd_truoc || ""),
       link_cccd_sau: normalizeText(profile.link_cccd_sau || ""),
-      avatartenfile: normalizeText(
-        profile.avatartenfile || profile.avatar_name || "",
-      ),
-      cccdmattruoctenfile: normalizeText(
-        profile.cccdmattruoctenfile || profile.cccd_front_name || "",
-      ),
-      cccdmatsautenfile: normalizeText(
-        profile.cccdmatsautenfile || profile.cccd_back_name || "",
-      ),
       ten_cong_ty: normalizeText(
         profile.ten_cong_ty || profile.company_name || "",
       ),
       ma_so_thue: normalizeText(
         profile.ma_so_thue || profile.tax_code || "",
+      ),
+      dia_chi_doanh_nghiep: normalizeText(
+        profile.dia_chi_doanh_nghiep || profile.diachidonvi || "",
       ),
       loai_phuong_tien: normalizeText(
         profile.loai_phuong_tien || profile.vehicle_type || "",
@@ -713,33 +731,10 @@ const customerPortalStoreModule = (function (window) {
       link_cccd_sau: normalizeText(
         row.link_cccd_sau || row.cccd_back_link || "",
       ),
-      avatartenfile: normalizeText(
-        row.avatartenfile || row.avatar_name || "",
-      ),
-      avatar_name: normalizeText(
-        row.avatar_name || row.avatartenfile || "",
-      ),
-      cccdmattruoctenfile: normalizeText(
-        row.cccdmattruoctenfile || row.cccd_front_name || "",
-      ),
-      cccd_front_name: normalizeText(
-        row.cccd_front_name || row.cccdmattruoctenfile || "",
-      ),
-      cccdmatsautenfile: normalizeText(
-        row.cccdmatsautenfile || row.cccd_back_name || "",
-      ),
-      cccd_back_name: normalizeText(
-        row.cccd_back_name || row.cccdmatsautenfile || "",
-      ),
       ten_cong_ty: normalizeText(row.ten_cong_ty || row.company_name || ""),
-      company_name: normalizeText(row.ten_cong_ty || row.company_name || ""),
       ma_so_thue: normalizeText(row.ma_so_thue || row.tax_code || ""),
-      tax_code: normalizeText(row.ma_so_thue || row.tax_code || ""),
       loai_phuong_tien: normalizeText(
         row.loai_phuong_tien || row.vehicle_type || "",
-      ),
-      vehicle_type: normalizeText(
-        row.vehicle_type || row.loai_phuong_tien || "",
       ),
     };
   }
@@ -1799,6 +1794,11 @@ const customerPortalStoreModule = (function (window) {
       try {
         const uploadedAvatar = await core.uploadFileToDrive(avatarFile, {
           name: avatarFile.name,
+          proxyFile:
+            getSavedRole() === "nha-cung-cap"
+              ? "nha-cung-cap/upload.php"
+              : "khach-hang/upload.php",
+          uploadKind: "avatar",
         });
         mediaPayload.link_avatar = normalizeText(
           uploadedAvatar?.fileId || uploadedAvatar?.id || "",
@@ -1813,6 +1813,7 @@ const customerPortalStoreModule = (function (window) {
       try {
         const uploadedFront = await core.uploadFileToDrive(cccdFrontFile, {
           name: cccdFrontFile.name,
+          proxyFile: "public/upload_to_drive.php",
         });
         mediaPayload.link_cccd_truoc = normalizeText(
           uploadedFront?.fileId || uploadedFront?.id || "",
@@ -1827,6 +1828,7 @@ const customerPortalStoreModule = (function (window) {
       try {
         const uploadedBack = await core.uploadFileToDrive(cccdBackFile, {
           name: cccdBackFile.name,
+          proxyFile: "public/upload_to_drive.php",
         });
         mediaPayload.link_cccd_sau = normalizeText(
           uploadedBack?.fileId || uploadedBack?.id || "",
@@ -1884,6 +1886,12 @@ const customerPortalStoreModule = (function (window) {
             nextProfilePayload.ma_so_thue ||
               nextProfilePayload.tax_code ||
               currentIdentity.ma_so_thue ||
+              "",
+          ),
+          dia_chi_doanh_nghiep: normalizeText(
+            nextProfilePayload.dia_chi_doanh_nghiep ||
+              nextProfilePayload.diachidonvi ||
+              currentIdentity.dia_chi_doanh_nghiep ||
               "",
           ),
           loai_phuong_tien: normalizeText(

@@ -1,5 +1,4 @@
 <?php
-// Fallback proxy for legacy flows such as CCCD. Intentionally does not send folderKey.
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -7,12 +6,12 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 $scriptUrl = "https://script.google.com/macros/s/AKfycbxThLPP2mI062gddeEyAAy3XYzUMJ-CIzMP3dMFWQ7v31t5H10ZESvx_i-ZKzWO5A_pog/exec";
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['file'])) {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST' || !isset($_FILES['file'])) {
     echo json_encode(['success' => false, 'message' => 'Yêu cầu không hợp lệ'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
@@ -35,6 +34,7 @@ $payload = json_encode([
     'name' => $name !== '' ? $name : 'media',
     'file' => $fileContent,
     'type' => $mime !== '' ? $mime : 'application/octet-stream',
+    'folderKey' => 32,
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
 if ($payload === false) {

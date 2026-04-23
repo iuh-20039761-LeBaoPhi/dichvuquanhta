@@ -207,6 +207,10 @@
           newsGrid.innerHTML = articlesHtml;
         }
 
+        function isPublishedArticle(article) {
+          return String(article.status || "published").toLowerCase() !== "hidden";
+        }
+
         function populateFilters() {
           const dates = new Set();
           window.newsData.forEach((article) => {
@@ -390,7 +394,7 @@
         fetch("public/data/du-lieu-bai-viet.json")
           .then(function(res) { return res.json(); })
           .then(function(data) {
-            window.newsData = data;
+            window.newsData = Array.isArray(data) ? data.filter(isPublishedArticle) : [];
 
             populateFilters();
 

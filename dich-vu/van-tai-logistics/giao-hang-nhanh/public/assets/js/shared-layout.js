@@ -233,7 +233,7 @@
     } else {
       baseLinks = {
         dashboard: `${projectBase}public/khach-hang/dashboard-giaohang.html`,
-        orders: `${projectBase}public/khach-hang/lich-su-don-hang-giaohang.html`,
+        orders: `${projectBase}public/khach-hang/danh-sach-don-hang-giaohang.html`,
         profile: `${projectBase}public/khach-hang/ho-so-giaohang.html`,
         ordersLabel: "Danh sách đơn hàng",
         profileLabel: "Hồ sơ cá nhân",

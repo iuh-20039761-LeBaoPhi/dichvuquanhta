@@ -16,17 +16,50 @@
       rerender,
     } = deps || {};
 
-    function bindFileSummary(input, host, emptyMessage) {
+    function bindFileSummary(input, host, emptyMessage, mediaType) {
       if (!input || !host) return;
+      let previewUrls = [];
+
+      const clearPreviewUrls = () => {
+        previewUrls.forEach((url) => URL.revokeObjectURL(url));
+        previewUrls = [];
+      };
 
       const refresh = () => {
+        clearPreviewUrls();
         const files = input.files ? Array.from(input.files) : [];
-        host.textContent = files.length
-          ? `Đã chọn: ${files.map((file) => file.name).join(", ")}`
-          : emptyMessage;
+        if (!files.length) {
+          host.textContent = emptyMessage;
+          return;
+        }
+
+        const previewFiles = files.slice(0, mediaType === "image" ? 4 : 1);
+        const previewHtml = previewFiles
+          .map((file) => {
+            const url = URL.createObjectURL(file);
+            previewUrls.push(url);
+            if (mediaType === "video") {
+              return `<video class="standalone-order-upload-preview-media" src="${url}" controls muted playsinline preload="metadata"></video>`;
+            }
+            return `<img class="standalone-order-upload-preview-media" src="${url}" alt="Ảnh phản hồi đã chọn">`;
+          })
+          .join("");
+        const countText =
+          mediaType === "image"
+            ? `${files.length} ảnh đã chọn`
+            : `${files.length} video đã chọn`;
+
+        host.innerHTML = `
+          <span class="standalone-order-upload-preview">${previewHtml}</span>
+          <span class="standalone-order-upload-count">${countText}</span>
+        `;
+        host.querySelectorAll("video").forEach((video) => {
+          video.addEventListener("click", (event) => event.stopPropagation());
+        });
       };
 
       input.addEventListener("change", refresh);
+      window.addEventListener("beforeunload", clearPreviewUrls, { once: true });
       refresh();
     }
 
@@ -52,6 +85,29 @@
       );
     }
 
+    function bindMediaRemoval(form, fieldName, removeTitle, restoreTitle) {
+      if (!form) return;
+      form.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-remove-media]");
+        if (!button || !form.contains(button)) return;
+        event.preventDefault();
+        const mediaItem = button.closest("[data-removable-media-index]");
+        const removeInput = mediaItem?.querySelector(
+          `input[name="${fieldName}"]`,
+        );
+        if (!mediaItem || !removeInput) return;
+        const willRemove = !mediaItem.classList.contains("is-removed");
+        mediaItem.classList.toggle("is-removed", willRemove);
+        removeInput.disabled = !willRemove;
+        button.setAttribute("aria-pressed", willRemove ? "true" : "false");
+        button.title = willRemove ? restoreTitle : removeTitle;
+        button.setAttribute(
+          "aria-label",
+          willRemove ? restoreTitle : removeTitle,
+        );
+      });
+    }
+
     function bindFeedbackForm(root) {
       const form = root.querySelector("#standalone-feedback-form");
       if (!form) return;
@@ -60,8 +116,15 @@
       const videoInput = form.querySelector('input[name="feedback_media_video"]');
       const imageSummary = root.querySelector("#standalone-feedback-image-files");
       const videoSummary = root.querySelector("#standalone-feedback-video-files");
-      bindFileSummary(imageInput, imageSummary, "Chưa chọn ảnh phản hồi.");
-      bindFileSummary(videoInput, videoSummary, "Chưa chọn video phản hồi.");
+      bindFileSummary(imageInput, imageSummary, "Chưa chọn ảnh", "image");
+      bindFileSummary(videoInput, videoSummary, "Chưa chọn video", "video");
+
+      bindMediaRemoval(
+        form,
+        "remove_feedback_media_indexes[]",
+        "Xóa media phản hồi",
+        "Hoàn tác xóa media phản hồi",
+      );
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -73,6 +136,12 @@
           const formData = new FormData(form);
           const rating = Number(formData.get("rating") || 0);
           const feedback = normalizeMultilineText(formData.get("feedback") || "");
+          const removedMediaIndexes = new Set(
+            formData
+              .getAll("remove_feedback_media_indexes[]")
+              .map((value) => Number(value))
+              .filter((value) => Number.isInteger(value) && value >= 0),
+          );
           const files = collectFiles(imageInput, videoInput);
           const nextDetail = normalizeDetail(getCurrentDetail());
           const orderRef =
@@ -82,6 +151,9 @@
           )
             ? nextDetail.provider.feedback_media
             : [];
+          const keptFeedbackMedia = existingFeedbackMedia.filter(
+            (_item, index) => !removedMediaIndexes.has(index),
+          );
           let mediaWarning = "";
           let uploadedFeedbackMedia = [];
           if (files.length) {
@@ -98,8 +170,8 @@
             }
           }
           const nextFeedbackMedia = uploadedFeedbackMedia.length
-            ? [...existingFeedbackMedia, ...uploadedFeedbackMedia]
-            : existingFeedbackMedia;
+            ? [...keptFeedbackMedia, ...uploadedFeedbackMedia]
+            : keptFeedbackMedia;
 
           nextDetail.order.rating = rating;
           nextDetail.order.feedback = feedback;
@@ -144,8 +216,14 @@
       const videoInput = form.querySelector('input[name="shipper_media_video"]');
       const imageSummary = root.querySelector("#standalone-shipper-image-files");
       const videoSummary = root.querySelector("#standalone-shipper-video-files");
-      bindFileSummary(imageInput, imageSummary, "Chưa chọn ảnh báo cáo.");
-      bindFileSummary(videoInput, videoSummary, "Chưa chọn video báo cáo.");
+      bindFileSummary(imageInput, imageSummary, "Chưa chọn ảnh", "image");
+      bindFileSummary(videoInput, videoSummary, "Chưa chọn video", "video");
+      bindMediaRemoval(
+        form,
+        "remove_shipper_report_indexes[]",
+        "Xóa media báo cáo",
+        "Hoàn tác xóa media báo cáo",
+      );
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -158,6 +236,12 @@
           const shipperNote = normalizeMultilineText(
             formData.get("shipper_note") || "",
           );
+          const removedReportIndexes = new Set(
+            formData
+              .getAll("remove_shipper_report_indexes[]")
+              .map((value) => Number(value))
+              .filter((value) => Number.isInteger(value) && value >= 0),
+          );
           const files = collectFiles(imageInput, videoInput);
           const nextDetail = normalizeDetail(getCurrentDetail());
           const orderRef =
@@ -167,6 +251,9 @@
           )
             ? nextDetail.provider.shipper_reports
             : [];
+          const keptReports = existingReports.filter(
+            (_item, index) => !removedReportIndexes.has(index),
+          );
           let mediaWarning = "";
           let uploadedReports = [];
           if (files.length) {
@@ -187,9 +274,9 @@
           nextDetail.provider = {
             ...(nextDetail.provider || {}),
             ...buildShipperSnapshot(nextDetail),
-            shipper_reports: files.length
-              ? [...existingReports, ...uploadedReports]
-              : existingReports,
+            shipper_reports: uploadedReports.length
+              ? [...keptReports, ...uploadedReports]
+              : keptReports,
           };
 
           try {

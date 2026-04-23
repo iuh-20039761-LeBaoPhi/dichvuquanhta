@@ -11,7 +11,7 @@
           logout: "../../dang-nhap.html",
           booking: "../../dat-lich-giao-hang-nhanh.html",
           dashboard: "dashboard-giaohang.html",
-          orders: "lich-su-don-hang-giaohang.html",
+          orders: "danh-sach-don-hang-giaohang.html",
           detail: "chi-tiet-don-hang-giaohang.html",
           profile: "ho-so-giaohang.html",
         };
@@ -21,6 +21,11 @@
     addresses: "ghn-customer-addresses",
   };
   const krudOrdersTable = "giaohangnhanh_dat_lich";
+  // Cache trong phiên trang: tránh gọi lại KRUD khi đổi tab trong portal.
+  const portalCache = {
+    orderDetailsBySession: new Map(),
+    customerBySession: new Map(),
+  };
   const AUTO_CANCEL_REASON =
     "Đơn đã quá khung giờ lấy hàng mà chưa có shipper nhận.";
   const SERVICE_AUTO_CANCEL_FALLBACK_MINUTES = {
@@ -102,6 +107,25 @@
       return localAuth.normalizePhone(value);
     }
     return String(value ?? "").replace(/\D/g, "");
+  }
+
+  function getSessionCacheKey(session) {
+    if (!session) return "anonymous";
+    return [
+      normalizeText(session.id || ""),
+      normalizeText(session.username || "").toLowerCase(),
+      normalizePhone(session.phone || session.so_dien_thoai || ""),
+      normalizeText(session.email || "").toLowerCase(),
+    ].join("|");
+  }
+
+  function clearPortalCache(scope = "all") {
+    if (scope === "orders" || scope === "all") {
+      portalCache.orderDetailsBySession.clear();
+    }
+    if (scope === "customer" || scope === "all") {
+      portalCache.customerBySession.clear();
+    }
   }
 
   function findStoredAuthUser(session) {
@@ -219,19 +243,29 @@
     }
 
     if (typeof window.crud === "function") {
-      return (payload) =>
-        window.crud("list", payload.table, {
+      return (payload) => {
+        const options = {
+          ...payload,
           p: payload.page || 1,
           limit: payload.limit || 100,
-        });
+        };
+        delete options.table;
+        delete options.page;
+        return window.crud("list", payload.table, options);
+      };
     }
 
     if (typeof window.krud === "function") {
-      return (payload) =>
-        window.krud("list", payload.table, {
+      return (payload) => {
+        const options = {
+          ...payload,
           p: payload.page || 1,
           limit: payload.limit || 100,
-        });
+        };
+        delete options.table;
+        delete options.page;
+        return window.krud("list", payload.table, options);
+      };
     }
 
     return null;
@@ -275,6 +309,19 @@
     }
 
     return [];
+  }
+
+  async function listKrudRows(table, where = [], options = {}) {
+    const listFn = getKrudListFn();
+    if (!table || !listFn) return [];
+    const response = await listFn({
+      table,
+      where,
+      page: options.page || 1,
+      limit: options.limit || 100,
+      sort: options.sort || { id: "desc" },
+    });
+    return extractRows(response);
   }
 
   function parseDateMs(value) {
@@ -492,7 +539,7 @@
           return url
             ? {
                 id: "",
-                name: `Tệp đính kèm ${index + 1}`,
+                name: `Tệp ${index + 1}`,
                 extension: getMediaExtension(url),
                 url,
                 created_at: "",
@@ -504,7 +551,7 @@
         const url = normalizeText(item.url || item.path || item.src || "");
         return {
           id: normalizeText(item.id || ""),
-          name: normalizeText(item.name || item.filename || "Tệp đính kèm"),
+          name: normalizeText(item.name || item.filename || "Tệp"),
           extension: getMediaExtension(item),
           url,
           created_at: normalizeText(item.created_at || item.createdAt || ""),
@@ -526,7 +573,15 @@
       throw new Error("Không tìm thấy helper upload Google Drive.");
     }
 
-    return normalizeMediaItems(await core.uploadFilesToDrive(list));
+    const proxyFile =
+      mediaType === "feedback" ? "upload_feedback_media.php" : "";
+    if (!proxyFile) {
+      throw new Error("Loại media này chưa được cấu hình thư mục Google Drive.");
+    }
+
+    return normalizeMediaItems(
+      await core.uploadFilesToDrive(list, { proxyFile }),
+    );
   }
   const escapeHtml =
     typeof core.escapeHtml === "function"
@@ -801,21 +856,94 @@
     };
   }
 
+  function getOrderRowMatchQueries(session) {
+    const sessionId = normalizeText(session?.id || "");
+    const sessionUsername = normalizeText(session?.username || "").toLowerCase();
+    const rawSessionPhone = normalizeText(
+      session?.phone || session?.so_dien_thoai || "",
+    );
+    const sessionPhone = normalizePhone(
+      session?.phone || session?.so_dien_thoai || "",
+    );
+    const sessionEmail = normalizeText(session?.email || "").toLowerCase();
+    return [
+      sessionId
+        ? [{ field: "customer_id", operator: "=", value: sessionId }]
+        : null,
+      sessionUsername
+        ? [{ field: "customer_username", operator: "=", value: sessionUsername }]
+        : null,
+      sessionPhone
+        ? [{ field: "so_dien_thoai_nguoi_gui", operator: "=", value: sessionPhone }]
+        : null,
+      rawSessionPhone && rawSessionPhone !== sessionPhone
+        ? [{ field: "so_dien_thoai_nguoi_gui", operator: "=", value: rawSessionPhone }]
+        : null,
+      sessionPhone
+        ? [{ field: "nguoi_gui_so_dien_thoai", operator: "=", value: sessionPhone }]
+        : null,
+      sessionEmail
+        ? [{ field: "email_nguoi_gui", operator: "=", value: sessionEmail }]
+        : null,
+      sessionEmail
+        ? [{ field: "customer_email", operator: "=", value: sessionEmail }]
+        : null,
+    ].filter(Boolean);
+  }
+
+  function dedupeRowsById(rows = []) {
+    const seen = new Set();
+    const result = [];
+    rows.forEach((row) => {
+      const key = normalizeText(
+        row?.id ||
+          row?.ma_don_hang_noi_bo ||
+          row?.ma_don_hang ||
+          row?.order_code ||
+          JSON.stringify(row),
+      ).toUpperCase();
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      result.push(row);
+    });
+    return result;
+  }
+
+  async function listCustomerOrderRows(session) {
+    const queries = getOrderRowMatchQueries(session);
+    if (!queries.length) return [];
+    const batches = [];
+    for (const where of queries) {
+      const rows = await listKrudRows(krudOrdersTable, where, {
+        limit: 200,
+        sort: { id: "desc" },
+      }).catch((error) => {
+        console.warn("Cannot query customer orders by where:", where, error);
+        return [];
+      });
+      batches.push(...rows);
+      if (rows.length && where[0]?.field === "customer_id") {
+        break;
+      }
+    }
+    return dedupeRowsById(batches);
+  }
+
   async function getAllOrderDetails(sessionOverride = null) {
     const localDetails = (readJson(storageKeys.orders, []) || []).map(
       normalizeLocalOrderDetail,
     );
     const session = sessionOverride || getCurrentSessionUser();
-    const listFn = getKrudListFn();
 
-    if (session && listFn) {
+    if (session && getKrudListFn()) {
+      const cacheKey = getSessionCacheKey(session);
+      if (portalCache.orderDetailsBySession.has(cacheKey)) {
+        return portalCache.orderDetailsBySession.get(cacheKey);
+      }
       try {
-        const response = await listFn({
-          table: krudOrdersTable,
-          page: 1,
-          limit: 500,
-        });
-        const rows = await autoCancelPendingKrudRows(extractRows(response));
+        const rows = await autoCancelPendingKrudRows(
+          await listCustomerOrderRows(session),
+        );
         const sessionId = normalizeText(session.id || "");
         const sessionUsername = normalizeText(
           session.username || "",
@@ -1067,12 +1195,16 @@
             });
           });
 
-        krudDetails.forEach((detail) => persistOrderDetail(detail));
-        return krudDetails.sort((left, right) => {
+        krudDetails.forEach((detail) => persistOrderDetail(detail, {
+          invalidateCache: false,
+        }));
+        const sortedDetails = krudDetails.sort((left, right) => {
           const leftTime = new Date(left?.order?.created_at || 0).getTime();
           const rightTime = new Date(right?.order?.created_at || 0).getTime();
           return rightTime - leftTime;
         });
+        portalCache.orderDetailsBySession.set(cacheKey, sortedDetails);
+        return sortedDetails;
       } catch (error) {
         console.warn(
           "Cannot load customer orders from KRUD, fallback local:",
@@ -1131,7 +1263,7 @@
     return true;
   }
 
-  function persistOrderDetail(detail) {
+  function persistOrderDetail(detail, options = {}) {
     const nextDetail = normalizeLocalOrderDetail(detail);
     const current = (readJson(storageKeys.orders, []) || []).map(
       normalizeLocalOrderDetail,
@@ -1155,6 +1287,9 @@
     });
     filtered.unshift(nextDetail);
     writeJson(storageKeys.orders, filtered);
+    if (options.invalidateCache !== false) {
+      clearPortalCache("orders");
+    }
     return nextDetail;
   }
 
@@ -1235,73 +1370,92 @@
 
   async function fetchCurrentKrudCustomer(session) {
     if (!session) return null;
-
-    if (localAuth && typeof localAuth.listAllKrudUsers === "function") {
-      const users = await localAuth.listAllKrudUsers().catch(() => []);
-      const sessionId = normalizeText(session.id || "");
-      const sessionUsername = normalizeText(
-        session.username || "",
-      ).toLowerCase();
-      const sessionPhone = normalizePhone(
-        session.phone || session.so_dien_thoai || "",
-      );
-      const sessionEmail = normalizeText(session.email || "").toLowerCase();
-      const matchedUser = Array.isArray(users)
-        ? users.find((user) => {
-            const userId = normalizeText(user.id || user.remote_id || "");
-            const userUsername = normalizeText(
-              user.username || user.phone || user.so_dien_thoai || "",
-            ).toLowerCase();
-            const userPhone = normalizePhone(
-              user.phone || user.so_dien_thoai || "",
-            );
-            const userEmail = normalizeText(user.email || "").toLowerCase();
-            return (
-              (sessionId && userId === sessionId) ||
-              (sessionUsername && userUsername === sessionUsername) ||
-              (sessionPhone && userPhone === sessionPhone) ||
-              (sessionEmail && userEmail === sessionEmail)
-            );
-          })
-        : null;
-      if (matchedUser) return matchedUser;
+    const cacheKey = getSessionCacheKey(session);
+    if (portalCache.customerBySession.has(cacheKey)) {
+      return portalCache.customerBySession.get(cacheKey);
     }
 
     const tableName = localAuth?.krudTables?.customer;
-    const listFn = getKrudListFn();
-    if (!tableName || !listFn) return null;
-
-    const response = await listFn({
-      table: tableName,
-      page: 1,
-      limit: 200,
-    });
-    const rows = extractRows(response);
     const sessionId = normalizeText(session.id || "");
     const sessionUsername = normalizeText(session.username || "").toLowerCase();
+    const rawSessionPhone = normalizeText(session.phone || session.so_dien_thoai || "");
     const sessionPhone = normalizePhone(
       session.phone || session.so_dien_thoai || "",
     );
     const sessionEmail = normalizeText(session.email || "").toLowerCase();
+    const normalizeCustomerRow = (row) => ({
+      ...row,
+      id: row?.id || row?.remote_id || row?.user_id || "",
+      fullname: row?.fullname || row?.hovaten || row?.ho_ten || "",
+      ho_ten: row?.ho_ten || row?.hovaten || row?.fullname || "",
+      phone: row?.phone || row?.sodienthoai || row?.so_dien_thoai || "",
+      so_dien_thoai: row?.so_dien_thoai || row?.sodienthoai || row?.phone || "",
+      address: row?.address || row?.diachi || row?.dia_chi || "",
+      dia_chi: row?.dia_chi || row?.diachi || row?.address || "",
+      password: row?.password || row?.matkhau || row?.mat_khau || "",
+      mat_khau: row?.mat_khau || row?.matkhau || row?.password || "",
+    });
+    const matchesSession = (row) => {
+      const normalizedRow = normalizeCustomerRow(row);
+      const rowId = normalizeText(
+        normalizedRow.id || normalizedRow.user_id || normalizedRow.ma_tai_khoan_noi_bo || "",
+      );
+      const rowUsername = normalizeText(
+        normalizedRow.username ||
+          normalizedRow.ten_dang_nhap ||
+          normalizedRow.phone ||
+          normalizedRow.so_dien_thoai,
+      ).toLowerCase();
+      const rowPhone = normalizePhone(
+        normalizedRow.phone || normalizedRow.so_dien_thoai || "",
+      );
+      const rowEmail = normalizeText(normalizedRow.email || "").toLowerCase();
+      return (
+        (sessionId && rowId === sessionId) ||
+        (sessionUsername && rowUsername === sessionUsername) ||
+        (sessionPhone && rowPhone === sessionPhone) ||
+        (sessionEmail && rowEmail === sessionEmail)
+      );
+    };
 
-    return (
-      rows.find((row) => {
-        const rowId = normalizeText(
-          row.id || row.user_id || row.ma_tai_khoan_noi_bo || "",
-        );
-        const rowUsername = normalizeText(
-          row.username || row.ten_dang_nhap || row.phone || row.so_dien_thoai,
-        ).toLowerCase();
-        const rowPhone = normalizePhone(row.phone || row.so_dien_thoai || "");
-        const rowEmail = normalizeText(row.email || "").toLowerCase();
-        return (
-          (sessionId && rowId === sessionId) ||
-          (sessionUsername && rowUsername === sessionUsername) ||
-          (sessionPhone && rowPhone === sessionPhone) ||
-          (sessionEmail && rowEmail === sessionEmail)
-        );
-      }) || null
-    );
+    if (tableName && getKrudListFn()) {
+      const queries = [
+        sessionId ? [{ field: "id", operator: "=", value: sessionId }] : null,
+        sessionPhone ? [{ field: "sodienthoai", operator: "=", value: sessionPhone }] : null,
+        rawSessionPhone && rawSessionPhone !== sessionPhone
+          ? [{ field: "sodienthoai", operator: "=", value: rawSessionPhone }]
+          : null,
+        sessionEmail ? [{ field: "email", operator: "=", value: sessionEmail }] : null,
+      ].filter(Boolean);
+      for (const where of queries) {
+        const rows = await listKrudRows(tableName, where, {
+          limit: 20,
+          sort: { id: "desc" },
+        }).catch((error) => {
+          console.warn("Cannot query current customer by where:", where, error);
+          return [];
+        });
+        const matchedRow = rows.find(matchesSession);
+        if (matchedRow) {
+          const normalized = normalizeCustomerRow(matchedRow);
+          portalCache.customerBySession.set(cacheKey, normalized);
+          return normalized;
+        }
+      }
+    }
+
+    if (localAuth && typeof localAuth.listAllKrudUsers === "function") {
+      const users = await localAuth.listAllKrudUsers().catch(() => []);
+      const matchedUser = Array.isArray(users) ? users.find(matchesSession) : null;
+      if (matchedUser) {
+        const normalized = normalizeCustomerRow(matchedUser);
+        portalCache.customerBySession.set(cacheKey, normalized);
+        return normalized;
+      }
+    }
+
+    portalCache.customerBySession.set(cacheKey, null);
+    return null;
   }
 
   function formatMultilineText(value) {
@@ -1390,6 +1544,16 @@
     const emptyState = document.getElementById(emptyId);
     if (!input || !preview) return;
 
+    const showEmptyState = () => {
+      preview.hidden = true;
+      if (emptyState) emptyState.hidden = false;
+    };
+
+    preview.addEventListener("error", showEmptyState);
+    if (preview.complete && preview.getAttribute("src") && !preview.naturalWidth) {
+      showEmptyState();
+    }
+
     input.addEventListener("change", () => {
       const file = input.files && input.files[0];
       if (!file) return;
@@ -1474,14 +1638,27 @@
       throw new Error("Phiên đăng nhập đã hết hạn.");
     }
 
-    const allDetails = await getAllOrderDetails(session);
-    const summaries = allDetails.map(getOrderSummaryFromDetail);
-
     if (action === "session") {
       return { status: "success", user: session };
     }
 
+    let allDetailsCache = null;
+    let summariesCache = null;
+    const getDetailsForAction = async () => {
+      if (!allDetailsCache) {
+        allDetailsCache = await getAllOrderDetails(session);
+      }
+      return allDetailsCache;
+    };
+    const getSummariesForAction = async () => {
+      if (!summariesCache) {
+        summariesCache = (await getDetailsForAction()).map(getOrderSummaryFromDetail);
+      }
+      return summariesCache;
+    };
+
     if (action === "dashboard") {
+      const summaries = await getSummariesForAction();
       const recentStatus = String(options?.params?.recent_status || "all")
         .trim()
         .toLowerCase();
@@ -1507,6 +1684,7 @@
     }
 
     if (action === "orders") {
+      const summaries = await getSummariesForAction();
       const params = options?.params || {};
       const search = String(params.search || "")
         .trim()
@@ -1556,6 +1734,7 @@
     }
 
     if (action === "order-detail") {
+      const allDetails = await getDetailsForAction();
       const orderId = String(options?.params?.id || "")
         .trim()
         .toUpperCase();
@@ -1578,6 +1757,7 @@
     }
 
     if (action === "cancel-order") {
+      const allDetails = await getDetailsForAction();
       const formData = options.body;
       const orderId = String(formData?.get("order_id") || "")
         .trim()
@@ -1625,6 +1805,7 @@
     }
 
     if (action === "submit-feedback") {
+      const allDetails = await getDetailsForAction();
       const formData = options.body;
       const orderId = String(formData?.get("order_id") || "")
         .trim()
@@ -1638,8 +1819,17 @@
       const mediaFiles = formData?.getAll("media_files[]") || [];
       const nextDetail = normalizeLocalOrderDetail(currentDetail);
       const orderRef = nextDetail.order.order_code || nextDetail.order.id || "";
+      const removedMediaIndexes = new Set(
+        formData
+          ?.getAll("remove_feedback_media_indexes[]")
+          .map((value) => Number(value))
+          .filter((value) => Number.isInteger(value) && value >= 0) || [],
+      );
       const existingFeedbackMedia = normalizeMediaItems(
         nextDetail.provider.feedback_media,
+      );
+      const keptFeedbackMedia = existingFeedbackMedia.filter(
+        (_item, index) => !removedMediaIndexes.has(index),
       );
       let mediaWarning = "";
       let uploadedFeedbackMedia = [];
@@ -1657,8 +1847,8 @@
         }
       }
       const feedbackMedia = uploadedFeedbackMedia.length
-        ? [...existingFeedbackMedia, ...uploadedFeedbackMedia]
-        : existingFeedbackMedia;
+        ? [...keptFeedbackMedia, ...uploadedFeedbackMedia]
+        : keptFeedbackMedia;
       nextDetail.order.rating = rating;
       nextDetail.order.feedback = feedback;
       nextDetail.provider.feedback_media = feedbackMedia;
@@ -1696,6 +1886,7 @@
     }
 
     if (action === "profile") {
+      const summaries = await getSummariesForAction();
       const remoteProfile = await fetchCurrentKrudCustomer(session).catch(
         () => null,
       );
@@ -1883,7 +2074,7 @@
 
     if (action === "update-profile") {
       const formData = options.body;
-      const uploadSingleFile = async (fieldName) => {
+      const uploadSingleFile = async (fieldName, uploadOptions = {}) => {
         const file = formData?.get(fieldName);
         if (!(file instanceof File) || !file.size) return "";
         if (typeof core.uploadFileToDrive !== "function") {
@@ -1891,6 +2082,7 @@
         }
         const uploaded = await core.uploadFileToDrive(file, {
           name: file.name,
+          proxyFile: uploadOptions.proxyFile || "",
         });
         return normalizeText(uploaded?.fileId || uploaded?.id || "");
       };
@@ -1900,7 +2092,9 @@
       let cccdFrontLink = "";
       let cccdBackLink = "";
       try {
-        avatarLink = await uploadSingleFile("avatar_file");
+        avatarLink = await uploadSingleFile("avatar_file", {
+          proxyFile: "upload_avatar.php",
+        });
         cccdFrontLink = await uploadSingleFile("cccd_front_file");
         cccdBackLink = await uploadSingleFile("cccd_back_file");
       } catch (uploadError) {
@@ -1987,6 +2181,7 @@
       if (!updatedUser) {
         throw new Error("Không thể cập nhật hồ sơ trong chế độ cục bộ.");
       }
+      clearPortalCache("customer");
       return {
         status: "success",
         profile: updatedUser,
@@ -2040,6 +2235,7 @@
       if (!updatedUser) {
         throw new Error("Không thể đổi mật khẩu trong chế độ cục bộ.");
       }
+      clearPortalCache("customer");
       return { status: "success" };
     }
 
@@ -2327,17 +2523,25 @@
 
   function renderFiles(items) {
     if (!items || !items.length) {
-      return '<div class="customer-empty">Chưa có tệp nào được đính kèm.</div>';
+      return '<div class="customer-empty">Chưa có tệp.</div>';
     }
 
     return `<div class="customer-file-grid">${items
-      .map(
-        (item) => `
+      .map((item) => {
+        const extension = String(item.extension || "").toLowerCase();
+        const typeLabel = isImageExtension(extension)
+          ? "Ảnh"
+          : isVideoExtension(extension)
+            ? "Video"
+            : extension
+              ? extension.toUpperCase()
+              : "Tệp";
+        return `
       <a class="customer-file-card" href="${escapeHtml(item.view_url || item.url)}" target="_blank" rel="noreferrer">
-        <span>${escapeHtml(item.name)}</span>
-        <small>${escapeHtml(item.extension || "tệp")}</small>
-      </a>`,
-      )
+        <span>${escapeHtml(typeLabel)}</span>
+        <small>Xem</small>
+      </a>`;
+      })
       .join("")}</div>`;
   }
 
@@ -2347,7 +2551,7 @@
         (item) => `
       <div>
         <dt>${escapeHtml(item.label)}</dt>
-        <dd>${item.html ? item.value : escapeHtml(item.value ?? "--")}</dd>
+        <dd class="${escapeHtml(item.valueClassName || "")}">${item.html ? item.value : escapeHtml(item.value ?? "--")}</dd>
       </div>`,
       )
       .join("")}</dl>`;
@@ -2420,6 +2624,12 @@
     );
   }
 
+  function formatDimensionValue(value) {
+    const number = Number(value || 0);
+    if (!Number.isFinite(number) || number <= 0) return "--";
+    return `${formatNumber(number)} cm`;
+  }
+
   function renderOrderItemCards(items) {
     if (!items || !items.length) {
       return '<div class="customer-empty">Chưa có dữ liệu chi tiết mặt hàng.</div>';
@@ -2432,68 +2642,120 @@
         <div class="customer-review-item-icon"><i class="fas fa-box"></i></div>
         <div class="customer-review-item-body">
           <strong>${escapeHtml(item.item_name || `Hàng hóa #${index + 1}`)}</strong>
-          <span>
-            Số lượng: <b>${formatNumber(item.quantity)}</b> ·
-            Nặng: <b>${escapeHtml(item.weight)} kg</b> ·
-            Khai giá: <b>${formatCurrency(item.declared_value)}</b>
-          </span>
-        </div>
-        <div class="customer-review-item-meta">
-          Kích thước<br />${escapeHtml(item.length)} x ${escapeHtml(item.width)} x ${escapeHtml(item.height)} cm
+          <div class="customer-review-item-declared">
+            <span>Khai giá dòng</span>
+            <b>${formatCurrency(item.declared_value)}</b>
+          </div>
+          <div class="customer-review-item-pair-grid">
+            <span><em>Số kiện</em><b>${formatNumber(item.quantity)}</b></span>
+            <span><em>Kg/kiện</em><b>${escapeHtml(item.weight || "--")} kg</b></span>
+          </div>
+          <div class="customer-review-item-dimension-grid">
+            <span><em>Dài</em><b>${formatDimensionValue(item.length)}</b></span>
+            <span><em>Rộng</em><b>${formatDimensionValue(item.width)}</b></span>
+            <span><em>Cao</em><b>${formatDimensionValue(item.height)}</b></span>
+          </div>
         </div>
       </article>`,
       )
       .join("")}</div>`;
   }
 
-  function renderAttachmentPreview(items) {
+  function renderAttachmentPreview(items, options = {}) {
+    if ((!items || !items.length) && options.hideEmpty) return "";
     if (!items || !items.length) {
-      return '<div class="customer-empty">Chưa có ảnh hoặc video đính kèm.</div>';
+      return '<div class="customer-empty">Chưa có ảnh/video.</div>';
     }
+    const removable = options.removable === true;
+    const removeName = options.removeName || "remove_feedback_media_indexes[]";
+    const removeButtonLabel = options.removeButtonLabel || "Xóa media phản hồi";
+
+    const wrapMediaCard = (content, targetUrl, index) => {
+      if (!removable) {
+        return `
+            <a class="customer-review-media-card" href="${targetUrl}" target="_blank" rel="noreferrer">
+              ${content}
+            </a>`;
+      }
+      return `
+            <div class="customer-review-media-card customer-review-media-card-removable" data-removable-media-index="${index}">
+              <a class="customer-review-media-preview-link" href="${targetUrl}" target="_blank" rel="noreferrer">
+                ${content}
+              </a>
+              <button type="button" class="customer-review-media-remove" data-remove-feedback-media aria-label="${escapeHtml(removeButtonLabel)}" title="${escapeHtml(removeButtonLabel)}">
+                <i class="fas fa-times"></i>
+              </button>
+              <input type="hidden" name="${escapeHtml(removeName)}" value="${index}" disabled />
+            </div>`;
+    };
 
     return `<div class="customer-review-media-grid">${items
-      .map((item) => {
+      .map((item, index) => {
+        const mediaIndex = Number.isInteger(item.__mediaIndex)
+          ? item.__mediaIndex
+          : index;
         const extension = String(item.extension || "").toLowerCase();
         const targetUrl = escapeHtml(item.view_url || item.url || "#");
         const previewUrl = escapeHtml(
           item.thumbnail_url || item.view_url || item.url || "#",
         );
-        const name = escapeHtml(item.name || "Tệp đính kèm");
+        const name = escapeHtml(item.name || "Media");
 
         if (isImageExtension(extension)) {
-          return `
-            <a class="customer-review-media-card" href="${targetUrl}" target="_blank" rel="noreferrer">
+          return wrapMediaCard(
+            `
               <img class="customer-review-media-thumb" src="${previewUrl}" alt="${name}" />
               <div class="customer-review-media-meta">
-                <strong>${name}</strong>
-                <span>Ảnh đính kèm</span>
-              </div>
-            </a>`;
+                <span>Ảnh</span>
+              </div>`,
+            targetUrl,
+            mediaIndex,
+          );
         }
 
         if (isVideoExtension(extension)) {
-          return `
-            <a class="customer-review-media-card" href="${targetUrl}" target="_blank" rel="noreferrer">
+          return wrapMediaCard(
+            `
               <video class="customer-review-media-thumb" src="${previewUrl}" preload="metadata" controls></video>
               <div class="customer-review-media-meta">
-                <strong>${name}</strong>
-                <span>Video đính kèm</span>
-              </div>
-            </a>`;
+                <span>Video</span>
+              </div>`,
+            targetUrl,
+            mediaIndex,
+          );
         }
 
-        return `
-          <a class="customer-review-media-card" href="${targetUrl}" target="_blank" rel="noreferrer">
+        return wrapMediaCard(
+          `
             <div class="customer-review-media-file">
               <i class="fas fa-file-lines"></i>
             </div>
             <div class="customer-review-media-meta">
-              <strong>${name}</strong>
               <span>${escapeHtml(extension || "Tệp")}</span>
-            </div>
-          </a>`;
+            </div>`,
+          targetUrl,
+          mediaIndex,
+        );
       })
       .join("")}</div>`;
+  }
+
+  function groupMediaByKind(items) {
+    return (Array.isArray(items) ? items : []).reduce(
+      (groups, item, index) => {
+        const mediaItem = { ...item, __mediaIndex: index };
+        const extension = String(item?.extension || "").toLowerCase();
+        if (isImageExtension(extension)) {
+          groups.images.push(mediaItem);
+        } else if (isVideoExtension(extension)) {
+          groups.videos.push(mediaItem);
+        } else {
+          groups.other.push(mediaItem);
+        }
+        return groups;
+      },
+      { images: [], videos: [], other: [] },
+    );
   }
 
   function hasProviderInfo(provider) {
@@ -2512,11 +2774,31 @@
     );
   }
 
+  function isCompletedOrder(order) {
+    const status = String(order?.status || order?.trang_thai || "")
+      .trim()
+      .toLowerCase();
+    return Boolean(
+      normalizeText(order?.ngayhoanthanhthucte || order?.completed_at || "") ||
+        ["completed", "delivered", "success"].includes(status),
+    );
+  }
+
+  function renderReviewRow(label, value, options = {}) {
+    const valueClassName = normalizeText(options.valueClassName || "");
+    return `
+      <div class="rv-row ${escapeHtml(options.className || "")}">
+        <span class="rv-label">${escapeHtml(label)}</span>
+        <span class="rv-val ${escapeHtml(valueClassName)}">${options.valueHtml ? value : escapeHtml(value ?? "--")}</span>
+      </div>`;
+  }
+
   function renderBookingReview(order, items, provider, logs) {
     const serviceMeta = order.service_meta || {};
     const attachments = Array.isArray(provider?.attachments)
       ? provider.attachments
       : [];
+    const completedOrder = isCompletedOrder(order);
     const distanceLabel =
       Number(serviceMeta.distance_km || 0) > 0
         ? `${Number(serviceMeta.distance_km).toLocaleString("vi-VN", {
@@ -2527,54 +2809,106 @@
     const pickupLabel = order.pickup_time
       ? formatDateTime(order.pickup_time)
       : serviceMeta.pickup_date || "--";
+    const scheduleRows = `
+          ${renderReviewRow("Tạo đơn lúc", formatDateTime(order.created_at), {
+            valueClassName: "rv-val--time",
+          })}
+          ${renderReviewRow("Khung lấy hàng", pickupLabel, {
+            valueClassName: "rv-val--time",
+          })}
+          ${renderReviewRow("Thời gian giao", serviceMeta.estimated_eta || "--", {
+            valueClassName: "rv-val--time",
+          })}`;
 
     return `
       <div class="customer-review-layout">
-        <section class="customer-review-block">
-          <h3><i class="fas fa-address-book"></i> Thông tin liên hệ</h3>
-          <div class="rv-row"><span class="rv-label">Người gửi</span><span class="rv-val">${escapeHtml(order.sender_name || "--")} · ${escapeHtml(order.sender_phone || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Người nhận</span><span class="rv-val">${escapeHtml(order.receiver_name || "--")} · ${escapeHtml(order.receiver_phone || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Lấy hàng tại</span><span class="rv-val">${escapeHtml(order.pickup_address || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Giao hàng đến</span><span class="rv-val">${escapeHtml(order.delivery_address || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Khoảng cách</span><span class="rv-val">${distanceLabel}</span></div>
+        <section class="customer-review-block customer-review-block--wide customer-review-contact-block">
+          <h3><i class="fas fa-address-book"></i> Gửi và nhận</h3>
+          <div class="customer-review-contact-grid">
+            <article class="customer-review-contact-card is-sender">
+              <div class="customer-review-contact-head">
+                <span><i class="fas fa-share-from-square"></i> Gửi</span>
+                ${order.sender_phone ? `<a href="tel:${escapeHtml(order.sender_phone)}" aria-label="Gọi người gửi"><i class="fas fa-phone"></i></a>` : ""}
+              </div>
+              <div class="customer-review-contact-body">
+                <div class="customer-review-contact-name">
+                  <span>Tên</span>
+                  <strong>${escapeHtml(order.sender_name || "--")}</strong>
+                </div>
+                <div class="customer-review-contact-address">
+                  <i class="fas fa-location-dot"></i>
+                  <div>
+                    <span>Địa chỉ</span>
+                    <strong>${escapeHtml(order.pickup_address || "--")}</strong>
+                  </div>
+                </div>
+              </div>
+            </article>
+            <article class="customer-review-contact-card is-receiver">
+              <div class="customer-review-contact-head">
+                <span><i class="fas fa-circle-down"></i> Nhận</span>
+                ${order.receiver_phone ? `<a href="tel:${escapeHtml(order.receiver_phone)}" aria-label="Gọi người nhận"><i class="fas fa-phone"></i></a>` : ""}
+              </div>
+              <div class="customer-review-contact-body">
+                <div class="customer-review-contact-name">
+                  <span>Tên</span>
+                  <strong>${escapeHtml(order.receiver_name || "--")}</strong>
+                </div>
+                <div class="customer-review-contact-address">
+                  <i class="fas fa-location-dot"></i>
+                  <div>
+                    <span>Địa chỉ</span>
+                    <strong>${escapeHtml(order.delivery_address || "--")}</strong>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
         </section>
 
         <section class="customer-review-block customer-review-block--wide">
           <h3><i class="fas fa-boxes-stacked"></i> Hàng hóa và đóng gói</h3>
           ${renderOrderItemCards(items)}
-          <div class="rv-row"><span class="rv-label">Giá trị thu hộ (COD)</span><span class="rv-val">${order.cod_amount ? formatCurrency(order.cod_amount) : "Không có"}</span></div>
+          ${renderReviewRow("Giá trị thu hộ (COD)", order.cod_amount ? formatCurrency(order.cod_amount) : "Không có", {
+            valueClassName: "rv-val--number",
+          })}
         </section>
 
         <section class="customer-review-block customer-review-block--wide">
-          <h3><i class="fas fa-photo-film"></i> Ảnh/video khách đính kèm khi đặt đơn</h3>
+          <h3><i class="fas fa-photo-film"></i> Ảnh/video khi đặt đơn</h3>
           ${renderAttachmentPreview(attachments)}
         </section>
 
         <section class="customer-review-block customer-review-block--wide">
-          <h3><i class="fas fa-note-sticky"></i> Ghi chú vận chuyển</h3>
-          <div class="rv-row"><span class="rv-label">Ghi chú</span><span class="rv-val">${formatMultilineText(order.clean_note || "Không có")}</span></div>
+          <h3><i class="fas fa-note-sticky"></i> Ghi chú</h3>
+          <div class="customer-review-note-text">${formatMultilineText(order.clean_note || "Không có")}</div>
         </section>
 
-        <section class="customer-review-block">
-          <h3><i class="fas fa-calendar-check"></i> Lịch trình</h3>
-          <div class="rv-row"><span class="rv-label">Tạo đơn lúc</span><span class="rv-val">${formatDateTime(order.created_at)}</span></div>
-          <div class="rv-row"><span class="rv-label">Lấy hàng</span><span class="rv-val">${pickupLabel}</span></div>
-          <div class="rv-row"><span class="rv-label">Thời gian giao dự kiến</span><span class="rv-val">${escapeHtml(serviceMeta.estimated_eta || "--")}</span></div>
-        </section>
+        ${
+          completedOrder
+            ? ""
+            : `<section class="customer-review-block">
+          <h3><i class="fas fa-calendar-check"></i> Thời gian</h3>
+          ${scheduleRows}
+        </section>`
+        }
 
         <section class="customer-review-block">
           <h3><i class="fas fa-receipt"></i> Chi phí</h3>
           ${renderFeeBreakdownRows(order.fee_breakdown || {}, order.shipping_fee)}
-          <div class="rv-row"><span class="rv-label">Người trả cước</span><span class="rv-val">${escapeHtml(order.payer_label || "Người gửi")}</span></div>
-          <div class="rv-row"><span class="rv-label">Thanh toán</span><span class="rv-val">${escapeHtml(order.payment_method_label || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Trạng thái thanh toán</span><span class="rv-val">${escapeHtml(order.payment_status_label || "--")}</span></div>
+          ${renderReviewRow("Người trả", order.payer_label || "Người gửi")}
+          ${renderReviewRow("Thanh toán", order.payment_method_label || "--")}
+          ${renderReviewRow("Trạng thái", order.payment_status_label || "--")}
         </section>
 
         <section class="customer-review-block">
           <h3><i class="fas fa-circle-info"></i> Theo dõi đơn</h3>
-          <div class="rv-row"><span class="rv-label">Trạng thái hiện tại</span><span class="rv-val">${escapeHtml(order.status_label || order.status || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Mã đơn khách theo dõi</span><span class="rv-val">${escapeHtml(order.order_code || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Bằng chứng giao hàng</span><span class="rv-val">${order.pod_image ? "Đã có" : "Chưa có"}</span></div>
+          ${renderReviewRow("Trạng thái", order.status_label || order.status || "--")}
+          ${renderReviewRow("Mã đơn", order.order_code || "--")}
+          ${renderReviewRow("Khoảng cách", distanceLabel, {
+            valueClassName: "rv-val--number",
+          })}
+          ${renderReviewRow("Bằng chứng", order.pod_image ? "Đã có" : "Chưa có")}
         </section>
 
         <section class="customer-review-block customer-review-block--wide">
@@ -2651,7 +2985,7 @@
     const summaryText = activeOrders
       ? "Tập trung vào các đơn đang di chuyển hoặc còn chờ xác nhận để xử lý nhanh hơn."
       : totalOrders
-        ? "Mọi đơn gần đây đang ở trạng thái ổn định. Bạn có thể mở lịch sử để xem lại chi tiết."
+        ? "Mọi đơn gần đây đang ở trạng thái ổn định. Bạn có thể mở danh sách đơn để xem lại chi tiết."
         : "Bạn chưa có đơn nào. Tạo đơn mới khi cần gửi hàng để bắt đầu theo dõi tại đây.";
 
     content.innerHTML = `
@@ -2742,7 +3076,7 @@
   }
 
   async function initOrders() {
-    renderLoading("Đang tải lịch sử đơn hàng...");
+    renderLoading("Đang tải danh sách đơn hàng...");
     const params = new URLSearchParams(window.location.search);
     const requestParams = {
       search: params.get("search") || "",
@@ -2781,7 +3115,7 @@
       <section class="customer-panel customer-orders-panel">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Lịch sử đơn hàng</p>
+            <p class="customer-section-kicker">Danh sách đơn hàng</p>
             <h2>Tìm và lọc đơn</h2>
             <p class="customer-panel-subtext">Trang ${formatNumber(currentPage)}/${formatNumber(totalPages)} · ${formatNumber(totalResults)} đơn</p>
           </div>
@@ -2923,9 +3257,18 @@
       : "Chưa gán";
     const canSubmitFeedback =
       String(order.status || "").toLowerCase() === "completed";
+    const detailServiceMeta = order.service_meta || {};
+    const detailDistanceLabel =
+      Number(detailServiceMeta.distance_km || 0) > 0
+        ? `${Number(detailServiceMeta.distance_km).toLocaleString("vi-VN", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+          })} km`
+        : detailServiceMeta.distance_label || "--";
     const feedbackSummary = order.rating
       ? `Đã đánh giá ${escapeHtml(order.rating)} sao${order.feedback ? ` · ${escapeHtml(order.feedback)}` : ""}`
-      : "Chưa có phản hồi nào cho đơn này.";
+      : "Chưa đánh giá";
+    const feedbackMediaGroups = groupMediaByKind(provider.feedback_media);
 
     content.innerHTML = `
       <section class="customer-panel">
@@ -2936,17 +3279,23 @@
           </div>
           <div class="customer-inline-actions">
             ${createStatusBadge(order.status, order.status_label)}
+            ${
+              isCompletedOrder(order)
+                ? `<span class="customer-detail-completed-time">${formatDateTime(order.ngayhoanthanhthucte || order.completed_at || order.delivered_at)}</span>`
+                : ""
+            }
             ${renderCancelButton(order)}
             <a class="customer-btn customer-btn-primary" href="${routes.booking}">Tạo đơn mới</a>
-            <a class="customer-btn customer-btn-ghost" href="${routes.orders}">Về lịch sử đơn</a>
+            <a class="customer-btn customer-btn-ghost" href="${routes.orders}">Về danh sách đơn</a>
           </div>
         </div>
 
         <div class="customer-detail-summary">
+          <article class="customer-detail-summary-amount"><span>Tổng phí</span><strong>${formatCurrency(order.shipping_fee)}</strong></article>
+          <article class="customer-detail-summary-distance"><span>Khoảng cách</span><strong>${escapeHtml(detailDistanceLabel)}</strong></article>
           <article><span>Gói dịch vụ</span><strong>${escapeHtml(order.service_label || "--")}</strong></article>
-          <article><span>Tổng phí ship</span><strong>${formatCurrency(order.shipping_fee)}</strong></article>
           <article><span>Thu hộ COD</span><strong>${formatCurrency(order.cod_amount)}</strong></article>
-          <article><span>Thanh toán</span><strong>${escapeHtml(order.payment_status_label || "--")}</strong></article>
+          <article><span>Trạng thái</span><strong>${escapeHtml(order.status_label || order.status || "--")}</strong></article>
           <article><span>Tạo đơn lúc</span><strong>${formatDateTime(order.created_at)}</strong></article>
           <article><span>Nhà cung cấp</span><strong>${escapeHtml(providerDisplayName)}</strong></article>
         </div>
@@ -2979,8 +3328,9 @@
                       },
                       { label: "Tài khoản", value: provider.username || "--" },
                       {
-                        label: "Số điện thoại",
+                        label: "SĐT",
                         value: provider.shipper_phone || provider.phone || "--",
+                        valueClassName: "is-number",
                       },
                       { label: "Email", value: provider.email || "--" },
                       {
@@ -3001,7 +3351,7 @@
                           "--",
                       },
                       {
-                        label: "Ghi chú từ shipper",
+                        label: "Ghi chú",
                         value:
                           order.shipper_note || "Chưa có ghi chú từ shipper.",
                       },
@@ -3012,13 +3362,11 @@
             </article>
 
             <article class="customer-info-card">
-              <h3>Tệp và bằng chứng</h3>
-              <h4 class="customer-subheading">Tệp đính kèm của đơn hàng</h4>
+              <h3>Media và bằng chứng</h3>
+              <h4 class="customer-subheading">Media của đơn hàng</h4>
               ${renderFiles(provider.attachments)}
               <h4 class="customer-subheading">Báo cáo quá trình làm việc</h4>
               ${renderAttachmentPreview(provider.shipper_reports)}
-              <h4 class="customer-subheading">Media phản hồi đã gửi</h4>
-              ${renderAttachmentPreview(provider.feedback_media)}
             </article>
           </div>
 
@@ -3028,6 +3376,7 @@
               canSubmitFeedback
                 ? `<form id="customer-feedback-form" class="customer-form-stack">
               <input type="hidden" name="order_id" value="${order.id}" />
+              ${order.rating ? "" : '<div class="customer-feedback-state">Chưa đánh giá</div>'}
               <div class="customer-form-grid">
                 <label>
                   <span>Mức đánh giá</span>
@@ -3046,21 +3395,27 @@
                   <textarea name="feedback" rows="5" placeholder="Mô tả chất lượng phục vụ hoặc báo cáo vấn đề cho quản lý.">${escapeHtml(order.feedback || "")}</textarea>
                 </label>
               </div>
-              <div class="customer-media-actions">
-                <label class="customer-btn customer-btn-ghost">
-                  Chụp ảnh
-                  <input type="file" id="feedback-capture-image" accept="image/*" capture="environment" hidden />
-                </label>
-                <label class="customer-btn customer-btn-ghost">
-                  Quay video
-                  <input type="file" id="feedback-capture-video" accept="video/*" capture="environment" hidden />
-                </label>
-                <label class="customer-btn customer-btn-ghost">
-                  Tải ảnh/video
-                  <input type="file" id="feedback-upload" accept="image/*,video/*" multiple hidden />
-                </label>
+              <div class="customer-feedback-upload-grid">
+                <div class="customer-feedback-upload-zone customer-feedback-upload-zone-image">
+                  <label class="customer-feedback-upload-picker">
+                    <span class="customer-feedback-upload-icon"><i class="fas fa-camera"></i></span>
+                    <strong>Ảnh phản hồi</strong>
+                    <input type="file" id="feedback-capture-image" accept="image/*" capture="environment" multiple hidden />
+                    <span id="customer-feedback-image-files" class="customer-selected-files">Chưa chọn ảnh</span>
+                  </label>
+                  ${renderAttachmentPreview(feedbackMediaGroups.images, { removable: true, hideEmpty: true })}
+                </div>
+                <div class="customer-feedback-upload-zone customer-feedback-upload-zone-video">
+                  <label class="customer-feedback-upload-picker">
+                    <span class="customer-feedback-upload-icon"><i class="fas fa-video"></i></span>
+                    <strong>Video phản hồi</strong>
+                    <input type="file" id="feedback-capture-video" accept="video/*" capture="environment" multiple hidden />
+                    <span id="customer-feedback-video-files" class="customer-selected-files">Chưa chọn video</span>
+                  </label>
+                  ${renderAttachmentPreview(feedbackMediaGroups.videos, { removable: true, hideEmpty: true })}
+                </div>
               </div>
-              <div class="customer-selected-files" id="customer-selected-files">Chưa chọn ảnh hoặc video phản hồi.</div>
+              ${renderAttachmentPreview(feedbackMediaGroups.other, { removable: true, hideEmpty: true })}
               <div class="customer-inline-actions">
                 <button class="customer-btn customer-btn-primary" type="submit">Gửi phản hồi</button>
               </div>
@@ -3078,9 +3433,13 @@
             <article class="customer-info-card">
               <h3>Thông tin khách hàng</h3>
               ${renderInfoList([
-                { label: "Họ tên", value: customer.fullname || "--" },
+                { label: "Tên", value: customer.fullname || "--" },
                 { label: "Tài khoản", value: customer.username || "--" },
-                { label: "Số điện thoại", value: customer.phone || "--" },
+                {
+                  label: "SĐT",
+                  value: customer.phone || "--",
+                  valueClassName: "is-number",
+                },
                 { label: "Email", value: customer.email || "--" },
                 { label: "Công ty", value: customer.company_name || "--" },
                 { label: "Mã số thuế", value: customer.tax_code || "--" },
@@ -3142,30 +3501,73 @@
     if (feedbackForm) {
       const captureImage = document.getElementById("feedback-capture-image");
       const captureVideo = document.getElementById("feedback-capture-video");
-      const uploadInput = document.getElementById("feedback-upload");
-      const selectedFilesHost = document.getElementById("customer-selected-files");
+      const imageFilesHost = document.getElementById("customer-feedback-image-files");
+      const videoFilesHost = document.getElementById("customer-feedback-video-files");
 
-      function refreshSelectedFiles() {
-        if (!selectedFilesHost) return;
-        const files = [];
-        [captureImage, captureVideo, uploadInput].forEach((input) => {
-          if (input && input.files) {
-            Array.from(input.files).forEach((file) => files.push(file.name));
+      function bindCustomerFeedbackPreview(input, host, emptyMessage, mediaType) {
+        if (!input || !host) return;
+        let previewUrls = [];
+        const clearPreviewUrls = () => {
+          previewUrls.forEach((url) => URL.revokeObjectURL(url));
+          previewUrls = [];
+        };
+        const refresh = () => {
+          clearPreviewUrls();
+          const files = input.files ? Array.from(input.files) : [];
+          if (!files.length) {
+            host.textContent = emptyMessage;
+            return;
           }
-        });
-        selectedFilesHost.textContent = files.length
-          ? `Đã chọn: ${files.join(", ")}`
-          : "Chưa chọn ảnh hoặc video phản hồi.";
+          const previewFiles = files.slice(0, mediaType === "image" ? 4 : 1);
+          const previewHtml = previewFiles
+            .map((file) => {
+              const url = URL.createObjectURL(file);
+              previewUrls.push(url);
+              if (mediaType === "video") {
+                return `<video class="customer-feedback-upload-preview-media" src="${url}" controls muted playsinline preload="metadata"></video>`;
+              }
+              return `<img class="customer-feedback-upload-preview-media" src="${url}" alt="Ảnh phản hồi đã chọn">`;
+            })
+            .join("");
+          const countText =
+            mediaType === "image"
+              ? `${files.length} ảnh đã chọn`
+              : `${files.length} video đã chọn`;
+          host.innerHTML = `
+            <span class="customer-feedback-upload-preview">${previewHtml}</span>
+            <span class="customer-feedback-upload-count">${countText}</span>
+          `;
+          host.querySelectorAll("video").forEach((video) => {
+            video.addEventListener("click", (event) => event.stopPropagation());
+          });
+        };
+        input.addEventListener("change", refresh);
+        window.addEventListener("beforeunload", clearPreviewUrls, { once: true });
+        refresh();
       }
 
-      [captureImage, captureVideo, uploadInput].forEach((input) => {
-        if (input) input.addEventListener("change", refreshSelectedFiles);
+      bindCustomerFeedbackPreview(captureImage, imageFilesHost, "Chưa chọn ảnh", "image");
+      bindCustomerFeedbackPreview(captureVideo, videoFilesHost, "Chưa chọn video", "video");
+
+      feedbackForm.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-remove-feedback-media]");
+        if (!button || !feedbackForm.contains(button)) return;
+        event.preventDefault();
+        const mediaItem = button.closest("[data-removable-media-index]");
+        const removeInput = mediaItem?.querySelector(
+          'input[name="remove_feedback_media_indexes[]"]',
+        );
+        if (!mediaItem || !removeInput) return;
+        const willRemove = !mediaItem.classList.contains("is-removed");
+        mediaItem.classList.toggle("is-removed", willRemove);
+        removeInput.disabled = !willRemove;
+        button.setAttribute("aria-pressed", willRemove ? "true" : "false");
       });
 
       feedbackForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(feedbackForm);
-        [captureImage, captureVideo, uploadInput].forEach((input) => {
+        [captureImage, captureVideo].forEach((input) => {
           if (input && input.files) {
             Array.from(input.files).forEach((file) => formData.append("media_files[]", file));
           }
@@ -3213,11 +3615,13 @@
 
     content.innerHTML = `
       <section class="customer-portal-profile customer-portal-profile-rich">
-        <!-- HEADER HERO -->
         <div class="customer-profile-hero customer-profile-hero-rich">
           <div class="customer-profile-hero-main">
             <div class="customer-profile-avatar-wrapper customer-profile-avatar-wrapper-rich">
               ${avatarSrc ? `<img class="customer-profile-avatar-image" src="${escapeHtml(avatarSrc)}" alt="${escapeHtml(name)}" />` : `<div class="customer-profile-avatar-large">${initial}</div>`}
+              <label class="customer-profile-avatar-action" for="customer-avatar-file" aria-label="Thay đổi ảnh đại diện">
+                <i class="fas fa-camera"></i>
+              </label>
             </div>
             <div class="customer-profile-hero-info">
               <p class="customer-profile-eyebrow">Thành viên Giao Hàng Nhanh</p>
@@ -3228,218 +3632,192 @@
               </div>
             </div>
           </div>
-          <div class="customer-profile-hero-side">
+          <div class="customer-profile-hero-actions">
             <span class="customer-profile-status-badge ${escapeHtml(statusMeta.className)}">${escapeHtml(statusMeta.label)}</span>
             <p class="customer-profile-hero-note">${escapeHtml(statusMeta.note)}</p>
+            <button class="customer-btn customer-btn-primary" type="submit" form="customer-profile-form" id="customer-profile-submit-btn">
+              <i class="fas fa-save"></i> Lưu thay đổi
+            </button>
           </div>
         </div>
 
-        <!-- 2. QUICK STATS SUMMARY -->
-        <div class="customer-profile-summary">
-          <article>
-            <span>Tổng đơn hàng</span>
-            <strong>${formatNumber(stats.total || 0)}</strong>
-          </article>
-          <article>
-            <span>Đã hoàn tất</span>
-            <strong>${formatNumber(stats.completed || 0)}</strong>
-          </article>
-          <article>
-            <span>Tỷ lệ thành công</span>
-            <strong>${stats.success_rate || (stats.total ? Math.round((stats.completed / stats.total) * 100) : 0)}%</strong>
-          </article>
-        </div>
-
-        <div class="customer-profile-grid-container">
-          <!-- LEFT COLUMN: MAIN CONTENT (Identity, Business, Media) -->
-          <div class="customer-profile-col-main">
-            <form id="customer-profile-form" enctype="multipart/form-data">
-              <!-- 1. IDENTITY & CONTACT CARD -->
-              <div class="customer-profile-card">
-                <div class="customer-profile-section-title">
-                  <i class="fas fa-address-card"></i>
-                  <h3>Thông tin định danh & Liên hệ</h3>
+        <div class="customer-profile-dashboard-grid">
+          <div class="customer-profile-main-column">
+            <form id="customer-profile-form" class="customer-profile-form" enctype="multipart/form-data">
+              <article class="customer-profile-card">
+                <div class="customer-profile-card-head">
+                  <i class="fas fa-user-circle"></i>
+                  <h3>Thông tin cá nhân</h3>
                 </div>
-                
-                <div class="customer-profile-form-grid" style="margin-top: 24px;">
+                <div class="customer-profile-form-grid">
                   <div class="customer-form-group">
-                    <span>Họ và tên khách hàng</span>
+                    <span>Họ và tên</span>
                     <div class="customer-form-field">
                       <i class="fas fa-user"></i>
                       <input name="ho_ten" value="${escapeHtml(name)}" required />
                     </div>
                   </div>
                   <div class="customer-form-group">
-                    <span>Số điện thoại (Định danh)</span>
+                    <span>Số điện thoại</span>
                     <div class="customer-form-field">
-                      <i class="fas fa-phone-lock"></i>
+                      <i class="fas fa-phone"></i>
                       <input name="so_dien_thoai" value="${escapeHtml(phone)}" readonly disabled />
                     </div>
                   </div>
                   <div class="customer-form-group">
-                    <span>Địa chỉ Email</span>
+                    <span>Email</span>
                     <div class="customer-form-field">
                       <i class="fas fa-envelope"></i>
                       <input name="email" type="email" value="${escapeHtml(profile.email || "")}" placeholder="name@example.com" />
                     </div>
                   </div>
-                  <div class="customer-form-group">
+                  <div class="customer-form-group customer-form-group-wide">
                     <span>Địa chỉ liên hệ</span>
                     <div class="customer-form-field">
-                      <i class="fas fa-map-location"></i>
+                      <i class="fas fa-location-dot"></i>
                       <input name="dia_chi" value="${escapeHtml(profile.dia_chi || profile.address || "")}" placeholder="Số nhà, tên đường..." />
                     </div>
                   </div>
                 </div>
-              </div>
+              </article>
 
-              <!-- 2. BUSINESS INFO (COLLAPSIBLE) -->
-              <div class="customer-profile-card customer-profile-accordion-item ${profile.ten_cong_ty ? "is-active" : ""}">
-                <button type="button" class="customer-profile-accordion-header js-accordion-toggle">
-                    <div class="customer-profile-section-title">
-                        <i class="fas fa-building"></i>
-                        <h3>Thông tin doanh nghiệp (Tùy chọn)</h3>
-                    </div>
-                    <i class="fas fa-chevron-down customer-profile-accordion-icon"></i>
-                </button>
-                
-                <div class="customer-profile-accordion-body">
-                    <div class="customer-profile-form-grid">
-                      <div class="customer-form-group">
-                        <span>Tên đơn vị / Công ty</span>
-                        <div class="customer-form-field">
-                          <i class="fas fa-building"></i>
-                          <input name="ten_cong_ty" value="${escapeHtml(profile.ten_cong_ty || profile.company_name || "")}" placeholder="Dành cho xuất hóa đơn" />
-                        </div>
-                      </div>
-                      <div class="customer-form-group">
-                        <span>Mã số thuế</span>
-                        <div class="customer-form-field">
-                          <i class="fas fa-fingerprint"></i>
-                          <input name="ma_so_thue" value="${escapeHtml(profile.ma_so_thue || profile.tax_code || "")}" placeholder="GST / Tax ID" />
-                        </div>
-                      </div>
-                      <div class="customer-form-group" style="grid-column: span 2;">
-                        <span>Địa chỉ xuất hóa đơn</span>
-                        <div class="customer-form-field">
-                          <i class="fas fa-receipt"></i>
-                          <input name="dia_chi_cong_ty" value="${escapeHtml(profile.dia_chi_cong_ty || profile.company_address || "")}" placeholder="Địa chỉ chính thức của doanh nghiệp" />
-                        </div>
-                      </div>
-                    </div>
+              <article class="customer-profile-card">
+                <div class="customer-profile-card-head">
+                  <i class="fas fa-fingerprint"></i>
+                  <h3>Xác thực căn cước công dân</h3>
                 </div>
-              </div>
-
-              <!-- 3. VERIFICATION & MEDIA (COLLAPSIBLE) -->
-              <div class="customer-profile-card customer-profile-accordion-item">
-                <button type="button" class="customer-profile-accordion-header js-accordion-toggle">
-                    <div class="customer-profile-section-title">
-                        <i class="fas fa-shield-halved"></i>
-                        <h3>Xác thực hồ sơ & Media</h3>
+                <div class="customer-profile-media-grid customer-profile-media-grid-identity">
+                  <article class="customer-profile-media-card customer-profile-media-card-avatar">
+                    <div class="customer-profile-media-head">
+                      <strong>Ảnh đại diện</strong>
+                      <span>JPG, PNG</span>
                     </div>
-                    <i class="fas fa-chevron-down customer-profile-accordion-icon"></i>
-                </button>
-                
-                <div class="customer-profile-accordion-body">
-                    <div class="customer-profile-media-grid">
-                       <article class="customer-profile-media-card">
-                            <div class="customer-profile-media-head">
-                              <strong>Avatar</strong>
-                              <span>Định dạng: JPG, PNG</span>
-                            </div>
-                            <div class="customer-profile-media-preview">
-                              <img id="customer-avatar-preview" src="${escapeHtml(avatarSrc || "")}" alt="Avatar" ${avatarSrc ? "" : "hidden"} />
-                              <div id="customer-avatar-empty" class="customer-profile-media-empty" ${avatarSrc ? "hidden" : ""}>Chưa có ảnh đại diện</div>
-                            </div>
-                            <label class="customer-btn customer-btn-ghost customer-profile-upload-btn customer-btn-sm">
-                              <input id="customer-avatar-file" name="avatar_file" type="file" accept="image/*" hidden />
-                              Thay đổi
-                            </label>
-                      </article>
+                    <div class="customer-profile-media-preview customer-profile-media-preview-avatar">
+                      <img id="customer-avatar-preview" src="${escapeHtml(avatarSrc || "")}" alt="Ảnh đại diện" ${avatarSrc ? "" : "hidden"} />
+                      <div id="customer-avatar-empty" class="customer-profile-media-empty" ${avatarSrc ? "hidden" : ""}>Chưa có ảnh đại diện</div>
+                    </div>
+                    <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
+                      <input id="customer-avatar-file" name="avatar_file" type="file" accept="image/*" hidden />
+                      <i class="fas fa-camera"></i> Thay đổi ảnh
+                    </label>
+                  </article>
 
-                      <div class="customer-profile-form-grid" style="grid-template-columns: 1fr 1fr; gap: 16px;">
-                          <article class="customer-profile-media-card">
-                                <div class="customer-profile-media-head">
-                                  <strong>CCCD Mặt trước</strong>
-                                </div>
-                                <div class="customer-profile-media-preview" style="min-height: 120px;">
-                                  <img id="customer-cccd-front-preview" src="${escapeHtml(cccdFrontSrc || "")}" alt="CCCD Front" ${cccdFrontSrc ? "" : "hidden"} />
-                                  <div id="customer-cccd-front-empty" class="customer-profile-media-empty" ${cccdFrontSrc ? "hidden" : ""}>Chưa tải lên</div>
-                                </div>
-                                <label class="customer-btn customer-btn-ghost customer-profile-upload-btn customer-btn-sm">
-                                  <input id="customer-cccd-front-file" name="cccd_front_file" type="file" accept="image/*" hidden />
-                                  Tải lên
-                                </label>
-                          </article>
-
-                          <article class="customer-profile-media-card">
-                                <div class="customer-profile-media-head">
-                                  <strong>CCCD Mặt sau</strong>
-                                </div>
-                                <div class="customer-profile-media-preview" style="min-height: 120px;">
-                                  <img id="customer-cccd-back-preview" src="${escapeHtml(cccdBackSrc || "")}" alt="CCCD Back" ${cccdBackSrc ? "" : "hidden"} />
-                                  <div id="customer-cccd-back-empty" class="customer-profile-media-empty" ${cccdBackSrc ? "hidden" : ""}>Chưa tải lên</div>
-                                </div>
-                                <label class="customer-btn customer-btn-ghost customer-profile-upload-btn customer-btn-sm">
-                                  <input id="customer-cccd-back-file" name="cccd_back_file" type="file" accept="image/*" hidden />
-                                  Tải lên
-                                </label>
-                          </article>
+                  <article class="customer-profile-media-card">
+                    <div class="customer-profile-media-head">
+                      <strong>CCCD mặt trước</strong>
+                      <span>Xác minh</span>
+                    </div>
+                    <div class="customer-profile-media-preview">
+                      <img id="customer-cccd-front-preview" src="${escapeHtml(cccdFrontSrc || "")}" alt="CCCD mặt trước" ${cccdFrontSrc ? "" : "hidden"} />
+                      <div id="customer-cccd-front-empty" class="customer-profile-media-empty" ${cccdFrontSrc ? "hidden" : ""}>
+                        <i class="fas fa-cloud-arrow-up"></i>
+                        <span>Tải lên mặt trước</span>
                       </div>
                     </div>
-                </div>
-              </div>
+                    <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
+                      <input id="customer-cccd-front-file" name="cccd_front_file" type="file" accept="image/*" hidden />
+                      <i class="fas fa-id-card"></i> Chọn ảnh
+                    </label>
+                  </article>
 
-              <!-- SAVE ACTION CARD -->
-              <div class="customer-profile-card">
-                  <div style="margin-bottom: 20px;">
-                      <h4 style="margin:0; color:#0c1e4b; font-size: 16px;">Cập nhật hồ sơ</h4>
-                      <p style="margin:6px 0 0; font-size:13px; color: #64748b;">Đảm bảo mọi thông tin khách hàng là chính xác trước khi lưu.</p>
-                  </div>
-                  <button class="customer-btn customer-btn-primary" type="submit" id="customer-profile-submit-btn" style="width: auto; padding: 12px 32px;">
-                    <i class="fas fa-cloud-arrow-up"></i> Lưu thay đổi
-                  </button>
-              </div>
+                  <article class="customer-profile-media-card">
+                    <div class="customer-profile-media-head">
+                      <strong>CCCD mặt sau</strong>
+                      <span>Xác minh</span>
+                    </div>
+                    <div class="customer-profile-media-preview">
+                      <img id="customer-cccd-back-preview" src="${escapeHtml(cccdBackSrc || "")}" alt="CCCD mặt sau" ${cccdBackSrc ? "" : "hidden"} />
+                      <div id="customer-cccd-back-empty" class="customer-profile-media-empty" ${cccdBackSrc ? "hidden" : ""}>
+                        <i class="fas fa-cloud-arrow-up"></i>
+                        <span>Tải lên mặt sau</span>
+                      </div>
+                    </div>
+                    <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
+                      <input id="customer-cccd-back-file" name="cccd_back_file" type="file" accept="image/*" hidden />
+                      <i class="fas fa-id-card-clip"></i> Chọn ảnh
+                    </label>
+                  </article>
+                </div>
+              </article>
             </form>
           </div>
 
-          <!-- RIGHT COLUMN: SIDEBAR (Security & Activity) -->
-          <div class="customer-profile-col-side">
-            <!-- 5. SECURITY CARD -->
-            <div class="customer-profile-card">
-                <div class="customer-profile-section-title">
-                  <i class="fas fa-lock"></i>
-                  <h3>Bảo mật & Mật khẩu</h3>
-                </div>
-                <form id="customer-password-form" class="customer-form-stack" style="margin-top: 24px;">
-                  <div class="customer-form-group">
-                    <span>Mật khẩu hiện tại</span>
-                    <div class="customer-form-field">
-                      <i class="fas fa-key"></i>
-                      <input name="mat_khau_hien_tai" type="password" required placeholder="••••••••" />
-                    </div>
-                  </div>
-                  <div class="customer-form-group">
-                    <span>Mật khẩu mới</span>
-                    <div class="customer-form-field">
-                      <i class="fas fa-lock"></i>
-                      <input name="mat_khau_moi" type="password" minlength="8" required placeholder="Ít nhất 8 ký tự" />
-                    </div>
-                  </div>
-                  <div class="customer-form-group">
-                    <span>Xác nhận mật khẩu</span>
-                    <div class="customer-form-field">
-                      <i class="fas fa-check-double"></i>
-                      <input name="xac_nhan_mat_khau_moi" type="password" minlength="8" required placeholder="Nhập lại mật khẩu mới" />
-                    </div>
-                  </div>
-                  <button class="customer-btn customer-btn-ghost" type="submit" style="width: 100%; margin-top: 8px;">
-                    Đổi mật khẩu
-                  </button>
-                </form>
-            </div>
+          <aside class="customer-profile-side-column">
+            <article class="customer-profile-card customer-profile-stats-card">
+              <div class="customer-profile-card-head">
+                <i class="fas fa-chart-line"></i>
+                <h3>Thống kê vận hành</h3>
+              </div>
+              <div class="customer-profile-stat-list">
+                <div><span>Tổng đơn hàng</span><strong>${formatNumber(stats.total || 0)}</strong></div>
+                <div><span>Đơn hoàn tất</span><strong>${formatNumber(stats.completed || 0)}</strong></div>
+                <div><span>Tỷ lệ thành công</span><strong>${stats.success_rate || (stats.total ? Math.round((stats.completed / stats.total) * 100) : 0)}%</strong></div>
+              </div>
+            </article>
 
-          </div>
+            <article class="customer-profile-card customer-profile-security-card">
+              <div class="customer-profile-card-head">
+                <i class="fas fa-shield-halved"></i>
+                <h3>Bảo mật</h3>
+              </div>
+              <form id="customer-password-form" class="customer-form-stack">
+                <div class="customer-form-group">
+                  <span>Mật khẩu hiện tại</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-key"></i>
+                    <input name="mat_khau_hien_tai" type="password" required placeholder="••••••••" autocomplete="current-password" />
+                  </div>
+                </div>
+                <div class="customer-form-group">
+                  <span>Mật khẩu mới</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-lock"></i>
+                    <input name="mat_khau_moi" type="password" minlength="8" required placeholder="Ít nhất 8 ký tự" autocomplete="new-password" />
+                  </div>
+                </div>
+                <div class="customer-form-group">
+                  <span>Xác nhận mật khẩu</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-check-double"></i>
+                    <input name="xac_nhan_mat_khau_moi" type="password" minlength="8" required placeholder="Nhập lại mật khẩu mới" autocomplete="new-password" />
+                  </div>
+                </div>
+                <button class="customer-btn customer-btn-ghost customer-profile-full-btn" type="submit">
+                  Cập nhật mật khẩu
+                </button>
+              </form>
+            </article>
+
+            <article class="customer-profile-card">
+              <div class="customer-profile-card-head">
+                <i class="fas fa-building"></i>
+                <h3>Hóa đơn / Doanh nghiệp</h3>
+              </div>
+              <div class="customer-form-stack customer-profile-company-form">
+                <div class="customer-form-group">
+                  <span>Tên công ty</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-building"></i>
+                    <input form="customer-profile-form" name="ten_cong_ty" value="${escapeHtml(profile.company_name || profile.ten_cong_ty || "")}" placeholder="Tên công ty xuất hóa đơn" />
+                  </div>
+                </div>
+                <div class="customer-form-group">
+                  <span>Mã số thuế</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-receipt"></i>
+                    <input form="customer-profile-form" name="ma_so_thue" value="${escapeHtml(profile.tax_code || profile.ma_so_thue || "")}" placeholder="Mã số thuế" />
+                  </div>
+                </div>
+                <div class="customer-form-group">
+                  <span>Địa chỉ công ty</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-location-dot"></i>
+                    <input form="customer-profile-form" name="dia_chi_cong_ty" value="${escapeHtml(profile.company_address || profile.dia_chi_cong_ty || "")}" placeholder="Địa chỉ xuất hóa đơn" />
+                  </div>
+                </div>
+              </div>
+            </article>
+          </aside>
         </div>
       </section>
     `;

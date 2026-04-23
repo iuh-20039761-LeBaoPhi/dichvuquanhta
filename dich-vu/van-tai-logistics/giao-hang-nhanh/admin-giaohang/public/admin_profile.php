@@ -135,6 +135,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                 </div>
+
+                <div class="admin-card" style="margin-top: 20px; border-top: 4px solid #0a2a66;">
+                    <div class="admin-card-header">
+                        <h3><i class="fa-solid fa-cloud-arrow-up"></i> Cấu hình upload</h3>
+                    </div>
+                    <form id="upload-settings-form">
+                        <div class="form-group">
+                            <label for="max_upload_mb">Dung lượng file upload tối đa (MB)</label>
+                            <input
+                                type="number"
+                                id="max_upload_mb"
+                                name="max_upload_mb"
+                                class="admin-input"
+                                min="1"
+                                step="1"
+                                value="25">
+                            <small style="display:block; margin-top:8px; color:#64748b; line-height:1.5;">
+                                Áp dụng cho các file upload qua web của Giao Hàng Nhanh. Không thay đổi Apps Script Google Drive / Google Sheet.
+                            </small>
+                        </div>
+                        <div id="upload-settings-status" style="display:none; margin-top:14px; padding:12px 14px; border-radius:12px; font-size:13px;"></div>
+                        <div style="margin-top: 20px; text-align: right;">
+                            <button type="submit" class="btn-primary" id="upload-settings-submit">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu cấu hình upload
+                            </button>
+                        </div>
+                    </form>
+                </div>
                 
                 <div class="admin-card" style="margin-top: 20px; background: #f8f9fa;">
                     <div style="display: flex; align-items: center; gap: 15px;">
@@ -149,6 +177,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
 
     <?php include __DIR__ . '/../includes/footer.php'; ?>
+    <script>
+        (function () {
+            const form = document.getElementById('upload-settings-form');
+            const input = document.getElementById('max_upload_mb');
+            const statusEl = document.getElementById('upload-settings-status');
+            const submitBtn = document.getElementById('upload-settings-submit');
+            const endpoint = 'api/settings.php';
+
+            if (!form || !input || !statusEl || !submitBtn) {
+                return;
+            }
+
+            function setStatus(message, type) {
+                statusEl.textContent = message;
+                statusEl.style.display = message ? 'block' : 'none';
+                statusEl.style.background =
+                    type === 'error' ? '#fff1f2' : type === 'success' ? '#ecfdf3' : '#eff6ff';
+                statusEl.style.color =
+                    type === 'error' ? '#b42318' : type === 'success' ? '#027a48' : '#0a2a66';
+                statusEl.style.border =
+                    type === 'error'
+                        ? '1px solid #fecdd3'
+                        : type === 'success'
+                            ? '1px solid #a6f4c5'
+                            : '1px solid #bfdbfe';
+            }
+
+            async function loadSettings() {
+                setStatus('Đang tải cấu hình upload...', 'info');
+                try {
+                    const response = await fetch(endpoint, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const payload = await response.json();
+                    if (!response.ok || !payload?.success) {
+                        throw new Error(payload?.message || 'Không thể tải cấu hình upload.');
+                    }
+
+                    const nextValue = Number(payload?.data?.settings?.max_upload_mb || 25);
+                    input.value = Number.isFinite(nextValue) && nextValue > 0 ? String(nextValue) : '25';
+                    setStatus('', 'info');
+                } catch (error) {
+                    setStatus(error.message || 'Không thể tải cấu hình upload.', 'error');
+                }
+            }
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const maxUploadMb = Math.max(1, parseInt(input.value, 10) || 25);
+
+                submitBtn.disabled = true;
+                setStatus('Đang lưu cấu hình upload...', 'info');
+
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            settings: {
+                                max_upload_mb: maxUploadMb
+                            }
+                        })
+                    });
+                    const payload = await response.json();
+                    if (!response.ok || !payload?.success) {
+                        throw new Error(payload?.message || 'Không thể lưu cấu hình upload.');
+                    }
+
+                    input.value = String(maxUploadMb);
+                    setStatus('Đã cập nhật dung lượng file upload tối đa.', 'success');
+                } catch (error) {
+                    setStatus(error.message || 'Không thể lưu cấu hình upload.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            });
+
+            loadSettings();
+        })();
+    </script>
 </body>
 
 </html>

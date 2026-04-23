@@ -1,5 +1,4 @@
 <?php
-// Fallback proxy for legacy flows such as CCCD. Intentionally does not send folderKey.
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -7,12 +6,12 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 $scriptUrl = "https://script.google.com/macros/s/AKfycbxThLPP2mI062gddeEyAAy3XYzUMJ-CIzMP3dMFWQ7v31t5H10ZESvx_i-ZKzWO5A_pog/exec";
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['file'])) {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST' || !isset($_FILES['file'])) {
     echo json_encode(['success' => false, 'message' => 'Yêu cầu không hợp lệ'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
@@ -21,6 +20,7 @@ $file = $_FILES['file'];
 $name = isset($_POST['name']) ? trim((string) $_POST['name']) : trim((string) ($file['name'] ?? ''));
 $mime = trim((string) ($file['type'] ?? 'application/octet-stream'));
 $tmpPath = (string) ($file['tmp_name'] ?? '');
+$uploadKind = trim((string) ($_POST['upload_kind'] ?? 'order_media'));
 
 if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($tmpPath)) {
     echo json_encode([
@@ -30,11 +30,22 @@ if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_fil
     exit;
 }
 
+$folderKeyMap = [
+    'avatar' => 33,
+    'order_media' => 32,
+];
+$folderKey = $folderKeyMap[$uploadKind] ?? 0;
+if ($folderKey <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Loại upload không hợp lệ'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
 $fileContent = base64_encode((string) file_get_contents($tmpPath));
 $payload = json_encode([
     'name' => $name !== '' ? $name : 'media',
     'file' => $fileContent,
     'type' => $mime !== '' ? $mime : 'application/octet-stream',
+    'folderKey' => $folderKey,
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
 if ($payload === false) {

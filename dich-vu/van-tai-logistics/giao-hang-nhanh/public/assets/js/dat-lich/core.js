@@ -709,7 +709,6 @@ function loadOrderFormConfigSync() {
       { key: "dong-lanh", label: "Hàng đông lạnh" },
       { key: "cong-kenh", label: "Hàng cồng kềnh" },
     ],
-    tenhangtheoloai: {},
     loaixe: [
       { key: "auto", label: "Để hệ thống tự đề xuất" },
       { key: "xe_may", label: "Xe máy trọng lượng ≤ 50kg" },
@@ -738,14 +737,166 @@ function loadOrderFormConfigSync() {
 }
 
 const ORDER_FORM_CONFIG = loadOrderFormConfigSync();
-const ITEM_TYPES = Array.isArray(ORDER_FORM_CONFIG.loaihang)
-  ? ORDER_FORM_CONFIG.loaihang
-  : [];
-const ITEM_NAMES_BY_TYPE = ORDER_FORM_CONFIG.tenhangtheoloai || {};
-const ITEM_TYPE_LABELS = ITEM_TYPES.reduce((acc, item) => {
-  if (item && item.key) acc[item.key] = item.label || item.key;
-  return acc;
-}, {});
+const ACTIVE_PRICING_VERSION_META_KEY = "active_pricing_version_id";
+let ITEM_TYPES = [];
+let ITEM_TYPE_LABELS = {};
+let itemTypesLoadState = "idle";
+let itemTypesLoadMessage = "";
+
+function normalizeItemTypeOption(item) {
+  if (!item || typeof item !== "object") return null;
+
+  const key = String(
+    item.item_type_key ||
+      item.key ||
+      item.loai_hang ||
+      item.type_key ||
+      "",
+  ).trim();
+  if (!key) return null;
+
+  const label = String(
+    item.item_type_label ||
+      item.label ||
+      item.ten_loai_hang ||
+      item.name ||
+      key,
+  ).trim();
+
+  return {
+    key,
+    label: label || key,
+    sort_order: Number(item.sort_order || 0),
+  };
+}
+
+function normalizeItemTypeOptions(items) {
+  const unique = new Map();
+  (Array.isArray(items) ? items : []).forEach((item) => {
+    const normalized = normalizeItemTypeOption(item);
+    if (!normalized || unique.has(normalized.key)) return;
+    unique.set(normalized.key, normalized);
+  });
+
+  return Array.from(unique.values()).sort((left, right) => {
+    const leftOrder = Number(left.sort_order || 0);
+    const rightOrder = Number(right.sort_order || 0);
+    if (leftOrder || rightOrder) return leftOrder - rightOrder;
+    return left.label.localeCompare(right.label, "vi");
+  });
+}
+
+function buildItemTypeLabels(items) {
+  return normalizeItemTypeOptions(items).reduce((acc, item) => {
+    acc[item.key] = item.label || item.key;
+    return acc;
+  }, {});
+}
+
+function setItemTypeOptions(items) {
+  ITEM_TYPES = normalizeItemTypeOptions(items);
+  ITEM_TYPE_LABELS = buildItemTypeLabels(ITEM_TYPES);
+}
+
+async function getActivePricingVersionIdFromCrud() {
+  const listFn = getBookingCrudListFn();
+  if (!listFn) return 0;
+
+  try {
+    const metaResponse = await listFn({
+      table: "ghn_pricing_meta",
+      where: [
+        {
+          field: "meta_key",
+          operator: "=",
+          value: ACTIVE_PRICING_VERSION_META_KEY,
+        },
+      ],
+      sort: { id: "desc" },
+      page: 1,
+      limit: 1,
+    });
+    const metaRow = extractCrudRows(metaResponse)[0];
+    const metaVersionId = Number(metaRow?.meta_value || 0);
+    if (metaVersionId > 0) return metaVersionId;
+  } catch (error) {
+    console.warn("Không đọc được active pricing meta từ KRUD:", error);
+  }
+
+  try {
+    const versionResponse = await listFn({
+      table: "ghn_pricing_versions",
+      where: [{ field: "status", operator: "=", value: "active" }],
+      sort: { id: "desc" },
+      page: 1,
+      limit: 1,
+    });
+    const versionRow = extractCrudRows(versionResponse)[0];
+    return Number(versionRow?.id || 0);
+  } catch (error) {
+    console.warn("Không đọc được active pricing version từ KRUD:", error);
+    return 0;
+  }
+}
+
+async function loadItemTypesFromDatabase() {
+  const listFn = getBookingCrudListFn();
+  if (!listFn) {
+    throw new Error("Không tìm thấy hàm KRUD để tải loại hàng.");
+  }
+
+  const activeVersionId = await getActivePricingVersionIdFromCrud();
+  if (activeVersionId <= 0) {
+    throw new Error("Chưa có active pricing version để tải loại hàng.");
+  }
+
+  const response = await listFn({
+    table: "ghn_loai_hang",
+    where: [
+      {
+        field: "pricing_version_id",
+        operator: "=",
+        value: activeVersionId,
+      },
+    ],
+    sort: { sort_order: "asc", id: "asc" },
+    page: 1,
+    limit: 500,
+  });
+
+  return normalizeItemTypeOptions(extractCrudRows(response));
+}
+
+async function initItemTypeOptionsFromDatabase() {
+  itemTypesLoadState = "loading";
+  itemTypesLoadMessage = "Đang tải loại hàng...";
+  if (typeof hien_thi_danh_sach_hang_hoa === "function") {
+    hien_thi_danh_sach_hang_hoa();
+  }
+
+  try {
+    const nextTypes = await loadItemTypesFromDatabase();
+    if (!nextTypes.length) {
+      throw new Error("Bảng ghn_loai_hang chưa có dữ liệu loại hàng.");
+    }
+    setItemTypeOptions(nextTypes);
+    itemTypesLoadState = "ready";
+    itemTypesLoadMessage = "";
+  } catch (error) {
+    itemTypesLoadState = "error";
+    itemTypesLoadMessage =
+      error?.message || "Không tải được loại hàng từ cơ sở dữ liệu.";
+    console.warn("Không tải được loại hàng từ cơ sở dữ liệu:", error);
+  }
+
+  if (typeof hien_thi_danh_sach_hang_hoa === "function") {
+    hien_thi_danh_sach_hang_hoa();
+  }
+}
+
+setItemTypeOptions(
+  Array.isArray(ORDER_FORM_CONFIG.loaihang) ? ORDER_FORM_CONFIG.loaihang : [],
+);
 const VEHICLE_OPTIONS = Array.isArray(ORDER_FORM_CONFIG.loaixe)
   ? ORDER_FORM_CONFIG.loaixe
   : [];
@@ -785,6 +936,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   hien_thi_danh_sach_hang_hoa();
+  initItemTypeOptionsFromDatabase();
   bindInfoToggleInteractions();
   document
     .getElementById("btn_them_hang_hoa")
@@ -803,7 +955,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("ngay_lay_hang").addEventListener("change", () => {
     if (lay_buoc_hien_tai() >= 3) renderServiceCards();
   });
-  document.getElementById("khung_gio_lay_hang").addEventListener("change", () => {
+  document.getElementById("khung_gio_lay_hang").addEventListener("input", () => {
     syncUrgentConditionVisibility(selectedService && selectedService.serviceType);
     if (lay_buoc_hien_tai() >= 3) renderServiceCards();
   });
@@ -993,6 +1145,116 @@ function timeTextToMinutes(timeText) {
   return hour * 60 + minute;
 }
 
+function formatTimeValue(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+  const hour = String(date.getHours()).padStart(2, "0");
+  const minute = String(date.getMinutes()).padStart(2, "0");
+  return `${hour}:${minute}`;
+}
+
+function normalizePickupSlotText(value) {
+  return String(value || "")
+    .replace(/[–—]/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function formatPickupSlotInputMask(value) {
+  const digits = String(value || "")
+    .replace(/\D/g, "")
+    .slice(0, 8);
+
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+  if (digits.length <= 6) {
+    return `${digits.slice(0, 2)}:${digits.slice(2, 4)} - ${digits.slice(4)}`;
+  }
+  return `${digits.slice(0, 2)}:${digits.slice(2, 4)} - ${digits.slice(4, 6)}:${digits.slice(6)}`;
+}
+
+function applyPickupSlotInputMask(input) {
+  if (!input) return;
+  const maskedValue = formatPickupSlotInputMask(input.value);
+  if (input.value !== maskedValue) {
+    input.value = maskedValue;
+  }
+}
+
+function initPickupSlotInputMask(input) {
+  if (!input || input.dataset.maskBound === "true") return;
+  input.dataset.maskBound = "true";
+  input.maxLength = 13;
+
+  input.addEventListener("beforeinput", (event) => {
+    if (
+      event.data &&
+      !/^\d+$/.test(event.data) &&
+      event.inputType !== "insertFromPaste"
+    ) {
+      event.preventDefault();
+    }
+  });
+
+  input.addEventListener("input", () => {
+    applyPickupSlotInputMask(input);
+  });
+
+  input.addEventListener("blur", () => {
+    applyPickupSlotInputMask(input);
+  });
+}
+
+function parsePickupSlotInput(value) {
+  const normalized = normalizePickupSlotText(value);
+  const match = normalized.match(
+    /^([01][0-9]|2[0-3]):([0-5][0-9])\s*-\s*([01][0-9]|2[0-3]):([0-5][0-9])$/,
+  );
+  if (!match) return null;
+  const start = `${match[1]}:${match[2]}`;
+  const end = `${match[3]}:${match[4]}`;
+  return {
+    key: `${start} - ${end}`,
+    label: `${start} - ${end}`,
+    start,
+    end,
+  };
+}
+
+function getDefaultPickupSlot(date = getCurrentDateTime()) {
+  const startAt = new Date(date);
+  const endAt = new Date(startAt.getTime() + 60 * 60 * 1000);
+  const start = formatTimeValue(startAt);
+  const end = formatTimeValue(endAt);
+  return {
+    key: `${start} - ${end}`,
+    label: `${start} - ${end}`,
+    start,
+    end,
+  };
+}
+
+function buildDateAtTime(dateValue, timeText) {
+  const minutes = timeTextToMinutes(timeText);
+  const parts = String(dateValue || "").split("-").map((value) => parseInt(value, 10));
+  if (minutes < 0 || parts.length !== 3 || parts.some((value) => !Number.isFinite(value))) {
+    return null;
+  }
+  const [year, month, day] = parts;
+  return new Date(year, month - 1, day, Math.floor(minutes / 60), minutes % 60, 0, 0);
+}
+
+function getPickupSlotDateRange(dateValue, pickupSlot) {
+  const startAt = buildDateAtTime(dateValue, pickupSlot?.start);
+  const endAt = buildDateAtTime(dateValue, pickupSlot?.end);
+  if (!startAt || !endAt || Number.isNaN(startAt.getTime()) || Number.isNaN(endAt.getTime())) {
+    return null;
+  }
+  if (endAt <= startAt) {
+    endAt.setDate(endAt.getDate() + 1);
+  }
+  return { startAt, endAt };
+}
+
 function formatDateValue(date) {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
   const year = date.getFullYear();
@@ -1012,10 +1274,10 @@ function getInstantPricingWindow(date = getCurrentDateTime()) {
       return {
         key: rule.key,
         label: rule.label,
-        start: rule.start,
-        end: rule.end,
-        phicodinh: rule.fixedFee || 0,
-        heso: rule.multiplier || 1,
+        start: rule.start || rule.batdau,
+        end: rule.end || rule.ketthuc,
+        phicodinh: rule.fixedFee || rule.phicodinh || 0,
+        heso: rule.multiplier || rule.heso || 1,
       };
     }
   }
@@ -1032,11 +1294,11 @@ function getInstantPricingWindow(date = getCurrentDateTime()) {
 function applyImmediateScheduleDefaults() {
   const now = getCurrentDateTime();
   const pickupDateInput = document.getElementById("ngay_lay_hang");
-  const pickupSlotSelect = document.getElementById("khung_gio_lay_hang");
-  const instantWindow = getInstantPricingWindow(now);
+  const pickupSlotInput = document.getElementById("khung_gio_lay_hang");
+  const defaultSlot = getDefaultPickupSlot(now);
 
   if (pickupDateInput) pickupDateInput.value = formatDateValue(now);
-  if (pickupSlotSelect && instantWindow) pickupSlotSelect.value = instantWindow.key;
+  if (pickupSlotInput) pickupSlotInput.value = defaultSlot.label;
 }
 
 function syncScheduleModeUI() {
@@ -1049,23 +1311,21 @@ function syncScheduleModeUI() {
       : null;
     packageHint.textContent = isInstantMode
       ? instantWindow
-        ? `Mặc định hệ thống chọn ${instantWindow.label} theo thời điểm hiện tại. Bạn vẫn có thể đổi ngày và khung giờ nếu cần.`
-        : "Hệ thống sẽ tự điền ngày và khung giờ hiện tại. Bạn vẫn có thể đổi lại nếu cần."
+        ? "Mặc định lấy hàng trong 1 giờ tới. Bạn có thể chỉnh lại nếu cần."
+        : "Mặc định lấy hàng trong 1 giờ tới. Bạn có thể chỉnh lại nếu cần."
       : "Thời gian nhận hàng sẽ do hệ thống phân bổ theo lộ trình (khoảng vài ngày).";
   }
 }
 
 function initPickupSlotOptions() {
-  const select = document.getElementById("khung_gio_lay_hang");
-  if (!select) return;
-  const options = getPickupSlotOptions();
-  if (!options.length) return;
-  select.innerHTML = options
-    .map((slot, index) => {
-      const selectedAttr = index === 0 ? " selected" : "";
-      return `<option value="${slot.key}" data-start="${slot.start}" data-end="${slot.end}"${selectedAttr}>${slot.label}</option>`;
-    })
-    .join("");
+  const input = document.getElementById("khung_gio_lay_hang");
+  if (!input) return;
+  initPickupSlotInputMask(input);
+  if (input.value.trim()) {
+    applyPickupSlotInputMask(input);
+    return;
+  }
+  input.value = getDefaultPickupSlot(getCurrentDateTime()).label;
 }
 
 function initUrgentConditionOptions() {
@@ -1082,11 +1342,30 @@ function initVehicleOptions() {
 }
 
 function getSelectedPickupSlot() {
-  const select = document.getElementById("khung_gio_lay_hang");
-  if (!select) return null;
+  const input = document.getElementById("khung_gio_lay_hang");
+  if (!input) return null;
+  const rawValue = normalizePickupSlotText(input.value);
+  if (!rawValue) return null;
   const options = getPickupSlotOptions();
-  const selected = options.find((slot) => slot.key === select.value);
-  return selected || null;
+  const selected = options.find(
+    (slot) => slot.key === rawValue || normalizePickupSlotText(slot.label) === rawValue,
+  );
+  if (selected) return selected;
+
+  const parsed = parsePickupSlotInput(rawValue);
+  if (!parsed) return null;
+  const pickupDateValue =
+    document.getElementById("ngay_lay_hang")?.value || formatDateValue(getCurrentDateTime());
+  const pickupRange = getPickupSlotDateRange(pickupDateValue, parsed);
+  const timeRule =
+    pickupRange && typeof window.getDomesticInstantTimeConfig === "function"
+      ? getInstantPricingWindow(pickupRange.startAt)
+      : null;
+  return {
+    ...parsed,
+    phicodinh: timeRule?.phicodinh || 0,
+    heso: timeRule?.heso || 1,
+  };
 }
 
 function getPickupAtDateTime() {
@@ -1094,9 +1373,9 @@ function getPickupAtDateTime() {
   const pickupSlot = getSelectedPickupSlot();
 
   if (pickupDateValue && pickupSlot?.start) {
-    const pickupAt = new Date(`${pickupDateValue}T${pickupSlot.start}`);
-    if (!Number.isNaN(pickupAt.getTime())) {
-      return pickupAt;
+    const pickupRange = getPickupSlotDateRange(pickupDateValue, pickupSlot);
+    if (pickupRange?.startAt) {
+      return pickupRange.startAt;
     }
   }
 

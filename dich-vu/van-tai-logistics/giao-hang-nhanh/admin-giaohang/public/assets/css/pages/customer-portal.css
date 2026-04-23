@@ -68,7 +68,6 @@
 .customer-portal-top-actions,
 .customer-inline-actions,
 .customer-order-actions,
-.customer-media-actions,
 .customer-chip-group {
   display: flex;
   flex-wrap: wrap;
@@ -122,24 +121,10 @@
   font-size: 13px;
 }
 
-.customer-portal-layout {
-  display: grid;
-  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
-}
-
-.customer-portal-sidebar,
 .customer-portal-main {
   min-width: 0;
 }
 
-.customer-portal-sidebar {
-  position: static;
-  align-self: start;
-}
-
-.customer-side-card,
 .customer-panel,
 .customer-state-card,
 .customer-info-card {
@@ -149,58 +134,9 @@
   box-shadow: 0 12px 28px rgba(10, 42, 102, 0.06);
 }
 
-.customer-side-card {
-  padding: 20px;
-  margin-bottom: 18px;
-}
-
-.customer-side-card h2,
 .customer-info-card h3 {
   margin: 0 0 14px;
   color: #0a2a66;
-}
-
-.customer-side-nav {
-  display: grid;
-  gap: 8px;
-}
-
-.customer-side-nav a {
-  border-radius: 12px;
-  padding: 12px 14px;
-  text-decoration: none;
-  color: #26406e;
-  background: #f7f9fd;
-  font-weight: 600;
-}
-
-.customer-side-nav a.is-active {
-  background: #0a2a66;
-  color: #fff;
-}
-
-.customer-side-meta {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0;
-}
-
-.customer-side-meta div {
-  display: grid;
-  gap: 4px;
-}
-
-.customer-side-meta dt {
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #64748b;
-}
-
-.customer-side-meta dd {
-  margin: 0;
-  color: #1e293b;
-  font-weight: 600;
 }
 
 .customer-panel {
@@ -1075,11 +1011,6 @@
 }
 
 @media (max-width: 1200px) {
-  .customer-portal-layout {
-    grid-template-columns: minmax(230px, 270px) minmax(0, 1fr);
-    gap: 20px;
-  }
-
   .customer-grid-dashboard {
     grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.9fr);
   }
@@ -1112,7 +1043,6 @@
     align-items: flex-start;
   }
 
-  .customer-portal-layout,
   .customer-grid-two,
   .customer-grid-dashboard,
   .customer-detail-grid,
@@ -1126,14 +1056,9 @@
     display: none !important;
   }
 
-  .customer-portal-sidebar {
-    position: static;
-  }
-
   .customer-portal-topbar,
   .customer-panel,
   .customer-info-card,
-  .customer-side-card,
   .customer-state-card {
     padding: 18px;
   }
@@ -1183,8 +1108,7 @@
   .customer-filter-form,
   .customer-filter-grid,
   .customer-form-grid,
-  .customer-file-grid,
-  .customer-side-meta {
+  .customer-file-grid {
     grid-template-columns: 1fr;
   }
 

@@ -88,36 +88,36 @@ function xac_thuc_buoc_1() {
 function xac_thuc_buoc_2() {
   xoa_loi(2);
   if (orderItems.length === 0) {
-    hien_thi_loi(2, "Vui lòng thêm ít nhất một món hàng.");
+    hien_thi_loi(2, "Vui lòng thêm ít nhất một kiện hàng.");
     return false;
   }
   for (let i = 0; i < orderItems.length; i++) {
     const it = orderItems[i];
     if (!it.loai_hang) {
-      hien_thi_loi(2, `Vui lòng chọn loại hàng cho món hàng thứ ${i + 1}.`);
+      hien_thi_loi(2, `Vui lòng chọn loại hàng cho kiện hàng thứ ${i + 1}.`);
       return false;
     }
     if (!it.ten_hang) {
-      hien_thi_loi(2, `Vui lòng chọn hoặc nhập tên cho món hàng thứ ${i + 1}.`);
+      hien_thi_loi(2, `Vui lòng nhập tên hàng cụ thể cho kiện hàng thứ ${i + 1}.`);
       return false;
     }
     if ((it.so_luong || 0) <= 0) {
-      hien_thi_loi(2, `Số lượng món hàng thứ ${i + 1} phải từ 1 trở lên.`);
+      hien_thi_loi(2, `Số lượng kiện hàng thứ ${i + 1} phải từ 1 trở lên.`);
       return false;
     }
     if (it.can_nang <= 0 || it.can_nang > 1000) {
       hien_thi_loi(
         2,
-        `Trọng lượng món hàng thứ ${i + 1} phải từ 0.1kg đến 1000kg.`,
+        `Trọng lượng kiện hàng thứ ${i + 1} phải từ 0.1kg đến 1000kg.`,
       );
       return false;
     }
     if (it.chieu_dai <= 0 || it.chieu_rong <= 0 || it.chieu_cao <= 0) {
-      hien_thi_loi(2, `Kích thước món hàng thứ ${i + 1} phải > 0.`);
+      hien_thi_loi(2, `Kích thước kiện hàng thứ ${i + 1} phải > 0.`);
       return false;
     }
     if (it.gia_tri_khai_bao < 0) {
-      hien_thi_loi(2, `Giá trị khai báo món hàng thứ ${i + 1} không được âm.`);
+      hien_thi_loi(2, `Giá trị khai báo kiện hàng thứ ${i + 1} không được âm.`);
       return false;
     }
   }
@@ -147,27 +147,30 @@ function xac_thuc_buoc_3() {
     return false;
   }
 
-  const pSlot = document.getElementById("khung_gio_lay_hang").value;
+  const pSlot = document.getElementById("khung_gio_lay_hang").value.trim();
   if (!pSlot) {
-    hien_thi_loi(3, "Vui lòng chọn khung giờ lấy hàng.");
+    hien_thi_loi(3, "Vui lòng nhập khung giờ lấy hàng.");
     return false;
   }
   const pickupSlot = getSelectedPickupSlot();
   if (!pickupSlot) {
-    hien_thi_loi(3, "Khung giờ lấy hàng không hợp lệ. Vui lòng chọn lại.");
+    hien_thi_loi(3, "Khung giờ lấy hàng không hợp lệ. Vui lòng nhập theo dạng HH:mm - HH:mm.");
     return false;
   }
 
-  // Logic: Check if slot is in the past for TODAY
   if (pDateVal === todayDate) {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const endMinutes = timeTextToMinutes(pickupSlot.end || "");
+    const pickupRange = getPickupSlotDateRange(pDateVal, pickupSlot);
+    const now = getCurrentDateTime();
 
-    if (endMinutes >= 0 && currentMinutes >= endMinutes) {
+    if (!pickupRange) {
+      hien_thi_loi(3, "Khung giờ lấy hàng không hợp lệ. Vui lòng nhập theo dạng HH:mm - HH:mm.");
+      return false;
+    }
+
+    if (now >= pickupRange.endAt) {
       hien_thi_loi(
         3,
-        `Khung giờ ${pickupSlot.label} của ngày hôm nay đã trôi qua. Vui lòng chọn khung giờ khác.`,
+        `Khung giờ ${pickupSlot.label} của ngày hôm nay đã trôi qua. Vui lòng nhập khung giờ khác.`,
       );
       return false;
     }
@@ -238,7 +241,7 @@ function chuan_bi_xac_nhan() {
       <div style="flex: 1;">
         <div style="font-weight: 800; color: #1e293b; font-size: 14px;">${escapeHtml(it.ten_hang || "Hàng hóa #" + (idx + 1))}</div>
         <div style="font-size: 12px; color: #64748b;">
-          Loại: <strong>${escapeHtml(ITEM_TYPE_LABELS[it.loai_hang] || it.loai_hang)}</strong> • Số lượng: <strong>${it.so_luong || 1}</strong> • Nặng: <strong>${it.can_nang}kg/kiện</strong> • Khai giá: <strong>${it.gia_tri_khai_bao.toLocaleString()}₫</strong>
+          Loại: <strong>${escapeHtml(ITEM_TYPE_LABELS[it.loai_hang] || it.loai_hang)}</strong> • Số kiện: <strong>${it.so_luong || 1}</strong> • Nặng: <strong>${it.can_nang}kg/kiện</strong> • Khai giá dòng: <strong>${it.gia_tri_khai_bao.toLocaleString()}₫</strong>
         </div>
       </div>
       <div style="font-size: 11px; color: #94a3b8; text-align: right;">
@@ -359,7 +362,7 @@ function clearBookingSuccessRedirectTimer() {
 }
 
 function buildBookingSuccessRedirectUrl() {
-  return resolveProjectHtmlUrl("public/khach-hang/lich-su-don-hang-giaohang.html");
+  return resolveProjectHtmlUrl("public/khach-hang/danh-sach-don-hang-giaohang.html");
 }
 
 function renderSubmitSuccessState(orderCode, messageHtml) {
@@ -553,7 +556,7 @@ async function uploadBookingMedia(orderCode) {
     throw new Error("Thiếu helper upload Google Drive cho Giao Hàng Nhanh.");
   }
 
-  return uploadFn(files);
+  return uploadFn(files, { proxyFile: "upload_booking_media.php" });
 }
 
 function buildBookingSheetPayload(payload, orderCode, attachments = []) {
