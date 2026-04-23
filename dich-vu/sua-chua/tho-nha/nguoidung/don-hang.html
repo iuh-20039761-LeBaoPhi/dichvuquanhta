@@ -1,0 +1,86 @@
+<script>
+    if (window.location.pathname.endsWith('don-hang.html')) {
+        window.location.href = 'trang-ca-nhan.html';
+    }
+</script>
+
+<div class="dashboard-container">
+    <div id="orderListSection">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="u-card-title" style="font-size: 1.5rem;"><i class="fa-solid fa-clock-rotate-left me-2"></i> Lịch sử đặt dịch vụ</h2>
+            <a href="../dich-vu.html" class="btn btn-primary px-4 py-2 fw-bold" style="border-radius: 12px; background: var(--u-primary); border:none;">
+                <i class="fa-solid fa-plus me-2"></i> Đặt lịch mới
+            </a>
+        </div>
+
+        <div class="u-card">
+            <div class="u-card-header d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+                <div>
+                    <h3 class="u-card-title">Danh sách đơn hàng</h3>
+                    <div class="text-muted small">Tất cả các dịch vụ bạn đã đặt</div>
+                </div>
+                <div class="d-flex bg-light p-1" style="border-radius: 12px;">
+                    <button class="btn btn-sm px-3 fw-bold active" id="filter-all" style="border-radius: 10px;">Tất cả (<span id="stat-all-count">0</span>)</button>
+                    <button class="btn btn-sm px-3 fw-bold" id="filter-new" style="border-radius: 10px;">Mới (<span id="stat-new-count">0</span>)</button>
+                    <button class="btn btn-sm px-3 fw-bold" id="filter-doing" style="border-radius: 10px;">Đang làm (<span id="stat-doing-count">0</span>)</button>
+                    <button class="btn btn-sm px-3 fw-bold" id="filter-done" style="border-radius: 10px;">Xong (<span id="stat-done-count">0</span>)</button>
+                </div>
+            </div>
+            <div class="u-table-wrap">
+                <table class="u-table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Dịch vụ</th>
+                            <th>Ngày đặt</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerOrderBody">
+                        <tr><td colspan="5" class="text-center py-5 text-muted">Đang tải lịch sử đơn hàng...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="u-mobile-list" id="customerMobileList"></div>
+            <div id="customerEmptyState" class="text-center py-5" hidden>
+                <div class="mb-3"><i class="fa-solid fa-box-open fa-4x text-muted opacity-25"></i></div>
+                <h4 class="text-muted">Bạn chưa có đơn hàng nào</h4>
+                <p class="text-muted small">Hãy đặt thợ ngay để trải nghiệm dịch vụ!</p>
+                <a href="../dich-vu.html" class="btn btn-outline-primary mt-3 px-4" style="border-radius: 10px;">Đặt lịch ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderDetailSection" hidden>
+        <div class="mb-4">
+            <button class="btn btn-outline-secondary px-4 py-2 fw-bold" data-action="back-to-list" style="border-radius:12px;">
+                <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
+            </button>
+        </div>
+        <div id="orderDetailContent"></div>
+    </div>
+</div>
+
+<!-- Pricing Modal -->
+<div class="modal fade" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 24px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #065f46, #059669); color: white; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 20px 25px;">
+                <h5 class="modal-title fw-bold" id="pricingModalLabel"><i class="fas fa-gift me-2"></i>NHẬP GIÁ & NHẬN TRỢ GIÁ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 30px 25px;">
+                <p class="text-muted mb-4">Vui lòng nhập giá trị thực tế bạn đã thanh toán cho thợ để nhận ngay <b>cấp trợ giá 5%</b> túi tiền!</p>
+                <div class="form-group mb-3">
+                    <label for="inputActualPriceModal" class="form-label fw-bold" style="color: #334155;">Giá thực tế đã trả (VND)</label>
+                    <input type="number" id="inputActualPriceModal" class="form-control" placeholder="Ví dụ: 500000" style="padding: 12px 15px; border-radius: 12px; border: 2px solid #e2e8f0; font-weight: 600;">
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 15px 25px 25px; border: none;">
+                <button type="button" class="btn btn-outline-secondary px-4 fw-bold" data-bs-dismiss="modal" style="border-radius: 12px; height: 48px;">Để sau</button>
+                <button type="button" class="btn btn-primary px-4 fw-bold" id="btnSubmitPricingModal" style="border-radius: 12px; height: 48px; background: #059669; border: none; box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);">Gửi & Nhận ưu đãi</button>
+            </div>
+        </div>
+    </div>
+</div>

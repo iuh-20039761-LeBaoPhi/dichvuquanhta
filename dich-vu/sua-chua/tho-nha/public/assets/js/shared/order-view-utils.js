@@ -106,7 +106,7 @@
      */
     function moneyOrFree(value) {
         var amount = Number(value);
-        if (!Number.isFinite(amount) || amount <= 0) return 'Miễn phí';
+        if (!Number.isFinite(amount) || amount <= 0) return 'Giá thỏa thuận';
         return formatCurrencyVn(amount);
     }
 
@@ -222,12 +222,16 @@
         // Cập nhật là chính nó nếu không dùng cột cập nhật riêng
         var updatedAt = createdAt;
 
-        var serviceName = raw.tendichvu || raw.ten_dich_vu || raw.service_name || raw.service || (opts.defaultServiceName || 'Dịch vụ tại nhà');
+        const rawService = raw.tendichvu || raw.ten_dich_vu || raw.service_name || raw.service || (opts.defaultServiceName || 'Dịch vụ tại nhà');
+        const catMap = opts.categoryMap || {};
+        const catId = String(raw.id_danhmuc || '');
+        
+        let serviceName = (catId && catMap[catId]) ? catMap[catId] : rawService;
 
         // Milestone ID & Code
         var rawId = raw.id || raw.ID || 0;
         var orderCode = String(rawId).padStart(7, '0');
-
+        
         var order = {
             id: String(rawId),
             orderCode: orderCode,
@@ -239,6 +243,7 @@
             },
             address: raw.diachikhachhang || raw.dia_chi_kh || raw.customer_address || raw.diachi || raw.address || '',
             service: serviceName,
+            fullService: rawService,
             note: raw.ghichu || raw.ghi_chu || raw.note || '',
             status: status,
             // Mốc thời gian thực tế
@@ -282,10 +287,10 @@
      */
     function buildStatusBadge(status) {
         switch (status) {
-            case 'new':       return '<span class="invoice-status-chip status-new">Mới</span>';
+            case 'new':       return '<span class="invoice-status-chip status-new">Đang xác nhận</span>';
             case 'confirmed': return '<span class="invoice-status-chip status-confirmed">Đã nhận</span>';
-            case 'doing':     return '<span class="invoice-status-chip status-doing">Đang làm</span>';
-            case 'done':      return '<span class="invoice-status-chip status-done">Hoàn thành</span>';
+            case 'doing':     return '<span class="invoice-status-chip status-doing">Đã bắt đầu</span>';
+            case 'done':      return '<span class="invoice-status-chip status-done">Đã hoàn thành</span>';
             case 'cancel':    return '<span class="invoice-status-chip status-canceled">Đã hủy</span>';
             default:          return '<span class="invoice-status-chip status-canceled">' + escapeHtml(status) + '</span>';
         }

@@ -26,7 +26,7 @@
         }
 
         const path = window.location.pathname;
-        if (path.includes('/khachhang/') || path.includes('/nhacungcap/') || path.includes('/admin_thonha/')) {
+        if (path.includes('/nguoidung/') || path.includes('/admin_thonha/')) {
             return '../';
         }
         return './';
@@ -36,13 +36,11 @@
         var base = ensureTrailingSlash(basePrefix);
         return {
             dashMap: {
-                customer: base + 'khachhang/trang-ca-nhan.html',
-                provider: base + 'nhacungcap/trang-ca-nhan.html',
+                user:  base + 'nguoidung/trang-ca-nhan.html',
                 admin: base + 'admin_thonha/quan-tri.html'
             },
             loginMap: {
-                customer: base + '../../../public/dang-nhap.html?service=thonha',
-                provider: base + '../../../public/dang-nhap.html?service=thonha',
+                user:  base + '../../../public/dang-nhap.html?service=thonha',
                 admin: base + 'admin_thonha/quan-tri.html'
             }
         };
@@ -102,10 +100,9 @@
             if (avatarMobile) avatarMobile.style.display = 'none';
         }
 
-        function bindDashboard(linkEl, role) {
+        function bindDashboard(linkEl) {
             if (!linkEl) return;
-            const dashUrl = paths.dashMap[role] || paths.dashMap.customer;
-            linkEl.href = dashUrl;
+            linkEl.href = paths.dashMap.user;
         }
 
         function bindLogout(linkEl) {
@@ -145,10 +142,7 @@
         }
 
         function applyLoggedInUi(authData) {
-            var role = String(authData && authData.role || 'customer');
-            var name = String(authData && authData.name || 'User');
-            var phone = authData.phone || '';
-
+            var name = String(authData && authData.name || 'Người dùng');
             var initial = name.charAt(0).toUpperCase();
 
             if (guestEl) guestEl.style.display = 'none';
@@ -160,16 +154,13 @@
             if (nameEl) nameEl.textContent = name;
             
             if (avatarEl) {
-                // Kiểm tra nhiều trường có thể chứa ảnh để đảm bảo lấy được dữ liệu
                 const avatarLink = authData.link_avatar || authData.avatar || authData.avatartenfile || '';
                 
                 if (avatarLink) {
                     if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
-                        // Nếu là link trực tiếp hoặc path
                         const finalUrl = avatarLink.startsWith('http') ? avatarLink : (getRoot() + '/public/uploads/users/' + avatarLink);
                         avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
                     } else {
-                        // Nếu là ID Drive - Kỹ thuật Zoom & Crop 300%
                         avatarEl.innerHTML = `
                             <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
                                 <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
@@ -203,27 +194,21 @@
                 }
             }
 
-            // Xác định vai trò nhà cung cấp dựa trên mã dịch vụ 9 (Thợ Nhà)
-            const serviceIds = String(authData.id_dichvu || '0').split(',');
-            const currentRole = serviceIds.includes('9') ? 'provider' : role;
-
+            // Không phân biệt role nữa — mọi người dùng vào cùng 1 trang
             const dashLink = document.getElementById('auth-dashboard-link');
-            bindDashboard(dashLink, currentRole);
+            bindDashboard(dashLink);
 
             const logoutLink = document.getElementById('auth-logout-link');
             bindLogout(logoutLink);
 
-            if (avatarMobile) {
-                avatarMobile.style.display = '';
-            }
-
+            if (avatarMobile) avatarMobile.style.display = '';
             if (mobileUser) mobileUser.style.display = '';
             
             const mobileNameEl = document.getElementById('mobile-auth-name');
             if (mobileNameEl) mobileNameEl.textContent = name;
 
             const mobileDashLink = document.getElementById('mobile-auth-dashboard-link');
-            bindDashboard(mobileDashLink, currentRole);
+            bindDashboard(mobileDashLink);
 
             const mobileLogout = document.getElementById('mobile-auth-logout-link');
             bindLogout(mobileLogout);

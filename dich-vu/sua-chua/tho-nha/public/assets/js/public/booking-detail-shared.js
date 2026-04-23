@@ -269,30 +269,9 @@ async function _bdPrepareBookingAuthState() {
     await _bdPrefillCustomerProfileToForm();
 }
 
-// Kiểm tra quyền đặt lịch (chỉ chặn nếu NCC tự đặt dịch vụ của mình).
-// Không còn yêu cầu đăng nhập — luôn cho phép đặt lịch.
 async function _bdRequireCustomerLogin(isSilent = false) {
-    const currentCatId = String(_bdCurCatId || '9');
-
-    // Nếu đã có Session Cookie (Đã đăng nhập thực sự) → Chỉ chặn NCC tự đặt cho mình
-    try {
-        const session = await DVQTApp.checkSession();
-        if (session && session.logged_in) {
-            const userDichVuIds = String(session.id_dichvu || '').split(',').map(v => v.trim());
-            if (userDichVuIds.includes(currentCatId)) {
-                Swal.fire({
-                    title: '<span style="color:#11998e">Rất tiếc!</span>',
-                    html: 'Bạn không thể đặt lịch dịch vụ do chính mình thực hiện.',
-                    icon: 'warning',
-                    confirmButtonColor: '#11998e',
-                    borderRadius: '12px'
-                });
-                return false;
-            }
-        }
-    } catch(_e) {}
-
-    // Luôn cho phép đặt lịch — tài khoản sẽ được tạo tự động khi submit
+    // Không còn bất kỳ hạn chế nào về vai trò khi đặt lịch.
+    // Mọi người dùng, bao gồm cả Nhà cung cấp, đều có thể đặt mọi dịch vụ.
     return true;
 }
 
@@ -553,7 +532,7 @@ function _bdUpdateBreakdown(price, travelFee, surveyFee) {
     // Hiển thị giá dịch vụ
     const bdService = document.getElementById('bd-service');
     if (bdService) {
-        bdService.innerHTML = price > 0 ? _bdFmt(price) : 'Miễn phí';
+        bdService.innerHTML = price > 0 ? _bdFmt(price) : 'Giá thỏa thuận';
     }
 
     const thoigianEl = document.getElementById('thoigianphucvu');
@@ -774,7 +753,7 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
         costSection.style.display = '';
 
         // Giá dịch vụ (Nếu khách sửa)
-        if (costBase) costBase.textContent = basePrice > 0 ? _bdFmt(basePrice) : 'Miễn phí';
+        if (costBase) costBase.textContent = basePrice > 0 ? _bdFmt(basePrice) : 'Giá thỏa thuận';
 
         // Phí di chuyển (Nếu khách không sửa)
         if (costTravel) {
@@ -1100,7 +1079,7 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
     function _serviceLabel(item) {
         const brand = selectedBrands[item.name];
         const p = _effectiveItemPrice(item);
-        const pS = p > 0 ? `${Number(p).toLocaleString('vi-VN')}đ` : 'Miễn phí';
+        const pS = p > 0 ? `${Number(p).toLocaleString('vi-VN')}đ` : 'Giá thỏa thuận';
         if (brand && brand.name) return `${item.name} (${brand.name}) – ${pS}`;
         return `${item.name} – ${pS}`;
     }
@@ -1217,7 +1196,7 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
         const totalPrice = selectedItems.reduce((s, i) => s + _effectiveItemPrice(i), 0);
         if (priceEl) {
             if (totalPrice === 0) {
-                priceEl.value = 'Miễn phí dịch vụ (chỉ tính phí di chuyển)';
+                priceEl.value = 'Giá thỏa thuận';
             } else {
                 priceEl.value = Number(totalPrice).toLocaleString('vi-VN') + 'đ';
             }

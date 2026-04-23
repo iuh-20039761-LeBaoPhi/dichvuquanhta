@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         '2': { icon: 'fa-hospital-user', color: '#0d9488', bg: '#f0fdfa', link: '../dich-vu/cham-soc/nguoi-benh/admin_nguoibenh/index.php', desc: 'Dịch vụ hỗ trợ y tế, chăm sóc tại nhà viện' },
         '3': { icon: 'fa-wheelchair', color: '#ea580c', bg: '#fff7ed', link: '../dich-vu/cham-soc/nguoi-gia/admin_nguoigia/index.php', desc: 'Cung cấp chuyên viên chăm lo người cao tuổi' },
         '4': { icon: 'fa-leaf', color: '#65a30d', bg: '#f7fee7', link: '../dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/admin/index.php', desc: 'Cắt cỏ, dọn dẹp và chăm sóc cây cảnh' },
-        '5': { icon: 'fa-broom', color: '#0284c7', bg: '#e0f2fe', link: '../dich-vu/ve-sinh/tap-vu-lau/don-ve-sinh/admin_donvesinh/index.php', desc: 'Giúp việc nhà và vệ sinh công nghiệp' },
+        '5': { icon: 'fa-broom', color: '#0284c7', bg: '#e0f2fe', link: '../dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/admin_donvesinh/index.php', desc: 'Giúp việc nhà và vệ sinh công nghiệp' },
         '6': { icon: 'fa-id-card', color: '#4b5563', bg: '#f3f4f6', link: '../dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/admin/index.php', desc: 'Dịch vụ tìm tài xế lái xe an toàn' },
         '7': { icon: 'fa-motorcycle', color: '#ca8a04', bg: '#fefce8', link: '../dich-vu/van-tai-logistics/giao-hang-nhanh/admin-giaohang/index.php', desc: 'Dịch vụ gọi shipper nhận và chuyển đồ hỏa tốc' },
         '8': { icon: 'fa-wrench', color: '#dc2626', bg: '#fef2f2', link: '../dich-vu/sua-chua/sua-xe-luu-dong/admin/index.html', desc: 'Cứu hộ, vá săm lốp và sửa xe tận nơi' },
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     async function loadAccounts() {
         const tbody = document.getElementById('accountTableBody');
         const filterSvc = document.getElementById('filterAccountService');
-        
+
         try {
             // Tải danh sách dịch vụ để map tên và fill filter
             const services = await DVQTKrud.listTable('dichvucungcap', { limit: 100 });
@@ -409,7 +409,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Tải danh sách tài khoản
             const data = await DVQTKrud.listTable('nguoidung', { limit: 5000 });
             allAccounts = data || [];
-            
+
             filterAndRenderAccounts();
         } catch (e) {
             tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Lỗi tải dữ liệu tài khoản</td></tr>';
@@ -437,8 +437,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         if (q) {
-            filtered = filtered.filter(u => 
-                (u.hovaten && u.hovaten.toLowerCase().includes(q)) || 
+            filtered = filtered.filter(u =>
+                (u.hovaten && u.hovaten.toLowerCase().includes(q)) ||
                 (u.sodienthoai && u.sodienthoai.includes(q))
             );
         }
@@ -468,26 +468,26 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (currentFilterSvc && currentFilterSvc !== "0" && svcIds.includes(currentFilterSvc)) {
                 svcIds = [currentFilterSvc, ...svcIds.filter(id => id !== currentFilterSvc)];
             }
-            
+
             // Làm đẹp phần hiển thị dịch vụ: Giới hạn hiện 3 cái, còn lại hiện +X
             const displayLimit = 3;
-            let svcNames = svcIds.slice(0, displayLimit).map(id => 
-                `<span class="badge rounded-pill bg-indigo-subtle text-indigo border border-indigo-subtle me-1 mb-1" style="font-size:10px; font-weight: 600; padding: 4px 8px;">${servicesMap[id] || 'ID:'+id}</span>`
+            let svcNames = svcIds.slice(0, displayLimit).map(id =>
+                `<span class="badge rounded-pill bg-indigo-subtle text-indigo border border-indigo-subtle me-1 mb-1" style="font-size:10px; font-weight: 600; padding: 4px 8px;">${servicesMap[id] || 'ID:' + id}</span>`
             ).join('');
-            
+
             if (svcIds.length > displayLimit) {
                 svcNames += `<span class="badge rounded-pill bg-light text-muted border mb-1" style="font-size:10px; font-weight: 600; padding: 4px 8px;">+${svcIds.length - displayLimit} thêm</span>`;
             }
-            
+
             // Quy ước chuẩn: 0 = Hoạt động, 1 = Khóa
             const isLocked = String(u.trangthai) === '1';
-            let statusBadge = isLocked 
-                ? '<span class="badge bg-danger">Bị khóa</span>' 
+            let statusBadge = isLocked
+                ? '<span class="badge bg-danger">Bị khóa</span>'
                 : '<span class="badge bg-success">Đang mở</span>';
-            
+
             // Trạng thái bật/tắt phục vụ (hoatdong)
             const isOnline = String(u.hoatdong) === '1';
-            const onlineStatus = isOnline 
+            const onlineStatus = isOnline
                 ? '<div class="small text-success fw-bold mt-1"><i class="fas fa-circle me-1" style="font-size:8px;"></i>Online</div>'
                 : '<div class="small text-muted fw-bold mt-1"><i class="fas fa-circle me-1" style="font-size:8px;"></i>Offline</div>';
 
@@ -562,15 +562,15 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             let finalUrl = '';
-            
+
             // 1. Nếu là URL trực tiếp (http...)
             if (val.startsWith('http')) {
                 finalUrl = val;
-            } 
+            }
             // 2. Nếu là ID Drive (không chứa dấu chấm, không chứa gạch chéo)
             else if (!val.includes('.') && !val.includes('/')) {
                 // Sử dụng iframe preview để ổn định nhất (giống profile.js)
-                const style = type === 'avatar' 
+                const style = type === 'avatar'
                     ? 'width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;'
                     : 'width: 180%; height: 180%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;';
                 const containerStyle = type === 'avatar'
@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         `;
 
         document.getElementById('accountDetailBody').innerHTML = bodyHtml;
-        
+
         const lockBtn = document.getElementById('btnToggleLockAccount');
         if (isLocked) {
             lockBtn.innerHTML = '<i class="fas fa-unlock me-2"></i>Mở khóa tài khoản';
@@ -712,7 +712,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!currentAccount) return;
         const isLocked = String(currentAccount.trangthai) === '1';
         const newStatus = isLocked ? '0' : '1';
-        
+
         if (confirm(`Bạn có chắc chắn muốn ${isLocked ? 'MỞ KHÓA' : 'KHÓA'} tài khoản này?`)) {
             try {
                 await DVQTKrud.updateRow('nguoidung', currentAccount.id, { trangthai: newStatus });
@@ -735,7 +735,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const id = lockBtn.dataset.id;
             const newStatus = lockBtn.dataset.status;
             const action = newStatus === '1' ? 'KHÓA' : 'MỞ KHÓA';
-            
+
             if (confirm(`Xác nhận ${action} tài khoản #${id}?`)) {
                 try {
                     await DVQTKrud.updateRow('nguoidung', id, { trangthai: newStatus });

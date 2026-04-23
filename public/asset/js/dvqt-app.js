@@ -117,7 +117,7 @@
             }
 
             const idDichvu = String(user.id_dichvu || '0');
-            const role = 'customer'; // Mặc định là khách hàng, các module sẽ tự kiểm tra id_dichvu để xác định NCC
+            const role = 'user'; // Không phân biệt KH/NCC, tính năng thêm dựa vào id_dichvu
 
             const profile = {
                 id: user.id,

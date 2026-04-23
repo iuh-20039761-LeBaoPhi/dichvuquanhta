@@ -28,7 +28,7 @@ document.addEventListener('click', function (e) {
     const fmtN = n => parseInt(n).toLocaleString('vi-VN');
 
     const totalEl = card.querySelector('.sic-total-price');
-    if (totalEl) totalEl.textContent = fmtN(price) + 'đ';
+    if (totalEl) totalEl.textContent = price > 0 ? fmtN(price) + 'đ' : 'Giá thỏa thuận';
 
     const matEl = card.querySelector('.sic-bd-material');
     if (matEl && matCost) matEl.innerHTML = `<i class="fas fa-box"></i> Vật liệu: ${fmtN(matCost)}đ`;
@@ -51,8 +51,8 @@ document.addEventListener('click', function (e) {
             const surveyRow = survey > 0
                 ? `<div style="display:flex;justify-content:space-between;color:#b45309;margin-bottom:3px;"><span><i class="fas fa-clipboard-check me-1"></i>Phí khảo sát</span><span>${fmtN(survey)}đ</span></div>` : '';
             const totalText = isPerKm
-                ? `${fmtN(price)}đ <span style="color:#94a3b8;font-size:0.82rem;">+ phí di chuyển</span>`
-                : fmtN(price + (travelFee?.min ?? travelFee?.fixedAmount ?? 0)) + 'đ';
+                ? (price > 0 ? `${fmtN(price)}đ <span style="color:#94a3b8;font-size:0.82rem;">+ phí di chuyển</span>` : `Giá thỏa thuận <span style="color:#94a3b8;font-size:0.82rem;">(+ phí di chuyển)</span>`)
+                : (price + (travelFee?.min ?? travelFee?.fixedAmount ?? 0) > 0 ? fmtN(price + (travelFee?.min ?? travelFee?.fixedAmount ?? 0)) + 'đ' : 'Giá thỏa thuận');
             feeDiv.innerHTML = travelRow + surveyRow
                 + `<div style="display:flex;justify-content:space-between;font-weight:600;color:var(--primary);border-top:1px dashed rgba(17,153,142,0.3);margin-top:5px;padding-top:5px;"><span>Tổng tạm tính:</span><span>${totalText}</span></div>`;
         }

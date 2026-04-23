@@ -1,0 +1,90 @@
+<!-- Sidebar Partial -->
+<aside class="sidebar-shell" id="sidebar">
+    <div class="sidebar-header" style="padding: 40px 24px; display: flex; align-items: center; gap: 14px;">
+        <div class="logo-box"
+            style="width: 44px; height: 44px; background: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 15px rgba(255,255,255,0.2);">
+            <img src="../public/assets/images/tho-nha-logo-thuong-hieu-cropped.jpg" alt="Logo"
+                style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <div>
+            <div class="brand-name" style="font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; color: #fff;">
+                Thợ Nhà</div>
+            <div class="brand-tag"
+                style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8;">
+                Hệ sinh thái dịch vụ</div>
+        </div>
+    </div>
+
+    <div class="nav-group" id="sidebarNav" style="padding: 10px 0; overflow-y: auto;">
+        <!-- Luôn hiển thị cho mọi người dùng -->
+        <div class="nav-label"
+            style="padding: 0 28px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">
+            Dành cho bạn</div>
+        <a href="#" class="nav-link nav-item" data-page="don-hang"
+            style="display: flex; align-items: center; gap: 14px; padding: 14px 28px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin: 4px 16px; border-radius: 12px;">
+            <i class="fa-solid fa-rectangle-list"></i>
+            <span>Đơn của tôi</span>
+        </a>
+        <a href="../dich-vu.html" class="nav-link"
+            style="display: flex; align-items: center; gap: 14px; padding: 14px 28px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin: 4px 16px; border-radius: 12px;">
+            <i class="fa-solid fa-calendar-plus"></i>
+            <span>Đặt lịch mới</span>
+        </a>
+
+        <!-- Chỉ hiển thị cho Nhà cung cấp (thợ) -->
+        <div id="providerSection" style="display: none;">
+            <div class="nav-label"
+                style="padding: 20px 28px 12px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">
+                Dành cho đối tác</div>
+            <a href="#" class="nav-link nav-item" data-page="don-nhan"
+                style="display: flex; align-items: center; gap: 14px; padding: 14px 28px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin: 4px 16px; border-radius: 12px;">
+                <i class="fa-solid fa-briefcase"></i>
+                <span>Đơn nhận làm</span>
+            </a>
+            <a href="#" class="nav-link nav-item" data-page="dich-vu-dang-ky"
+                style="display: flex; align-items: center; gap: 14px; padding: 14px 28px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin: 4px 16px; border-radius: 12px;">
+                <i class="fa-solid fa-tags"></i>
+                <span>Dịch vụ đăng ký</span>
+            </a>
+        </div>
+
+        <div class="nav-label"
+            style="padding: 20px 28px 12px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">
+            Cá nhân</div>
+        <a href="#" class="nav-link nav-item" data-page="tai-khoan"
+            style="display: flex; align-items: center; gap: 14px; padding: 14px 28px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin: 4px 16px; border-radius: 12px;">
+            <i class="fa-solid fa-user-gear"></i>
+            <span>Hồ sơ của tôi</span>
+        </a>
+    </div>
+
+    <div class="logout-area" style="margin-top: auto; padding: 30px 20px;">
+        <a href="javascript:void(0)" onclick="logoutUser()" class="logout-btn"
+            style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: #fca5a5; text-decoration: none; border-radius: 12px; transition: 0.3s; font-weight: 600;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Đăng xuất</span>
+        </a>
+    </div>
+</aside>
+
+<style>
+    .nav-link:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-link.active {
+        background: #10b981;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+    }
+
+    .nav-link i {
+        font-size: 1.1rem;
+    }
+
+    .logout-btn:hover {
+        background: rgba(239, 68, 68, 0.1);
+    }
+</style>

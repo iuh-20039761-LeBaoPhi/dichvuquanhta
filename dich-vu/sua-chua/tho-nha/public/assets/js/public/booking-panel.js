@@ -234,7 +234,7 @@
                 if (priceEl) {
                     priceEl.value = _prefillMeta.price > 0
                         ? _prefillMeta.price.toLocaleString('vi-VN') + 'đ'
-                        : 'Miễn phí dịch vụ (chỉ tính phí di chuyển)';
+                        : 'Giá thỏa thuận';
                 }
                 if (typeof _bdSetBreakdown === 'function') {
                     _bdSetBreakdown(

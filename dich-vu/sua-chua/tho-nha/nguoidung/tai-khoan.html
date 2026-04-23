@@ -1,0 +1,74 @@
+<div class="dashboard-card shadow-sm" style="border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; overflow: hidden;">
+    <div class="d-card-header" style="background: #f8fafc; padding: 25px 30px; border-bottom: 1px solid #e2e8f0;">
+        <h3 class="d-card-title" style="margin:0; font-weight: 800; font-size: 1.25rem;"><i class="fa-solid fa-user-circle"></i> Hồ sơ cá nhân</h3>
+    </div>
+    <div class="d-card-body" style="padding: 30px;">
+        <div id="saveMsg" class="mb-3"></div>
+        <div class="row g-4">
+            <!-- Basic Info -->
+            <div class="col-md-6">
+                <label class="form-label fw-bold small text-uppercase text-muted">Họ và tên</label>
+                <input type="text" id="accName" class="form-control" style="border-radius: 12px; height: 50px;" placeholder="Nhập tên của bạn">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold small text-uppercase text-muted">Số điện thoại</label>
+                <div id="accPhone" class="form-control bg-light" style="border-radius: 12px; height: 50px; display: flex; align-items: center; font-weight: 600;">Loading...</div>
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-bold small text-uppercase text-muted">Địa chỉ</label>
+                <input type="text" id="accAddress" class="form-control" style="border-radius: 12px; height: 50px;" placeholder="Nhập địa chỉ của bạn">
+            </div>
+
+            <!-- Password Change -->
+            <div class="col-12 mt-4">
+                <h5 class="fw-800" style="font-size: 1rem; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">Đổi mật khẩu (Để trống nếu không đổi)</h5>
+            </div>
+            <div class="col-md-4">
+                <input type="password" id="oldPass" class="form-control" style="border-radius: 12px; height: 45px;" placeholder="Mật khẩu cũ">
+            </div>
+            <div class="col-md-4">
+                <input type="password" id="newPass" class="form-control" style="border-radius: 12px; height: 45px;" placeholder="Mật khẩu mới">
+            </div>
+            <div class="col-md-4">
+                <input type="password" id="confirmNewPass" class="form-control" style="border-radius: 12px; height: 45px;" placeholder="Xác nhận mật khẩu mới">
+            </div>
+
+            <!-- Provider Specific Section -->
+            <div id="providerSpecificProfile" style="display: none;" class="col-12 mt-4">
+                <h5 class="fw-800" style="font-size: 1rem; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; color: var(--primary);">Thông tin đối tác</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Ảnh đại diện (Thợ)</label>
+                        <div class="profile-upload-zone" id="zone-avatar" style="border: 2px dashed #cbd5e1; border-radius: 16px; height: 150px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden;">
+                             <img id="acc-prev-avatar" style="width:100%; height:100%; object-fit:cover; display:none;">
+                             <div id="acc-ph-avatar" class="text-center"><i class="fas fa-camera fa-2x text-muted"></i></div>
+                             <input type="file" id="acc-avatar" hidden onchange="previewProfileImg(this, 'zone-avatar', 'acc-prev-avatar')">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">CCCD Mặt trước</label>
+                        <div class="profile-upload-zone" id="zone-front" style="border: 2px dashed #cbd5e1; border-radius: 16px; height: 150px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden;">
+                             <img id="acc-prev-front" style="width:100%; height:100%; object-fit:cover; display:none;">
+                             <div id="acc-ph-front" class="text-center"><i class="fas fa-id-card fa-2x text-muted"></i></div>
+                             <input type="file" id="acc-cccd-front" hidden onchange="previewProfileImg(this, 'zone-front', 'acc-prev-front')">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">CCCD Mặt sau</label>
+                        <div class="profile-upload-zone" id="zone-back" style="border: 2px dashed #cbd5e1; border-radius: 16px; height: 150px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden;">
+                             <img id="acc-prev-back" style="width:100%; height:100%; object-fit:cover; display:none;">
+                             <div id="acc-ph-back" class="text-center"><i class="fas fa-id-card fa-2x text-muted"></i></div>
+                             <input type="file" id="acc-cccd-back" hidden onchange="previewProfileImg(this, 'zone-back', 'acc-prev-back')">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 text-end">
+            <button id="saveProfileBtn" class="btn btn-primary px-5 py-3 fw-bold" style="border-radius: 14px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border:none; box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.3);">
+                <i class="fa-solid fa-floppy-disk me-2"></i> Lưu hồ sơ
+            </button>
+        </div>
+    </div>
+</div>

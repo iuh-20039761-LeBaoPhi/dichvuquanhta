@@ -282,7 +282,7 @@ async function _bdLoadStandaloneServices() {
             cat.items.forEach(item => {
                 const opt = document.createElement('option');
                 opt.value = item.name;
-                opt.textContent = item.name + (item.price ? ` – ${Number(item.price).toLocaleString('vi-VN')}đ` : '');
+                opt.textContent = item.name + (item.price > 0 ? ` – ${Number(item.price).toLocaleString('vi-VN')}đ` : ' – Giá thỏa thuận');
                 subSel && subSel.appendChild(opt);
             });
         }
@@ -296,7 +296,7 @@ async function _bdLoadStandaloneServices() {
             const priceEl = document.getElementById('giadichvu');
             if (!item) { if (priceEl) priceEl.value = ''; _bdHideBreakdown(); return; }
             const price = item.price || 0;
-            if (priceEl) priceEl.value = price > 0 ? Number(price).toLocaleString('vi-VN') + 'đ' : '';
+            if (priceEl) priceEl.value = price > 0 ? Number(price).toLocaleString('vi-VN') + 'đ' : 'Giá thỏa thuận';
             _bdSetBreakdown(price, item.travelFee || mainCat.travelFee || null, item.surveyFee || mainCat.surveyFee || null, mainCat.id, item.id);
         });
     }

@@ -208,7 +208,10 @@ async function _bdOpenModal(mode, prefill) {
             const selEl   = document.getElementById('dichvudachon');
             const priceEl = document.getElementById('giadichvu');
             if (selEl)   selEl.value   = prefill.name  || '';
-            if (priceEl) priceEl.value = prefill.price ? Number(prefill.price).toLocaleString('vi-VN') + 'đ' : '';
+            if (priceEl) {
+                const p = parseInt(prefill.price);
+                priceEl.value = (p > 0) ? p.toLocaleString('vi-VN') + 'đ' : 'Giá thỏa thuận';
+            }
             if (prefill.price) {
                 _bdSetBreakdown(parseInt(prefill.price) || 0, prefill.travelFee || null, prefill.surveyFee || null, prefill.catId || null, prefill.serviceId || null);
             }

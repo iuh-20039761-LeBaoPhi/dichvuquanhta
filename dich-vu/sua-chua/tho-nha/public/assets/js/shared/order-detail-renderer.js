@@ -21,19 +21,29 @@ const ThoNhaOrderDetailRenderer = (() => {
 
         // 1. Binder Map: Tự động điền dữ liệu theo ID
         const hasActual = order.actualCost > 0;
-        
+
         // Cập nhật nhãn tiêu đề nếu đã báo giá
         if (hasActual) {
             const labelService = container.querySelector('span[id="heroServiceFee"]')?.previousElementSibling || container.querySelector('.meta-label:nth-of-type(1)');
             if (labelService) labelService.textContent = 'Giá thợ báo:';
-            
+
             const labelSurcharge = container.querySelector('span[id="heroSurchargeFee"]')?.previousElementSibling;
             if (labelSurcharge) labelSurcharge.textContent = 'Được trợ giá/giảm:';
         }
 
+        // Cập nhật nhãn Tổng tiền ở khu vực trung tâm / Header
+        const labelTotalMain = container.querySelector('span[id="heroTotalAmountHeader"]')?.previousElementSibling;
+        const textTotal = hasActual ? 'TỔNG TIỀN' : 'CHI PHÍ ƯỚC TÍNH';
+        if (labelTotalMain) labelTotalMain.textContent = textTotal;
+
+        // Thử tìm nhãn ở các khu vực khác nếu có class đặc trưng
+        container.querySelectorAll('.total-label-sync').forEach(el => {
+            el.textContent = textTotal;
+        });
+
         const bindings = {
             heroOrderCode: '#' + order.orderCode,
-            heroServiceName: order.service,
+            heroServiceName: order.fullService || order.service,
             heroBookingDate: utils.formatDateTime(order.dates.ordered),
             heroServiceFee: hasActual ? utils.formatCurrencyVn(order.actualCost) : utils.formatCurrencyVn(order.estimated_price),
             heroTransportFee: utils.formatCurrencyVn(order._raw.phidichuyen || 0),
@@ -51,8 +61,8 @@ const ThoNhaOrderDetailRenderer = (() => {
             detailCustomerName: order.customer.name,
             detailCustomerPhone: order.customer.phone,
             detailCustomerAddress: order._raw.diachikhachhang || (order.customer && order.customer.address) || '---',
-            detailProviderName: (order.provider.id && order.provider.name !== 'Nhà cung cấp') 
-                ? (order.provider.company || order.provider.name) 
+            detailProviderName: (order.provider.id && order.provider.name !== 'Nhà cung cấp')
+                ? (order.provider.company || order.provider.name)
                 : 'Chờ nhận',
             detailProviderPhone: order.provider.id ? (order.provider.phone || '---') : '---',
             detailProviderAddress: order._raw.diachincc || (order.provider && order.provider.address) || '---'
@@ -66,21 +76,21 @@ const ThoNhaOrderDetailRenderer = (() => {
         // Tự động tính % dựa trên ngày tháng thực tế
         const progress = (order.progress && order.progress > 0) ? order.progress : calculateProgress(order);
         const progressStr = progress.toFixed(0) + '%';
-        
+
         ['heroProgressPercent', 'detailProgressText', 'heroProgressPercentLabel'].forEach(id => setText(container, id, progressStr));
-        
+
         const ring = container.querySelector('#heroProgressRing');
         if (ring) {
             // Nếu hủy đơn thì đổi vòng tròn sang màu RED (#ef4444)
             const isCanceled = order.status === 'canceled' || order.status === 'rejected';
             const progressColor = isCanceled ? '#ef4444' : 'var(--primary-emerald)';
-            
+
             ring.style.background = `conic-gradient(${progressColor} ${progress}%, #334155 0%)`;
         }
-        
+
         const bar = container.querySelector('#detailProgressBar');
         if (bar) bar.style.width = progressStr;
-        
+
         // Cụm progress-fill trong timeline
         const fillEl = container.querySelector('.progress-fill');
         if (fillEl) fillEl.style.width = progressStr;
@@ -105,7 +115,7 @@ const ThoNhaOrderDetailRenderer = (() => {
                                 style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
                     </div>`;
             }
-            custAvatarEl.style.padding = '0'; 
+            custAvatarEl.style.padding = '0';
             custAvatarEl.style.overflow = 'hidden';
         }
 
@@ -138,7 +148,7 @@ const ThoNhaOrderDetailRenderer = (() => {
 
     function renderReviews(container, order, role) {
         const raw = order._raw || {};
-        
+
         // --- Feedback Khách hàng ---
         const custTextEl = container.querySelector('#reviewCustomerText');
         const custHeadEl = container.querySelector('#reviewCustomerText')?.closest('.review-card')?.querySelector('.review-card-head');
@@ -263,16 +273,16 @@ const ThoNhaOrderDetailRenderer = (() => {
         const raw = order._raw || {};
 
         if (order.status === 'canceled' || order.status === 'rejected') return 0;
-        
+
         // Bước 4: Hoàn thành thực tế
         if (dates.completed) return 100;
-        
+
         // Bước 3: Đã bắt đầu làm thực tế (Trường ngaythuchienthucte trong database)
         if (raw.ngaythuchienthucte) return 75;
-        
+
         // Bước 2: Thợ đã nhận đơn
         if (dates.accepted || (order.provider && order.provider.id)) return 40;
-        
+
         // Bước 1: Mới đặt đơn
         if (dates.ordered) return 10;
 
@@ -284,7 +294,7 @@ const ThoNhaOrderDetailRenderer = (() => {
         if (!list) return;
 
         // Tách dịch vụ từ chuỗi text (ví dụ: "Lát nền gạch - 6.000.000đ + Sơn nhà...")
-        const tasks = order.service.split(' + ').map(t => t.trim());
+        const tasks = (order.fullService || order.service).split(' + ').map(t => t.trim());
         list.innerHTML = tasks.map((task, idx) => `
             <li class="task-item">
                 <span class="task-index">${idx + 1}</span>
@@ -301,18 +311,18 @@ const ThoNhaOrderDetailRenderer = (() => {
         if (role === 'customer') {
             // Khách chỉ được hủy khi đơn chưa có thợ nhận
             if (!order.provider.id && order.status === 'new') {
-                html = `<button class="btn-cancel" data-action="cancel-order" data-id="${order.id}" data-code="${order.orderCode}">Hủy đơn ngay</button>`;
+                html = `<button class="btn-cancel" data-action="cancel-order" data-id="${order.id}" data-code="${order.orderCode}">HỦY ĐƠN</button>`;
             } else if (order.status === 'done' && (!order.actualCost || order.actualCost === 0)) {
-                html = `<button class="btn-emerald btn-action-pricing" data-action="open-pricing-modal" data-id="${order.id}"><i class="fas fa-gift me-2"></i>NHẬP GIÁ & NHẬN TRỢ GIÁ</button>`;
+                html = `<button class="btn-emerald btn-action-pricing" data-action="open-pricing-modal" data-id="${order.id}">NHẬP GIÁ THỰC TẾ</button>`;
             }
         } else if (role === 'provider') {
             // Nhà cung cấp: Nhận -> Bắt đầu -> Hoàn thành
             if (!order.provider.id && order.status === 'new') {
-                html = `<button class="btn-emerald btn-action-accept" data-action="accept-order" data-id="${order.id}"><i class="fas fa-handshake me-2"></i>NHẬN ĐƠN NGAY</button>`;
+                html = `<button class="btn-emerald btn-action-accept" data-action="accept-order" data-id="${order.id}">XÁC NHẬN</button>`;
             } else if (order.status === 'confirmed' || order.status === 'pending') {
-                html = `<button class="btn-emerald btn-action-start" data-action="start-order" data-id="${order.id}"><i class="fas fa-play me-2"></i>BẮT ĐẦU LÀM</button>`;
+                html = `<button class="btn-emerald btn-action-start" data-action="start-order" data-id="${order.id}">BẮT ĐẦU LÀM</button>`;
             } else if (order.status === 'doing' || order.status === 'working') {
-                html = `<button class="btn-emerald btn-action-complete" data-action="complete-order" data-id="${order.id}"><i class="fas fa-check-double me-2"></i>XÁC NHẬN XONG</button>`;
+                html = `<button class="btn-emerald btn-action-complete" data-action="complete-order" data-id="${order.id}">HOÀN THÀNH</button>`;
             }
         } else if (role === 'admin') {
             html = `<span class="invoice-status-chip">CHẾ ĐỘ XEM (ADMIN)</span>`;

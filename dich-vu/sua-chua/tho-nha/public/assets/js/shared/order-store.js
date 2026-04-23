@@ -248,44 +248,57 @@
     }
 
     /**
-     * Lấy thông tin hồ sơ Khách hàng hiện tại từ Session.
+     * Lấy thông tin hồ sơ Khách hàng - Dựa trên cookie dvqt_u (SĐT).
+     * Cookie dvqt_u là nguồn đáng tin cậy nhất, được set khi đăng nhập.
      */
     function getCustomerProfile() {
-        const s = window._dvqt_session_cache || window._thonha_session_cache;
-        if (s && s.role === 'customer') {
-            return {
-                id: s.id,
-                name: s.name || 'Khách hàng',
-                phone: s.phone || '',
-                address: s.address || ''
-            };
-        }
-        return { name: 'Khách hàng', phone: '', address: '' };
+        // Ưu tiên lấy SĐT từ cookie dvqt_u
+        var phone = '';
+        try {
+            var v = document.cookie.match('(^|;) ?dvqt_u=([^;]*)(;|$)');
+            phone = v ? v[2] : '';
+        } catch(e) {}
+
+        // Bổ sung thông tin từ session cache nếu có
+        var s = window._dvqt_session_cache || window._thonha_session_cache || {};
+        return {
+            id: s.id || '',
+            name: s.name || 'Khách hàng',
+            phone: phone || s.phone || '',
+            address: s.address || ''
+        };
     }
 
     /**
-     * Lấy thông tin hồ sơ Nhà cung cấp hiện tại từ Session.
+     * Lấy thông tin hồ sơ Nhà cung cấp - Dựa trên cookie dvqt_u + kiểm tra id_dichvu=9.
+     * Chỉ trả về profile hợp lệ nếu user có id_dichvu chứa '9'.
      */
     function getProviderProfile() {
-        const s = window._dvqt_session_cache || window._thonha_session_cache;
-        const serviceIds = String(s && s.id_dichvu || '0').split(',');
-        const isThoNha = serviceIds.includes('9') || (s && s.role === 'admin');
+        var s = window._dvqt_session_cache || window._thonha_session_cache || {};
+        var serviceIds = String(s.id_dichvu || '0').split(',');
+        var isProvider = serviceIds.includes('9');
 
-        if (s && (isThoNha || s.role === 'provider')) {
-            return {
-                id: s.id || ('provider-' + toDigits(s.phone)),
-                role: isThoNha ? 'provider' : s.role,
-                name: s.name || 'Nhà cung cấp',
-                phone: s.phone || '',
-                company: (s.extra && s.extra.company) || s.company || '',
-                categories: (s.extra && s.extra.danh_muc_thuc_hien) || s.danh_muc_thuc_hien || s.categories || '',
-                address: (s.extra && s.extra.address) || s.address || '',
-                avatar: (s.extra && s.extra.avatartenfile) || s.avatartenfile || '',
-                cccd_front: (s.extra && s.extra.cccdmattruoctenfile) || s.cccdmattruoctenfile || '',
-                cccd_back: (s.extra && s.extra.cccdmatsautenfile) || s.cccdmatsautenfile || ''
-            };
-        }
-        return { name: 'Nhà cung cấp', phone: '', company: '', address: '' };
+        if (!isProvider) return { name: '', phone: '', id: '' };
+
+        // Lấy SĐT từ cookie dvqt_u
+        var phone = '';
+        try {
+            var v = document.cookie.match('(^|;) ?dvqt_u=([^;]*)(;|$)');
+            phone = v ? v[2] : '';
+        } catch(e) {}
+
+        return {
+            id: s.id || '',
+            role: 'provider',
+            name: s.name || 'Nhà cung cấp',
+            phone: phone || s.phone || '',
+            company: (s.extra && s.extra.company) || s.company || '',
+            categories: (s.extra && s.extra.danh_muc_thuc_hien) || s.danh_muc_thuc_hien || s.categories || '',
+            address: (s.extra && s.extra.address) || s.address || '',
+            avatar: (s.extra && s.extra.avatartenfile) || s.avatartenfile || '',
+            cccd_front: (s.extra && s.extra.cccdmattruoctenfile) || s.cccdmattruoctenfile || '',
+            cccd_back: (s.extra && s.extra.cccdmatsautenfile) || s.cccdmatsautenfile || ''
+        };
     }
 
     /**

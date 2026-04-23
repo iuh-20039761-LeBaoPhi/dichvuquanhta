@@ -1,0 +1,105 @@
+<script>
+    if (window.location.pathname.endsWith('don-nhan.html')) {
+        window.location.href = 'trang-ca-nhan.html';
+    }
+</script>
+
+<div class="dashboard-container">
+    <div id="providerListSection">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="u-card-title" style="font-size: 1.5rem;"><i class="fa-solid fa-briefcase me-2"></i> Theo dõi & Nhận việc</h2>
+            <button id="refreshProviderBtn" class="btn btn-primary px-4 py-2 fw-bold" style="border-radius: 12px; background: var(--u-primary); border:none;">
+                <i class="fa-solid fa-rotate me-2"></i> Làm mới đơn
+            </button>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="orderFilterSection">
+            <div class="u-stat-card">
+                <div class="u-stat-icon green"><i class="fa-solid fa-bullhorn"></i></div>
+                <div><p class="u-stat-label">Chờ nhận</p><h2 class="u-stat-value" id="statOpen">0</h2></div>
+            </div>
+            <div class="u-stat-card">
+                <div class="u-stat-icon blue"><i class="fa-solid fa-clipboard-list"></i></div>
+                <div><p class="u-stat-label">Đã nhận</p><h2 class="u-stat-value" id="statAssigned">0</h2></div>
+            </div>
+            <div class="u-stat-card">
+                <div class="u-stat-icon amber"><i class="fa-solid fa-person-digging"></i></div>
+                <div><p class="u-stat-label">Đang làm</p><h2 class="u-stat-value" id="statDoing">0</h2></div>
+            </div>
+            <div class="u-stat-card">
+                <div class="u-stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                <div><p class="u-stat-label">Đã xong</p><h2 class="u-stat-value" id="statDone">0</h2></div>
+            </div>
+        </div>
+
+        <!-- Open Orders Card -->
+        <div class="u-card">
+            <div class="u-card-header">
+                <h3 class="u-card-title"><i class="fa-solid fa-inbox me-2"></i> Yêu cầu mới cần thợ</h3>
+            </div>
+            <div class="u-table-wrap">
+                <table class="u-table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Dịch vụ</th>
+                            <th>Ngày đặt</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="openRequestBody">
+                        <tr><td colspan="6" class="text-center py-5 text-muted">Đang tìm yêu cầu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="u-mobile-list" id="openMobileList"></div>
+            <div id="openEmptyState" class="text-center py-5" hidden>
+                <i class="fa-regular fa-face-smile fa-3x text-muted"></i>
+                <h4 class="mt-3 text-muted">Hiện chưa có đơn mới</h4>
+            </div>
+        </div>
+
+        <!-- Assigned Orders Card -->
+        <div class="u-card">
+            <div class="u-card-header">
+                <h3 class="u-card-title"><i class="fa-solid fa-list-check me-2"></i> Việc bạn đang phụ trách</h3>
+            </div>
+            <div class="u-table-wrap">
+                <table class="u-table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Dịch vụ</th>
+                            <th>Ngày đặt</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignedOrderBody">
+                        <tr><td colspan="6" class="text-center py-5 text-muted">Đang tải danh sách...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="u-mobile-list" id="assignedMobileList"></div>
+            <div id="assignedEmptyState" class="text-center py-5" hidden>
+                <i class="fa-regular fa-clipboard fa-3x text-muted"></i>
+                <h4 class="mt-3 text-muted">Bạn chưa nhận đơn nào</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Section -->
+    <div id="providerDetailSection" hidden>
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-secondary px-4 py-2 fw-bold" data-action="back-to-list" style="border-radius:12px;">
+                <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
+            </button>
+            <div class="text-muted small fw-500">Chi tiết dịch vụ #ThoNha</div>
+        </div>
+        <div id="providerDetailContent"></div>
+    </div>
+</div>

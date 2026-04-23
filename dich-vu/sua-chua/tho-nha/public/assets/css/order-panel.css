@@ -55,9 +55,47 @@
 .btn-detail { border: 1px solid var(--admin-border); border-radius: 12px; background: #fff; color: var(--admin-text); font-size: 0.82rem; font-weight: 800; padding: 8px 16px; transition: all 0.2s; white-space: nowrap; cursor: pointer; }
 .btn-detail:hover { background: var(--admin-primary); color: #fff; border-color: var(--admin-primary); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
 
-/* 8. Status Badges Re-sync - Using .invoice-status-chip from custom css */
+/* 8. Status Badges Re-sync */
 .status-cell { white-space: nowrap; }
-.status-badge { display: none; } /* Deprecated */
+.invoice-status-chip {
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s;
+    border: none;
+    line-height: 1.4;
+}
+.invoice-status-chip.status-new {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
+}
+.invoice-status-chip.status-confirmed {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+}
+.invoice-status-chip.status-doing {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
+}
+.invoice-status-chip.status-done {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);
+}
+.invoice-status-chip.status-canceled {
+    background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2);
+}
 
 /* 9. Provider Board Styles */
 .order-board { margin-top: 2rem; background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid var(--admin-border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }

@@ -128,6 +128,27 @@ window.initProviderOrders = function() {
         const currentProvider = store.getProviderProfile();
 
         if (actionType === 'accept-order') {
+            // Kiểm tra không cho nhận đơn chính mình đặt
+            const orders = store.getOrders();
+            const order = orders.find(o => String(o.id) === String(id));
+            if (order) {
+                const provPhone = String(currentProvider.phone || '').replace(/\D/g, '').slice(-9);
+                const custPhone = String(order.customer?.phone || order._raw?.sdtkhachhang || '').replace(/\D/g, '').slice(-9);
+                if (provPhone && custPhone && provPhone === custPhone) {
+                    if (window.Swal) {
+                        window.Swal.fire({
+                            title: '<span style="color:#11998e">Thông báo</span>',
+                            html: 'Bạn không thể tự nhận đơn hàng do chính mình đặt.',
+                            icon: 'warning',
+                            confirmButtonColor: '#11998e'
+                        });
+                    } else {
+                        alert('Bạn không thể tự nhận đơn hàng do chính mình đặt.');
+                    }
+                    return;
+                }
+            }
+
             if (!confirm('Xác nhận nhận đơn hàng này?')) return;
             payload = {
                 id_nhacungcap: currentProvider.id,
