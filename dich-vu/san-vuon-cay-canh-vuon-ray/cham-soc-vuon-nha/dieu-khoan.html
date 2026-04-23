@@ -5,8 +5,8 @@
   <script src="/ga.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Điều Khoản Sử Dụng - Chăm Sóc Vườn Nhà</title>
-  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo1.jpg" />
+  <title>Dịch Vụ Quanh Ta - Chăm Sóc Vườn Nhà - Điều Khoản</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo2.jpg" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
@@ -27,7 +27,7 @@
       padding-top: 96px;
     }
 
-    /* --- HERO SECTION (ĐỒNG BỘ 100% VỚI TRANG DỊCH VỤ) --- */
+    /* --- HERO SECTION --- */
     .hero-terms {
       background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
       padding: 160px 0 100px;
@@ -36,7 +36,6 @@
       text-align: center;
     }
 
-    /* Chữ mờ chạy nền giống trang dịch vụ/giới thiệu */
     .hero-terms::before {
       content: "Terms";
       position: absolute;
@@ -51,12 +50,12 @@
 
     .hero-terms h1 {
       font-family: 'Playfair Display', serif;
-      font-style: italic; /* Nét nghiêng nghệ thuật */
+      font-style: italic;
       color: var(--primary-green);
       font-size: 4rem;
       font-weight: 700;
       line-height: 1.2;
-      letter-spacing: -1px; /* Thu hẹp khoảng cách chữ */
+      letter-spacing: -1px;
       margin-bottom: 20px;
       position: relative;
       z-index: 1;
@@ -80,7 +79,7 @@
 
     .terms-card {
       background: #ffffff;
-      border-radius: 45px; /* Bo góc cực đại đồng bộ card dịch vụ */
+      border-radius: 45px;
       padding: 60px;
       box-shadow: 0 30px 60px rgba(26, 77, 46, 0.08);
       border: 1px solid rgba(26, 77, 46, 0.05);
@@ -126,7 +125,7 @@
       color: var(--accent-green);
     }
 
-    /* --- HIGHLIGHT BOX THANH TOÁN --- */
+    /* --- HIGHLIGHT BOX --- */
     .payment-highlight {
       background: var(--soft-lime);
       border-radius: 25px;
@@ -135,23 +134,26 @@
       margin-top: 25px;
     }
 
-    .payment-formula {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--primary-green);
-      text-align: center;
-      margin: 20px 0;
-      padding: 20px;
-      border: 2px dashed var(--primary-green);
-      border-radius: 20px;
-      background: rgba(255,255,255,0.5);
+    .price-box {
+      background: #fff;
+      padding: 15px 25px;
+      border-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      border: 1px solid rgba(26, 77, 46, 0.1);
+      transition: var(--transition);
     }
+
+    .price-label { font-weight: 700; color: var(--primary-green); }
+    .price-value { font-weight: 800; color: var(--accent-green); }
 
     @media (max-width: 768px) {
       .hero-terms h1 { font-size: 2.8rem; }
       .terms-card { padding: 30px; border-radius: 30px; }
       .term-content { padding-left: 0; }
+      .price-box { flex-direction: column; text-align: center; gap: 5px; }
     }
   </style>
 </head>
@@ -171,56 +173,93 @@
     <div class="terms-card">
       
       <div class="term-section">
-        <h3><i class="fas fa-seedling"></i> 1. Phạm Vi Áp Dụng</h3>
+        <h3><i class="fas fa-file-invoice-dollar"></i> 1. Phí Dịch Vụ & Thuế VAT</h3>
         <div class="term-content">
-          <p>Điều khoản này quy định các quyền và nghĩa vụ giữa <strong>Gia chủ</strong> (Khách hàng) và <strong>Nghệ nhân</strong> (Người cung cấp dịch vụ) thông qua nền tảng kết nối cảnh quan xanh của chúng tôi.</p>
-        </div>
-      </div>
-
-      <div class="term-section">
-        <h3><i class="fas fa-file-invoice-dollar"></i> 2. Phí Dịch Vụ & Hoa Hồng 10%</h3>
-        <div class="term-content">
-          <p>Để đảm bảo chất lượng kỹ thuật và bảo hiểm cây trồng, hệ thống áp dụng cơ chế tính phí minh bạch:</p>
+          <p>Để đảm bảo chất lượng kỹ thuật và tuân thủ quy định pháp luật, hệ thống áp dụng cơ chế tính phí minh bạch như sau:</p>
           
-          <div class="payment-highlight">
-            <p class="mb-2"><strong>Quy tắc tính Tổng số tiền thanh toán:</strong></p>
-            <div class="payment-formula">
-              TỔNG TIỀN = TIỀN DỊCH VỤ + 10% PHÍ HOA HỒNG
+          <div class="payment-highlight shadow-sm border-0" style="background: linear-gradient(135deg, #e8f3d6 0%, #ffffff 100%); position: relative; overflow: hidden;">
+            <div style="position: absolute; right: -20px; top: -20px; font-size: 8rem; color: rgba(26, 77, 46, 0.05); z-index: 0;"><i class="fas fa-receipt"></i></div>
+            
+            <div style="position: relative; z-index: 1;">
+              <div class="price-box" style="background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); border-left: 5px solid var(--primary-green);">
+                <span class="price-label">Thuế Giá Trị Gia Tăng (VAT)</span>
+                <span class="price-value" style="font-size: 1.3rem;">10%</span>
+              </div>
+
+              <div class="mt-4 text-center">
+                <div class="d-inline-block p-1 mb-2" style="background: linear-gradient(90deg, var(--primary-green), var(--accent-green)); border-radius: 50px;">
+                    <div class="px-4 py-1" style="background: white; border-radius: 50px;">
+                        <span style="color: var(--primary-green); font-weight: 800; font-size: 0.8rem;">CÔNG THỨC TỔNG TIỀN</span>
+                    </div>
+                </div>
+                <div class="py-3 px-4" style="background: var(--primary-green); color: white; border-radius: 20px; box-shadow: 0 10px 20px rgba(26, 77, 46, 0.2);">
+                    <span style="font-family: 'Playfair Display', serif; font-size: 1.4rem; letter-spacing: 1px;">
+                        TỔNG = (Dịch vụ + Phụ phí) + 10% VAT
+                    </span>
+                </div>
+              </div>
             </div>
-            <p class="small text-dark mb-0 italic">
-              * Phí hoa hồng 10% được dùng để duy trì hệ thống chăm sóc khách hàng, bảo hiểm rủi ro cây trồng và chi phí vận hành nền tảng.
-            </p>
           </div>
         </div>
       </div>
 
       <div class="term-section">
-        <h3><i class="fas fa-user-check"></i> 3. Trách Nhiệm Đối Tác Nghệ Nhân</h3>
+        <h3><i class="fas fa-hourglass-half"></i> 2. Phụ phí gia hạn thời gian</h3>
         <div class="term-content">
-          <ul>
-            <li>Thực hiện công việc cắt tỉa, chăm bón theo đúng tiêu chuẩn kỹ thuật cảnh quan.</li>
-            <li>Cam kết sử dụng phân bón và thuốc bảo vệ thực vật hữu cơ, an toàn cho môi trường.</li>
-            <li>Luôn mặc đồng phục và mang thẻ định danh trong suốt quá trình làm việc tại vườn nhà.</li>
-            <li>Chịu trách nhiệm 100% nếu xảy ra hư hại cây trồng do sai sót kỹ thuật chủ quan.</li>
-          </ul>
+          <p>Nếu khối lượng công việc thực tế cần nhiều thời gian hơn dự kiến, khách hàng có thể đăng ký thêm trực tiếp:</p>
+          <div class="price-box" style="border-radius: 20px;">
+            <span class="price-label"><i class="far fa-clock me-2"></i>Đăng ký thêm 30 phút</span>
+            <span class="price-value">80.000 VNĐ</span>
+          </div>
+          <div class="price-box" style="border-radius: 20px;">
+            <span class="price-label"><i class="fas fa-history me-2"></i>Đăng ký thêm 01 giờ</span>
+            <span class="price-value">150.000 VNĐ</span>
+          </div>
+          <p class="small italic text-muted mt-2">* Nhân viên sẽ xác nhận sự đồng ý của Gia chủ trước khi tiến hành tính phí phát sinh.</p>
         </div>
       </div>
 
       <div class="term-section">
-        <h3><i class="fas fa-heart"></i> 4. Quyền Lợi Của Gia Chủ</h3>
+        <h3><i class="fas fa-truck-fast"></i> 3. Phí vận chuyển & Khoảng cách</h3>
+        <div class="term-content">
+          <p>Phí di chuyển của Nhân viên được tối ưu hóa dựa trên khoảng cách thực tế:</p>
+          <div class="row g-3">
+            <div class="col-md-6">
+                <div class="p-3 text-center" style="background: var(--soft-lime); border-radius: 20px; border: 1px dashed var(--primary-green);">
+                    <h6 class="fw-bold mb-1" style="color: var(--primary-green);">Dưới 2 km</h6>
+                    <span class="badge bg-success px-3">MIỄN PHÍ</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 text-center" style="background: #ffffff; border-radius: 20px; border: 1px solid #eee;">
+                    <h6 class="fw-bold mb-1" style="color: var(--primary-green);">Trên 2 km</h6>
+                    <span class="text-danger fw-bold">15.000 VNĐ / 1 km</span>
+                </div>
+            </div>
+          </div>
+          <p class="small text-muted mt-3"><i>(Khoảng cách tính từ vị trí Nhân viên theo dữ liệu thời gian thực của Google Maps)</i></p>
+        </div>
+      </div>
+
+      <div class="term-section">
+        <h3><i class="fas fa-user-check"></i> 4. Trách nhiệm Nhân viên</h3>
         <div class="term-content">
           <ul>
-            <li>Được quyền yêu cầu đổi nghệ nhân chăm sóc nếu cảm thấy phong cách làm việc không phù hợp.</li>
-            <li>Được cung cấp báo cáo tình trạng sức khỏe định kỳ của cây trồng sau mỗi lần chăm sóc.</li>
-            <li>Mọi thông tin cá nhân và hình ảnh khuôn viên vườn đều được bảo mật tuyệt đối.</li>
+            <li>Thực hiện công việc theo đúng tiêu chuẩn kỹ thuật cảnh quan và vệ sinh khu vực sau khi làm.</li>
+            <li>Cam kết sử dụng vật tư nông nghiệp hữu cơ, an toàn cho môi trường và sức khỏe.</li>
+            <li>Chịu trách nhiệm bảo trì hoặc bồi thường nếu xảy ra hư hại cây trồng do lỗi kỹ thuật chủ quan.</li>
           </ul>
         </div>
       </div>
 
       <div class="term-section" style="margin-bottom: 0;">
-        <h3><i class="fas fa-user-shield"></i> 5. Bảo Mật & Thay Đổi Điều Khoản</h3>
+        <h3><i class="fas fa-shield-alt"></i> 5. Quyền lợi khách hàng & Bảo mật</h3>
         <div class="term-content">
-          <p>Chúng tôi có quyền cập nhật các điều khoản này để phù hợp với quy định pháp luật hiện hành. Mọi thay đổi sẽ được thông báo trực tiếp qua email hoặc ứng dụng của Khách hàng.</p>
+          <ul>
+            <li>Được yêu cầu báo cáo tình trạng cây trồng định kỳ sau mỗi buổi chăm sóc.</li>
+            <li>Được quyền thay đổi hoặc hủy lịch miễn phí trước ít nhất 4 giờ so với thời điểm bắt đầu.</li>
+            <li>Mọi hình ảnh về khuôn viên vườn và thông tin cá nhân đều được bảo mật tuyệt đối.</li>
+          </ul>
         </div>
       </div>
 
@@ -229,20 +268,22 @@
 
   <div id="site-footer"></div>
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="../../../public/asset/js/dvqt-map.js"></script>
-    <script src="../../../public/asset/js/dvqt-krud.js"></script>
-    <script src="../../../public/asset/js/dvqt-app.js"></script>
-    <script src="../../../public/asset/js/driveUtil.js"></script>
-    <script src="../../assets/js/public/booking-detail-shared.js"></script>
-    <script src="../../assets/js/public/booking-detail-modal.js"></script>
-    <script src="../../assets/js/public/booking-detail-standalone.js"></script>
-    <script src="../../assets/js/public/booking-detail.js"></script>
-    <script>window.BD_BASE = '../../';</script>
-    <script src="../../assets/js/public/booking-panel.js"></script>
-    <script src="../../assets/js/shared/auth-nav.js"></script>
+  <script src="JS/shared-layout.js"></script>
+  <script src="JS/user-nav-menu.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // Đảm bảo Header và Footer luôn hiển thị
+      if ($("#site-header").is(':empty')) {
+        $("#site-header").load("header.html");
+      }
+      if ($("#site-footer").is(':empty')) {
+        $("#site-footer").load("footer.html");
+      }
+    });
+  </script>
 </body>
 
 </html>

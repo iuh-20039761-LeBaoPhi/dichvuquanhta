@@ -19,7 +19,7 @@
    */
   const authUrl = (action) => {
     const query = action ? ('?action=' + encodeURIComponent(action)) : '';
-    return new URL('session_auth.php' + query, projectBase).href;
+    return new URL('session_user.php' + query, projectBase).href;
   };
 
   const assetUrl = (path) => {
@@ -126,8 +126,17 @@
 
     if (navUserName) navUserName.textContent = user && user.hovaten ? user.hovaten : 'Tài khoản';
     if (navAvatar) {
-      const avatar = user && user.avatartenfile ? user.avatartenfile : 'assets/logomvb.png';
-      navAvatar.src = assetUrl(avatar);
+      const img = getEl('navAvatarImg');
+      const fileId = user && user.avatartenfile;
+      if (fileId) {
+        navAvatar.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+        navAvatar.style.display = 'block';
+        if (img) img.style.display = 'none';
+      } else {
+        navAvatar.src = '';
+        navAvatar.style.display = 'none';
+        if (img) img.style.display = 'block';
+      }
     }
     resetIdleLogoutTimer();
   }

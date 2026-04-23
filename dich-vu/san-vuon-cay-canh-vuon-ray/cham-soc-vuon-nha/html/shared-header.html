@@ -131,7 +131,7 @@
 
   <div class="container">
     <div class="d-flex align-items-center">
-      <a class="brand-wrapper" href="../index.html">
+      <a class="brand-wrapper" href="../../../index.html">
         <img style="width: 65px; height: auto;" src="assets/images/logo1.jpg" alt="logo-main" />
       </a>
       <span class="brand-text ms-2 d-none d-sm-block">Chăm Sóc Vườn Nhà</span>
@@ -150,35 +150,44 @@
         <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="about" href="gioi-thieu.html">Giới Thiệu</a></li>
         <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="services" href="dich-vu.html">Dịch Vụ</a></li>
         <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="blog" href="bai-viet.html">Bài Viết</a></li>
-        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="terms" href="dieu-khoan.html">Điều Khoản</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="terms" href="dieu-khoan.html">Điều khoản</a></li>
         <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="contact" href="lien-he.html">Liên Hệ</a></li>
+      
       </ul>
 
-      <ul class="navbar-nav align-items-center">
-        <li class="nav-item" id="loginNavItem">
-          <a id="btnLoginCheck" 
-             href="../../../dichvuquanhta/public/dang-nhap.html?redirect=/dichvuquanhta/cham-soc-me-va-be/index.html" 
-             class="btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" 
-             style="background-color: var(--primary-green); transition: 0.3s;"
-             onmouseover="this.style.backgroundColor='var(--hover-green)'; this.style.transform='scale(1.05)'"
-             onmouseout="this.style.backgroundColor='var(--primary-green)'; this.style.transform='scale(1)'">
-             Đăng Nhập
-          </a>
-        </li>
+      <ul class="navbar-nav align-items-center gap-2">
+  <li class="nav-item">
+    <a href="dat-lich.html" 
+       class="btn rounded-pill px-4 py-2 shadow-sm fw-bold d-flex align-items-center gap-2" 
+       style="background-color: var(--soft-lime); color: var(--primary-green); border: 1px solid rgba(26, 77, 46, 0.2); transition: var(--transition); font-size: 0.9rem;">
+       <i class="far fa-calendar-check" style="font-size: 1.1rem;"></i> 
+       <span>Đặt Lịch</span>
+    </a>
+  </li>
 
+  <li class="nav-item" id="loginNavItem">
+    <a id="btnLoginCheck" 
+       href="../../../public/dang-nhap.html?service=vuonnha" 
+       class="btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" 
+       style="background-color: var(--primary-green); transition: var(--transition); font-size: 0.9rem;"
+       onmouseover="this.style.backgroundColor='var(--hover-green)'; this.style.transform='translateY(-2px)'"
+       onmouseout="this.style.backgroundColor='var(--primary-green)'; this.style.transform='translateY(0)'">
+       Đăng Nhập
+    </a>
+  </li>
         <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
           <div class="dropdown">
             <button class="btn btn-user-nav rounded-pill px-2 py-1 d-inline-flex align-items-center gap-2 shadow-sm" 
                     type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img id="navAvatar" src="assets/logomvb.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
+              <img id="navAvatar" src="assets/images/logo2.jpg" alt="avatar" width="32" height="32" class="rounded-circle border" />
               <span id="navUserName" class="fw-bold small text-dark">Tài khoản</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end border-0">
-              <li><a class="dropdown-item" id="navInvoiceLink" href="nhan-vien/danh-sach-hoa-don.php">
-                <i class="fas fa-file-invoice me-2"></i>Hóa đơn của bạn</a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 text-center">
+              <li><a class="dropdown-item" id="navInvoiceLink" href="don-hang/index.php">
+                <i class="fas fa-file-invoice me-2"></i>Danh sách hóa đơn</a>
               </li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="logout.html">
+              <li><a class="dropdown-item text-danger" href="logout.php">
                 <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a>
               </li>
             </ul>
