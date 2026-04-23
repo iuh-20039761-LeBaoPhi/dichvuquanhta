@@ -431,7 +431,7 @@
         return '<div class="booking-breakdown">' +
             bookingLine('Giá dịch vụ', serviceText) +
             bookingLine('Phí di chuyển', travelText) +
-            bookingLine('Phí khảo sát', surveyText) +
+            bookingLine('Phí kiểm tra', surveyText) +
             bookingLine('Tổng tạm tính', totalText, 'booking-total') +
             noteHtml +
             '</div>';

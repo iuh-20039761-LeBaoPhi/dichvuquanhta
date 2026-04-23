@@ -117,8 +117,7 @@ async function _bdInitStandalone() {
                     });
                     
                     // Chuyển đến trang quản lý đơn hàng
-                    const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : '';
-                    window.location.href = root + '/tho-nha/pages/customer/trang-ca-nhan.html';
+                    window.location.href = 'nguoidung/trang-ca-nhan.html';
 
                 } else if (accountResult && accountResult.accountExists) {
                     // SĐT ĐÃ TỒN TẠI → Thông báo, đặt lịch thành công nhưng KHÔNG đăng nhập
@@ -148,8 +147,7 @@ async function _bdInitStandalone() {
                         confirmButtonColor: '#11998e'
                     });
 
-                    const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : '';
-                    window.location.href = root + '/tho-nha/pages/customer/trang-ca-nhan.html';
+                    window.location.href = 'nguoidung/trang-ca-nhan.html';
                 }
             });
         } catch (err) {

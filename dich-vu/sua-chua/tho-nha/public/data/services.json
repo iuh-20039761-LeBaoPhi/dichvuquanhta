@@ -19,7 +19,7 @@
                 "name": "Kiểm tra lỗi",
                 "isSurveyOnly": true,
                 "price": 0,
-                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí kiểm tra được miễn nếu đồng ý sửa.",
                 "duration": "30–60 phút",
                 "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
             },
@@ -144,7 +144,7 @@
                 "name": "Kiểm tra lỗi",
                 "isSurveyOnly": true,
                 "price": 0,
-                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí kiểm tra được miễn nếu đồng ý sửa.",
                 "duration": "30–60 phút",
                 "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
             },
@@ -242,7 +242,7 @@
                 "name": "Kiểm tra lỗi",
                 "isSurveyOnly": true,
                 "price": 0,
-                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí kiểm tra được miễn nếu đồng ý sửa.",
                 "duration": "30–60 phút",
                 "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
             },
@@ -330,7 +330,7 @@
                 "name": "Kiểm tra lỗi",
                 "isSurveyOnly": true,
                 "price": 0,
-                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí kiểm tra được miễn nếu đồng ý sửa.",
                 "duration": "30–60 phút",
                 "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
             },
@@ -418,7 +418,7 @@
                 "name": "Kiểm tra lỗi",
                 "isSurveyOnly": true,
                 "price": 0,
-                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí kiểm tra được miễn nếu đồng ý sửa.",
                 "duration": "30–60 phút",
                 "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
             },
@@ -526,7 +526,7 @@
                 "name": "Kiểm tra lỗi",
                 "isSurveyOnly": true,
                 "price": 0,
-                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí kiểm tra được miễn nếu đồng ý sửa.",
                 "duration": "30–60 phút",
                 "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
             },
@@ -634,7 +634,7 @@
                 "name": "Kiểm tra lỗi",
                 "isSurveyOnly": true,
                 "price": 0,
-                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí kiểm tra được miễn nếu đồng ý sửa.",
                 "duration": "30–60 phút",
                 "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
             },
@@ -742,7 +742,7 @@
                 "name": "Kiểm tra lỗi",
                 "isSurveyOnly": true,
                 "price": 0,
-                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán tình trạng công trình và tư vấn phương án cải tạo phù hợp. Phí khảo sát được miễn nếu ký hợp đồng sửa chữa.",
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán tình trạng công trình và tư vấn phương án cải tạo phù hợp. Phí kiểm tra được miễn nếu ký hợp đồng sửa chữa.",
                 "duration": "1–2 giờ",
                 "surveyFee": { "amount": 200000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
             },

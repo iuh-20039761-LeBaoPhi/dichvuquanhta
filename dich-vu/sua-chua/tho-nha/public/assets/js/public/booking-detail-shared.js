@@ -322,7 +322,7 @@ function _bdSendToSheet(pendingData, orderCode) {
         "Yêu cầu TG":     thoigianLabel,
         "Giá dịch vụ":    basePrice,
         "Phí di chuyển":  travelAmt,
-        "Phí khảo sát":   surveyAmt,
+        "Phí kiểm tra":   surveyAmt,
         "Tổng tiền":      basePrice + travelAmt,
         "Ghi chú":        pendingData.note            || '',
         "Ngày đặt":       created_at,
@@ -764,7 +764,7 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
             }
         }
 
-        // Phí khảo sát
+        // Phí kiểm tra
         if (costSurvey) {
             costSurvey.innerHTML = survey > 0 ? `<span style="font-weight:600;">${_bdFmt(survey)}</span>` : 'Miễn phí';
         }

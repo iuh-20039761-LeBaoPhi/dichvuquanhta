@@ -122,20 +122,20 @@
 
     function initScripts(pageId, wrapper) {
         if (pageId === 'don-hang') {
-            if (typeof window.initCustomerOrders === 'function') {
+            if (typeof window.ThoNhaOrderManager !== 'undefined') {
                 window.initCustomerOrders();
             } else {
                 const script = document.createElement('script');
-                script.src = '../public/assets/js/customer/order-management.js?v=' + Date.now();
+                script.src = '../public/assets/js/shared/order-manager.js?v=' + Date.now();
                 script.onload = () => { window.initCustomerOrders(); };
                 document.body.appendChild(script);
             }
         } else if (pageId === 'don-nhan') {
-            if (typeof window.initProviderOrders === 'function') {
+            if (typeof window.ThoNhaOrderManager !== 'undefined') {
                 window.initProviderOrders();
             } else {
                 const script = document.createElement('script');
-                script.src = '../public/assets/js/provider/order-management.js?v=' + Date.now();
+                script.src = '../public/assets/js/shared/order-manager.js?v=' + Date.now();
                 script.onload = () => { window.initProviderOrders(); };
                 document.body.appendChild(script);
             }
@@ -144,7 +144,7 @@
                 window.initCategoryManager();
             } else {
                 const script = document.createElement('script');
-                script.src = '../public/assets/js/provider/category-manager.js?v=' + Date.now();
+                script.src = '../public/assets/js/shared/category-manager.js?v=' + Date.now();
                 script.onload = () => { window.initCategoryManager(); };
                 document.body.appendChild(script);
             }

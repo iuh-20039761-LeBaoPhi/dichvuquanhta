@@ -322,7 +322,7 @@
                 : (tMax > 0 ? `<div class="sic-fee-row"><span><i class="fas fa-motorcycle me-1"></i>Phí di chuyển</span><span>${fmt(tMin)}đ</span></div>` : '');
             
             const surveyRow = survey > 0
-                ? `<div class="sic-fee-row sic-fee-survey"><span><i class="fas fa-clipboard-check me-1"></i>Phí khảo sát (bắt buộc)</span><span>${fmt(survey)}đ</span></div>` : '';
+                ? `<div class="sic-fee-row sic-fee-survey"><span><i class="fas fa-clipboard-check me-1"></i>Phí kiểm tra (bắt buộc)</span><span>${fmt(survey)}đ</span></div>` : '';
 
             const totalText = isPerKm ? `${fmt(basePrice)}đ <small>+ phí km</small>` : `${fmt(basePrice + tMin)}đ`;
 
