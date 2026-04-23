@@ -1827,10 +1827,19 @@ include 'layout-header.php';
 
 		function getUrlParams() {
 			const p = new URLSearchParams(window.location.search);
+			let mahd = p.get('mahd');
+			let sodienthoai = p.get('sodienthoai');
+			let password = p.get('password');
+
+			// Fallback to sessionStorage if not in URL
+			if (!mahd) mahd = sessionStorage.getItem('last_view_mahd');
+			if (!sodienthoai) sodienthoai = sessionStorage.getItem('last_view_sodienthoai');
+			if (!password) password = sessionStorage.getItem('last_view_password');
+
 			return {
-				mahd: p.get('mahd') || '',
-				sodienthoai: p.get('sodienthoai') || '',
-				password: p.get('password') || ''
+				mahd: mahd || '',
+				sodienthoai: sodienthoai || '',
+				password: password || ''
 			};
 		}
 

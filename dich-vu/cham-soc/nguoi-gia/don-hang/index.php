@@ -584,8 +584,8 @@ include 'layout-header.php';
                                             <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
                                             <td>
                                                 <div class="action-group">
-                                                    <a href="chi-tiet-hoa-don-nguoigia.php?mahd=<?= urlencode((string) $itemId) ?>&sodienthoai=<?= urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) ?>&password=<?= urlencode((string) ($_SESSION['user']['matkhau'] ?? '')) ?>"
-                                                        onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }"
+                                                    <a href="chi-tiet-hoa-don-nguoigia.php"
+                                                        onclick="sessionStorage.setItem('last_view_mahd', <?= htmlspecialchars(json_encode((string)$itemId)) ?>); sessionStorage.setItem('last_view_sodienthoai', <?= htmlspecialchars(json_encode((string)($_SESSION['user']['sodienthoai'] ?? ''))) ?>); sessionStorage.setItem('last_view_password', <?= htmlspecialchars(json_encode((string)($_SESSION['user']['matkhau'] ?? ''))) ?>); if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }"
                                                         class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
                                                 </div>
                                             </td>
@@ -610,10 +610,9 @@ include 'layout-header.php';
                                 $statusValue = trim((string) ($item['trangthai'] ?? ''));
                                 if ($statusValue === '') { $statusValue = 'đang chờ'; }
                                 $price = number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND';
-                                $detailUrl = "chi-tiet-hoa-don-nguoigia.php?mahd=" . urlencode((string) $itemId) . "&sodienthoai=" . urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) . "&password=" . urlencode((string) ($_SESSION['user']['matkhau'] ?? ''));
                                 ?>
-                                <a href="<?= $detailUrl ?>" class="invoice-card"
-                                    onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }">
+                                <a href="chi-tiet-hoa-don-nguoigia.php" class="invoice-card"
+                                    onclick="sessionStorage.setItem('last_view_mahd', <?= htmlspecialchars(json_encode((string)$itemId)) ?>); sessionStorage.setItem('last_view_sodienthoai', <?= htmlspecialchars(json_encode((string)($_SESSION['user']['sodienthoai'] ?? ''))) ?>); sessionStorage.setItem('last_view_password', <?= htmlspecialchars(json_encode((string)($_SESSION['user']['matkhau'] ?? ''))) ?>); if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="inv-id"><?= htmlspecialchars($displayItemId, ENT_QUOTES, 'UTF-8') ?></div>
                                         <div class="inv-date"><?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?></div>
