@@ -131,6 +131,18 @@
         form.sodienthoai.value = currentUser.sodienthoai || '';
         form.email.value = currentUser.email || '';
         form.diachi.value = currentUser.diachi || '';
+        
+        // Load Current Address
+        if (form.diachihientai) form.diachihientai.value = currentUser.diachihientai || '';
+        if (document.getElementById('lat_hientai')) {
+            const lat = currentUser.lat_hientai || '';
+            const lng = currentUser.lng_hientai || '';
+            document.getElementById('lat_hientai').value = lat;
+            document.getElementById('lng_hientai').value = lng;
+            if (document.getElementById('display_coords') && lat && lng) {
+                document.getElementById('display_coords').value = `${lat}, ${lng}`;
+            }
+        }
 
         // Show existing images
         const avatarLink = currentUser.link_avatar;
@@ -176,8 +188,13 @@
 
         // Fill coordinates
         if (currentUser.maplat && currentUser.maplng) {
-            document.getElementById('reg_lat').value = currentUser.maplat;
-            document.getElementById('reg_lng').value = currentUser.maplng;
+            const lat = currentUser.maplat;
+            const lng = currentUser.maplng;
+            document.getElementById('reg_lat').value = lat;
+            document.getElementById('reg_lng').value = lng;
+            if (document.getElementById('display_reg_coords')) {
+                document.getElementById('display_reg_coords').value = `${lat}, ${lng}`;
+            }
         }
 
         // Initialize Work Status Toggle
@@ -212,6 +229,64 @@
             }
         }
     }
+    
+    /**
+     * Lấy vị trí GPS hiện tại và Reverse Geocode thành địa chỉ (openstreetmap)
+     */
+    window.getCurrentLocation = function() {
+        const btn = document.querySelector('.btn-gps-live');
+        const addrInput = document.getElementById('diachihientai');
+        const latInput = document.getElementById('lat_hientai');
+        const lngInput = document.getElementById('lng_hientai');
+
+        if (!navigator.geolocation) {
+            return Swal.fire('Lỗi', 'Trình duyệt không hỗ trợ định vị.', 'error');
+        }
+
+        const oldText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xác vị...';
+
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            
+            latInput.value = lat;
+            lngInput.value = lng;
+            
+            // Cập nhật ô hiển thị gộp để copy 1 lần
+            if (document.getElementById('display_coords')) {
+                document.getElementById('display_coords').value = `${lat}, ${lng}`;
+            }
+
+            try {
+                // Reverse Geocode dùng Nominatim
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                const data = await res.json();
+                if (data && data.display_name) {
+                    addrInput.value = data.display_name;
+                    Swal.fire({
+                        title: 'Đã xác định vị trí',
+                        text: 'Địa chỉ hiện tại đã được cập nhật tự động.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            } catch (err) {
+                console.warn('Geocode error:', err);
+                Swal.fire('Thành công', 'Đã lấy được tọa độ, nhưng không thể dịch thành địa chỉ.', 'info');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = oldText;
+            }
+        }, (err) => {
+            console.error('GPS error:', err);
+            btn.disabled = false;
+            btn.innerHTML = oldText;
+            Swal.fire('Lỗi', 'Không thể lấy vị trí. Vui lòng kiểm tra quyền truy cập vị trí.', 'error');
+        }, { enableHighAccuracy: true });
+    };
 
     function renderServiceTab() {
         const container = document.getElementById('serviceGrid');
@@ -230,12 +305,49 @@
         }).join('');
     }
 
+    /**
+     * Sao chép tọa độ vào bộ nhớ tạm
+     */
+    window.handleCopyCoords = function(btn) {
+        const targetId = btn.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (!input || !input.value) return;
+
+        navigator.clipboard.writeText(input.value).then(() => {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check text-success"></i>';
+            
+            // Hiện Toast thông báo
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+            Toast.fire({
+                icon: 'success',
+                title: 'Đã sao chép tọa độ'
+            });
+
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+            }, 2000);
+        }).catch(err => {
+            console.error('Copy failed:', err);
+            Swal.fire('Lỗi', 'Không thể sao chép. Vui lòng chọn và copy thủ công.', 'error');
+        });
+    };
+
     // 4. LOGIC FUNCTIONS
     window._bdTravelFromCoords = function(lat, lng) {
         const latEl = document.getElementById('reg_lat');
         const lngEl = document.getElementById('reg_lng');
         if (latEl) latEl.value = lat;
         if (lngEl) lngEl.value = lng;
+        if (document.getElementById('display_reg_coords')) {
+            document.getElementById('display_reg_coords').value = `${lat}, ${lng}`;
+        }
     };
 
     window.toggleService = function (el) {
@@ -267,6 +379,15 @@
     }
 
     function setupEvents() {
+        // Gắn sự kiện copy (Event Delegation)
+        document.addEventListener('click', (e) => {
+            const copyBtn = e.target.closest('.btn-copy-coords');
+            if (copyBtn) {
+                e.preventDefault();
+                handleCopyCoords(copyBtn);
+            }
+        });
+
         // Toggle Hoạt động
         const toggle = document.getElementById('hoatdongToggle');
         if (toggle) {
@@ -383,7 +504,10 @@
                 email: e.target.email.value,
                 diachi: e.target.diachi.value,
                 maplat: document.getElementById('reg_lat').value || '',
-                maplng: document.getElementById('reg_lng').value || ''
+                maplng: document.getElementById('reg_lng').value || '',
+                diachihientai: e.target.diachihientai ? e.target.diachihientai.value : (currentUser.diachihientai || ''),
+                lat_hientai: document.getElementById('lat_hientai') ? document.getElementById('lat_hientai').value : (currentUser.lat_hientai || ''),
+                lng_hientai: document.getElementById('lng_hientai') ? document.getElementById('lng_hientai').value : (currentUser.lng_hientai || '')
             };
 
             // Image Upload Handling

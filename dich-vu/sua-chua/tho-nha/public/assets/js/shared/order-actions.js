@@ -107,7 +107,22 @@ const ThoNhaOrderActions = (() => {
                 } else if (action === 'submit-actual-price') {
                     const price = Number(document.getElementById('inputActualPriceModal').value);
                     if (!price || price <= 0) return _tnToast('Vui lòng nhập giá thực tế.', 'danger');
-                    const sub = Math.round(price * 0.05);
+
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    let subsidyPercent = 5; // Mặc định 5%
+                    try {
+                        const services = await window.DVQTKrud.listTable('dichvucungcap');
+                        const thoNhaSvc = services.find(s => String(s.id) === '9');
+                        if (thoNhaSvc && thoNhaSvc.tro_gia) {
+                            subsidyPercent = Number(thoNhaSvc.tro_gia);
+                        }
+                    } catch (e) {
+                        console.warn('[ThoNhaActions] Fetch subsidy failed, using fallback 5%');
+                    }
+
+                    const sub = Math.round(price * (subsidyPercent / 100));
                     payload = { chiphithucte: price, sotientrogia: sub, khachthanhtoan: price - sub };
                 } else if (action === 'cancel-order') {
                     const code = btn.dataset.code || id;

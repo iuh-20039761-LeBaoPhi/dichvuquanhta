@@ -127,16 +127,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('btnSaveService').addEventListener('click', async () => {
         const id = document.getElementById('serviceId').value;
         const dichvu = document.getElementById('serviceName').value.trim();
+        const tro_gia = document.getElementById('serviceSubsidy').value.trim();
+        const hoa_hong = document.getElementById('serviceCommission').value.trim();
         const mota = document.getElementById('serviceDesc').value.trim();
 
         if (!dichvu) return alert('Vui lòng nhập tên dịch vụ');
 
         try {
             if (id) {
-                await DVQTKrud.updateRow('dichvucungcap', id, { dichvu, mota });
+                await DVQTKrud.updateRow('dichvucungcap', id, { dichvu, mota, tro_gia, hoa_hong });
                 alert('Cập nhật thành công!');
             } else {
-                await DVQTKrud.insertRow('dichvucungcap', { dichvu, mota });
+                await DVQTKrud.insertRow('dichvucungcap', { dichvu, mota, tro_gia, hoa_hong });
                 alert('Thêm mới thành công!');
             }
             modalSvc.hide();
@@ -154,6 +156,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (editBtn) {
             document.getElementById('serviceId').value = editBtn.dataset.id;
             document.getElementById('serviceName').value = editBtn.dataset.name;
+            document.getElementById('serviceSubsidy').value = editBtn.dataset.subsidy || '';
+            document.getElementById('serviceCommission').value = editBtn.dataset.commission || '';
             document.getElementById('serviceDesc').value = editBtn.dataset.desc;
             document.getElementById('modalServiceTitle').textContent = 'Sửa thông tin dịch vụ';
             modalSvc.show();
@@ -228,9 +232,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 <tr>
                     <td class="fw-bold">#${item.id}</td>
                     <td class="fw-bold text-primary">${item.dichvu || 'N/A'}</td>
-                    <td>${item.mota || 'Chưa có mô tả'}</td>
+                    <td><div class="text-truncate" style="max-width: 250px;">${item.mota || 'Chưa có mô tả'}</div></td>
+                    <td><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">${item.tro_gia || 0}%</span></td>
+                    <td><span class="badge bg-indigo-subtle text-indigo border border-indigo-subtle px-2 py-1">${item.hoa_hong || 0}%</span></td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-primary handle-edit-service" data-id="${item.id}" data-name="${item.dichvu || ''}" data-desc="${item.mota || ''}" title="Sửa"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-primary handle-edit-service" data-id="${item.id}" data-name="${item.dichvu || ''}" data-subsidy="${item.tro_gia || ''}" data-commission="${item.hoa_hong || ''}" data-desc="${item.mota || ''}" title="Sửa"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-sm btn-outline-danger handle-delete-service" data-id="${item.id}" title="Xóa"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
@@ -242,12 +248,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                 svcMobile.innerHTML = data.map(item => `
                     <div class="mobile-data-card">
                         <div class="card-top">
-                            <span class="card-id">#${item.id}</span>
-                            <span class="card-name">${item.dichvu || 'N/A'}</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="card-id">#${item.id}</span>
+                                <span class="card-name text-primary fw-bold">${item.dichvu || 'N/A'}</span>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <span class="badge bg-success">${item.tro_gia || 0}%</span>
+                                <span class="badge bg-primary">${item.hoa_hong || 0}%</span>
+                            </div>
                         </div>
                         <div class="card-desc">${item.mota || 'Chưa có mô tả'}</div>
                         <div class="card-actions">
-                            <button class="btn btn-sm btn-outline-primary handle-edit-service" data-id="${item.id}" data-name="${item.dichvu || ''}" data-desc="${item.mota || ''}"><i class="fas fa-edit me-1"></i>Sửa</button>
+                            <button class="btn btn-sm btn-outline-primary handle-edit-service" data-id="${item.id}" data-name="${item.dichvu || ''}" data-subsidy="${item.tro_gia || ''}" data-commission="${item.hoa_hong || ''}" data-desc="${item.mota || ''}"><i class="fas fa-edit me-1"></i>Sửa</button>
                             <button class="btn btn-sm btn-outline-danger handle-delete-service" data-id="${item.id}"><i class="fas fa-trash me-1"></i>Xóa</button>
                         </div>
                     </div>
