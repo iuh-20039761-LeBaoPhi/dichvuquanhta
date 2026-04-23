@@ -412,7 +412,11 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
                     data-page="index.php">
                     <i class="bi bi-receipt"></i> <span>Danh sách đơn hàng</span>
                 </a>
-
+                <?php if ((int)(($_SESSION['user']['id_dichvu'] ?? 0)) === 1): ?>
+                <a href="don-hang-cua-toi.php" class="list-group-item <?php echo $current_page == 'don-hang-cua-toi.php' ? 'active' : ''; ?>" data-page="don-hang-cua-toi.php">
+                    <i class="bi bi-receipt"></i> <span>Đơn hàng của tôi</span>
+                </a>
+                <?php endif; ?>
                 <a href="../logout.php" class="list-group-item text-warning">
                     <i class="bi bi-box-arrow-right"></i> <span>Đăng xuất</span>
                 </a>
