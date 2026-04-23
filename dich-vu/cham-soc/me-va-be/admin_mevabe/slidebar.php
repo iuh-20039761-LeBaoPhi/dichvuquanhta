@@ -369,6 +369,9 @@ if (!function_exists('admin_render_layout_start')) {
                             <a href="quan-ly-dich-vu.php"
                                 class="<?= admin_h(admin_menu_link_class($activeKey, 'services')) ?>"><i
                                     class="bi bi-grid"></i>Quan ly dich vu</a>
+                            <a href="quan-ly-phu-thu.php"
+                                class="<?= admin_h(admin_menu_link_class($activeKey, 'phu_thu')) ?>"><i
+                                    class="bi bi-percent"></i>Phu thu dac biet</a>
                             <a href="logout.php"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 border-0 rounded-3 mt-2 px-3 py-2 fw-semibold"><i
                                     class="bi bi-box-arrow-right"></i>Dang xuat</a>

@@ -896,7 +896,7 @@
                       <span id="calcDetailText" class="text-muted" style="font-size: 11px"></span>
                     </div>
                     <div id="nightRow" class="d-none justify-content-between small mb-1 text-danger">
-                      <span>Phụ thu ca đêm (+20%)</span>
+                      <span id="phuThuLabel">Phụ thu (+0%)</span>
                       <span id="nightFee" class="fw-bold">0 đ</span>
                     </div>
                     <div id="holidayRow" class="d-none justify-content-between small mb-1 text-danger">
@@ -1605,14 +1605,64 @@
           $('#autoEndDateRow').addClass('d-none');
         }
 
-        var HOLIDAYS = ['01-01', '30-04', '01-05', '02-09'];
+        var PHU_THU_RULES = [];
+
+        // Chuyển chuỗi 'HH:MM' thành số phút từ 0h.
+        function timeToMin(t) {
+          if (!t) return null;
+          var p = t.split(':');
+          return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+        }
+
+        // Tính tổng phụ thu (%) và nhãn cho ngày+giờ hiện tại dựa trên PHU_THU_RULES.
+        function calcPhuThu(dateStr, startTimeStr) {
+          var result = { percent: 0, labels: [] };
+          if (!PHU_THU_RULES.length) return result;
+
+          var d = dateStr ? new Date(dateStr) : null;
+          var ngay = d ? d.getDate() : null;
+          var thang = d ? d.getMonth() + 1 : null;
+          var nam = d ? d.getFullYear() : null;
+          var sMin = timeToMin(startTimeStr);
+
+          PHU_THU_RULES.forEach(function (r) {
+            var loai = (r.loai || '').trim();
+            var pct = parseFloat(r.phu_thu_percent) || 0;
+            var ten = (r.ten || '').trim();
+            if (!pct) return;
+
+            if (loai === 'le') {
+              var rNgay = r.ngay != null && r.ngay !== '' ? parseInt(r.ngay, 10) : null;
+              var rThang = r.thang != null && r.thang !== '' ? parseInt(r.thang, 10) : null;
+              var rNam = r.nam != null && r.nam !== '' ? parseInt(r.nam, 10) : null;
+              if (rNgay === null || rThang === null) return;
+              if (ngay !== rNgay || thang !== rThang) return;
+              if (rNam !== null && nam !== rNam) return;
+              result.percent += pct;
+              result.labels.push(ten);
+            } else if (loai === 'dem' || loai === 'cao_diem') {
+              if (sMin === null) return;
+              var bdMin = timeToMin(r.gio_bat_dau);
+              var ktMin = timeToMin(r.gio_ket_thuc);
+              if (bdMin === null || ktMin === null) return;
+              var inShift;
+              if (ktMin < bdMin) {
+                inShift = sMin >= bdMin || sMin < ktMin;
+              } else {
+                inShift = sMin >= bdMin && sMin < ktMin;
+              }
+              if (!inShift) return;
+              result.percent += pct;
+              result.labels.push(ten);
+            }
+          });
+          return result;
+        }
 
         // Chuc nang: xu ly nghiep vu cho isHoliday.
         function isHoliday(dateStr) {
-          if (!dateStr) return false;
-          var d = new Date(dateStr);
-          var key = String(d.getDate()).padStart(2, '0') + '-' + String(d.getMonth() + 1).padStart(2, '0');
-          return HOLIDAYS.indexOf(key) !== -1;
+          var pt = calcPhuThu(dateStr, null);
+          return pt.labels.some(l => l.toLowerCase().includes('lễ') || l.toLowerCase().includes('tết'));
         }
 
         // Chuc nang: xu ly nghiep vu cho isWeekend.
@@ -1844,14 +1894,11 @@
         // Chuc nang: xu ly nghiep vu cho updateTotalPrice.
         function updateTotalPrice() {
           if (!CURRENT_SERVICE) return;
-
           if (!validateTimeForShift()) return;
 
           var baseCalc = calculateBasePriceByServiceType();
-          var selectedJobCount = $('.job-check:checked').length;
-          var totalJobs = (CURRENT_SERVICE.includes || []).length;
 
-          if (!baseCalc.valid || selectedJobCount === 0 || totalJobs === 0) {
+          if (!baseCalc.valid) {
             $('#totalPrice').val('0 đ');
             $('#basePrice').text('0 đ');
             $('#calcDetailRow').addClass('d-none');
@@ -1862,55 +1909,37 @@
             return;
           }
 
-          var jobRatio = selectedJobCount / totalJobs;
-          var adjustedBase = Number(baseCalc.basePrice || 0) * jobRatio;
-
-          var peakFactor = isPeakTime() ? 1.2 : 1;
-          var dayFactorData = getDayFactor($('#startDate').val());
-          var dayFactor = dayFactorData.factor;
+          var adjustedBase = Number(baseCalc.basePrice || 0); // Bỏ jobRatio
           var totalDays = Math.max(getDays(), 1);
+          var baseTotal = adjustedBase * totalDays;
+
+          // Tính phụ thu động
+          var pt = calcPhuThu($('#startDate').val(), $('#startTime').val());
+          var phuThuFee = pt.percent > 0 ? baseTotal * (pt.percent / 100) : 0;
+
           var km = Number(DISTANCE_KM || 0);
           var travelFee = km * 5000;
+          var finalPrice = baseTotal + phuThuFee + travelFee;
 
-          var dailyServicePrice = adjustedBase * peakFactor * dayFactor;
-          var finalPrice = dailyServicePrice * totalDays + travelFee;
-
-          $('#basePrice').text(formatMoney(adjustedBase * totalDays));
+          $('#basePrice').text(formatMoney(baseTotal));
 
           $('#calcDetailText').text(
             baseCalc.calcText +
-            '; chọn ' +
-            selectedJobCount +
-            '/' +
-            totalJobs +
-            ' công việc' +
-            '; quãng đường ' +
-            km.toFixed(2) +
-            'km' +
-            '; số ngày ' +
-            totalDays +
-            '; hệ số giờ ' +
-            peakFactor +
-            '; hệ số ngày ' +
-            dayFactor
+            '; số ngày ' + totalDays +
+            '; quãng đường ' + km.toFixed(2) + 'km'
           );
           $('#calcDetailRow').removeClass('d-none');
 
-          if (peakFactor > 1) {
+          // Hiển thị phụ thu
+          if (phuThuFee > 0) {
             $('#nightRow').removeClass('d-none').css('display', 'flex');
-            $('#nightRow span:first').text('Phụ thu giờ cao điểm (+20%)');
-            $('#nightFee').text(formatMoney(adjustedBase * (peakFactor - 1) * dayFactor * totalDays));
+            var labelText = (pt.labels.length ? pt.labels.join(', ') : 'Phụ thu') + ' (+' + pt.percent + '%)';
+            $('#phuThuLabel').text(labelText);
+            $('#nightFee').text(formatMoney(phuThuFee));
           } else {
             $('#nightRow').addClass('d-none');
           }
-
-          if (dayFactor > 1) {
-            $('#holidayRow').removeClass('d-none').css('display', 'flex');
-            $('#holidayRow span:first').text(dayFactorData.label || 'Phụ thu ngày');
-            $('#holidayFee').text(formatMoney(adjustedBase * peakFactor * (dayFactor - 1) * totalDays));
-          } else {
-            $('#holidayRow').addClass('d-none');
-          }
+          $('#holidayRow').addClass('d-none'); // Gộp chung vào nightRow (phụ thu)
 
           $('#travelFee').text(formatMoney(travelFee));
           $('#totalPrice').val(formatMoney(finalPrice));
@@ -1923,8 +1952,8 @@
             packageValue: baseCalc.packageValue || '',
             totalHours: Number(baseCalc.estimatedHours || getHours() || 0),
             staff: Number(baseCalc.estimatedStaff || 0),
-            dayFactor: dayFactor,
-            peakFactor: peakFactor,
+            phuThuPercent: pt.percent,
+            phuThuLabels: pt.labels,
             travelFee: travelFee,
             distanceKm: km,
             totalDays: totalDays
@@ -2618,6 +2647,21 @@
           }
         }
 
+        // Load quy tắc phụ thu từ bảng phu_thu_dac_biet
+        try {
+          var ptRes = await fetchRows('phu_thu_dac_biet');
+          PHU_THU_RULES = normalizeRows(ptRes);
+        } catch (e) {
+          console.warn('Không load được phu_thu_dac_biet, dùng fallback mặc định:', e);
+          PHU_THU_RULES = [
+            { loai: 'le', ten: 'Ngày Tết', ngay: 1, thang: 1, nam: null, phu_thu_percent: 30 },
+            { loai: 'le', ten: '30/4', ngay: 30, thang: 4, nam: null, phu_thu_percent: 30 },
+            { loai: 'le', ten: '1/5', ngay: 1, thang: 5, nam: null, phu_thu_percent: 30 },
+            { loai: 'le', ten: '2/9', ngay: 2, thang: 9, nam: null, phu_thu_percent: 30 },
+            { loai: 'dem', ten: 'Ca đêm', gio_bat_dau: '18:00', gio_ket_thuc: '06:00', phu_thu_percent: 20 }
+          ];
+        }
+
         await loadServices();
 
         var today = new Date().toISOString().split('T')[0];
@@ -2765,15 +2809,10 @@
           e.preventDefault();
           if (!validateTimeForShift()) return;
 
-          var selectedJobCount = $('.job-check:checked').length;
           var baseCalc = calculateBasePriceByServiceType();
 
           if (!baseCalc.valid) {
             alert(baseCalc.message || 'Vui lòng nhập đủ thông tin để tính giá.');
-            return;
-          }
-          if (selectedJobCount === 0) {
-            alert('Vui lòng chọn ít nhất 1 công việc cần làm.');
             return;
           }
           if (!$('#startDate').val()) {

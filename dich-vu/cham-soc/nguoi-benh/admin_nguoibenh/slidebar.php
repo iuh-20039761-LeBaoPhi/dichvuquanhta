@@ -231,51 +231,83 @@ if (!function_exists('admin_render_layout_start')) {
                     background-color: #2563eb;
                     border-color: #2563eb;
                 }
-                .btn-success:hover, .btn-success:focus, .btn-success:active {
+
+                .btn-success:hover,
+                .btn-success:focus,
+                .btn-success:active {
                     background-color: #1e40af !important;
                     border-color: #1e40af !important;
                 }
-                .text-success { color: #2563eb !important; }
-                .bg-success { background-color: #3b82f6 !important; }
+
+                .text-success {
+                    color: #2563eb !important;
+                }
+
+                .bg-success {
+                    background-color: #3b82f6 !important;
+                }
+
                 .btn-outline-success {
                     color: #2563eb;
                     border-color: #2563eb;
                 }
+
                 .btn-outline-success:hover {
                     background-color: #2563eb;
                     color: #fff;
                 }
-                
+
                 .btn-primary {
                     background-color: #1e40af;
                     border-color: #1e40af;
                 }
+
                 .btn-primary:hover {
                     background-color: #1e3a8a;
                     border-color: #1e3a8a;
                 }
-                .text-primary { color: #1e40af !important; }
+
+                .text-primary {
+                    color: #1e40af !important;
+                }
+
                 .btn-outline-primary {
                     color: #1e40af;
                     border-color: #1e40af;
                 }
+
                 .btn-outline-primary:hover {
                     background-color: #1e40af;
                     color: #fff;
                 }
 
-                .badge.bg-success { background-color: #60a5fa !important; }
-                .badge.bg-primary { background-color: #1e40af !important; }
-                .badge.bg-info { background-color: #3b82f6 !important; }
-                
+                .badge.bg-success {
+                    background-color: #60a5fa !important;
+                }
+
+                .badge.bg-primary {
+                    background-color: #1e40af !important;
+                }
+
+                .badge.bg-info {
+                    background-color: #3b82f6 !important;
+                }
+
                 .pagination .page-item.active .page-link {
                     background-color: #1e40af;
                     border-color: #1e40af;
                 }
-                .page-link { color: #1e40af; }
-                .page-link:hover { color: #1e3a8a; }
 
-                .form-control:focus, .form-select:focus {
+                .page-link {
+                    color: #1e40af;
+                }
+
+                .page-link:hover {
+                    color: #1e3a8a;
+                }
+
+                .form-control:focus,
+                .form-select:focus {
                     border-color: #60a5fa;
                     box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
                 }
@@ -369,6 +401,9 @@ if (!function_exists('admin_render_layout_start')) {
                             <a href="quan-ly-dich-vu.php"
                                 class="<?= admin_h(admin_menu_link_class($activeKey, 'services')) ?>"><i
                                     class="bi bi-grid"></i>Quản lý dịch vụ</a>
+                            <a href="quan-ly-phu-thu.php"
+                                class="<?= admin_h(admin_menu_link_class($activeKey, 'phu_thu')) ?>"><i
+                                    class="bi bi-percent"></i>Phu thu dac biet</a>
                             <a href="logout.php"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 border-0 rounded-3 mt-2 px-3 py-2 fw-semibold"><i
                                     class="bi bi-box-arrow-right"></i>Đăng xuất</a>

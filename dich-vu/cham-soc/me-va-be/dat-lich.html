@@ -900,7 +900,7 @@
                     <span id="calcDetailText" class="text-muted" style="font-size: 11px"></span>
                   </div>
                   <div id="nightRow" class="d-none justify-content-between small mb-1 text-danger">
-                    <span>Phụ thu ca đêm (+20%)</span>
+                    <span id="phuThuLabel">Phụ thu</span>
                     <span id="nightFee" class="fw-bold">0 đ</span>
                   </div>
                   <div id="holidayRow" class="d-none justify-content-between small mb-1 text-danger">
@@ -1257,7 +1257,7 @@
       var OFFICE_COORDS = { lat: 10.853880, lng: 106.629830 };
       var DISTANCE_KM = 0;
       var DISTANCE_REQUEST_ID = 0;
-      var HOLIDAYS = ['01-01', '30-04', '01-05', '02-09'];
+      var PHU_THU_RULES = []; // load từ phu_thu_dac_biet
 
       // Hiển thị mô tả quãng đường/phí di chuyển.
       function renderDistanceInfo(message, isError) {
@@ -1447,20 +1447,61 @@
         return diff > 0 ? diff : 0;
       }
 
-      // Kiểm tra ngày lễ để phụ thu.
-      function isHoliday(dateStr) {
-        if (!dateStr) return false;
-        var d = new Date(dateStr);
-        var key = String(d.getDate()).padStart(2, '0') + '-' + String(d.getMonth() + 1).padStart(2, '0');
-        return HOLIDAYS.indexOf(key) !== -1;
+      // Chuyển chuỗi 'HH:MM' thành số phút từ 0h.
+      function timeToMin(t) {
+        if (!t) return null;
+        var p = t.split(':');
+        return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
       }
 
-      // Xác định có phụ thu ca đêm hay không.
-      function isNightShift() {
-        var start = $('#startTime').val();
-        if (!start) return false;
-        var h = parseInt(start.split(':')[0], 10);
-        return h >= 18 || h < 6;
+      // Tính tổng phụ thu (%) và nhãn cho ngày+giờ hiện tại dựa trên PHU_THU_RULES.
+      // Trả về { percent: number, labels: string[] }
+      function calcPhuThu(dateStr, startTimeStr) {
+        var result = { percent: 0, labels: [] };
+        if (!PHU_THU_RULES.length) return result;
+
+        var d = dateStr ? new Date(dateStr) : null;
+        var ngay = d ? d.getDate() : null;
+        var thang = d ? d.getMonth() + 1 : null;
+        var nam = d ? d.getFullYear() : null;
+        var sMin = timeToMin(startTimeStr);
+
+        PHU_THU_RULES.forEach(function (r) {
+          var loai = (r.loai || '').trim();
+          var pct = parseFloat(r.phu_thu_percent) || 0;
+          var ten = (r.ten || '').trim();
+          if (!pct) return;
+
+          if (loai === 'le') {
+            // Phải có ngày và tháng khớp; năm NULL = mọi năm
+            var rNgay = r.ngay != null && r.ngay !== '' ? parseInt(r.ngay, 10) : null;
+            var rThang = r.thang != null && r.thang !== '' ? parseInt(r.thang, 10) : null;
+            var rNam = r.nam != null && r.nam !== '' ? parseInt(r.nam, 10) : null;
+            if (rNgay === null || rThang === null) return; // thiếu ngày/tháng → bỏ qua
+            if (ngay !== rNgay || thang !== rThang) return;
+            if (rNam !== null && nam !== rNam) return;
+            result.percent += pct;
+            result.labels.push(ten);
+
+          } else if (loai === 'dem') {
+            if (sMin === null) return;
+            var bdMin = timeToMin(r.gio_bat_dau);
+            var ktMin = timeToMin(r.gio_ket_thuc);
+            if (bdMin === null || ktMin === null) return;
+            // Xét khung giờ qua đêm: nếu ktMin < bdMin thì ca vắt qua nửa đêm
+            var inShift;
+            if (ktMin < bdMin) {
+              inShift = sMin >= bdMin || sMin < ktMin; // từ bdMin đến hết ngày HOÀC từ 0h đến ktMin
+            } else {
+              inShift = sMin >= bdMin && sMin < ktMin;
+            }
+            if (!inShift) return;
+            result.percent += pct;
+            result.labels.push(ten);
+          }
+        });
+
+        return result;
       }
 
       // Reset trạng thái form liên quan đến tính tiền.
@@ -1487,9 +1528,8 @@
         var days = getDays();
         var hours = getHours();
         var selectedPackage = $('.package-check:checked');
-        var selectedJobCount = $('.job-check:checked').length;
 
-        if (!selectedPackage.length || selectedJobCount === 0 || hours === 0 || days === 0) {
+        if (!selectedPackage.length || hours === 0 || days === 0) {
           $('#totalPrice').val('0 đ');
           $('#basePrice').text('0 đ');
           $('#travelFee').text('0 đ');
@@ -1499,28 +1539,30 @@
 
         var price = Number(selectedPackage.val());
         var baseHours = Number(selectedPackage.data('hours'));
-        var totalJobs = CURRENT_SERVICE.includes.length;
-        var jobPrice = (price / baseHours) / totalJobs;
-        var baseTotal = jobPrice * selectedJobCount * hours * days;
+        var hourlyRate = price / baseHours;
+        var baseTotal = hourlyRate * hours * days;
 
         $('#basePrice').text(formatMoney(baseTotal));
         $('#calcDetailText').text(
-          formatMoney(price) + '/' + baseHours + 'h ÷ ' + totalJobs + 'cv = ' +
-          formatMoney(Math.round(jobPrice)) + '/cv/h × ' + selectedJobCount + 'cv × ' +
+          formatMoney(price) + '/' + baseHours + 'h = ' +
+          formatMoney(Math.round(hourlyRate)) + '/h × ' +
           hours.toFixed(1) + 'h × ' + days + ' ngày; quãng đường ' + Number(DISTANCE_KM || 0).toFixed(2) + 'km'
         );
         $('#calcDetailRow').removeClass('d-none');
 
-        var nightFee = isNightShift() ? baseTotal * 0.2 : 0;
-        var holidayFee = isHoliday($('#startDate').val()) ? baseTotal * 0.3 : 0;
-        $('#nightRow').toggleClass('d-none', !nightFee);
-        $('#holidayRow').toggleClass('d-none', !holidayFee);
-        if (nightFee) $('#nightFee').text(formatMoney(nightFee));
-        if (holidayFee) $('#holidayFee').text(formatMoney(holidayFee));
+        var pt = calcPhuThu($('#startDate').val(), $('#startTime').val());
+        var phuThuFee = pt.percent > 0 ? baseTotal * (pt.percent / 100) : 0;
+        $('#nightRow').toggleClass('d-none', !phuThuFee);
+        if (phuThuFee) {
+          $('#nightFee').text(formatMoney(phuThuFee));
+          var labelText = (pt.labels.length ? pt.labels.join(', ') : 'Phụ thu') + ' (+' + pt.percent + '%)';
+          $('#phuThuLabel').text(labelText);
+        }
+        $('#holidayRow').addClass('d-none');
 
         var travelFee = Number(DISTANCE_KM || 0) * 5000;
         $('#travelFee').text(formatMoney(travelFee));
-        $('#totalPrice').val(formatMoney(baseTotal + nightFee + holidayFee + travelFee));
+        $('#totalPrice').val(formatMoney(baseTotal + phuThuFee + travelFee));
       }
 
       // Gán text an toàn cho ô review, rỗng thì hiển thị dấu '-'.
@@ -1913,6 +1955,22 @@
         renderService(defaultService || SERVICES[0]);
       }
 
+      // Load quy tắc phụ thu từ bảng phu_thu_dac_biet (không chặn luồng chính)
+      try {
+        var ptRes = await fetchRows('phu_thu_dac_biet');
+        PHU_THU_RULES = normalizeRows(ptRes);
+      } catch (e) {
+        console.warn('Không load được phu_thu_dac_biet, dùng fallback mặc định:', e);
+        // Fallback: ngày lễ cố định + ca đêm mặc định
+        PHU_THU_RULES = [
+          // { loai: 'le', ten: 'Ngày Tết', ngay: 1, thang: 1, nam: null, phu_thu_percent: 30 },
+          // { loai: 'le', ten: '30/4', ngay: 30, thang: 4, nam: null, phu_thu_percent: 30 },
+          // { loai: 'le', ten: '1/5', ngay: 1, thang: 5, nam: null, phu_thu_percent: 30 },
+          // { loai: 'le', ten: '2/9', ngay: 2, thang: 9, nam: null, phu_thu_percent: 30 },
+          // { loai: 'dem', ten: 'Ca đêm', gio_bat_dau: '18:00', gio_ket_thuc: '06:00', phu_thu_percent: 20 }
+        ];
+      }
+
       try {
         await initServices();
       } catch (e) {
@@ -1987,8 +2045,8 @@
         var days = formData.totalDays;
         var hours = formData.totalHours;
 
-        if (!selectedPackage.length || selectedJobCount === 0 || hours === 0 || days === 0) {
-          alert('Vui lòng chọn đầy đủ gói dịch vụ, công việc, ngày và giờ hợp lệ trước khi tiếp tục.');
+        if (!selectedPackage.length || hours === 0 || days === 0) {
+          alert('Vui lòng chọn đầy đủ gói dịch vụ, ngày và giờ hợp lệ trước khi tiếp tục.');
           return;
         }
 
