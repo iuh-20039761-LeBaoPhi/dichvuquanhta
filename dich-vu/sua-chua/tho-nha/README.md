@@ -1,154 +1,108 @@
-# Thợ Nhà
+# Thợ Nhà — Hệ sinh thái dịch vụ sửa chữa 24/7
 
 Nền tảng trung gian dịch vụ sửa chữa nhà tích hợp trong hệ sinh thái **Dịch Vụ Quanh Ta**. Project cho phép khách hàng đặt lịch online, nhà cung cấp (thợ) nhận đơn và Admin quản lý toàn bộ hệ thống thông qua giao diện SPA hiện đại.
 
 ---
 
-## Mục lục
+## 📌 Mục lục
 
 - [Cài đặt](#cài-đặt)
-- [Hệ thống Tài khoản & SSO](#hệ-thống-tài-khoản--sso)
-- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+- [Hệ thống Tài khoản & Dashboard](#hệ-thống-tài-khoản--dashboard)
+- [Cấu trúc thư mục (Flattened)](#cấu-trúc-thư-mục-flattened)
 - [Cơ sở dữ liệu (Database)](#cơ-sở-dữ-liệu-database)
 - [Luồng hoạt động chính](#luồng-hoạt-động-chính)
-  - [1. Đặt lịch (Public Flow)](#1-đặt-lịch-public-flow)
-  - [2. Quản trị (Admin SPA)](#2-quản-tri-admin-spa)
-  - [3. Nhà cung cấp (Provider Flow)](#3-nhà-cung-cấp-provider-flow)
-- [Kiến trúc Kỹ thuật & Tích hợp](#kiến-trúc-kỹ-thuật--tích-hợp)
-- [Xử lý lỗi & Bảo trì](#xử-lý-lỗi--bảo-trì)
+- [Kiến trúc Kỹ thuật](#kiến-trúc-kỹ-thuật)
 
 ---
 
-## Cài đặt
+## 🚀 Cài đặt
 
 ```text
 1. Vị trí Project:
-   Đặt toàn bộ codebase vào thư mục: 
    C:\xampp\htdocs\dichvuquanhta\dich-vu\sua-chua\tho-nha\
 
-2. Cấu hình Database:
-   - Sử dụng database chung `dichvuquanhta` (hoặc `thonha` tùy cấu hình local).
-   - Đảm bảo các bảng `datlich_thonha`, `nguoidung`, `danhmuc_thonha` đã được khởi tạo.
-
-3. File .env:
-   Chỉnh sửa file .env tại thư mục gốc của project (tho-nha/.env) để kết nối DB cục bộ nếu cần.
-
-4. URL truy cập local:
-   Trang chủ: http://localhost/dichvuquanhta/dich-vu/sua-chua/tho-nha/index.html
+2. Cổng vào chính:
+   Trang chủ: .../tho-nha/index.html
+   Dashboard: .../tho-nha/nguoidung/trang-ca-nhan.html
 ```
 
 ---
 
-## Hệ thống Tài khoản & SSO
+## 🔐 Hệ thống Tài khoản & Dashboard
 
-Project sử dụng hệ thống xác thực tập trung (Central SSO) của platform **Dịch Vụ Quanh Ta**.
+Hệ thống đã được hợp nhất vai trò Khách hàng và Đối tác (Thợ) vào một cổng quản lý duy nhất.
 
-| Vai trò | URL đăng nhập / quản lý | Ghi chú |
+| Vai trò | URL Quản lý | Đặc điểm |
 | :--- | :--- | :--- |
-| **Admin** | `/public/admin-login.html` | Đăng nhập tập trung cho toàn platform. |
-| **Khách hàng** | `/public/dang-nhap.html` | Tự động tạo tài khoản khi đặt lịch nhanh. |
-| **Nhà cung cấp** | `tho-nha/pages/provider/trang-ca-nhan.html` | Quản lý profile và danh sách đơn được giao. |
+| **User (KH/NCC)** | `.../tho-nha/nguoidung/trang-ca-nhan.html` | Dashboard dùng chung. NCC (id_dichvu=9) sẽ thấy thêm mục "Đơn nhận làm". |
+| **Admin** | `.../tho-nha/admin_thonha/quan-tri.html` | Quản trị toàn hệ thống, gán đơn, quản lý NCC. |
 
 ---
 
-## Cấu trúc thư mục
+## 📂 Cấu trúc thư mục (Flattened)
 
-Hệ thống được tổ chức theo mô hình Modular JS + SPA, tách biệt Content (HTML) và Logic (JS Shared).
+Hệ thống được tổ chức theo mô hình Modular JS + SPA, tách biệt rõ ràng Content (HTML) và Logic (JS).
 
 ```text
 tho-nha/
-├── index.html                    # Trang chủ (cổng vào chính)
-├── chi-tiet-don-hang.html        # Trang xem chi tiết đơn (cho Khách/Thợ/Admin)
-├── .htaccess                     # Cấu hình chặn truy cập file nhạy cảm
+├── index.html                    # Trang chủ chính
+├── dich-vu.html                  # Danh sách dịch vụ public
+├── dat-lich.html                 # Trang đặt lịch (chế độ standalone)
+├── chi-tiet-don-hang.html        # Trang độc lập xem chi tiết đơn hàng
 │
-├── assets/
-│   ├── css/                      # style.css (Public), admin-style.css (Dashboard)
-│   ├── images/                   # Banner, Logo, ảnh dịch vụ
-│   └── js/
-│       ├── public/               # Logic đặt lịch: booking-detail-shared.js, order-tracking.js
-│       ├── admin/                # shell.js (Router SPA Admin), pages/ (Logic từng tab)
-│       ├── shared/               # Module dùng chung: auth-nav.js, order-service.js, order-view-utils.js
-│       └── customer/             # Logic dành riêng cho khách hàng
+├── nguoidung/                    # Dashboard hợp nhất cho KH và NCC
+│   ├── trang-ca-nhan.html        # Shell SPA (Hồ sơ, Đơn hàng, Việc làm)
+│   ├── aside.html                # Sidebar phân quyền tự động
+│   └── don-hang.html, don-nhan.html... # Các tab nội dung SPA
 │
-├── pages/
-│   ├── public/                   # dich-vu.html, chi-tiet-dich-vu.html, cam-nang.html
-│   ├── admin/                    # quan-tri.html, tong-quan.html, don-hang.html (Template SPA)
-│   ├── provider/                 # trang-ca-nhan.html
-│   └── customer/                 # Trang dành cho khách hàng đã đăng nhập
+├── admin_thonha/                 # Trang quản trị dành riêng cho Thợ Nhà
+│   ├── quan-tri.html             # Shell SPA Admin
+│   └── tong-quan.html, dich-vu.html... # Các tab quản trị
 │
-├── partials/
-│   ├── dau-trang.html            # Header dùng chung (navbar + auth state)
-│   ├── chan-trang.html           # Footer dùng chung
-│   └── dat-lich-chi-tiet.html    # Template Modal đặt lịch (lazy-load)
+├── public/
+│   └── assets/
+│       ├── css/                  # order-panel.css, user-panel.css
+│       └── js/
+│           ├── user/             # shell.js (Router cho trang cá nhân)
+│           ├── shared/           # Logic lõi: order-manager.js (NEW), order-service.js
+│           └── public/           # booking-detail-shared.js, map-picker.js
 │
-└── data/                         # services.json (Fallback pricing), blog-data.json
+└── data/                         # services.json (Cấu hình dịch vụ & phí kiểm tra)
 ```
 
 ---
 
-## Cơ sở dữ liệu (Database)
+## 🗄️ Cơ sở dữ liệu (Database)
 
-Sử dụng hệ thống **KRUD API** (Google Apps Script hoặc PHP Wrapper) để giao tiếp với các bảng:
+Sử dụng **DVQTKrud API** để giao tiếp với các bảng chính:
 
-### 1. `datlich_thonha` (Đơn hàng)
-- `madon`: Mã đơn hàng (TN-YYYYMMDD-XXXX).
-- `hoten`, `sodienthoai`, `diachi`: Thông tin khách hàng.
-- `id_dichvu`: Liên kết đến danh mục sửa chữa.
-- `trangthai`: `new` (Mới) → `confirmed` → `doing` → `done` | `cancel`.
-- `giadichvu`, `phidichuyen`, `tongtien`: Chi tiết tài chính.
-- `media_ids`: Danh sách ID ảnh/video lưu trên Google Drive.
-
-### 2. `nguoidung` (User chung)
-- Chứa cả Admin, Provider và Customer.
-- Phân loại qua `vaitro` và `id_dichvu` (id_dichvu=9 dành cho Thợ Nhà).
-
-### 3. `danhmuc_thonha`
-- Chứa danh sách 8+ danh mục dịch vụ (Sửa Máy Lạnh, Máy Giặt, Điện Nước...).
+1. **`datlich_thonha`**: Lưu trữ mọi đơn hàng. Trạng thái: `Mới` → `Đã xác nhận` → `Đang làm` → `Hoàn thành`.
+2. **`nguoidung`**: Bảng người dùng chung. Khách hàng mặc định `id_dichvu=0`, Đối tác thợ `id_dichvu=9`.
+3. **`danhmuc_thonha`**: Định nghĩa 8+ nhóm dịch vụ sửa chữa.
+4. **`phidichuyen`**: Bảng giá cước di chuyển theo thời điểm (Sáng/Tối/Gấp).
 
 ---
 
-## Luồng hoạt động chính
+## 🔄 Luồng hoạt động chính
 
-### 1. Đặt lịch (Public Flow)
+### 1. Đặt lịch & Tính phí (Phí kiểm tra)
+- **Thuật ngữ:** Toàn bộ hệ thống sử dụng thuật ngữ **"Phí kiểm tra"** thay cho phí khảo sát để tăng tính chuyên nghiệp.
+- **Tính quãng đường:** Tích hợp Nominatim (Geocoding) và OSRM (Routing) để tính phí di chuyển tự động dựa trên khoảng cách từ NCC gần nhất đến địa chỉ khách hàng.
+- **Tự động hóa:** Tự động tạo tài khoản khi khách hàng đặt lịch lần đầu (Mật khẩu mặc định là SĐT).
 
-- **Auth Gate:** Người dùng có thể đăng nhập hoặc dùng chế độ "Đặt lịch nhanh". Nếu chưa có tài khoản, hệ thống tự động tạo account với mật khẩu là số điện thoại.
-- **Tính toán chi phí:**
-  - `booking-detail-shared.js` phối hợp với `map-picker.js` (Leaflet).
-  - Sử dụng **Nominatim** để geocode địa chỉ và **OSRM** để tính km từ Provider gần nhất.
-  - Phí di chuyển tính theo giờ (Ngày/Đêm/Gấp) dựa trên bảng giá `phidichuyen`.
-- **Media & Avatar Management:**
-  - Ảnh/Video đính kèm trong đơn hàng được upload và quản lý qua Google Drive.
-  - Avatar người dùng được render tự động bằng kỹ thuật "Zoom & Crop" iframe từ link Google Drive, đảm bảo tính thẩm mỹ đồng bộ trên toàn dashboard.
-- **Google Sheets Integration:** Tự động ghi log đơn hàng mới vào Google Sheets để phục vụ báo cáo và theo dõi real-time.
-
-### 2. Quản trị (Admin SPA)
-
-- **Entry:** `pages/admin/quan-tri.html` (Yêu cầu đăng nhập admin platform).
-- **Cơ chế SPA:** `shell.js` fetch template HTML và script JS của từng tab (Tổng quan, Đơn hàng, Dịch vụ) rồi inject vào `pageContent`.
-- **Quản lý:** Admin có thể thay đổi trạng thái đơn, gán thợ (Provider), và quản lý danh mục dịch vụ.
-
-### 3. Nhà cung cấp (Provider Flow)
-
-- Thợ đăng nhập vào trang cá nhân để xem danh sách đơn hàng được gán.
-- Cập nhật trạng thái thi công (`doing`, `done`) trực tiếp trên chi tiết đơn hàng.
+### 2. Dashboard Hợp nhất (Unified SPA)
+- Sử dụng `user/shell.js` để điều hướng không tải lại trang (SPA).
+- **Phân quyền ẩn hiện:** Sidebar tự động hiển thị mục "Dành cho đối tác" nếu tài khoản có `id_dichvu=9`.
+- **Order Manager:** Toàn bộ logic quản lý đơn hàng được tập trung tại `shared/order-manager.js`, xử lý chung cho cả việc đặt đơn (Customer) và nhận đơn (Provider).
 
 ---
 
-## Kiến trúc Kỹ thuật & Tích hợp
+## 🛠️ Kiến trúc Kỹ thuật
 
-- **Authentication:** Token/Cookie based SSO. Tích hợp chặt chẽ với platform `dichvuquanhta`.
-- **Database Access:** Không gọi Raw SQL trực tiếp từ frontend. Sử dụng `DVQTKrud` (Wrapper cho RESTful API).
-- **Bản đồ & Định vị:** Leaflet.js + OSM (OpenStreetMap).
-- **Lưu trữ:** Google Drive (Media) & Google Sheets (Logging/Reporting).
-- **UI Framework:** Bootstrap 5.3 + Vanilla JS (ES6+).
-
----
-
-## Xử lý lỗi & Bảo trì
-
-1. **Lỗi tính phí di chuyển (0đ):** Thường do Nominatim không geocode được địa chỉ hoặc mất kết nối internet. Hệ thống sẽ để trống để thợ báo giá sau.
-2. **Lỗi Login Admin:** Kiểm tra Cookie `admin_e` và `admin_p`. Nếu mất, hệ thống tự động đưa về trang login trung tâm.
-3. **Mã đơn hàng bị trùng:** Đã được xử lý bằng algorithm phát sinh mã kèm timestamp và random suffix.
+- **UI Framework:** Bootstrap 5.3 + Vanilla CSS (Custom Premium Design).
+- **Status Design:** Hệ thống Badge trạng thái dạng Capsule với hiệu ứng Gradient sang trọng.
+- **Confirm System:** Toàn bộ các hành động thay đổi trạng thái (Nhận đơn, Hoàn thành, Hủy) đều sử dụng **SweetAlert2** để xác nhận.
+- **Media Management:** Tích hợp Google Drive để lưu trữ ảnh/video minh họa lỗi của khách hàng.
 
 ---
-*Cập nhật lần cuối: 20/04/2026 bởi Antigravity AI.*
+*Cập nhật lần cuối: 23/04/2026 bởi Antigravity AI.*
