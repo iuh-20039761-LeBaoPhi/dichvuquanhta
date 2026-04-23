@@ -897,14 +897,14 @@
                   <input type="hidden" name="anh_id" id="anh_id" value="" />
                   <input type="hidden" name="video_id" id="video_id" value="" />
                   <div class="form-section-card">
-                    <div class="form-section-header" data-bs-toggle="collapse" data-bs-target="#customerInfoCollapse" aria-expanded="true">
+                    <div class="form-section-header collapsed" data-bs-toggle="collapse" data-bs-target="#customerInfoCollapse" aria-expanded="false">
                       <h5 class="form-section-title">
                         <i class="fas fa-user-circle"></i>
                         Thông tin khách hàng
                         <i class="fas fa-chevron-down section-arrow"></i>
                       </h5>
                     </div>
-                    <div class="collapse show" id="customerInfoCollapse">
+                    <div class="collapse" id="customerInfoCollapse">
                       <div class="form-section-body">
                         <div class="form-group">
                           <label for="hotenkhachhang">Họ và tên *</label>
@@ -920,51 +920,51 @@
                             required
                           />
                         </div>
-      
-                        <div class="form-group">
-                          <label for="diachi">Địa chỉ</label>
-                          <div class="input-group">
-                            <input
-                              type="text"
-                              id="diachi"
-                              name="diachi"
-                              placeholder="Nhập địa chỉ của bạn"
-                            />
-                          </div>
-                          <div id="toaDoHienThi" class="mt-2 text-muted fw-medium d-flex align-items-center flex-wrap" style="font-size: 0.9rem;"></div>
-                        </div>
-                        <div class="form-group">
-                          <div class="d-flex gap-2">
-                            <button
-                              class="btn btn-info text-white flex-grow-1"
-                              type="button"
-                              id="nutbando"
-                            >
-                              <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
-                            </button>
-                            <button
-                              class="btn btn-purple flex-grow-1"
-                              type="button"
-                              id="nutvitrihientai"
-                            >
-                              <i class="fas fa-location-arrow me-1"></i> Vị trí hiện tại
-                            </button>
-                          </div>
-                        </div>
-      
-                        <div
-                          class="form-group map-wrapper"
-                          id="khungbando"
-                          style="display: none"
-                        >
-                          <label>Chọn vị trí trên bản đồ</label>
-                          <div
-                            id="bando"
-                            style="height: 320px; border-radius: 12px"
-                          ></div>
-                        </div>
                       </div>
                     </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="diachi">Địa chỉ</label>
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        id="diachi"
+                        name="diachi"
+                        placeholder="Nhập địa chỉ của bạn"
+                      />
+                    </div>
+                    <div id="toaDoHienThi" class="mt-2 text-muted fw-medium d-flex align-items-center flex-wrap" style="font-size: 0.9rem;"></div>
+                  </div>
+                  <div class="form-group">
+                    <div class="d-flex gap-2">
+                      <button
+                        class="btn btn-info text-white flex-grow-1"
+                        type="button"
+                        id="nutbando"
+                      >
+                        <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                      </button>
+                      <button
+                        class="btn btn-purple flex-grow-1"
+                        type="button"
+                        id="nutvitrihientai"
+                      >
+                        <i class="fas fa-location-arrow me-1"></i> Vị trí hiện tại
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    class="form-group map-wrapper"
+                    id="khungbando"
+                    style="display: none"
+                  >
+                    <label>Chọn vị trí trên bản đồ</label>
+                    <div
+                      id="bando"
+                      style="height: 320px; border-radius: 12px"
+                    ></div>
                   </div>
 
                   <div class="row">
@@ -1210,7 +1210,7 @@
               <!-- Nhóm 2: Chi tiết dịch vụ & Đơn hàng -->
               <div class="confirm-section-card">
                 <div class="section-badge-gradient purple">
-                  <i class="fas fa-list-check"></i>
+                  <i class="fas fa-clipboard-list"></i>
                   <span>Chi tiết dịch vụ</span>
                 </div>
                 <div class="section-content-list">
