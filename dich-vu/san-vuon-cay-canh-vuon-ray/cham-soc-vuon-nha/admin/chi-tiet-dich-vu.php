@@ -19,11 +19,11 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 
 <style>
 	:root {
-		--admin-primary: #4361ee;
-		--admin-secondary: #8392a5;
-		--admin-success: #2ec4b6;
-		--admin-warning: #ff9f1c;
-		--admin-bg: #f8f9fa;
+		--admin-primary: #ec4899;
+		--admin-secondary: #be185d;
+		--admin-success: #db2777;
+		--admin-warning: #f472b6;
+		--admin-bg: #fff5f7;
 	}
 
 	.admin-main,
@@ -33,22 +33,24 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 
 	.card {
 		transition: transform 0.2s ease, box-shadow 0.2s ease;
-		border: 1px solid rgba(0, 0, 0, 0.05) !important;
+		border: 1px solid #fce7f3 !important;
+		border-radius: 14px !important;
 	}
 
 	.card:hover {
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
+		box-shadow: 0 5px 15px rgba(131, 24, 67, 0.08) !important;
 		z-index: 1;
 	}
 
 	.compact-row {
-		--bs-gutter-x: 2px;
-		--bs-gutter-y: 2px;
+		--bs-gutter-x: 8px;
+		--bs-gutter-y: 8px;
 	}
 
 	.service-image-container {
-		background: #fdfdfd;
+		background: #ffffff;
 		position: relative;
+		border-color: #fce7f3 !important;
 	}
 
 	.service-image-container img {
@@ -66,6 +68,8 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 	.custom-table thead th {
 		border-top: none;
 		letter-spacing: 0.5px;
+		background-color: #fff1f2 !important;
+		color: #831843 !important;
 	}
 
 	.custom-table tbody tr {
@@ -73,11 +77,11 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 	}
 
 	.custom-table tbody tr:hover {
-		background-color: rgba(67, 97, 238, 0.02);
+		background-color: #fff5f7;
 	}
 
 	.badge {
-		font-weight: 500;
+		font-weight: 600;
 	}
 
 	.ls-1 {
@@ -106,10 +110,6 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 <?php else: ?>
 	<?php
 	$image = trim((string) ($row['image'] ?? ''));
-	$imageSrc = $image;
-	if ($imageSrc !== '' && !preg_match('/^https?:\/\//i', $imageSrc)) {
-		$imageSrc = '../' . ltrim($imageSrc, '/');
-	}
 	?>
 	<div class="row compact-row">
 		<!-- Box 1: Thông tin cơ bản & Ảnh -->
@@ -127,10 +127,9 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 					<div class="row g-3 mb-3">
 						<div class="col-md-4">
 							<div class="service-image-container rounded-3 overflow-hidden shadow-sm border">
-								<?php if ($imageSrc !== ''): ?>
-									<img src="<?= admin_h($imageSrc) ?>" class="img-fluid w-100"
-										style="object-fit: cover; aspect-ratio: 1/1;"
-										alt="<?= admin_h((string) ($row['alt'] ?? 'Dịch vụ')) ?>">
+								<?php if ($image !== ''): ?>
+									<iframe src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview" class="w-100"
+										style="aspect-ratio: 1/1; border:none;" scrolling="no" loading="lazy"></iframe>
 								<?php else: ?>
 									<div class="d-flex align-items-center justify-content-center bg-light text-secondary"
 										style="height: 180px;">

@@ -1413,6 +1413,7 @@
         const uploaded = await core.uploadFileToDrive(file, {
           name: file.name,
           proxyFile: uploadOptions.proxyFile || "",
+          uploadKind: uploadOptions.uploadKind || "",
         });
         return normalizeText(uploaded?.fileId || uploaded?.id || "");
       };
@@ -1422,7 +1423,8 @@
       let cccdBackLink = "";
       try {
         avatarLink = await uploadSingleFile("avatar_file", {
-          proxyFile: "upload_avatar.php",
+          proxyFile: "nha-cung-cap/upload.php",
+          uploadKind: "avatar",
         });
         cccdFrontLink = await uploadSingleFile("cccd_front_file");
         cccdBackLink = await uploadSingleFile("cccd_back_file");

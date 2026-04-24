@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("danhsachdichvucontainer");
+  const otherServicesContainer = document.getElementById("other-services-links");
   if (!container) return;
 
   const dataUrl = "public/data/dsdichvugiaohang.json";
@@ -54,6 +55,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     return article;
   }
 
+  function renderOtherServices() {
+    if (!otherServicesContainer) return;
+
+    const serviceDirectory =
+      window.GiaoHangNhanhLayout &&
+      typeof window.GiaoHangNhanhLayout.getServiceDirectory === "function"
+        ? window.GiaoHangNhanhLayout.getServiceDirectory()
+        : [];
+
+    const relatedServices = serviceDirectory.filter(
+      (service) => service && service.key !== "svc-giao-hang-nhanh",
+    );
+
+    if (!relatedServices.length) {
+      otherServicesContainer.innerHTML = "";
+      return;
+    }
+
+    otherServicesContainer.innerHTML = relatedServices
+      .map(
+        (service) => `
+          <a class="other-services-link" href="${escapeHtml(service.href || "#")}">
+            ${escapeHtml(service.label || "")}
+          </a>
+        `,
+      )
+      .join("");
+  }
+
   try {
     const response = await fetch(dataUrl);
     if (!response.ok) {
@@ -76,4 +106,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     container.innerHTML =
       '<p class="text-danger">Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.</p>';
   }
+
+  renderOtherServices();
 });

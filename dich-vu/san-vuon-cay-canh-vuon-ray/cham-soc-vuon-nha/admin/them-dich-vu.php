@@ -13,11 +13,11 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
 
 <style>
     :root {
-        --admin-primary: #4361ee;
-        --admin-secondary: #8392a5;
-        --admin-success: #2ec4b6;
-        --admin-warning: #ff9f1c;
-        --admin-bg: #f8f9fa;
+        --admin-primary: #ec4899;
+        --admin-secondary: #be185d;
+        --admin-success: #db2777;
+        --admin-warning: #f472b6;
+        --admin-bg: #fff5f7;
     }
 
     .admin-main,
@@ -26,18 +26,18 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
     }
 
     .card {
-        border-radius: 4px;
-        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        border-radius: 14px;
+        border: 1px solid var(--admin-border) !important;
         transition: box-shadow 0.2s ease;
     }
 
     .card:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 5px 15px rgba(131, 24, 67, 0.08) !important;
     }
 
     .form-label {
         font-weight: 700;
-        color: #000;
+        color: #831843;
         margin-bottom: 3px;
         font-size: 0.85rem;
         text-transform: uppercase;
@@ -46,17 +46,17 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
 
     .form-control,
     .form-select {
-        border-radius: 4px;
-        border: 1px solid #000 !important;
+        border-radius: 8px;
+        border: 1px solid #fce7f3 !important;
         padding: 0.5rem 0.75rem;
         font-size: 0.95rem;
-        color: #000;
+        color: #4a044e;
         font-weight: 500;
     }
 
     .form-control:focus {
         border-color: var(--admin-primary) !important;
-        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.1);
+        box-shadow: 0 0 0 0.2rem rgba(236, 72, 153, 0.1);
     }
 </style>
 
@@ -105,8 +105,7 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
                         <div class="col-md-7 d-flex flex-column">
                             <div class="mb-2">
                                 <label class="form-label">Tên dịch vụ</label>
-                                <input type="text" class="form-control fw-bold text-success" name="name"
-                                    placeholder="VD: Tắm bé sơ sinh" required>
+                                <input type="text" class="form-control fw-bold text-success" name="name" required>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label">Mô tả ảnh (SEO)</label>
@@ -133,8 +132,7 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
                 </div>
                 <div class="card-body p-3 d-flex flex-column h-100">
                     <label class="form-label">Công việc bao gồm (Mỗi dòng 1 mục):</label>
-                    <textarea class="form-control flex-grow-1" name="includes_text"
-                        placeholder="VD: Tắm bé&#10;Vệ sinh rốn&#10;Massage cho bé" required
+                    <textarea class="form-control flex-grow-1" name="includes_text" required
                         style="font-size: 0.95rem; border-left: 3px solid var(--admin-success) !important; min-height: 250px;"></textarea>
                     <div class="form-text small mt-1">Xuống dòng để tạo mục mới.</div>
                 </div>

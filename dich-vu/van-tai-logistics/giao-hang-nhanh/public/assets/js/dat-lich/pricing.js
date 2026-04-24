@@ -186,9 +186,7 @@ function tao_du_lieu_tinh_cuoc() {
   const primaryItem = getPrimaryItemMeta();
   const isInstantMode = getDeliveryMode() === "instant";
   const currentDate = getCurrentDateTime();
-  const instantWindow = isInstantMode ? getInstantPricingWindow(currentDate) : null;
-  const selectedPickupSlot = getSelectedPickupSlot();
-  const pickupSlot = selectedPickupSlot || instantWindow;
+  const resolvedPickupSlot = resolvePickupSlot();
   const urgentCondition = getSelectedUrgentCondition();
   const pickupPoint = markerPickup?.getLatLng?.() || null;
   const deliveryPoint = markerDelivery?.getLatLng?.() || null;
@@ -224,14 +222,18 @@ function tao_du_lieu_tinh_cuoc() {
     delivery_lat: deliveryPoint ? Number(deliveryPoint.lat) : 0,
     delivery_lng: deliveryPoint ? Number(deliveryPoint.lng) : 0,
     ngay_lay_hang: pickupDateValue,
-    khung_gio_lay_hang: (pickupSlot && pickupSlot.key) || document.getElementById("khung_gio_lay_hang").value || "",
-    ten_khung_gio_lay_hang: (pickupSlot && pickupSlot.label) || "",
-    gio_bat_dau_lay_hang: (pickupSlot && pickupSlot.start) || "",
-    gio_ket_thuc_lay_hang: (pickupSlot && pickupSlot.end) || "",
+    khung_gio_lay_hang:
+      resolvedPickupSlot?.rawLabel ||
+      normalizePickupSlotText(
+        document.getElementById("khung_gio_lay_hang").value || "",
+      ),
+    ten_khung_gio_lay_hang: resolvedPickupSlot?.rawLabel || "",
+    gio_bat_dau_lay_hang: resolvedPickupSlot?.enteredStart || "",
+    gio_ket_thuc_lay_hang: resolvedPickupSlot?.enteredEnd || "",
     phi_khung_gio:
-      (pickupSlot && pickupSlot.phicodinh) || 0,
+      resolvedPickupSlot?.pricingFixedFee || 0,
     he_so_khung_gio:
-      (pickupSlot && pickupSlot.heso) || 1,
+      resolvedPickupSlot?.pricingMultiplier || 1,
     ngay_nhan_mong_muon: "",
     khung_gio_nhan_hang: "",
     ten_khung_gio_nhan_hang: "",

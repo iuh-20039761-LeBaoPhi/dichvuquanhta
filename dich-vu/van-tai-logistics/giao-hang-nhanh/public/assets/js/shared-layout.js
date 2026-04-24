@@ -20,6 +20,90 @@
   const localAuthScriptPath = `${projectBase}public/assets/js/local-auth.js`;
   let authBootstrapPromise = null;
 
+  function toDirectoryUrl(path) {
+    const value = String(path || "/").trim();
+    if (!value) return "/";
+    if (value.endsWith("/")) return value;
+    return `${value}/`;
+  }
+
+  function buildServiceDirectory() {
+    return [
+      {
+        key: "svc-giao-hang-nhanh",
+        label: "Giao Hàng Nhanh",
+        group: "van-tai-logistics",
+        href: `${projectBase}dich-vu-giao-hang.html`,
+      },
+      {
+        key: "svc-dich-vu-chuyen-don",
+        label: "Dịch Vụ Chuyển Dọn",
+        group: "van-tai-logistics",
+        href: `${parentBase}dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html`,
+      },
+      {
+        key: "svc-thue-xe",
+        label: "Thuê Xe",
+        group: "van-tai-logistics",
+        href: `${parentBase}dich-vu/van-tai-logistics/thue-xe/views/pages/public/dich-vu.html`,
+      },
+      {
+        key: "svc-lai-xe-ho",
+        label: "Dịch vụ lái xe hộ",
+        group: "van-tai-logistics",
+        href: `${parentBase}dich-vu-lai-xe-ho/`,
+      },
+      {
+        key: "svc-cham-soc-nguoi-benh",
+        label: "Chăm Sóc Người Bệnh",
+        group: "cham-soc",
+        href: `${parentBase}dich-vu/cham-soc/nguoi-benh/dich-vu.html`,
+      },
+      {
+        key: "svc-cham-soc-me-be",
+        label: "Chăm Sóc Mẹ & Bé",
+        group: "cham-soc",
+        href: `${parentBase}dich-vu/cham-soc/me-va-be/dich-vu.html`,
+      },
+      {
+        key: "svc-cham-soc-nguoi-gia",
+        label: "Chăm Sóc Người Già",
+        group: "cham-soc",
+        href: `${parentBase}dich-vu/cham-soc/nguoi-gia/dich-vu.html`,
+      },
+      {
+        key: "svc-lau-don-ve-sinh",
+        label: "Dịch vụ Vệ Sinh",
+        group: "ve-sinh",
+        href: `${parentBase}dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html`,
+      },
+      {
+        key: "svc-cham-soc-vuon",
+        label: "Chăm Sóc Vườn Nhà",
+        group: "ve-sinh",
+        href: `${parentBase}cham-soc-vuon-nha/dichvu.html`,
+      },
+      {
+        key: "svc-giat-ui",
+        label: "Giặt Ủi Nhanh",
+        group: "ve-sinh",
+        href: `${parentBase}dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html`,
+      },
+      {
+        key: "svc-tho-nha",
+        label: "Thợ Nhà",
+        group: "sua-chua",
+        href: `${parentBase}dich-vu/sua-chua/tho-nha/pages/public/dich-vu.html`,
+      },
+      {
+        key: "svc-sua-xe",
+        label: "Sửa xe lưu động",
+        group: "sua-chua",
+        href: `${parentBase}sua-xe-luu-dong/dich-vu.html`,
+      },
+    ];
+  }
+
   function buildSharedAuthUrl(pageName, options = {}) {
     const target = new URL(`${parentBase}public/${pageName}`, window.location.origin);
     target.searchParams.set("service", "giaohangnhanh");
@@ -56,18 +140,27 @@
     return host;
   }
 
-  function buildLinkMap() {
+  function buildLinkMap(serviceDirectory) {
+    const serviceLinks = (Array.isArray(serviceDirectory) ? serviceDirectory : []).reduce(
+      (accumulator, service) => {
+        if (!service?.key || !service?.href) return accumulator;
+        accumulator[service.key] = service.href;
+        return accumulator;
+      },
+      {},
+    );
+
     return {
-      mainSite: `${parentBase}index.html`,
-      brand: `${projectBase}index.html`,
+      mainSite: toDirectoryUrl(parentBase),
+      brand: toDirectoryUrl(projectBase),
       mainLogo: `${projectBase}public/assets/images/logo-dich-vu-quanh-ta.png`,
       brandLogo: `${projectBase}public/assets/images/favicon.png`,
 
-      home: `${projectBase}index.html`,
-      about: `${projectBase}index.html`,
+      home: toDirectoryUrl(projectBase),
+      about: toDirectoryUrl(projectBase),
       services: `${projectBase}dich-vu-giao-hang.html`,
       pricing: `${projectBase}tra-cuu-gia-giaohang.html`,
-      contact: `${projectBase}index.html#contact`,
+      contact: `${toDirectoryUrl(projectBase)}#contact`,
       booking: `${projectBase}dat-lich-giao-hang-nhanh.html`,
       tracking: `${projectBase}tra-don-hang-giaohang.html`,
       guide: `${projectBase}huong-dan-su-dung-dich-vu-giao-hang-nhanh.html`,
@@ -77,19 +170,7 @@
       privacy: `${projectBase}chinh-sach-bao-mat.html`,
       terms: `${projectBase}dieu-khoan-su-dung.html`,
       articles: `${projectBase}cam-nang.html`,
-
-      "svc-giao-hang-nhanh": `${projectBase}dich-vu-giao-hang.html`,
-      "svc-dich-vu-chuyen-don": `${parentBase}dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html`,
-      "svc-lau-don-ve-sinh": `${parentBase}dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html`,
-      "svc-cham-soc-me-be": `${parentBase}dich-vu/cham-soc/me-va-be/dich-vu.html`,
-      "svc-cham-soc-vuon": `${parentBase}cham-soc-vuon-nha/dichvu.html`,
-      "svc-giat-ui": `${parentBase}dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html`,
-      "svc-tho-nha": `${parentBase}dich-vu/sua-chua/tho-nha/pages/public/dich-vu.html`,
-      "svc-cham-soc-nguoi-gia": `${parentBase}dich-vu/cham-soc/nguoi-gia/dich-vu.html`,
-      "svc-cham-soc-nguoi-benh": `${parentBase}dich-vu/cham-soc/nguoi-benh/dich-vu.html`,
-      "svc-thue-xe": `${parentBase}dich-vu/van-tai-logistics/thue-xe/views/pages/public/dich-vu.html`,
-      "svc-lai-xe-ho": `${parentBase}dich-vu-lai-xe-ho/index.html`,
-      "svc-sua-xe": `${parentBase}sua-xe-luu-dong/dich-vu.html`,
+      ...serviceLinks,
     };
   }
 
@@ -610,9 +691,21 @@
     }, 650);
   }
 
+  const serviceDirectory = Object.freeze(buildServiceDirectory().map((service) => ({
+    ...service,
+  })));
   const headerHost = injectPartial("site-header", "header.html");
   const footerHost = injectPartial("site-footer", "footer.html");
-  const linkMap = buildLinkMap();
+  const linkMap = buildLinkMap(serviceDirectory);
+
+  window.GiaoHangNhanhLayout = Object.freeze({
+    getLinkMap() {
+      return { ...linkMap };
+    },
+    getServiceDirectory() {
+      return serviceDirectory.map((service) => ({ ...service }));
+    },
+  });
 
   if (headerHost) applyLinks(headerHost, linkMap);
   if (headerHost) applyActiveNav(headerHost);

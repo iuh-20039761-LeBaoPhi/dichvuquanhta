@@ -137,13 +137,6 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                                         class="fw-bold text-primary"><?= number_format((float) ($pricing['base_price'] ?? 0)) ?>đ</span>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3">
-                                <div class="p-2 border rounded bg-light text-center">
-                                    <small class="text-muted d-block">Giá tối thiểu</small>
-                                    <span
-                                        class="fw-bold text-danger"><?= number_format((float) ($pricing['min_price'] ?? 0)) ?>đ</span>
-                                </div>
-                            </div>
                             <div class="col-12 col-md-6">
                                 <div class="p-2 border rounded bg-light">
                                     <small class="text-muted d-block text-center mb-1">Hệ số (Nhẹ / Thường / Sâu)</small>

@@ -90,6 +90,72 @@ const providerOrderDetailModule = (function (window, document) {
     return merged;
   }
 
+  function filterAttachmentValuesByIndexes(values, removedIndexes) {
+    const list = Array.isArray(values) ? values : [];
+    const removed = new Set(
+      (Array.isArray(removedIndexes) ? removedIndexes : [])
+        .map((value) => Number(value))
+        .filter((value) => Number.isInteger(value) && value >= 0),
+    );
+
+    return list.filter((_, index) => !removed.has(index));
+  }
+
+  function renderEditableAttachmentGallery(items, type, options = {}) {
+    const list = (Array.isArray(items) ? items : [])
+      .map((value, index) => ({
+        value: normalizeText(value),
+        index,
+      }))
+      .filter((item) => item.value);
+
+    if (!list.length && options.hideEmpty) return "";
+    if (!list.length) {
+      return `<div class="standalone-order-note-panel"><p>${escapeHtml(
+        options.emptyMessage || "Chưa có ảnh/video.",
+      )}</p></div>`;
+    }
+
+    const removeName = options.removeName || "remove_attachment_indexes[]";
+    const removeButtonLabel = options.removeButtonLabel || "Xóa media";
+    const removedLabel = options.removedLabel || "Sẽ xóa khi lưu";
+    const labelPrefix = options.labelPrefix || (type === "video" ? "Video" : "Ảnh");
+
+    return `
+      <div class="standalone-order-media-grid">
+        ${list
+          .map((item) => {
+            const attachmentHref = getAttachmentHref(item.value);
+            const previewUrl = getAttachmentPreviewUrl(item.value, type);
+            const attachmentName = getAttachmentFileName(item.value) || item.value;
+            const mediaPreview =
+              type === "image" && previewUrl
+                ? `<img src="${escapeHtml(previewUrl)}" alt="${escapeHtml(`${labelPrefix} ${item.index + 1}`)}" />`
+                : type === "video" && previewUrl
+                  ? `<video src="${escapeHtml(previewUrl)}" controls preload="metadata"></video>`
+                  : `<div class="standalone-order-item-icon">
+                      <i class="${escapeHtml(type === "video" ? "fa-solid fa-video" : "fa-solid fa-image")}"></i>
+                    </div>`;
+
+            return `
+              <div class="standalone-order-media-item standalone-order-media-item-removable" data-removed-label="${escapeHtml(removedLabel)}">
+                <a class="standalone-order-media-preview-link" href="${escapeHtml(
+                  attachmentHref || "#",
+                )}" target="_blank" rel="noreferrer">
+                  ${mediaPreview}
+                </a>
+                <button type="button" class="standalone-order-media-remove" data-remove-media aria-label="${escapeHtml(removeButtonLabel)}" title="${escapeHtml(removeButtonLabel)}">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+                <input type="hidden" name="${escapeHtml(removeName)}" value="${escapeHtml(String(item.index))}" disabled />
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    `;
+  }
+
   function resolveAttachmentUrls(value) {
     const normalized = normalizeText(value);
     if (!normalized) {
@@ -349,7 +415,7 @@ const providerOrderDetailModule = (function (window, document) {
         label: "Đã hủy",
         note: expiredPending
           ? "Đơn đã quá thời gian chờ nhận và được hệ thống tự hủy."
-          : "Đơn đã bị hủy.",
+          : "",
       };
     }
     if (statusKey === "completed") {
@@ -427,7 +493,7 @@ const providerOrderDetailModule = (function (window, document) {
             <i class="fa-solid fa-calendar-check"></i>
           </span>
           <div>
-            <span class="standalone-order-hero-support-label">Ngày thực hiện</span>
+            <span class="standalone-order-hero-support-label">Thời gian thực hiện</span>
             <strong>${escapeHtml(order?.schedule_date || order?.schedule_label || "Chưa chốt lịch")}</strong>
           </div>
         </div>
@@ -487,8 +553,22 @@ const providerOrderDetailModule = (function (window, document) {
     `;
   }
 
+  function getRenderableServiceDetails(items) {
+    const list = Array.isArray(items) ? items : [];
+    return list.filter((item) => {
+      const normalized = normalizeText(item).toLowerCase();
+      if (!normalized) return false;
+      return !(
+        /phương án xe|phuong an xe|loại xe|loai xe|xe tải|xe tai/.test(normalized) ||
+        /khảo sát trước|khao sat truoc/.test(normalized)
+      );
+    });
+  }
+
   function renderPricingRows(order) {
-    const rows = getRenderableBookingPricingRows(order?.pricing_breakdown)
+    const rows = getRenderableBookingPricingRows(order?.pricing_breakdown, {
+      excludeLabelPatterns: [/loai xe|xe tai|binh thuong/i],
+    })
       .map((item, index) =>
         renderInfoRow(
           item.label || `Hạng mục ${index + 1}`,
@@ -554,10 +634,6 @@ const providerOrderDetailModule = (function (window, document) {
                 attachmentHref || "#",
               )}" target="_blank" rel="noreferrer">
                 ${mediaPreview}
-                <strong>${escapeHtml(item.label)}</strong>
-                <span title="${escapeHtml(attachmentValue)}">${escapeHtml(
-                  attachmentName,
-                )}</span>
               </a>
             `;
           })
@@ -879,55 +955,41 @@ const providerOrderDetailModule = (function (window, document) {
       <section class="standalone-order-block">
         <div class="standalone-order-block-header">
           <p class="standalone-order-block-kicker">Phản hồi</p>
-          <h2>Đánh giá từ khách hàng</h2>
+          <h2>Phản hồi khách hàng</h2>
         </div>
-        <div class="standalone-order-side-stack standalone-order-review-layout">
-          <article class="standalone-order-subcard">
-            <div class="standalone-order-subcard-head">
-              <strong>Tóm tắt phản hồi</strong>
-              <span class="standalone-order-chip">${escapeHtml(
-                safeRating > 0 ? `${safeRating}/5 sao` : "Chưa có sao",
-              )}</span>
-            </div>
-            <div class="standalone-order-note-panel">
-              <p>
-                <span class="standalone-order-rating-stars" aria-label="${escapeHtml(
-                  `${safeRating}/5 sao`,
-                )}">
-                  ${Array.from({ length: 5 }, (_, index) =>
-                    `<i class="${escapeHtml(
-                      index < safeRating
-                        ? "fa-solid fa-star"
-                        : "fa-regular fa-star",
-                    )}"></i>`,
-                  ).join("")}
-                </span>
-              </p>
-            </div>
-            <p class="standalone-order-note-text">${escapeHtml(
-              feedback || "Chưa có phản hồi từ khách hàng cho đơn hàng này.",
-            )}</p>
-            ${renderAttachmentGallery(
-              feedbackImageAttachments,
-              feedbackVideoAttachments,
-              {
-                imageLabelPrefix: "Ảnh phản hồi",
-                videoLabelPrefix: "Video phản hồi",
-                emptyMessage:
-                  "Chưa có ảnh hoặc video phản hồi từ khách hàng.",
-              },
-            )}
-          </article>
-          <article class="standalone-order-subcard">
-            <div class="standalone-order-subcard-head">
-              <strong>Lưu ý sử dụng</strong>
-              <span class="standalone-order-chip">Chỉ xem</span>
-            </div>
-            <div class="standalone-order-note-panel">
-              <p>Phản hồi này do khách hàng gửi để nhà cung cấp theo dõi lại chất lượng phục vụ và xử lý các góp ý liên quan.</p>
-            </div>
-          </article>
-        </div>
+        <article class="standalone-order-subcard">
+          <div class="standalone-order-subcard-head">
+            <strong>Phản hồi khách hàng</strong>
+            ${safeRating > 0 ? `<span class="standalone-order-chip">${escapeHtml(`${safeRating}/5 sao`)}</span>` : ""}
+          </div>
+          <div class="standalone-order-note-panel">
+            <p>
+              <span class="standalone-order-rating-stars" aria-label="${escapeHtml(
+                `${safeRating}/5 sao`,
+              )}">
+                ${Array.from({ length: 5 }, (_, index) =>
+                  `<i class="${escapeHtml(
+                    index < safeRating
+                      ? "fa-solid fa-star"
+                      : "fa-regular fa-star",
+                  )}"></i>`,
+                ).join("")}
+              </span>
+            </p>
+          </div>
+          <p class="standalone-order-note-text">${escapeHtml(
+            feedback || "Chưa đánh giá",
+          )}</p>
+          ${renderAttachmentGallery(
+            feedbackImageAttachments,
+            feedbackVideoAttachments,
+            {
+              imageLabelPrefix: "Ảnh phản hồi",
+              videoLabelPrefix: "Video phản hồi",
+              emptyMessage: "Chưa có ảnh/video phản hồi.",
+            },
+          )}
+        </article>
       </section>
     `;
   }
@@ -949,80 +1011,95 @@ const providerOrderDetailModule = (function (window, document) {
       !!(milestones.acceptedAt || milestones.startedAt || milestones.completedAt) &&
       !milestones.cancelledAt;
     const helperText = canEditNote
-      ? "Cập nhật tiến độ, hiện trạng, kết quả xử lý hoặc chú thích cần khách hàng theo dõi."
+      ? "Cập nhật tiến độ, vấn đề hiện trường hoặc lưu ý cần khách hàng theo dõi."
       : milestones.cancelledAt
-        ? "Đơn đã hủy nên không thể cập nhật thêm báo cáo công việc."
-        : "Nhận đơn trước khi cập nhật báo cáo công việc.";
+        ? "Đơn đã hủy nên không thể cập nhật thêm."
+        : "Chỉ có thể thêm ghi chú sau khi đơn đã được nhận.";
 
     return `
       <section class="standalone-order-block">
         <div class="standalone-order-block-header">
           <p class="standalone-order-block-kicker">Báo cáo</p>
-          <h2>Báo cáo công việc</h2>
+          <h2>Ghi chú NCC</h2>
         </div>
         <div class="standalone-order-side-stack standalone-order-review-layout">
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Nội dung hiện có</strong>
-              <span class="standalone-order-chip">${escapeHtml(
-                note ? "Đã cập nhật" : "Chưa có báo cáo",
-              )}</span>
+              <strong>Ghi chú</strong>
             </div>
-            <p class="standalone-order-note-text">${escapeHtml(
-              note || "Nhà cung cấp chưa cập nhật ghi chú xử lý cho đơn hàng này.",
-            )}</p>
-            ${renderAttachmentGallery(
+            <p class="standalone-order-note-text">${escapeHtml(note || "Chưa có ghi chú")}</p>
+            ${canEditNote ? "" : renderAttachmentGallery(
               providerReportImageAttachments,
               providerReportVideoAttachments,
               {
                 imageLabelPrefix: "Ảnh báo cáo",
                 videoLabelPrefix: "Video báo cáo",
-                emptyMessage:
-                  "Chưa có ảnh hoặc video báo cáo từ nhà cung cấp.",
+                emptyMessage: "Chưa có ảnh/video.",
               },
             )}
           </article>
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Cập nhật báo cáo</strong>
-              <span class="standalone-order-chip">${escapeHtml(
-                canEditNote ? "Nhà cung cấp" : "Chờ nhận đơn",
-              )}</span>
+              <strong>Cập nhật</strong>
             </div>
             ${
               canEditNote
                 ? `
                   <form class="standalone-order-form" data-provider-note-form>
                     <label class="standalone-order-field">
-                      <span>Nội dung báo cáo</span>
+                      <span>Ghi chú xử lý</span>
                       <textarea name="provider_note" rows="5" placeholder="${escapeHtml(helperText)}">${escapeHtml(note)}</textarea>
                     </label>
                     <div class="standalone-order-upload-grid">
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-image">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
-                        <strong>Gửi ảnh báo cáo</strong>
-                        <span class="standalone-order-upload-copy">Ảnh báo cáo sẽ được lưu riêng trong phần media báo cáo nhà cung cấp.</span>
-                        <input type="file" name="provider_note_image" accept="image/*" multiple hidden />
-                        <span class="standalone-order-upload-meta" data-provider-image-summary>Chưa chọn ảnh báo cáo.</span>
-                      </label>
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-video">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
-                        <strong>Gửi video báo cáo</strong>
-                        <span class="standalone-order-upload-copy">Video báo cáo sẽ được lưu riêng trong phần media báo cáo nhà cung cấp.</span>
-                        <input type="file" name="provider_note_video" accept="video/*" multiple hidden />
-                        <span class="standalone-order-upload-meta" data-provider-video-summary>Chưa chọn video báo cáo.</span>
-                      </label>
+                      <div class="standalone-order-upload-zone standalone-order-upload-zone-image">
+                        <label class="standalone-order-upload-picker">
+                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
+                          <strong>Chụp hoặc gửi ảnh báo cáo</strong>
+                          <input type="file" name="provider_note_image" accept="image/*" multiple hidden />
+                          <span class="standalone-order-upload-meta" data-provider-image-summary>Chưa chọn ảnh</span>
+                        </label>
+                        ${renderEditableAttachmentGallery(
+                          providerReportImageAttachments,
+                          "image",
+                          {
+                            removeName: "remove_provider_report_image_indexes[]",
+                            removeButtonLabel: "Xóa ảnh báo cáo",
+                            removedLabel: "Sẽ xóa khi lưu",
+                            hideEmpty: true,
+                            labelPrefix: "Ảnh báo cáo",
+                          },
+                        )}
+                      </div>
+                      <div class="standalone-order-upload-zone standalone-order-upload-zone-video">
+                        <label class="standalone-order-upload-picker">
+                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
+                          <strong>Gửi video báo cáo</strong>
+                          <input type="file" name="provider_note_video" accept="video/*" multiple hidden />
+                          <span class="standalone-order-upload-meta" data-provider-video-summary>Chưa chọn video</span>
+                        </label>
+                        ${renderEditableAttachmentGallery(
+                          providerReportVideoAttachments,
+                          "video",
+                          {
+                            removeName: "remove_provider_report_video_indexes[]",
+                            removeButtonLabel: "Xóa video báo cáo",
+                            removedLabel: "Sẽ xóa khi lưu",
+                            hideEmpty: true,
+                            labelPrefix: "Video báo cáo",
+                          },
+                        )}
+                      </div>
                     </div>
                     <div class="standalone-order-inline-actions">
-                      <button class="customer-btn customer-btn-primary" type="submit">Lưu báo cáo</button>
+                      <button class="customer-btn customer-btn-primary" type="submit">Lưu ghi chú NCC</button>
                     </div>
                   </form>
                 `
-                : `
-                  <div class="standalone-order-note-panel">
-                    <p>${escapeHtml(helperText)}</p>
-                  </div>
-                `
+                : `<div class="standalone-order-note-panel">
+                    <p>${escapeHtml(
+                      note ? "Chỉ xem" : helperText,
+                    )}</p>
+                  </div>`
             }
           </article>
         </div>
@@ -1035,6 +1112,16 @@ const providerOrderDetailModule = (function (window, document) {
     const progressMeta = getProgressMeta(detail);
     const statusKey = deriveStatusKey(detail);
     const statusBadge = renderStatusBadge(statusKey);
+    const milestones = getMilestones(detail);
+    const isCancelled = statusKey === "cancelled";
+    const isCompleted = statusKey === "completed";
+    const isTerminal = isCancelled || isCompleted;
+    const cancelledTimeLabel = formatDateTime(
+      milestones.cancelledAt || order.cancelled_at || order.updated_at || "",
+    );
+    const completedTimeLabel = formatDateTime(
+      milestones.completedAt || order.completed_at || "",
+    );
     currentDetailSignature = getDetailRenderSignature(detail);
 
     root.innerHTML = `
@@ -1061,7 +1148,7 @@ const providerOrderDetailModule = (function (window, document) {
                     <h1>${escapeHtml(order.service_label || "Dịch vụ Chuyển Dọn")}</h1>
                     <p class="standalone-order-card-subtitle standalone-order-reference">${escapeHtml(order.code || "--")}</p>
                   </div>
-                  <div class="standalone-order-hero-summary-grid">
+                  <div class="standalone-order-hero-summary-grid standalone-order-hero-fee-distance-row">
                     ${renderHeroStat(
                       "Tạm tính",
                       formatCurrency(order.estimated_amount),
@@ -1072,22 +1159,12 @@ const providerOrderDetailModule = (function (window, document) {
                       "Khoảng cách",
                       formatDistance(order.distance_km),
                       "Quãng đường dự kiến",
-                    )}
-                    ${renderHeroStat(
-                      "Trạng thái đơn",
-                      statusBadge,
-                      progressMeta.note,
-                      {
-                        className: "standalone-order-hero-stat--status",
-                        valueHtml: true,
-                        noteHtml: false,
-                        valueTag: "div",
-                      },
+                      { className: "standalone-order-hero-stat--distance" },
                     )}
                   </div>
                 </div>
 
-                <div class="standalone-order-hero-frame standalone-order-hero-frame-side">
+                <div class="standalone-order-hero-frame standalone-order-hero-frame-side standalone-order-hero-status-frame">
                   <div class="standalone-order-hero-progress-card">
                     <div class="standalone-order-hero-side-progress">
                       <div class="standalone-order-progress-ring status-${escapeHtml(
@@ -1099,20 +1176,30 @@ const providerOrderDetailModule = (function (window, document) {
                         </div>
                       </div>
                       <div class="standalone-order-progress-info">
-                        <span class="standalone-order-progress-label">${escapeHtml(progressMeta.label)}</span>
-                        <p>${escapeHtml(progressMeta.note)}</p>
+                        <p class="standalone-order-progress-label">Trạng thái đơn hàng</p>
+                        <div class="standalone-order-progress-status-row">${statusBadge}</div>
+                        ${
+                          isCancelled
+                            ? `<time>Hủy lúc ${escapeHtml(cancelledTimeLabel)}</time>`
+                            : isCompleted
+                              ? `<time>Hoàn thành lúc ${escapeHtml(completedTimeLabel)}</time>`
+                              : ""
+                        }
+                        ${normalizeText(progressMeta.note) ? `<p>${escapeHtml(progressMeta.note)}</p>` : ""}
                       </div>
                     </div>
-                  </div>
-                  <div class="standalone-order-actions-group standalone-order-hero-actions-group">
-                    ${buildActionButtons(detail)}
                   </div>
                 </div>
               </div>
 
-              <div class="standalone-order-hero-support-grid">
-                ${renderHeroScheduleCard(order)}
-                ${renderHeroRouteCard(order)}
+              <div class="standalone-order-hero-support-grid ${isTerminal ? "standalone-order-hero-support-grid--route-only" : ""}">
+                ${isTerminal ? "" : renderHeroScheduleCard(order)}
+                <div class="standalone-order-hero-route-stack">
+                  <div class="standalone-order-actions-group standalone-order-hero-actions-group standalone-order-route-actions-group">
+                    ${buildActionButtons(detail)}
+                  </div>
+                  ${renderHeroRouteCard(order)}
+                </div>
               </div>
             </div>
           </header>
@@ -1129,7 +1216,6 @@ const providerOrderDetailModule = (function (window, document) {
                       <strong>Chi tiết đơn</strong>
                       <p>Những thông tin cần rà nhanh khi xử lý đơn.</p>
                     </div>
-                    <span class="standalone-order-chip">Đơn hàng</span>
                   </div>
                   <div class="standalone-order-info-list">
                     ${renderInfoRow("Khảo sát", order.service_details.some((item) => normalizeLowerText(item).includes("khảo sát trước")) ? "Cần khảo sát trước" : "Không cần khảo sát trước")}
@@ -1142,7 +1228,6 @@ const providerOrderDetailModule = (function (window, document) {
                       <strong>Chi tiết tạm tính</strong>
                       <p>Các khoản phí đang cấu thành mức tạm tính của đơn hàng.</p>
                     </div>
-                    <span class="standalone-order-chip">Tạm tính</span>
                   </div>
                   <div class="standalone-order-info-list">
                     ${renderPricingRows(order)}
@@ -1167,7 +1252,6 @@ const providerOrderDetailModule = (function (window, document) {
                         <p>Đầu mối liên hệ của đơn hàng.</p>
                       </div>
                     </div>
-                    <span class="standalone-order-chip">Khách hàng</span>
                   </div>
                   <div class="standalone-order-info-list">
                     ${renderInfoRow("Khách hàng", order.customer_name || "--")}
@@ -1188,10 +1272,6 @@ const providerOrderDetailModule = (function (window, document) {
                           <p>Thông tin cần lưu ý trước khi thực hiện.</p>
                         </div>
                       </div>
-                      <span class="standalone-order-chip">Lưu ý</span>
-                    </div>
-                    <div class="standalone-order-note-panel standalone-order-contact-note-panel">
-                      <p>${escapeHtml(order.note || "Chưa có ghi chú bổ sung.")}</p>
                     </div>
                     <div class="standalone-order-side-stack standalone-order-review-layout">
                       <article class="standalone-order-subcard">
@@ -1204,7 +1284,10 @@ const providerOrderDetailModule = (function (window, document) {
                         <div class="standalone-order-subcard-head">
                           <strong>Hạng mục đã chọn</strong>
                         </div>
-                        ${renderChipList(order.service_details, "Chưa có hạng mục nào được chọn thêm.")}
+                        ${renderChipList(
+                          getRenderableServiceDetails(order.service_details),
+                          "Không có hạng mục bổ sung ngoài thông tin chính.",
+                        )}
                       </article>
                     </div>
                   </article>
@@ -1223,7 +1306,6 @@ const providerOrderDetailModule = (function (window, document) {
                       <strong>Tiến độ xử lý</strong>
                       <p>Các mốc chính từ lúc nhận đến khi hoàn tất.</p>
                     </div>
-                    <span class="standalone-order-chip">Tiến độ</span>
                   </div>
                   ${renderTimeline(detail)}
                 </article>
@@ -1233,7 +1315,6 @@ const providerOrderDetailModule = (function (window, document) {
                       <strong>Ảnh/video khách đính kèm khi đặt đơn</strong>
                       <p>Media được gửi từ form đặt lịch ban đầu của đơn hàng.</p>
                     </div>
-                    <span class="standalone-order-chip">Tệp đính kèm</span>
                   </div>
                   ${renderAttachmentGallery(
                     order.booking_image_attachments,
@@ -1288,6 +1369,14 @@ const providerOrderDetailModule = (function (window, document) {
         }
 
         const formData = new FormData(form);
+        const removedImageIndexes = formData
+          .getAll("remove_provider_report_image_indexes[]")
+          .map((value) => Number(value))
+          .filter((value) => Number.isInteger(value) && value >= 0);
+        const removedVideoIndexes = formData
+          .getAll("remove_provider_report_video_indexes[]")
+          .map((value) => Number(value))
+          .filter((value) => Number.isInteger(value) && value >= 0);
         const imageFiles = collectFiles(
           form.querySelector('input[name="provider_note_image"]'),
         );
@@ -1331,12 +1420,20 @@ const providerOrderDetailModule = (function (window, document) {
             ].filter(Boolean).join(" ");
           }
         }
-        const mergedImageAttachments = mergeAttachmentValues(
+        const baseImageAttachments = filterAttachmentValuesByIndexes(
           detail?.order?.provider_report_image_attachments,
+          removedImageIndexes,
+        );
+        const baseVideoAttachments = filterAttachmentValuesByIndexes(
+          detail?.order?.provider_report_video_attachments,
+          removedVideoIndexes,
+        );
+        const mergedImageAttachments = mergeAttachmentValues(
+          baseImageAttachments,
           uploadedImageLinks,
         );
         const mergedVideoAttachments = mergeAttachmentValues(
-          detail?.order?.provider_report_video_attachments,
+          baseVideoAttachments,
           uploadedVideoLinks,
         );
 
@@ -1374,7 +1471,7 @@ const providerOrderDetailModule = (function (window, document) {
           form.querySelector('button[type="submit"]') || null;
         if (submitButton) {
           submitButton.disabled = false;
-          submitButton.textContent = "Lưu báo cáo";
+          submitButton.textContent = "Lưu ghi chú NCC";
         }
       }
     });
@@ -1384,14 +1481,25 @@ const providerOrderDetailModule = (function (window, document) {
       bindFileSummary(
         providerNoteForm.querySelector('input[name="provider_note_image"]'),
         providerNoteForm.querySelector("[data-provider-image-summary]"),
-        "Chưa chọn ảnh báo cáo.",
+        "Chưa chọn ảnh",
       );
       bindFileSummary(
         providerNoteForm.querySelector('input[name="provider_note_video"]'),
         providerNoteForm.querySelector("[data-provider-video-summary]"),
-        "Chưa chọn video báo cáo.",
+        "Chưa chọn video",
       );
     }
+
+    root.querySelectorAll("[data-remove-media]").forEach((button) => {
+      button.addEventListener("click", function () {
+        const card = button.closest(".standalone-order-media-item-removable");
+        const hiddenInput = card?.querySelector('input[type="hidden"]');
+        if (!card || !hiddenInput) return;
+        const willRemove = !card.classList.contains("is-removed");
+        card.classList.toggle("is-removed", willRemove);
+        hiddenInput.disabled = !willRemove;
+      });
+    });
   }
 
   (async function bootstrapProviderOrderDetail() {

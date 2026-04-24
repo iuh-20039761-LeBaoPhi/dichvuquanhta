@@ -53,16 +53,24 @@ function resolveOrderFormConfigUrl() {
 
 function getProjectBasePath() {
   if (typeof window === "undefined") return "/";
-  const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
+  const currentPath = String(window.location.pathname || "").replace(
+    /\\/g,
+    "/",
+  );
   const marker = "/giao-hang-nhanh/";
   const markerIndex = currentPath.toLowerCase().lastIndexOf(marker);
-  return markerIndex !== -1 ? currentPath.slice(0, markerIndex + marker.length) : "/";
+  return markerIndex !== -1
+    ? currentPath.slice(0, markerIndex + marker.length)
+    : "/";
 }
 
 function resolveProjectHtmlUrl(path) {
   if (typeof window === "undefined") return String(path || "");
   const normalized = String(path || "").replace(/^\.?\//, "");
-  return new URL(normalized, `${window.location.origin}${getProjectBasePath()}`).toString();
+  return new URL(
+    normalized,
+    `${window.location.origin}${getProjectBasePath()}`,
+  ).toString();
 }
 
 function readLocalJson(key, fallback) {
@@ -226,18 +234,33 @@ function getReorderIdentifierCandidates(row) {
     row?.ma_don_hang,
     row?.order_code,
     row?.id,
-    formatSystemOrderCode(row?.id, row?.created_at || row?.created_date || new Date()),
+    formatSystemOrderCode(
+      row?.id,
+      row?.created_at || row?.created_date || new Date(),
+    ),
   ]
-    .map((value) => String(value || "").trim().toUpperCase())
+    .map((value) =>
+      String(value || "")
+        .trim()
+        .toUpperCase(),
+    )
     .filter(Boolean);
 }
 
 function mapKrudRowToReorderData(row) {
   if (!row || typeof row !== "object") return null;
-  const parsedItems = parseCrudJsonSafe(row.mat_hang_json || row.items_json, []);
+  const parsedItems = parseCrudJsonSafe(
+    row.mat_hang_json || row.items_json,
+    [],
+  );
   const fallbackOrderCode =
-    String(row.ma_don_hang_noi_bo || row.ma_don_hang || row.order_code || "").trim() ||
-    formatSystemOrderCode(row.id, row.created_at || row.created_date || new Date()) ||
+    String(
+      row.ma_don_hang_noi_bo || row.ma_don_hang || row.order_code || "",
+    ).trim() ||
+    formatSystemOrderCode(
+      row.id,
+      row.created_at || row.created_date || new Date(),
+    ) ||
     String(row.id || "").trim();
 
   return {
@@ -270,7 +293,9 @@ function mapKrudRowToReorderData(row) {
 
 async function fetchReorderDataFromCrud(identifier) {
   const listFn = getBookingCrudListFn();
-  const normalizedIdentifier = String(identifier || "").trim().toUpperCase();
+  const normalizedIdentifier = String(identifier || "")
+    .trim()
+    .toUpperCase();
   if (!listFn || !normalizedIdentifier) return null;
 
   const exactFilters = [
@@ -387,11 +412,15 @@ function buildCrudBookingInsertPayload(payload) {
   const dieuChinhTheoXe = Number(chiTietGiaCuoc.dieu_chinh_theo_xe || 0);
   const phiCod = Number(chiTietGiaCuoc.phi_cod || 0);
   const phiBaoHiem = Number(chiTietGiaCuoc.phi_bao_hiem || 0);
-  const danhSachMatHang = Array.isArray(payload.mat_hang) ? payload.mat_hang : [];
+  const danhSachMatHang = Array.isArray(payload.mat_hang)
+    ? payload.mat_hang
+    : [];
   const tongSoKienHang = tinh_tong_so_kien_hang(danhSachMatHang);
   const tongCanNangKg = tinh_tong_can_nang_hang(danhSachMatHang);
   const tomTatMatHang = tao_tom_tat_mat_hang(danhSachMatHang);
-  const attachments = Array.isArray(payload.attachments) ? payload.attachments : [];
+  const attachments = Array.isArray(payload.attachments)
+    ? payload.attachments
+    : [];
 
   return {
     ma_don_hang_noi_bo: "",
@@ -469,7 +498,8 @@ async function syncCrudOrderCode(recordId, orderCode, createdAt = new Date()) {
   const updateFn = getBookingCrudUpdateFn();
   const normalizedId = String(recordId || "").trim();
   const normalizedCode =
-    String(orderCode || "").trim() || formatSystemOrderCode(normalizedId, createdAt);
+    String(orderCode || "").trim() ||
+    formatSystemOrderCode(normalizedId, createdAt);
 
   if (!updateFn || !normalizedId || !normalizedCode) {
     return false;
@@ -588,7 +618,10 @@ function extractCrudInsertOrderMeta(result) {
   };
 }
 
-function resolveSystemOrderCodeFromResult(result, fallbackCreatedAt = new Date()) {
+function resolveSystemOrderCodeFromResult(
+  result,
+  fallbackCreatedAt = new Date(),
+) {
   const meta = extractCrudInsertOrderMeta(result);
   if (isSystemOrderCode(meta.order_code)) {
     return meta.order_code.toUpperCase();
@@ -623,7 +656,10 @@ function savePendingBookingDraft(payload = tao_du_lieu_gui()) {
     );
     return true;
   } catch (error) {
-    console.warn("Không thể lưu nháp đơn hàng để tiếp tục sau đăng nhập:", error);
+    console.warn(
+      "Không thể lưu nháp đơn hàng để tiếp tục sau đăng nhập:",
+      error,
+    );
     return false;
   }
 }
@@ -639,10 +675,7 @@ function loadPendingBookingDraft() {
       return null;
     }
     const savedAt = Number(draft.saved_at || 0);
-    if (
-      !savedAt ||
-      Date.now() - savedAt > BOOKING_DRAFT_TTL_MS
-    ) {
+    if (!savedAt || Date.now() - savedAt > BOOKING_DRAFT_TTL_MS) {
       window.sessionStorage.removeItem(BOOKING_DRAFT_STORAGE_KEY);
       return null;
     }
@@ -747,11 +780,7 @@ function normalizeItemTypeOption(item) {
   if (!item || typeof item !== "object") return null;
 
   const key = String(
-    item.item_type_key ||
-      item.key ||
-      item.loai_hang ||
-      item.type_key ||
-      "",
+    item.item_type_key || item.key || item.loai_hang || item.type_key || "",
   ).trim();
   if (!key) return null;
 
@@ -931,7 +960,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initVehicleOptions();
   initPackageChoiceControls();
   setDeliveryMode(
-    document.getElementById("goi_cuoc")?.value === "instant" ? "instant" : "scheduled",
+    document.getElementById("goi_cuoc")?.value === "instant"
+      ? "instant"
+      : "scheduled",
     { render: false },
   );
 
@@ -941,24 +972,32 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("btn_them_hang_hoa")
     .addEventListener("click", them_hang_hoa);
-  document.getElementById("gia_tri_thu_ho_cod").addEventListener("input", () => {
-    hien_thi_danh_sach_hang_hoa();
-    if (lay_buoc_hien_tai() >= 3) renderServiceCards();
-  });
+  document
+    .getElementById("gia_tri_thu_ho_cod")
+    .addEventListener("input", () => {
+      hien_thi_danh_sach_hang_hoa();
+      if (lay_buoc_hien_tai() >= 3) renderServiceCards();
+    });
 
   // Default date = today
   const today = formatDateValue(getCurrentDateTime());
   document.getElementById("ngay_lay_hang").value = today;
-  document.getElementById("phuong_tien_giao_hang").addEventListener("change", () => {
-    if (lay_buoc_hien_tai() >= 3) renderServiceCards();
-  });
+  document
+    .getElementById("phuong_tien_giao_hang")
+    .addEventListener("change", () => {
+      if (lay_buoc_hien_tai() >= 3) renderServiceCards();
+    });
   document.getElementById("ngay_lay_hang").addEventListener("change", () => {
     if (lay_buoc_hien_tai() >= 3) renderServiceCards();
   });
-  document.getElementById("khung_gio_lay_hang").addEventListener("input", () => {
-    syncUrgentConditionVisibility(selectedService && selectedService.serviceType);
-    if (lay_buoc_hien_tai() >= 3) renderServiceCards();
-  });
+  document
+    .getElementById("khung_gio_lay_hang")
+    .addEventListener("input", () => {
+      syncUrgentConditionVisibility(
+        selectedService && selectedService.serviceType,
+      );
+      if (lay_buoc_hien_tai() >= 3) renderServiceCards();
+    });
   document
     .getElementById("btn_buoc_1_sang_2")
     .addEventListener("click", () => xac_thuc_buoc_1() && chuyen_den_buoc(2));
@@ -1046,8 +1085,7 @@ function createDefaultWeatherQuoteState() {
     conditionKey: "macdinh",
     conditionLabel: "Chưa phát sinh phụ phí thời tiết",
     summary: "Hệ thống đang tạm tính theo thời tiết bình thường",
-    note:
-      "Hệ thống sẽ tự kiểm tra thời tiết tại điểm lấy hàng để tính phụ phí nếu có. Nếu chưa lấy được dữ liệu, điều phối sẽ kiểm tra lại trước khi chốt đơn.",
+    note: "Hệ thống sẽ tự kiểm tra thời tiết tại điểm lấy hàng để tính phụ phí nếu có. Nếu chưa lấy được dữ liệu, điều phối sẽ kiểm tra lại trước khi chốt đơn.",
     source: "fallback",
     checkedAt: "",
     effectiveAt: "",
@@ -1235,18 +1273,37 @@ function getDefaultPickupSlot(date = getCurrentDateTime()) {
 
 function buildDateAtTime(dateValue, timeText) {
   const minutes = timeTextToMinutes(timeText);
-  const parts = String(dateValue || "").split("-").map((value) => parseInt(value, 10));
-  if (minutes < 0 || parts.length !== 3 || parts.some((value) => !Number.isFinite(value))) {
+  const parts = String(dateValue || "")
+    .split("-")
+    .map((value) => parseInt(value, 10));
+  if (
+    minutes < 0 ||
+    parts.length !== 3 ||
+    parts.some((value) => !Number.isFinite(value))
+  ) {
     return null;
   }
   const [year, month, day] = parts;
-  return new Date(year, month - 1, day, Math.floor(minutes / 60), minutes % 60, 0, 0);
+  return new Date(
+    year,
+    month - 1,
+    day,
+    Math.floor(minutes / 60),
+    minutes % 60,
+    0,
+    0,
+  );
 }
 
 function getPickupSlotDateRange(dateValue, pickupSlot) {
   const startAt = buildDateAtTime(dateValue, pickupSlot?.start);
   const endAt = buildDateAtTime(dateValue, pickupSlot?.end);
-  if (!startAt || !endAt || Number.isNaN(startAt.getTime()) || Number.isNaN(endAt.getTime())) {
+  if (
+    !startAt ||
+    !endAt ||
+    Number.isNaN(startAt.getTime()) ||
+    Number.isNaN(endAt.getTime())
+  ) {
     return null;
   }
   if (endAt <= startAt) {
@@ -1341,39 +1398,82 @@ function initVehicleOptions() {
   }).join("");
 }
 
-function getSelectedPickupSlot() {
-  const input = document.getElementById("khung_gio_lay_hang");
-  if (!input) return null;
-  const rawValue = normalizePickupSlotText(input.value);
-  if (!rawValue) return null;
-  const options = getPickupSlotOptions();
-  const selected = options.find(
-    (slot) => slot.key === rawValue || normalizePickupSlotText(slot.label) === rawValue,
+function findPickupSlotOptionByValue(value) {
+  const normalizedValue = normalizePickupSlotText(value);
+  if (!normalizedValue) return null;
+  return (
+    getPickupSlotOptions().find(
+      (slot) =>
+        slot.key === normalizedValue ||
+        normalizePickupSlotText(slot.label) === normalizedValue,
+    ) || null
   );
-  if (selected) return selected;
+}
 
-  const parsed = parsePickupSlotInput(rawValue);
-  if (!parsed) return null;
-  const pickupDateValue =
-    document.getElementById("ngay_lay_hang")?.value || formatDateValue(getCurrentDateTime());
-  const pickupRange = getPickupSlotDateRange(pickupDateValue, parsed);
-  const timeRule =
-    pickupRange && typeof window.getDomesticInstantTimeConfig === "function"
-      ? getInstantPricingWindow(pickupRange.startAt)
-      : null;
+function findPricingPickupSlotByStart(startTimeText) {
+  const startMinutes = timeTextToMinutes(startTimeText);
+  if (startMinutes < 0) return null;
+
+  return (
+    getPickupSlotOptions().find((slot) => {
+      const slotStartMinutes = timeTextToMinutes(slot.start);
+      const slotEndMinutes = timeTextToMinutes(slot.end);
+      if (slotStartMinutes < 0 || slotEndMinutes < 0) return false;
+      if (slotEndMinutes <= slotStartMinutes) return false;
+      return (
+        startMinutes >= slotStartMinutes && startMinutes < slotEndMinutes
+      );
+    }) || null
+  );
+}
+
+function resolvePickupSlot(value = null) {
+  const input = document.getElementById("khung_gio_lay_hang");
+  const rawInputValue =
+    value == null ? input?.value || "" : String(value || "");
+  const normalizedValue = normalizePickupSlotText(rawInputValue);
+  if (!normalizedValue) return null;
+
+  const matchedOption = findPickupSlotOptionByValue(normalizedValue);
+  const enteredSlot = matchedOption || parsePickupSlotInput(normalizedValue);
+  if (!enteredSlot) return null;
+
+  const enteredStartMinutes = timeTextToMinutes(enteredSlot.start);
+  const enteredEndMinutes = timeTextToMinutes(enteredSlot.end);
+  if (enteredStartMinutes < 0 || enteredEndMinutes < 0) return null;
+  if (enteredEndMinutes <= enteredStartMinutes) return null;
+
+  const pricingSlot =
+    matchedOption || findPricingPickupSlotByStart(enteredSlot.start);
+  if (!pricingSlot) return null;
+
   return {
-    ...parsed,
-    phicodinh: timeRule?.phicodinh || 0,
-    heso: timeRule?.heso || 1,
+    rawLabel: normalizePickupSlotText(enteredSlot.label),
+    enteredStart: enteredSlot.start,
+    enteredEnd: enteredSlot.end,
+    pricingSlotKey: pricingSlot.key || "",
+    pricingSlotLabel: pricingSlot.label || "",
+    pricingSlotStart: pricingSlot.start || "",
+    pricingSlotEnd: pricingSlot.end || "",
+    pricingFixedFee: pricingSlot.phicodinh || 0,
+    pricingMultiplier: pricingSlot.heso || 1,
+    pricingSlot,
   };
+}
+
+function getSelectedPickupSlot() {
+  return resolvePickupSlot()?.pricingSlot || null;
 }
 
 function getPickupAtDateTime() {
   const pickupDateValue = document.getElementById("ngay_lay_hang")?.value || "";
-  const pickupSlot = getSelectedPickupSlot();
+  const resolvedPickupSlot = resolvePickupSlot();
 
-  if (pickupDateValue && pickupSlot?.start) {
-    const pickupRange = getPickupSlotDateRange(pickupDateValue, pickupSlot);
+  if (pickupDateValue && resolvedPickupSlot?.enteredStart) {
+    const pickupRange = getPickupSlotDateRange(pickupDateValue, {
+      start: resolvedPickupSlot.enteredStart,
+      end: resolvedPickupSlot.enteredEnd,
+    });
     if (pickupRange?.startAt) {
       return pickupRange.startAt;
     }
@@ -1471,12 +1571,19 @@ function buildWeatherRequestKey() {
 function getOpenMeteoForecastDays(pickupAt) {
   const pickupTime = pickupAt instanceof Date ? pickupAt.getTime() : Date.now();
   const now = Date.now();
-  const diffDays = Math.max(0, Math.ceil((pickupTime - now) / (24 * 60 * 60 * 1000)));
+  const diffDays = Math.max(
+    0,
+    Math.ceil((pickupTime - now) / (24 * 60 * 60 * 1000)),
+  );
   return Math.min(Math.max(diffDays + 2, 3), 16);
 }
 
 function findClosestOpenMeteoHourlyIndex(hourlyTimes, pickupAt) {
-  if (!Array.isArray(hourlyTimes) || !hourlyTimes.length || !(pickupAt instanceof Date)) {
+  if (
+    !Array.isArray(hourlyTimes) ||
+    !hourlyTimes.length ||
+    !(pickupAt instanceof Date)
+  ) {
     return -1;
   }
 
@@ -1625,16 +1732,15 @@ async function requestWeatherQuote(force = false) {
   url.searchParams.set("latitude", pickupPoint.lat);
   url.searchParams.set("longitude", pickupPoint.lng);
   url.searchParams.set("timezone", "Asia/Bangkok");
-  url.searchParams.set("forecast_days", String(getOpenMeteoForecastDays(pickupAt)));
+  url.searchParams.set(
+    "forecast_days",
+    String(getOpenMeteoForecastDays(pickupAt)),
+  );
   url.searchParams.set(
     "current",
-    [
-      "weather_code",
-      "precipitation",
-      "rain",
-      "showers",
-      "wind_speed_10m",
-    ].join(","),
+    ["weather_code", "precipitation", "rain", "showers", "wind_speed_10m"].join(
+      ",",
+    ),
   );
   url.searchParams.set(
     "hourly",
@@ -1651,7 +1757,9 @@ async function requestWeatherQuote(force = false) {
   try {
     const response = await fetch(url.toString());
     if (!response.ok) {
-      throw new Error(`Không thể lấy dữ liệu thời tiết (HTTP ${response.status}).`);
+      throw new Error(
+        `Không thể lấy dữ liệu thời tiết (HTTP ${response.status}).`,
+      );
     }
     const result = await response.json();
     weatherQuoteState = {
@@ -1706,7 +1814,11 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function buildInfoToggleMarkup(content, label = "Xem chi tiết", extraClass = "") {
+function buildInfoToggleMarkup(
+  content,
+  label = "Xem chi tiết",
+  extraClass = "",
+) {
   const classes = ["info-toggle", "info-toggle--inline", extraClass]
     .filter(Boolean)
     .join(" ");
@@ -1733,7 +1845,8 @@ function updateInfoTogglePlacement(toggle) {
 
   window.requestAnimationFrame(() => {
     const rect = content.getBoundingClientRect();
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportWidth =
+      window.innerWidth || document.documentElement.clientWidth;
     const safeEdge = 12;
 
     if (rect.left < safeEdge) {

@@ -163,10 +163,7 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
                                     <label class="form-label small">Giá cơ bản (VNĐ/m2)</label>
                                     <input type="number" id="base_price" class="form-control" value="<?= (int) ($pricing['base_price'] ?? 15000) ?>">
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small">Giá tối thiểu (VNĐ)</label>
-                                    <input type="number" id="min_price" class="form-control" value="<?= (int) ($pricing['min_price'] ?? 1200000) ?>">
-                                </div>
+                                
                             </div>
                             <label class="form-label small">Hệ số mức độ sạch (Levels)</label>
                             <div class="row g-2 mb-3">

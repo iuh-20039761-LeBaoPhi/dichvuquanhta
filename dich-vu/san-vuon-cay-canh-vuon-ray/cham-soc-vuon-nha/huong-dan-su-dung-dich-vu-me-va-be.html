@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng dẫn sử dụng - Dịch vụ Mẹ và Bé</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Hide carousel indicators (gạch ngang dưới slide) */
+        .carousel-indicators {
+            display: none;
+        }
+
+        :root {
+            --pink-primary: #ff8fab;
+            --pink-light: #ffe5ec;
+            --pink-dark: #fb6f92;
+            --bg-gradient: linear-gradient(135deg, #fff5f7 0%, #ffffff 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+            /* Space for sticky header */
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-gradient);
+            color: #4a4a4a;
+        }
+
+        /* Hero Header */
+        .hero-section {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+                url('https://www.transparenttextures.com/patterns/cubes.png'),
+                linear-gradient(45deg, var(--pink-light), #ffffff);
+            padding: 15px 0;
+            border-bottom: 3px solid var(--pink-light);
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .hero-title {
+            color: var(--pink-dark);
+            font-weight: 700;
+            font-size: 1.8rem;
+            /* Slightly smaller for sticky version */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 0;
+        }
+
+        .hero-section p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-menu {
+            position: sticky;
+            top: 100px;
+            /* Offset to avoid header overlap */
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(255, 143, 171, 0.15);
+            border: 1px solid var(--pink-light);
+        }
+
+        .sidebar-menu .nav-link {
+            color: #666;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-menu .nav-link i {
+            width: 30px;
+            color: var(--pink-primary);
+        }
+
+        .sidebar-menu .nav-link:hover,
+        .sidebar-menu .nav-link.active {
+            background-color: var(--pink-primary);
+            color: white !important;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu .nav-link:hover i,
+        .sidebar-menu .nav-link.active i {
+            color: white;
+        }
+
+        /* Content Area */
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border-left: 5px solid var(--pink-primary);
+        }
+
+        .section-header {
+            color: var(--pink-dark);
+            margin-bottom: 25px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--pink-primary);
+            border-radius: 2px;
+        }
+
+        /* Placeholder Content */
+        .placeholder-box {
+            background: #fdfdfd;
+            border: 2px dashed var(--pink-light);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            color: #bbb;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--pink-light);
+            padding: 30px 0;
+            margin-top: 50px;
+            text-align: center;
+            border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+        }
+
+        .text-pink {
+            color: var(--pink-dark) !important;
+        }
+
+        .bg-pink {
+            background-color: var(--pink-primary) !important;
+            color: white;
+        }
+
+        /* Accordion Style */
+        .section-content {
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .content-card.active {
+            border-left: 5px solid var(--pink-dark);
+            box-shadow: 0 10px 30px rgba(255, 143, 171, 0.1);
+        }
+
+        .content-card.active .section-content {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header[role="button"] {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header[role="button"]::after {
+            content: '\f078';
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            font-size: 1rem;
+            color: var(--pink-primary);
+            transition: transform 0.3s ease;
+        }
+
+        .content-card.active .section-header::after {
+            transform: rotate(180deg);
+            color: var(--pink-dark);
+        }
+
+        /* Gallery/Carousel Style */
+        .interface-img {
+            width: 100%;
+            height: 450px;
+            object-fit: contain;
+            background: #f0f0f0;
+            border-radius: 12px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            filter: invert(1);
+        }
+
+        .carousel-indicators [data-bs-target] {
+            background-color: var(--pink-dark);
+        }
+
+        @media (max-width: 991.98px) {
+            .interface-img {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .interface-img {
+                height: 200px;
+            }
+        }
+
+        /* Guide Accordion Styles */
+        .guide-large-header,
+        .guide-small-header {
+            cursor: pointer;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .guide-large-header {
+            background-color: var(--pink-light);
+            color: var(--pink-dark);
+        }
+
+        .guide-small-header {
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .guide-large-header:hover,
+        .guide-small-header:hover {
+            filter: brightness(0.95);
+        }
+
+        .guide-large-header[aria-expanded="true"] {
+            background-color: var(--pink-primary);
+            color: white;
+        }
+
+        .guide-small-header[aria-expanded="true"] {
+            border-color: var(--pink-primary);
+            color: var(--pink-dark);
+            background-color: #fff;
+        }
+
+        .guide-large-header::after,
+        .guide-small-header::after {
+            content: '\f107';
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+
+        .guide-large-header[aria-expanded="true"]::after,
+        .guide-small-header[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+
+        .inner-carousel-img {
+            height: 350px;
+            object-fit: contain;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .img-caption {
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            color: #666;
+            background: #fdfdfd;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .inner-carousel-img {
+                height: 200px;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 15px 3px !important;
+            }
+
+            .section-header {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            #sidebarMenu {
+                position: sticky;
+                top: 100px;
+                z-index: 900;
+                height: fit-content;
+            }
+
+            .offcanvas-body {
+                overflow: visible !important;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar-menu {
+                position: relative;
+                top: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+
+            .offcanvas-body .sidebar-menu {
+                margin-top: 20px;
+            }
+        }
+
+        /* Device Tabs */
+        .device-tabs .nav-link {
+            color: var(--pink-dark);
+            border: 1px solid var(--pink-light);
+            margin: 0 5px;
+            border-radius: 25px;
+            font-weight: 600;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        .device-tabs .nav-link.active {
+            background-color: var(--pink-primary) !important;
+            color: white !important;
+            border-color: var(--pink-primary);
+            box-shadow: 0 4px 15px rgba(255, 143, 171, 0.4);
+        }
+
+        .device-tabs .nav-link:hover:not(.active) {
+            background-color: var(--pink-light);
+            transform: translateY(-2px);
+        }
+
+        .device-mockup {
+            margin: 0 auto;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-mockup {
+            max-width: 350px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .ipad-mockup {
+            max-width: 600px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .desktop-mockup {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .device-tabs .nav-link {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                margin: 2px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header Section -->
+    <header class="hero-section">
+        <div class="container-fluid d-flex align-items-center justify-content-between"
+            style="padding-left: 3px; padding-right: 3px;">
+            <!-- Left Spacer to balance the right menu icon on mobile -->
+            <div class="d-lg-none" style="width: 32px"></div>
+
+            <div class="text-center flex-grow-1">
+                <h1 class="hero-title">Hướng dẫn</h1>
+                <p class="text-muted d-none d-md-block mb-0">Dịch vụ Chăm sóc Mẹ và Bé chuyên nghiệp</p>
+            </div>
+
+            <!-- Mobile Menu Toggle (Moved to Right) -->
+            <button class="btn d-lg-none text-pink p-0" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#sidebarMenu">
+                <i class="fas fa-bars fs-3"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container-fluid my-4" style="padding-left: 3px; padding-right: 3px;">
+        <div class="row g-2">
+            <!-- Navigation Sidebar -->
+            <div class="col-lg-3">
+                <div class="offcanvas-lg offcanvas-end" id="sidebarMenu" tabindex="-1">
+                    <div class="offcanvas-header bg-pink text-white">
+                        <h5 class="offcanvas-title fw-bold">Danh mục hướng dẫn</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                            data-bs-target="#sidebarMenu"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <nav class="sidebar-menu shadow-sm">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#gioi-thieu">
+                                        <i class="fas fa-info-circle"></i> 1. Giới thiệu
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#giao-dien">
+                                        <i class="fas fa-desktop"></i> 2. Giao diện
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#huong-dan">
+                                        <i class="fas fa-book-open"></i> 3. Hướng dẫn chi tiết
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#lien-he">
+                                        <i class="fas fa-envelope"></i> 4. Liên hệ
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9 col-12">
+
+                <!-- 1. Giới thiệu -->
+                <section id="gioi-thieu" class="content-card active">
+                    <h2 class="section-header" role="button">1. Giới thiệu</h2>
+                    <div class="section-content">
+                        <div class="overview-content">
+                            <p class="lead mb-4">Hệ thống <strong>Chăm sóc Mẹ và Bé tại nhà</strong> được thiết kế nhằm
+                                mang lại sự tiện lợi và chuyên nghiệp trong việc chăm sóc sức khỏe toàn diện cho mẹ và
+                                bé sau sinh.</p>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <h5 class="fw-bold text-pink"><i class="fas fa-bullseye me-2"></i>Mục đích</h5>
+                                    <p>Cung cấp giải pháp đặt lịch chăm sóc tại nhà, giúp nâng cao chất lượng sống và
+                                        hồi phục sức khỏe tối ưu cho mẹ và bé.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5 class="fw-bold text-pink"><i class="fas fa-users me-2"></i>Đối tượng</h5>
+                                    <p>Các bà mẹ sau sinh, gia đình có trẻ nhỏ hoặc người thân có nhu cầu đặt dịch vụ
+                                        chăm sóc chuyên nghiệp.</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="fw-bold text-pink"><i class="fas fa-star me-2"></i>Chức năng chính</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Đăng ký & Đăng nhập
+                                                tài khoản</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Đặt lịch dịch vụ
+                                                trực tuyến</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Xem bảng giá & Chi
+                                                tiết dịch vụ</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Quản lý lịch sử &
+                                                Hóa đơn</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Gửi phản hồi & Liên
+                                                hệ</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Quản trị hệ thống
+                                                toàn diện</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="fw-bold text-pink"><i class="fas fa-user-cog me-2"></i>Thao tác người dùng
+                                </h5>
+                                <div class="p-3 bg-light rounded-3">
+                                    <span class="badge bg-pink m-1">Đăng ký/Đăng nhập</span>
+                                    <span class="badge bg-pink m-1">Đặt lịch</span>
+                                    <span class="badge bg-pink m-1">Chỉnh sửa Profile</span>
+                                    <span class="badge bg-pink m-1">Tra cứu hóa đơn</span>
+                                    <span class="badge bg-pink m-1">Tìm kiếm dịch vụ</span>
+                                    <span class="badge bg-pink m-1">Gửi phản hồi</span>
+                                </div>
+                            </div>
+
+                            <div class="workflow-box p-3 border-start border-4 border-pink bg-light">
+                                <h5 class="fw-bold text-pink small text-uppercase">Quy trình hệ thống</h5>
+                                <p class="small mb-0 italic">Người dùng <strong>Đăng nhập</strong> &rarr; Chọn
+                                    <strong>Dịch vụ</strong> &rarr; <strong>Đặt lịch</strong> &rarr; Hệ thống
+                                    <strong>Xác nhận</strong> & Thông báo nhân viên &rarr; Theo dõi <strong>Lịch sử &
+                                        Hóa đơn</strong>.
+                                </p>
+                            </div>
+
+                            <hr class="my-4 opacity-25">
+
+                            <div class="admin-overview">
+                                <h5 class="fw-bold text-pink mb-3"><i class="fas fa-user-shield me-2"></i>Quản trị hệ
+                                    thống (Admin)</h5>
+                                <p class="small text-muted mb-4">Mô-đun <code>admin_mevabe</code> là trung tâm điều hành
+                                    giúp quản trị viên kiểm soát toàn bộ hoạt động, đảm bảo dịch vụ vận hành trơn tru và
+                                    hỗ trợ khách hàng kịp thời.</p>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div
+                                            class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                            <h6 class="fw-bold small mb-2"><i
+                                                    class="fas fa-concierge-bell text-pink me-2"></i>Quản lý dịch vụ
+                                            </h6>
+                                            <p class="small mb-0 text-secondary">Thêm, sửa, xóa và cập nhật bảng giá, mô
+                                                tả dịch vụ mẹ và bé.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div
+                                            class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                            <h6 class="fw-bold small mb-2"><i
+                                                    class="fas fa-file-invoice-dollar text-pink me-2"></i>Quản lý đơn
+                                                hàng</h6>
+                                            <p class="small mb-0 text-secondary">Xác nhận lịch hẹn, cập nhật trạng thái
+                                                và tra soát hóa đơn chi tiết.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div
+                                            class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                            <h6 class="fw-bold small mb-2"><i
+                                                    class="fas fa-id-card-alt text-pink me-2"></i>Quản lý nhân viên</h6>
+                                            <p class="small mb-0 text-secondary">Quản lý hồ sơ nhân sự và phân công lịch
+                                                thực hiện dịch vụ cho khách.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div
+                                            class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                            <h6 class="fw-bold small mb-2"><i
+                                                    class="fas fa-user-graduate text-pink me-2"></i>Quản lý khách hàng
+                                            </h6>
+                                            <p class="small mb-0 text-secondary">Theo dõi hành trình khách hàng và xử lý
+                                                nhanh các phản hồi/yêu cầu.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </section>
+
+                <!-- 2. Giao diện -->
+                <section id="giao-dien" class="content-card">
+                    <h2 class="section-header" role="button">2. Giao diện</h2>
+                    <div class="section-content">
+                        <!-- 2.1 Khách hàng & Nhà cung cấp -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold text-pink mb-3"><i class="fas fa-users me-2"></i>2.1 Khách hàng & Nhà
+                                cung cấp</h5>
+
+                            <!-- Device Selector Tabs 2.1 -->
+                            <ul class="nav nav-pills device-tabs mb-4 justify-content-center" id="pills-2-1-tab"
+                                role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="pills-2-1-desktop-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-2-1-desktop" type="button" role="tab"><i
+                                            class="fas fa-desktop me-2"></i>Máy tính</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-2-1-ipad-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-2-1-ipad" type="button" role="tab"><i
+                                            class="fas fa-tablet-alt me-2"></i>iPad</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-2-1-mobile-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-2-1-mobile" type="button" role="tab"><i
+                                            class="fas fa-mobile-alt me-2"></i>Mobile</button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="pills-2-1-tabContent">
+                                <!-- Desktop View -->
+                                <div class="tab-pane fade show active" id="pills-2-1-desktop" role="tabpanel">
+                                    <div class="device-mockup desktop-mockup">
+                                        <div id="carouselUserDesktop" class="carousel slide" data-bs-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active"><img src="img/mobie/1.png"
+                                                        class="interface-img" alt="UI 1">
+                                                    <p class="img-caption">Trang chủ dịch vụ (Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/2.png"
+                                                        class="interface-img" alt="UI 2">
+                                                    <p class="img-caption">Trang giới thiệu (Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/3.png"
+                                                        class="interface-img" alt="UI 3">
+                                                    <p class="img-caption">Trang danh sách dịch vụ (Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/4.png"
+                                                        class="interface-img" alt="UI 4">
+                                                    <p class="img-caption">Trang cẩm nang (Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/5.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang liên hệ (Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/6.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang danh sách đơn hàng(Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/7.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang chi tiết đơn hàng (Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/8.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang đặt lịch dịch vụ(Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/9.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang điều khoản (Máy tính)</p>
+                                                </div>
+                                            </div>
+                                            <button class="carousel-control-prev" type="button"
+                                                data-bs-target="#carouselUserDesktop" data-bs-slide="prev"><span
+                                                    class="carousel-control-prev-icon"></span></button>
+                                            <button class="carousel-control-next" type="button"
+                                                data-bs-target="#carouselUserDesktop" data-bs-slide="next"><span
+                                                    class="carousel-control-next-icon"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- iPad View -->
+                                <div class="tab-pane fade" id="pills-2-1-ipad" role="tabpanel">
+                                    <div class="device-mockup ipad-mockup">
+                                        <div id="carouselUserIpad" class="carousel slide" data-bs-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active"><img src="img/ipad/1.png"
+                                                        class="interface-img" alt="UI 6">
+                                                    <p class="img-caption">Trang danh sách đơn hàng (iPad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/2.png"
+                                                        class="interface-img" alt="UI 7">
+                                                    <p class="img-caption">Trang chi tiết đơn hàng (iPad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/3.png"
+                                                        class="interface-img" alt="UI 3">
+                                                    <p class="img-caption">Trang danh sách dịch vụ (iPad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/4.png"
+                                                        class="interface-img" alt="UI 4">
+                                                    <p class="img-caption">Trang cẩm nang (iPad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/5.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang liên hệ (iPad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/6.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang danh sách đơn hàng(iPad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/7.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang chi tiết đơn hàng (iPad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/8.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang đặt lịch dịch vụ(iPad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/9.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang điều khoản (iPad)</p>
+                                                </div>
+                                            </div>
+                                            <button class="carousel-control-prev" type="button"
+                                                data-bs-target="#carouselUserIpad" data-bs-slide="prev"><span
+                                                    class="carousel-control-prev-icon"></span></button>
+                                            <button class="carousel-control-next" type="button"
+                                                data-bs-target="#carouselUserIpad" data-bs-slide="next"><span
+                                                    class="carousel-control-next-icon"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Mobile View -->
+                                <div class="tab-pane fade" id="pills-2-1-mobile" role="tabpanel">
+                                    <div class="device-mockup mobile-mockup">
+                                        <div id="carouselUserMobile" class="carousel slide" data-bs-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active"><img src="img/mobie/1.png"
+                                                        class="interface-img" alt="UI 6">
+                                                    <p class="img-caption">Trang danh sách đơn hàng (mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/2.png"
+                                                        class="interface-img" alt="UI 7">
+                                                    <p class="img-caption">Trang chi tiết đơn hàng (mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/3.png"
+                                                        class="interface-img" alt="UI 3">
+                                                    <p class="img-caption">Trang danh sách dịch vụ (mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/4.png"
+                                                        class="interface-img" alt="UI 4">
+                                                    <p class="img-caption">Trang cẩm nang (mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/5.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang liên hệ (mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/6.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang danh sách đơn hàng(mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/7.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang chi tiết đơn hàng (mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/8.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang đặt lịch dịch vụ(mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/9.png"
+                                                        class="interface-img" alt="UI 5">
+                                                    <p class="img-caption">Trang điều khoản (mobie)</p>
+                                                </div>
+                                            </div>
+                                            <button class="carousel-control-prev" type="button"
+                                                data-bs-target="#carouselUserMobile" data-bs-slide="prev"><span
+                                                    class="carousel-control-prev-icon"></span></button>
+                                            <button class="carousel-control-next" type="button"
+                                                data-bs-target="#carouselUserMobile" data-bs-slide="next"><span
+                                                    class="carousel-control-next-icon"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2.2 Admin -->
+                        <div>
+                            <h5 class="fw-bold text-pink mb-3"><i class="fas fa-user-shield me-2"></i>2.2 Quản trị viên
+                                (Admin)</h5>
+
+                            <!-- Device Selector Tabs 2.2 -->
+                            <ul class="nav nav-pills device-tabs mb-4 justify-content-center" id="pills-2-2-tab"
+                                role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="pills-2-2-desktop-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-2-2-desktop" type="button" role="tab"><i
+                                            class="fas fa-desktop me-2"></i>Máy tính</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-2-2-ipad-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-2-2-ipad" type="button" role="tab"><i
+                                            class="fas fa-tablet-alt me-2"></i>iPad</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-2-2-mobile-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-2-2-mobile" type="button" role="tab"><i
+                                            class="fas fa-mobile-alt me-2"></i>Mobile</button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="pills-2-2-tabContent">
+                                <!-- Desktop View -->
+                                <div class="tab-pane fade show active" id="pills-2-2-desktop" role="tabpanel">
+                                    <div class="device-mockup desktop-mockup">
+                                        <div id="carouselAdminDesktop" class="carousel slide" data-bs-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active"><img src="img/laptop/10.png"
+                                                        class="interface-img" alt="Admin UI 1">
+                                                    <p class="img-caption">Trang quản lý danh sách đơn hàng(Admin - Máy
+                                                        tính)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/laptop/11.png"
+                                                        class="interface-img" alt="Admin UI 2">
+                                                    <p class="img-caption">Trang chi tiết đơn hàng (Admin - Máy tính)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/laptop/12.png"
+                                                        class="interface-img" alt="Admin UI 3">
+                                                    <p class="img-caption">Trang quản lý dịch vụ (Admin - Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/laptop/13.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang chi tiết dịch vụ (Admin - Máy tính)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/laptop/14.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang sửa dich vụ chi tiết (Admin - Máy tính)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/laptop/15.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang thêm dịch vụ mới (Admin - Máy tính)</p>
+                                                </div>
+                                            </div>
+                                            <button class="carousel-control-prev" type="button"
+                                                data-bs-target="#carouselAdminDesktop" data-bs-slide="prev"><span
+                                                    class="carousel-control-prev-icon"></span></button>
+                                            <button class="carousel-control-next" type="button"
+                                                data-bs-target="#carouselAdminDesktop" data-bs-slide="next"><span
+                                                    class="carousel-control-next-icon"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- iPad View -->
+                                <div class="tab-pane fade" id="pills-2-2-ipad" role="tabpanel">
+                                    <div class="device-mockup ipad-mockup">
+                                        <div id="carouselAdminIpad" class="carousel slide" data-bs-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active"><img src="img/ipad/10.png"
+                                                        class="interface-img" alt="Admin UI 1">
+                                                    <p class="img-caption">Trang quản lý danh sách đơn hàng(Admin -ipad)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/11.png"
+                                                        class="interface-img" alt="Admin UI 2">
+                                                    <p class="img-caption">Trang chi tiết đơn hàng (Admin - ipad)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/12.png"
+                                                        class="interface-img" alt="Admin UI 3">
+                                                    <p class="img-caption">Trang quản lý dịch vụ (Admin - ipad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/13.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang chi tiết dịch vụ (Admin - ipad)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/14.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang sửa dich vụ chi tiết (Admin - ipad)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/ipad/15.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang thêm dịch vụ mới (Admin - ipad)</p>
+                                                </div>
+                                            </div>
+                                            <button class="carousel-control-prev" type="button"
+                                                data-bs-target="#carouselAdminIpad" data-bs-slide="prev"><span
+                                                    class="carousel-control-prev-icon"></span></button>
+                                            <button class="carousel-control-next" type="button"
+                                                data-bs-target="#carouselAdminIpad" data-bs-slide="next"><span
+                                                    class="carousel-control-next-icon"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Mobile View -->
+                                <div class="tab-pane fade" id="pills-2-2-mobile" role="tabpanel">
+                                    <div class="device-mockup mobile-mockup">
+                                        <div id="carouselAdminMobile" class="carousel slide" data-bs-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div class="carousel-item active"><img src="img/mobie/10.png"
+                                                        class="interface-img" alt="Admin UI 1">
+                                                    <p class="img-caption">Trang quản lý danh sách đơn hàng(Admin-mobie)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/11.png"
+                                                        class="interface-img" alt="Admin UI 2">
+                                                    <p class="img-caption">Trang chi tiết đơn hàng (Admin - mobie)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/12.png"
+                                                        class="interface-img" alt="Admin UI 3">
+                                                    <p class="img-caption">Trang quản lý dịch vụ (Admin - mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/13.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang chi tiết dịch vụ (Admin - mobie)</p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/14.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang sửa dich vụ chi tiết (Admin - mobie)
+                                                    </p>
+                                                </div>
+                                                <div class="carousel-item"><img src="img/mobie/15.png"
+                                                        class="interface-img" alt="Admin UI 4">
+                                                    <p class="img-caption">Trang thêm dịch vụ mới (Admin - mobie)</p>
+                                                </div>
+                                            </div>
+                                            <button class="carousel-control-prev" type="button"
+                                                data-bs-target="#carouselAdminMobile" data-bs-slide="prev"><span
+                                                    class="carousel-control-prev-icon"></span></button>
+                                            <button class="carousel-control-next" type="button"
+                                                data-bs-target="#carouselAdminMobile" data-bs-slide="next"><span
+                                                    class="carousel-control-next-icon"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Hướng dẫn chi tiết -->
+                <section id="huong-dan" class="content-card">
+                    <h2 class="section-header" role="button">3. Hướng dẫn chi tiết</h2>
+                    <div class="section-content">
+
+                        <!-- Accordion Mục Lớn -->
+                        <div class="accordion" id="guideAccordionMain">
+
+                            <!-- 1. KHÁCH HÀNG -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header" data-bs-toggle="collapse"
+                                    data-bs-target="#guideCustomer" aria-expanded="true">
+                                    <span><i class="fas fa-user-heart me-2"></i>I. KHÁCH HÀNG</span>
+                                </div>
+                                <div id="guideCustomer" class="collapse show" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subCustomer">
+                                        <!-- 1.1 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse"
+                                                data-bs-target="#cust1" aria-expanded="true">
+                                                1.1 Hướng dẫn đặt lịch và hủy đơn
+                                            </div>
+                                            <div id="cust1" class="collapse show" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <!-- Tabs for 1.1 -->
+                                                    <ul class="nav nav-pills device-tabs mb-3 justify-content-center"
+                                                        id="pills-3-1-1-tab" role="tablist">
+                                                        <li class="nav-item"><button class="nav-link active"
+                                                                data-bs-toggle="pill"
+                                                                data-bs-target="#pills-3-1-1-desktop" type="button"><i
+                                                                    class="fas fa-desktop me-1"></i>Máy tính</button>
+                                                        </li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-1-1-ipad"
+                                                                type="button"><i
+                                                                    class="fas fa-tablet-alt me-1"></i>iPad</button>
+                                                        </li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill"
+                                                                data-bs-target="#pills-3-1-1-mobile" type="button"><i
+                                                                    class="fas fa-mobile-alt me-1"></i>Mobile</button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content" id="pills-3-1-1-tabContent">
+                                                        <!-- Desktop -->
+                                                        <div class="tab-pane fade show active" id="pills-3-1-1-desktop">
+                                                            <div class="device-mockup desktop-mockup">
+                                                                <div id="carousel-3-1-1-dt" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/laptop/16.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Truy cập
+                                                                                trang dich vụ và
+                                                                                chọn nút'Dịch vụ' </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/17.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Điền thông
+                                                                                tin vào form sau đó Chọn nút "xem lại
+                                                                                thông tin" </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/18.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 3: Kiểm tra
+                                                                                thông tin điền sau đó nhấn "Xác Nhận",
+                                                                                trang tự động chuyển tới danh sách đơn
+                                                                                hàng
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/19.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 4: Xem danh sách
+                                                                                đơn hàng chọn xem "Chi tiết"
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/20.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 5: Chọn "Hủy"
+                                                                                Nếu muốn hủy đơn
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#carousel-3-1-1-dt"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#carousel-3-1-1-dt"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- iPad -->
+                                                        <div class="tab-pane fade" id="pills-3-1-1-ipad">
+                                                            <div class="device-mockup ipad-mockup">
+                                                                <div id="carousel-3-1-1-ip" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/ipad/16.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Truy cập
+                                                                                trang dich vụ và
+                                                                                chọn nút'Dịch vụ' </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/17.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Điền thông
+                                                                                tin vào form sau đó Chọn nút "xem lại
+                                                                                thông tin" </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/18.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 3: Kiểm tra
+                                                                                thông tin điền sau đó nhấn "Xác Nhận",
+                                                                                trang tự động chuyển tới danh sách đơn
+                                                                                hàng
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/19.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 4: Xem danh sách
+                                                                                đơn hàng chọn xem "Chi tiết"
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/20.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 5: Chọn "Hủy"
+                                                                                Nếu muốn hủy đơn
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#carousel-3-1-1-ip"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#carousel-3-1-1-ip"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Mobile -->
+                                                        <div class="tab-pane fade" id="pills-3-1-1-mobile">
+                                                            <div class="device-mockup mobile-mockup">
+                                                                <div id="carousel-3-1-1-mb" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/mobie/16.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Truy cập
+                                                                                trang dich vụ và
+                                                                                chọn nút'Dịch vụ' </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/17.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Điền thông
+                                                                                tin vào form sau đó Chọn nút "xem lại
+                                                                                thông tin" </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/18.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 3: Kiểm tra
+                                                                                thông tin điền sau đó nhấn "Xác Nhận",
+                                                                                trang tự động chuyển tới danh sách đơn
+                                                                                hàng
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/19.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 4: Xem danh sách
+                                                                                đơn hàng chọn xem "Chi tiết"
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/20.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 3">
+                                                                            <p class="img-caption">Bước 5: Chọn "Hủy"
+                                                                                Nếu muốn hủy đơn
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#carousel-3-1-1-mb"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#carousel-3-1-1-mb"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 1.2 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse"
+                                                data-bs-target="#cust2">
+                                                1.2 Hướng dẫn liên hệ tư vấn
+                                            </div>
+                                            <div id="cust2" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <ul class="nav nav-pills device-tabs mb-3 justify-content-center"
+                                                        id="pills-3-1-2-tab" role="tablist">
+                                                        <li class="nav-item"><button class="nav-link active"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-1-2-dt"
+                                                                type="button">Máy tính</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-1-2-ip"
+                                                                type="button">iPad</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-1-2-mb"
+                                                                type="button">Mobile</button></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-3-1-2-dt">
+                                                            <div class="device-mockup desktop-mockup">
+                                                                <div id="slideCust2dt" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/laptop/21.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Chọn "Liên
+                                                                                Hệ"</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/22.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Điền form và
+                                                                                chọn dịch vụ quan tâm và "Gửi tin nhắn"
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideCust2dt"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideCust2dt"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-1-2-ip">
+                                                            <div class="device-mockup ipad-mockup">
+                                                                <div id="slideCust2ip" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/ipad/21.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Chọn "Liên
+                                                                                Hệ"</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/22.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Điền form và
+                                                                                chọn dịch vụ quan tâm và "Gửi tin nhắn"
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideCust2ip"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideCust2ip"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-1-2-mb">
+                                                            <div class="device-mockup mobile-mockup">
+                                                                <div id="slideCust2mb" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/mobie/21.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Chọn "Liên
+                                                                                Hệ"</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/22.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Điền form và
+                                                                                chọn dịch vụ quan tâm và "Gửi tin nhắn"
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideCust2mb"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideCust2mb"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 1.3 -->
+                                        <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse"
+                                                data-bs-target="#cust3">
+                                                1.3 Hướng dẫn theo dõi đơn & Đánh giá
+                                            </div>
+                                            <div id="cust3" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light">
+                                                    <ul class="nav nav-pills device-tabs mb-3 justify-content-center"
+                                                        id="pills-3-1-3-tab" role="tablist">
+                                                        <li class="nav-item"><button class="nav-link active"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-1-3-dt"
+                                                                type="button">Máy tính</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-1-3-ip"
+                                                                type="button">iPad</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-1-3-mb"
+                                                                type="button">Mobile</button></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-3-1-3-dt">
+                                                            <div class="device-mockup desktop-mockup">
+                                                                <div id="slideCust3dt" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/laptop/23.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Vào mục danh
+                                                                                sách đơn hàng</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/24.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: xem chi tiết
+                                                                                đơn</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/25.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 3:đánh giá nếu
+                                                                                đơn đã hoàn thành</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideCust3dt"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideCust3dt"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-1-3-ip">
+                                                            <div class="device-mockup ipad-mockup">
+                                                                <div id="slideCust3ip" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/ipad/23.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Vào mục danh
+                                                                                sách đơn hàng</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/24.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: xem chi tiết
+                                                                                đơn</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/25.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 3:đánh giá nếu
+                                                                                đơn đã hoàn thành</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideCust3ip"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideCust3ip"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-1-3-mb">
+                                                            <div class="device-mockup mobile-mockup">
+                                                                <div id="slideCust3mb" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/mobie/23.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Vào mục danh
+                                                                                sách đơn hàng</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/24.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: xem chi tiết
+                                                                                đơn</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/25.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 3:đánh giá nếu
+                                                                                đơn đã hoàn thành</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideCust3mb"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideCust3mb"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. NHÀ CUNG CẤP -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse"
+                                    data-bs-target="#guideProvider">
+                                    <span><i class="fas fa-hand-holding-heart me-2"></i>II. NHÀ CUNG CẤP</span>
+                                </div>
+                                <div id="guideProvider" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subProvider">
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse"
+                                                data-bs-target="#prov1">
+                                                2.1 Hướng dẫn nhận việc & Bắt đầu công việc
+                                            </div>
+                                            <div id="prov1" class="collapse" data-bs-parent="#subProvider">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <ul class="nav nav-pills device-tabs mb-3 justify-content-center"
+                                                        id="pills-3-2-1-tab" role="tablist">
+                                                        <li class="nav-item"><button class="nav-link active"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-2-1-dt"
+                                                                type="button">Máy tính</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-2-1-ip"
+                                                                type="button">iPad</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-2-1-mb"
+                                                                type="button">Mobile</button></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-3-2-1-dt">
+                                                            <div class="device-mockup desktop-mockup">
+                                                                <div id="slideProv1dt" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/laptop/26.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Đăng nhập và
+                                                                                vào danh sách đơn hàng nhấn "xem chi
+                                                                                tiết"đơn chờ duyệt</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/27.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 3: Chọn "Nhận
+                                                                                Việc"</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/28.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 4:Bắt đầu tổng
+                                                                                thể dịch vụ Chọn "Bắt đầu dịch vụ"</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/29.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 5:Nếu muốn kết
+                                                                                thúc hoàn toàn dịch vụ chọn "Hoàn thành
+                                                                                dich vụ"
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/30.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 6: Bắt đầu công
+                                                                                việc trong ngày chọn "Bắt đầu"
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/31.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 7: Kết thúc công
+                                                                                việc trong ngày chọn "Kết thúc"
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/32.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 8: xem lịch sửa
+                                                                                làm việc trong ngày"
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideProv1dt"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideProv1dt"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-2-1-ip">
+                                                             <div class="device-mockup ipad-mockup">
+                                                                 <div id="slideProv1ip" class="carousel slide"
+                                                                     data-bs-ride="carousel">
+                                                                     <div class="carousel-inner">
+                                                                         <div class="carousel-item active"><img
+                                                                                 src="img/ipad/26.png"
+                                                                                 class="inner-carousel-img w-100"
+                                                                                 alt="Step 1">
+                                                                             <p class="img-caption">Bước 1: Đăng nhập và
+                                                                                 vào danh sách đơn hàng nhấn "xem chi
+                                                                                 tiết"đơn chờ duyệt</p>
+                                                                         </div>
+                                                                         <div class="carousel-item"><img
+                                                                                 src="img/ipad/27.png"
+                                                                                 class="inner-carousel-img w-100"
+                                                                                 alt="Step 2">
+                                                                             <p class="img-caption">Bước 3: Chọn "Nhận
+                                                                                 Việc"</p>
+                                                                         </div>
+                                                                         <div class="carousel-item"><img
+                                                                                 src="img/ipad/28.png"
+                                                                                 class="inner-carousel-img w-100"
+                                                                                 alt="Step 2">
+                                                                             <p class="img-caption">Bước 4:Bắt đầu tổng
+                                                                                 thể dịch vụ Chọn "Bắt đầu dịch vụ"</p>
+                                                                         </div>
+                                                                         <div class="carousel-item"><img
+                                                                                 src="img/ipad/29.png"
+                                                                                 class="inner-carousel-img w-100"
+                                                                                 alt="Step 2">
+                                                                             <p class="img-caption">Bước 5:Nếu muốn kết
+                                                                                 thúc hoàn toàn dịch vụ chọn "Hoàn thành
+                                                                                 dich vụ"
+                                                                             </p>
+                                                                         </div>
+                                                                         <div class="carousel-item"><img
+                                                                                 src="img/ipad/30.png"
+                                                                                 class="inner-carousel-img w-100"
+                                                                                 alt="Step 2">
+                                                                             <p class="img-caption">Bước 6: Bắt đầu công
+                                                                                 việc trong ngày chọn "Bắt đầu"
+                                                                             </p>
+                                                                         </div>
+                                                                         <div class="carousel-item"><img
+                                                                                 src="img/ipad/31.png"
+                                                                                 class="inner-carousel-img w-100"
+                                                                                 alt="Step 2">
+                                                                             <p class="img-caption">Bước 7: Kết thúc công
+                                                                                 việc trong ngày chọn "Kết thúc"
+                                                                             </p>
+                                                                         </div>
+                                                                         <div class="carousel-item"><img
+                                                                                 src="img/ipad/32.png"
+                                                                                 class="inner-carousel-img w-100"
+                                                                                 alt="Step 2">
+                                                                             <p class="img-caption">Bước 8: xem lịch sửa
+                                                                                 làm việc trong ngày"
+                                                                             </p>
+                                                                         </div>
+                                                                     </div>
+                                                                     <button class="carousel-control-prev" type="button"
+                                                                         data-bs-target="#slideProv1ip"
+                                                                         data-bs-slide="prev"><span
+                                                                             class="carousel-control-prev-icon"></span></button>
+                                                                     <button class="carousel-control-next" type="button"
+                                                                         data-bs-target="#slideProv1ip"
+                                                                         data-bs-slide="next"><span
+                                                                             class="carousel-control-next-icon"></span></button>
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                        <div class="tab-pane fade" id="pills-3-2-1-mb">
+                                                            <div class="device-mockup mobile-mockup">
+                                                                <div id="slideProv1mb" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-inner">
+                                                                            <div class="carousel-item active"><img
+                                                                                    src="img/mobie/26.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 1">
+                                                                                <p class="img-caption">Bước 1: Đăng nhập
+                                                                                    và
+                                                                                    vào danh sách đơn hàng nhấn "xem chi
+                                                                                    tiết"đơn chờ duyệt</p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/27.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Bước 3: Chọn
+                                                                                    "Nhận
+                                                                                    Việc"</p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/28.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Bước 4:Bắt đầu
+                                                                                    tổng
+                                                                                    thể dịch vụ Chọn "Bắt đầu dịch vụ"
+                                                                                </p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/29.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Bước 5:Nếu muốn
+                                                                                    kết
+                                                                                    thúc hoàn toàn dịch vụ chọn "Hoàn
+                                                                                    thành
+                                                                                    dich vụ"
+                                                                                </p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/30.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Bước 6: Bắt đầu
+                                                                                    công
+                                                                                    việc trong ngày chọn "Bắt đầu"
+                                                                                </p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/31.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Bước 7: Kết thúc
+                                                                                    công
+                                                                                    việc trong ngày chọn "Kết thúc"
+                                                                                </p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/32.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Bước 8: xem lịch
+                                                                                    sửa
+                                                                                    làm việc trong ngày"
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button class="carousel-control-prev"
+                                                                            type="button"
+                                                                            data-bs-target="#slideProv1mb"
+                                                                            data-bs-slide="prev"><span
+                                                                                class="carousel-control-prev-icon"></span></button>
+                                                                        <button class="carousel-control-next"
+                                                                            type="button"
+                                                                            data-bs-target="#slideProv1mb"
+                                                                            data-bs-slide="next"><span
+                                                                                class="carousel-control-next-icon"></span></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse"
+                                                data-bs-target="#prov2">
+                                                2.2 Hướng dẫn theo dõi lịch làm việc & Đánh giá
+                                            </div>
+                                            <div id="prov2" class="collapse" data-bs-parent="#subProvider">
+                                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light">
+                                                    <ul class="nav nav-pills device-tabs mb-3 justify-content-center"
+                                                        id="pills-3-2-2-tab" role="tablist">
+                                                        <li class="nav-item"><button class="nav-link active"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-2-2-dt"
+                                                                type="button">Máy tính</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-2-2-ip"
+                                                                type="button">iPad</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-2-2-mb"
+                                                                type="button">Mobile</button></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-3-2-2-dt">
+                                                            <div class="device-mockup desktop-mockup">
+                                                                <div id="slideProv2dt" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/141/"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Bước 1: Quản lý lịch
+                                                                                làm việc</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-2-2-ip">
+                                                            <div class="device-mockup ipad-mockup">
+                                                                <div class="placeholder-box p-4">
+                                                                    <p>Giao diện iPad cho mục này đang được cập nhật.
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-2-2-mb">
+                                                            <div class="device-mockup mobile-mockup">
+                                                                <div id="slideProv2mb" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/142/"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Đối soát đánh
+                                                                                giá trên Mobile</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. ADMIN -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse"
+                                    data-bs-target="#guideAdmin">
+                                    <span><i class="fas fa-user-shield me-2"></i>III. ADMIN</span>
+                                </div>
+                                <div id="guideAdmin" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subAdmin">
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse"
+                                                data-bs-target="#adm1">
+                                                3.1 Hướng dẫn xem đơn hàng
+                                            </div>
+                                            <div id="adm1" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <ul class="nav nav-pills device-tabs mb-3 justify-content-center"
+                                                        id="pills-3-3-1-tab" role="tablist">
+                                                        <li class="nav-item"><button class="nav-link active"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-1-dt"
+                                                                type="button">Máy tính</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-1-ip"
+                                                                type="button">iPad</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-1-mb"
+                                                                type="button">Mobile</button></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-3-3-1-dt">
+                                                            <div class="device-mockup desktop-mockup">
+                                                                <div id="slideAdm1dt" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/laptop/33.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Admin Bước 1: Đăng
+                                                                                nhập Admin</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/34.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Chọn Dịch vụ
+                                                                                mẹ và bé
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/35.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 3: Chọn chọn đơn
+                                                                                hàng muốn xem
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/35.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 4: xem chi tiết
+                                                                                đơn hàng
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideAdm1dt"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideAdm1dt"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-3-1-ip">
+                                                            <div class="device-mockup ipad-mockup">
+                                                                <div id="slideAdm1ip" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/ipad/33.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Admin Bước 1: Đăng
+                                                                                nhập Admin</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/34.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Chọn Dịch vụ
+                                                                                mẹ và bé
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/35.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 3: Chọn chọn đơn
+                                                                                hàng muốn xem
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/35.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 4: xem chi tiết
+                                                                                đơn hàng
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideAdm1ip"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideAdm1ip"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-3-1-mb">
+                                                            <div class="device-mockup mobile-mockup">
+                                                                <div id="slideAdm1mb" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/mobie/33.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Admin Bước 1: Đăng
+                                                                                nhập Admin</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/34.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 2: Chọn Dịch vụ
+                                                                                mẹ và bé
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/35.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 3: Chọn chọn đơn
+                                                                                hàng muốn xem
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/mobie/35.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Bước 4: xem chi tiết
+                                                                                đơn hàng
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideAdm1mb"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideAdm1mb"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse"
+                                                data-bs-target="#adm2">
+                                                3.2 Hướng dẫn thêm dịch vụ
+                                            </div>
+                                            <div id="adm2" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <ul class="nav nav-pills device-tabs mb-3 justify-content-center"
+                                                        id="pills-3-3-2-tab" role="tablist">
+                                                        <li class="nav-item"><button class="nav-link active"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-2-dt"
+                                                                type="button">Máy tính</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-2-ip"
+                                                                type="button">iPad</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-2-mb"
+                                                                type="button">Mobile</button></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-3-3-2-dt">
+                                                            <div class="device-mockup desktop-mockup">
+                                                                <div id="slideAdm2dt" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/laptop/38.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Admin Bước 1: Chọn
+                                                                                quản lý dich vụ</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/38.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Admin Bước 2: Chọn
+                                                                                Thêm dich vụ</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/39.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Admin Bước 3: Điền
+                                                                                thông tin dich vụ và nhấn Lưu</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideAdm2dt"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideAdm2dt"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-3-2-ip">
+                                                            <div class="device-mockup ipad-mockup">
+                                                                <div id="slideAdm2ip" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/ipad/37.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Admin Bước 1: Chọn
+                                                                                quản lý dich vụ</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/38.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Admin Bước 2: Chọn
+                                                                                Thêm dich vụ</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/39.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Admin Bước 3: Điền
+                                                                                thông tin dich vụ và nhấn Lưu</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideAdm2ip"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideAdm2ip"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-3-2-mb">
+                                                            <div class="device-mockup mobile-mockup">
+                                                                <div id="slideAdm2mb" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-inner">
+                                                                            <div class="carousel-item active"><img
+                                                                                    src="img/mobie/37.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 1">
+                                                                                <p class="img-caption">Admin Bước 1:
+                                                                                    Chọn quản lý dich vụ</p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/38.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Admin Bước 2:
+                                                                                    Chọn Thêm dich vụ</p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/39.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Admin Bước 3:
+                                                                                    Điền thông tin dich vụ và nhấn Lưu
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button class="carousel-control-prev"
+                                                                            type="button"
+                                                                            data-bs-target="#slideAdm2mb"
+                                                                            data-bs-slide="prev"><span
+                                                                                class="carousel-control-prev-icon"></span></button>
+                                                                        <button class="carousel-control-next"
+                                                                            type="button"
+                                                                            data-bs-target="#slideAdm2mb"
+                                                                            data-bs-slide="next"><span
+                                                                                class="carousel-control-next-icon"></span></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse"
+                                                data-bs-target="#adm3">
+                                                3.3 Hướng dẫn sửa dịch vụ
+                                            </div>
+                                            <div id="adm3" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light">
+                                                    <ul class="nav nav-pills device-tabs mb-3 justify-content-center"
+                                                        id="pills-3-3-3-tab" role="tablist">
+                                                        <li class="nav-item"><button class="nav-link active"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-3-dt"
+                                                                type="button">Máy tính</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-3-ip"
+                                                                type="button">iPad</button></li>
+                                                        <li class="nav-item"><button class="nav-link"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-3-3-3-mb"
+                                                                type="button">Mobile</button></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-3-3-3-dt">
+                                                            <div class="device-mockup desktop-mockup">
+                                                                <div id="slideAdm3dt" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/laptop/38.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Admin Bước 1: Chọn
+                                                                                dịch vụ muốn sửa</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/laptop/40.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Admin Bước 2: Sửa
+                                                                                thông tin dich vụ và nhấn lưu</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideAdm3dt"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideAdm3dt"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-3-3-ip">
+                                                            <div class="device-mockup ipad-mockup">
+                                                                <div id="slideAdm3ip" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-item active"><img
+                                                                                src="img/ipad/38.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 1">
+                                                                            <p class="img-caption">Admin Bước 1: Chọn
+                                                                                dịch vụ muốn sửa</p>
+                                                                        </div>
+                                                                        <div class="carousel-item"><img
+                                                                                src="img/ipad/40.png"
+                                                                                class="inner-carousel-img w-100"
+                                                                                alt="Step 2">
+                                                                            <p class="img-caption">Admin Bước 2: Sửa
+                                                                                thông tin dich vụ và nhấn lưu</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <button class="carousel-control-prev" type="button"
+                                                                        data-bs-target="#slideAdm3ip"
+                                                                        data-bs-slide="prev"><span
+                                                                            class="carousel-control-prev-icon"></span></button>
+                                                                    <button class="carousel-control-next" type="button"
+                                                                        data-bs-target="#slideAdm3ip"
+                                                                        data-bs-slide="next"><span
+                                                                            class="carousel-control-next-icon"></span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-3-3-3-mb">
+                                                            <div class="device-mockup mobile-mockup">
+                                                                <div id="slideAdm3mb" class="carousel slide"
+                                                                    data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        <div class="carousel-inner">
+                                                                            <div class="carousel-item active"><img
+                                                                                    src="img/mobie/38.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 1">
+                                                                                <p class="img-caption">Admin Bước 1:
+                                                                                    Chọn
+                                                                                    dịch vụ muốn sửa</p>
+                                                                            </div>
+                                                                            <div class="carousel-item"><img
+                                                                                    src="img/mobie/40.png"
+                                                                                    class="inner-carousel-img w-100"
+                                                                                    alt="Step 2">
+                                                                                <p class="img-caption">Admin Bước 2: Sửa
+                                                                                    thông tin dich vụ và nhấn lưu</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button class="carousel-control-prev"
+                                                                            type="button"
+                                                                            data-bs-target="#slideAdm3mb"
+                                                                            data-bs-slide="prev"><span
+                                                                                class="carousel-control-prev-icon"></span></button>
+                                                                        <button class="carousel-control-next"
+                                                                            type="button"
+                                                                            data-bs-target="#slideAdm3mb"
+                                                                            data-bs-slide="next"><span
+                                                                                class="carousel-control-next-icon"></span></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Liên hệ -->
+                <section id="lien-he" class="content-card">
+                    <h2 class="section-header" role="button">4. Liên hệ</h2>
+                    <div class="section-content">
+                        <div class="p-4 bg-white rounded-4 shadow-sm border border-light">
+                            <h4 class="fw-bold text-pink mb-3">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI</h4>
+                            <p class="mb-2"><strong>MST:</strong> 0315609853</p>
+                            <p class="mb-4 lh-lg">
+                                <i class="fas fa-map-marker-alt text-pink me-2"></i><strong>Địa chỉ:</strong>
+                                Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp,
+                                Quận 12, Thành Phố Hồ Chí Minh, Việt Nam
+                            </p>
+
+                            <hr class="my-4 opacity-25">
+
+                            <h5 class="fw-bold mb-3"><i class="fas fa-headset text-pink me-2"></i>Thông tin liên lạc
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-light border border-light">
+                                        <i class="fas fa-phone-alt fa-2x text-pink me-3"></i>
+                                        <div>
+                                            <div class="small text-muted">Điện thoại</div>
+                                            <a href="tel:0775472347"
+                                                class="fw-bold text-dark text-decoration-none">0775472347</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-light border border-light">
+                                        <i class="fas fa-envelope fa-2x text-pink me-3"></i>
+                                        <div>
+                                            <div class="small text-muted">Email</div>
+                                            <a href="mailto:dichvuquanhta.vn@gmail.com"
+                                                class="fw-bold text-dark text-decoration-none">dichvuquanhta.vn@gmail.com</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container-fluid" style="padding-left: 3px; padding-right: 3px;">
+            <p class="mb-0 text-muted">Dịch vụ Chăm sóc Mẹ và Bé</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.content-card');
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu .nav-link');
+
+            function activateSection(id) {
+                if (!id) return;
+                const targetId = id.startsWith('#') ? id : `#${id}`;
+
+                sections.forEach(s => s.classList.remove('active'));
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+
+                const targetSection = document.querySelector(targetId);
+                const targetLink = document.querySelector(`.sidebar-menu .nav-link[href="${targetId}"]`);
+
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    // Scroll to section smoothly
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 110,
+                        behavior: 'smooth'
+                    });
+                }
+                if (targetLink) targetLink.classList.add('active');
+
+                // Close offcanvas on mobile after selection
+                const offcanvasElement = document.getElementById('sidebarMenu');
+                if (offcanvasElement) {
+                    const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+                    if (window.innerWidth < 992) {
+                        bsOffcanvas.hide();
+                    }
+                }
+            }
+
+            // Click on Sidebar
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const id = link.getAttribute('href');
+                    if (id && id.startsWith('#')) {
+                        e.preventDefault();
+                        activateSection(id);
+                    }
+                });
+            });
+
+            // Click on Section Header
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const id = header.parentElement.id;
+                    if (id) activateSection(id);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

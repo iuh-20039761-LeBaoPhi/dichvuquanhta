@@ -42,12 +42,23 @@ import core from "./core/app-core.js";
   const NewsService = {
     _cache: null,
 
+    normalizeVisibility: function (items) {
+      return (Array.isArray(items) ? items : []).filter((item) => {
+        const status = String(item?.status || "published").trim().toLowerCase();
+        return status !== "hidden";
+      });
+    },
+
     fetchData: function () {
       if (this._cache) return Promise.resolve(this._cache);
       const jsonPath = toPublicUrl("assets/js/data/news-data.json");
       return fetch(jsonPath)
         .then(function (res) { return res.json(); })
-        .then((data) => { NewsService._cache = data; return data; });
+        .then((data) => {
+          const visibleArticles = NewsService.normalizeVisibility(data);
+          NewsService._cache = visibleArticles;
+          return visibleArticles;
+        });
     },
 
     getAll: function () {

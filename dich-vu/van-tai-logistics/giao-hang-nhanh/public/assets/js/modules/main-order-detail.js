@@ -1588,7 +1588,11 @@
     }
 
     const uploadOptions =
-      mediaType === "feedback" ? { proxyFile: "upload_feedback_media.php" } : {};
+      mediaType === "feedback"
+        ? { proxyFile: "khach-hang/upload.php", uploadKind: "order_media" }
+        : mediaType === "shipper"
+          ? { proxyFile: "nha-cung-cap/upload.php", uploadKind: "order_media" }
+          : {};
 
     return (await core.uploadFilesToDrive(list, uploadOptions)).map((item) => ({
       id: normalizeText(item.id || item.fileId || ""),

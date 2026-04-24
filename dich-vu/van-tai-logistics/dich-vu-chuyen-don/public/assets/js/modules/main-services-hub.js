@@ -106,6 +106,36 @@ import core from "./core/app-core.js";
     `;
   }
 
+  function renderOtherServices() {
+    const container = document.getElementById("other-services-links");
+    if (!container) return;
+
+    const serviceDirectory =
+      window.FastGoLayout &&
+      typeof window.FastGoLayout.getServiceDirectory === "function"
+        ? window.FastGoLayout.getServiceDirectory()
+        : [];
+
+    const relatedServices = serviceDirectory.filter(
+      (service) => service && service.key !== "svc-dich-vu-chuyen-don",
+    );
+
+    if (!relatedServices.length) {
+      container.innerHTML = "";
+      return;
+    }
+
+    container.innerHTML = relatedServices
+      .map(
+        (service) => `
+          <a class="other-services-link" href="${escapeHtml(service?.href || "#")}">
+            ${escapeHtml(service?.label || "")}
+          </a>
+        `,
+      )
+      .join("");
+  }
+
   function scrollToHashTarget() {
     const hash = String(window.location.hash || "").replace(/^#/, "").trim();
     if (!hash) return;
@@ -142,6 +172,7 @@ import core from "./core/app-core.js";
 
   function initServiceHub() {
     const root = document.querySelector("[data-service-hub-root]");
+    renderOtherServices();
     if (!root || typeof window.fetch !== "function") return;
 
     fetch(resolveConfigUrl())

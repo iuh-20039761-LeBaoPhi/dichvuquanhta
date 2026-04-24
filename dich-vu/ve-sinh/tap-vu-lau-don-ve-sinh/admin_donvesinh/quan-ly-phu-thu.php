@@ -273,7 +273,7 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
                                     <form method="post" action="xu-ly-phu-thu.php" class="d-inline" style="margin:0;"
-                                        onsubmit="return confirm('Xóa phụ thu này?');">
+                                        onsubmit="return showConfirmDelete(this);">
                                         <input type="hidden" name="action" value="xoa">
                                         <input type="hidden" name="id" value="<?= (int)($row['id'] ?? 0) ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
@@ -313,7 +313,7 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
                     <div class="d-flex gap-2">
                         <a href="?view_id=<?= (int)($row['id'] ?? 0) ?>" class="btn btn-sm btn-outline-primary flex-grow-1"><i class="bi bi-eye me-1"></i>Xem</a>
                         <a href="?edit_id=<?= (int)($row['id'] ?? 0) ?>" class="btn btn-sm btn-outline-warning flex-grow-1"><i class="bi bi-pencil me-1"></i>Sửa</a>
-                        <form method="post" action="xu-ly-phu-thu.php" style="flex:1;" onsubmit="return confirm('Xóa phụ thu này?');">
+                        <form method="post" action="xu-ly-phu-thu.php" style="flex:1;" onsubmit="return showConfirmDelete(this);">
                             <input type="hidden" name="action" value="xoa">
                             <input type="hidden" name="id" value="<?= (int)($row['id'] ?? 0) ?>">
                             <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="bi bi-trash me-1"></i>Xóa</button>
@@ -327,11 +327,41 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
     </div>
 </div>
 
+<div id="confirmOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:24px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); max-width:380px; width:90%; text-align:center;">
+        <div style="width:60px; height:60px; background:#fff1f2; color:#e11d48; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:30px; margin-bottom:16px;">
+            <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <h5 style="margin-bottom:8px; color:#1f2937; font-weight:700;">Xác nhận xóa</h5>
+        <p style="color:#6b7280; margin-bottom:24px; font-size:0.95rem;">Bạn có chắc chắn muốn xóa phụ thu này không? Hành động này không thể hoàn tác.</p>
+        <div style="display:flex; gap:12px;">
+            <button type="button" class="btn btn-light" onclick="closeConfirm()" style="flex:1; border:1px solid #e5e7eb; font-weight:600; padding:10px;">Hủy</button>
+            <button type="button" class="btn btn-danger" onclick="doConfirm()" style="flex:1; background:#e11d48; border:none; font-weight:600; padding:10px;">Xác nhận xóa</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function toggleLoai(val) {
     document.getElementById('grpNgayLe').style.display = (val === 'le') ? '' : 'none';
     document.getElementById('grpCaDem').style.display  = (val === 'dem') ? '' : 'none';
 }
+
+let pendingDeleteForm = null;
+function showConfirmDelete(form) {
+    pendingDeleteForm = form;
+    document.getElementById('confirmOverlay').style.display = 'flex';
+    return false;
+}
+function closeConfirm() {
+    document.getElementById('confirmOverlay').style.display = 'none';
+    pendingDeleteForm = null;
+}
+function doConfirm() {
+    if (pendingDeleteForm) pendingDeleteForm.submit();
+    closeConfirm();
+}
+
 // Init on load
 (function() {
     var sel = document.getElementById('selLoai');

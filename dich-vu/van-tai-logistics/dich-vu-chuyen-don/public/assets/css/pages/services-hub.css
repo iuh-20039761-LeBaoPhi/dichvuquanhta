@@ -230,6 +230,66 @@
   box-shadow: 0 24px 52px rgba(27, 67, 50, 0.14);
 }
 
+.other-services-section {
+  padding: 0 0 72px;
+}
+
+.other-services-wrap {
+  padding: 28px 30px;
+  border-radius: 28px;
+  border: 1px solid rgba(27, 67, 50, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(255, 183, 3, 0.14), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, #f7fbf8 100%);
+  box-shadow: 0 22px 48px rgba(27, 67, 50, 0.08);
+}
+
+.other-services-wrap h2 {
+  margin: 0 0 12px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  color: #173528;
+}
+
+.other-services-desc {
+  max-width: 820px;
+  margin: 0 0 28px;
+  color: #5f776c;
+  line-height: 1.8;
+}
+
+.other-services-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.other-services-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 67, 50, 0.14);
+  background: #ffffff;
+  color: #1b4332;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
+.other-services-link:hover {
+  transform: translateY(-2px);
+  border-color: #ffb703;
+  color: #173528;
+  box-shadow: 0 12px 26px rgba(255, 183, 3, 0.16);
+}
+
 @media (max-width: 960px) {
   .service-detail-hero,
   .service-detail-panel:nth-child(even) .service-detail-hero {
@@ -250,6 +310,10 @@
 
   .trang-dich-vu-noi-bat {
     padding: 42px 0 56px;
+  }
+
+  .other-services-section {
+    padding-bottom: 56px;
   }
 
   .hero-dich-vu-hanh-dong,
@@ -312,6 +376,11 @@
   .trang-dich-vu .service-detail-actions .nut-vien {
     min-width: 0;
   }
+
+  .other-services-wrap {
+    padding: 24px 22px;
+    border-radius: 22px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -324,5 +393,13 @@
   .service-bullet-list {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .other-services-wrap {
+    padding: 20px 18px;
+  }
+
+  .other-services-link {
+    width: 100%;
   }
 }

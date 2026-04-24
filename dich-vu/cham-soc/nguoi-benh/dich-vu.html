@@ -122,6 +122,77 @@
         height: auto !important;
       }
     }
+
+    /* Giảm khoảng cách cho các section */
+    section.py-5 {
+      padding-top: 1rem !important;
+      padding-bottom: 1rem !important;
+    }
+
+    /* Triệt tiêu padding thêm của container trên màn hình lớn */
+    section.py-5 .container.py-lg-5,
+    section.py-5 .container.py-lg-4 {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    /* Làm cho section Khám Phá Dịch Vụ Khác sát với section trên */
+    .other-services-section {
+      background: #fdfdfd;
+      padding-top: 0 !important;
+    }
+
+    #servicesContainer .row:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    .other-service-item {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #fff;
+      border: 1px solid #fce4ec;
+      border-radius: 20px;
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+      text-decoration: none !important;
+      color: #444;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .other-service-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(240, 98, 146, 0.15), 0 10px 10px -5px rgba(240, 98, 146, 0.04);
+      border-color: #f06292;
+      color: #f06292;
+    }
+
+    .other-service-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      color: #fff !important;
+    }
+
+    .other-service-item:hover .other-service-icon {
+      transform: rotate(10deg) scale(1.1);
+    }
+
+    .other-service-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.4;
+    }
   </style>
   <script src="/ga.js"></script>
 </head>
@@ -164,6 +235,127 @@
             <span class="visually-hidden">Đang tải...</span>
           </div>
           <p class="mt-2 text-muted">Đang tải danh sách dịch vụ...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Other Services Exploration -->
+  <section class="py-5 other-services-section">
+    <div class="container py-lg-4">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold display-6 mb-3">Khám Phá Dịch Vụ Khác</h2>
+        <p class="text-muted">Chúng tôi cung cấp đa dạng giải pháp cho cuộc sống của bạn</p>
+        <div style="width: 50px; height: 3px; background-color: #f06292; margin: 20px auto;"></div>
+      </div>
+
+      <div class="row g-4 row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 justify-content-center">
+        <!-- Chăm Sóc Mẹ & Bé -->
+        <div class="col d-flex">
+          <a href="../me-va-be/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #ec4899;">
+              <i class="fas fa-baby"></i>
+            </div>
+            <h3 class="other-service-name">Chăm Sóc Mẹ & Bé</h3>
+          </a>
+        </div>
+        <!-- Chăm Sóc Người Già -->
+        <div class="col d-flex">
+          <a href="../nguoi-gia/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #f97316;">
+              <i class="fas fa-person-cane"></i>
+            </div>
+            <h3 class="other-service-name">Chăm Sóc Người Già</h3>
+          </a>
+        </div>
+        <!-- Chăm Sóc Bệnh Nhân -->
+        <div class="col d-flex">
+          <a href="../nguoi-benh/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #ef4444;">
+              <i class="fas fa-user-nurse"></i>
+            </div>
+            <h3 class="other-service-name">Chăm Sóc Bệnh Nhân</h3>
+          </a>
+        </div>
+        <!-- Lau Dọn Vệ Sinh -->
+        <div class="col d-flex">
+          <a href="../../ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #06b6d4;">
+              <i class="fas fa-broom"></i>
+            </div>
+            <h3 class="other-service-name">Lau Dọn Vệ Sinh</h3>
+          </a>
+        </div>
+        <!-- Chăm Sóc Vườn Nhà -->
+        <div class="col d-flex">
+          <a href="../../san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #22c55e;">
+              <i class="fas fa-seedling"></i>
+            </div>
+            <h3 class="other-service-name">Chăm Sóc Vườn Nhà</h3>
+          </a>
+        </div>
+        <!-- Giặt Ủi Nhanh -->
+        <div class="col d-flex">
+          <a href="../../giat-ui/giat-ui-nhanh/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #f43f5e;">
+              <i class="fas fa-shirt"></i>
+            </div>
+            <h3 class="other-service-name">Giặt Ủi Nhanh</h3>
+          </a>
+        </div>
+        <!-- Giao Hàng Nhanh -->
+        <div class="col d-flex">
+          <a href="../../van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #6366f1;">
+              <i class="fas fa-truck-fast"></i>
+            </div>
+            <h3 class="other-service-name">Giao Hàng Nhanh</h3>
+          </a>
+        </div>
+        <!-- Chuyển Dọn -->
+        <div class="col d-flex">
+          <a href="../../van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #14532d;">
+              <i class="fas fa-box-open"></i>
+            </div>
+            <h3 class="other-service-name">Chuyển Dọn</h3>
+          </a>
+        </div>
+        <!-- Thuê Xe -->
+        <div class="col d-flex">
+          <a href="../../van-tai-logistics/thue-xe/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #0ea5e9;">
+              <i class="fas fa-car-side"></i>
+            </div>
+            <h3 class="other-service-name">Thuê Xe</h3>
+          </a>
+        </div>
+        <!-- Lái Xe Hộ -->
+        <div class="col d-flex">
+          <a href="../../van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #3b82f6;">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <h3 class="other-service-name">Lái Xe Hộ</h3>
+          </a>
+        </div>
+        <!-- Sửa Xe Lưu Động -->
+        <div class="col d-flex">
+          <a href="../../sua-chua/sua-xe-luu-dong/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #8b5cf6;">
+              <i class="fas fa-motorcycle"></i>
+            </div>
+            <h3 class="other-service-name">Sửa Xe</h3>
+          </a>
+        </div>
+        <!-- Thợ Nhà -->
+        <div class="col d-flex">
+          <a href="../../sua-chua/tho-nha/dich-vu.html" class="other-service-item w-100">
+            <div class="other-service-icon" style="background-color: #0d9488;">
+              <i class="fas fa-hammer"></i>
+            </div>
+            <h3 class="other-service-name">Thợ Nhà</h3>
+          </a>
         </div>
       </div>
     </div>
