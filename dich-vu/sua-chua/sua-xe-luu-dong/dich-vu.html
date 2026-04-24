@@ -271,6 +271,73 @@
           font-size: 14px;
         }
       }
+      /* Related Services Styles */
+      .related-services-section {
+        background-color: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+      }
+      .title-underline {
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(to right, #ec4899, #f43f5e);
+        border-radius: 2px;
+        margin-top: 15px;
+      }
+      .service-icon-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none !important;
+        padding: 24px 15px;
+        background: #fff;
+        border: 1px solid #f1f5f9;
+        border-radius: 24px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        height: 100%;
+        text-align: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      }
+      .service-icon-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.1);
+        border-color: #e2e8f0;
+      }
+      .icon-wrapper {
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        color: #fff;
+        font-size: 28px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+      .service-icon-card:hover .icon-wrapper {
+        transform: scale(1.1) rotate(5deg);
+      }
+      .service-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.3;
+      }
+      @media (max-width: 576px) {
+        .service-icon-card {
+           padding: 16px 10px;
+        }
+        .icon-wrapper {
+          width: 56px;
+          height: 56px;
+          font-size: 22px;
+          margin-bottom: 12px;
+        }
+        .service-name {
+          font-size: 13px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -470,156 +537,128 @@
       </div>
     </section>
 
-    <!-- <div
-      class="modal fade"
-      id="orderDetailModal"
-      tabindex="-1"
-      aria-labelledby="orderDetailModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="orderDetailModalLabel">
-              Chi tiết đơn sửa xe
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+    <!-- Related Services Section -->
+    <section class="related-services-section py-5 bg-light">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="section-title fw-bold">Khám Phá Dịch Vụ Khác</h2>
+          <p class="section-subtitle text-muted">Chúng tôi cung cấp đa dạng giải pháp cho cuộc sống của bạn</p>
+          <div class="title-underline mx-auto"></div>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+          <!-- Thợ Nhà -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../tho-nha/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #0d9488;">
+                <i class="fas fa-hammer"></i>
+              </div>
+              <span class="service-name">Thợ Nhà</span>
+            </a>
           </div>
-          <div class="modal-body">
-            <ul class="nav nav-tabs" id="orderDetailTabs" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link active"
-                  id="order-main-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#order-main-pane"
-                  type="button"
-                  role="tab"
-                >
-                  Đơn đặt
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link"
-                  id="order-payment-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#order-payment-pane"
-                  type="button"
-                  role="tab"
-                >
-                  Thanh toán
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link"
-                  id="order-note-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#order-note-pane"
-                  type="button"
-                  role="tab"
-                >
-                  Ghi chú
-                </button>
-              </li>
-            </ul>
-
-            <div class="tab-content pt-3">
-              <div
-                class="tab-pane fade show active"
-                id="order-main-pane"
-                role="tabpanel"
-              >
-                <div class="info-item">
-                  <b>Mã đơn:</b> <span id="modalOrderId">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Dịch vụ:</b> <span id="modalServiceType">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Hạng mục:</b> <span id="modalServiceName">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Hãng xe:</b> <span id="modalVehicleBrand">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Phụ tùng/sửa chữa:</b>
-                  <span id="modalRepairItem">-</span>
-                </div>
+          <!-- Chăm Sóc Mẹ và Bé -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../cham-soc/me-va-be/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #ec4899;">
+                <i class="fas fa-baby"></i>
               </div>
-              <div
-                class="tab-pane fade"
-                id="order-payment-pane"
-                role="tabpanel"
-              >
-                <div class="info-item">
-                  <b>Ngày đặt:</b> <span id="modalOrderDate">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Trạng thái đơn:</b> <span id="modalOrderStatus">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Trạng thái thanh toán:</b>
-                  <span id="modalTransactionStatus">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Giá khảo sát:</b> <span id="modalSurveyFee">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Phí di chuyển:</b> <span id="modalShippingFee">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Tổng tiền:</b> <span id="modalTotalPrice">-</span>
-                </div>
-              </div>
-              <div class="tab-pane fade" id="order-note-pane" role="tabpanel">
-                <div class="info-item" id="modalNote">Không có ghi chú.</div>
-              </div>
-            </div>
-
-            <div class="order-modal-grid mt-3">
-              <div class="order-info-card">
-                <h6>Thông tin khách hàng</h6>
-                <div class="info-item">
-                  <b>Họ tên:</b> <span id="modalCustomerName">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Số điện thoại:</b> <span id="modalCustomerPhone">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Email:</b> <span id="modalCustomerEmail">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Địa chỉ:</b> <span id="modalCustomerAddress">-</span>
-                </div>
-              </div>
-              <div class="order-info-card">
-                <h6>Thông tin nhà cung cấp</h6>
-                <div class="info-item">
-                  <b>Họ tên:</b> <span id="modalProviderName">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Số điện thoại:</b> <span id="modalProviderPhone">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Email:</b> <span id="modalProviderEmail">-</span>
-                </div>
-                <div class="info-item">
-                  <b>Địa chỉ:</b> <span id="modalProviderAddress">-</span>
-                </div>
-              </div>
-            </div>
+              <span class="service-name">Chăm Sóc Mẹ và Bé</span>
+            </a>
           </div>
+          <!-- Chăm Sóc Người Già -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../cham-soc/nguoi-gia/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #f97316;">
+                <i class="fas fa-blind"></i>
+              </div>
+              <span class="service-name">Chăm Sóc Người Già</span>
+            </a>
+          </div>
+          <!-- Chăm Sóc Bệnh Nhân -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../cham-soc/nguoi-benh/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #ef4444;">
+                <i class="fas fa-user-nurse"></i>
+              </div>
+              <span class="service-name">Chăm Sóc Bệnh Nhân</span>
+            </a>
+          </div>
+          <!-- Lau Dọn Vệ Sinh -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #06b6d4;">
+                <i class="fas fa-broom"></i>
+              </div>
+              <span class="service-name">Lau Dọn Vệ Sinh</span>
+            </a>
+          </div>
+          <!-- Chăm Sóc Vườn Nhà -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #22c55e;">
+                <i class="fas fa-seedling"></i>
+              </div>
+              <span class="service-name">Chăm Sóc Vườn Nhà</span>
+            </a>
+          </div>
+          <!-- Giặt Ủi Nhanh -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../giat-ui/giat-ui-nhanh/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #f43f5e;">
+                <i class="fas fa-tshirt"></i>
+              </div>
+              <span class="service-name">Giặt Ủi Nhanh</span>
+            </a>
+          </div>
+          <!-- Giao Hàng Nhanh -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #4f46e5;">
+                <i class="fas fa-shipping-fast"></i>
+              </div>
+              <span class="service-name">Giao Hàng Nhanh</span>
+            </a>
+          </div>
+          <!-- Chuyển Dọn -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #065f46;">
+                <i class="fas fa-box-open"></i>
+              </div>
+              <span class="service-name">Chuyển Dọn</span>
+            </a>
+          </div>
+          <!-- Thuê Xe -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../van-tai-logistics/thue-xe/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #0ea5e9;">
+                <i class="fas fa-car"></i>
+              </div>
+              <span class="service-name">Thuê Xe</span>
+            </a>
+          </div>
+          <!-- Lái Xe Hộ -->
+          <div class="col-6 col-md-4 col-lg-2">
+            <a href="../../van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #3b82f6;">
+                <i class="fas fa-id-card"></i>
+              </div>
+              <span class="service-name">Lái Xe Hộ</span>
+            </a>
+          </div>
+          <!-- Sửa Xe -->
+          <!-- <div class="col-6 col-md-4 col-lg-2">
+            <a href="dich-vu.html" class="service-icon-card">
+              <div class="icon-wrapper" style="background-color: #8b5cf6;">
+                <i class="fas fa-motorcycle"></i>
+              </div>
+              <span class="service-name">Sửa Xe</span>
+            </a>
+          </div> -->
+          
         </div>
       </div>
-    </div> -->
-
+    </section>
     <!-- Footer -->
     <footer>
       <div class="container">

@@ -1987,7 +1987,7 @@
         });
         group.appendChild(receiveBtn);
       } else if (canStart) {
-        var startBtn = makeButton("Bắt đầu", "btn btn-primary");
+        var startBtn = makeButton("Bắt đầu", "btn btn-info text-white");
         startBtn.addEventListener("click", function () {
           runProviderAction(
             startBtn, 
