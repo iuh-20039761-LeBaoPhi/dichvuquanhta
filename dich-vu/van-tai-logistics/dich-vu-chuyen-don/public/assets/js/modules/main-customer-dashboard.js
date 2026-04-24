@@ -89,14 +89,6 @@ const customerDashboardModule = (function (window, document) {
       return;
     }
 
-    const role = store.getSavedRole();
-    if (role && role !== "khach-hang") {
-      window.location.href = core.getSharedLoginUrl({
-        redirect: core.getCurrentRelativeUrl(),
-      });
-      return;
-    }
-
     const identity = data.profile;
     const displayName = store.getDisplayName(identity);
     const requests = Array.isArray(data?.recent_requests)
@@ -145,7 +137,7 @@ const customerDashboardModule = (function (window, document) {
         <section class="customer-panel customer-panel-overview">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Tổng quan đơn hàng</p>
+              <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
               <h2>Tóm tắt nhanh để theo dõi</h2>
               <p class="customer-panel-subtext">${escapeHtml(heroState)}. ${escapeHtml(summaryText)}</p>
             </div>
@@ -174,7 +166,7 @@ const customerDashboardModule = (function (window, document) {
         <section class="customer-panel customer-panel-orders customer-panel-orders-main">
           <div class="customer-panel-head customer-panel-head-dashboard">
             <div>
-              <p class="customer-section-kicker">Đơn hàng gần đây</p>
+              <p class="customer-section-kicker">Đơn gần đây</p>
               <h2>Đơn gần nhất cần bạn theo dõi</h2>
               <p class="customer-panel-subtext">Giữ lại danh sách ngắn để bạn nhìn ra ngay đơn mới hoặc đơn vừa đổi trạng thái.</p>
             </div>

@@ -49,6 +49,46 @@ function normalizeText(value) {
     .trim();
 }
 
+function normalizePhone(value) {
+  return String(value || "").replace(/[^\d+]/g, "");
+}
+
+function isBookingOwnedByActor(order, actor) {
+  const currentOrder = order && typeof order === "object" ? order : {};
+  const currentActor = actor && typeof actor === "object" ? actor : {};
+
+  const customerId = normalizeText(
+    currentOrder.customer_id ||
+      currentOrder.booking_owner_id ||
+      currentOrder.owner_customer_id ||
+      "",
+  );
+  const customerLoginIdentifier = normalizeText(
+    currentOrder.customer_login_identifier ||
+      currentOrder.customer_username ||
+      currentOrder.booking_owner_login ||
+      currentOrder.owner_customer_login ||
+      "",
+  ).toLowerCase();
+  const customerPhone = normalizePhone(
+    currentOrder.so_dien_thoai || currentOrder.phone || "",
+  );
+
+  const actorId = normalizeText(currentActor.id || "");
+  const actorLoginIdentifier = normalizeText(
+    currentActor.loginIdentifier || currentActor.username || "",
+  ).toLowerCase();
+  const actorPhone = normalizePhone(currentActor.phone || "");
+
+  return !!(
+    (customerId && actorId && customerId === actorId) ||
+    (customerLoginIdentifier &&
+      actorLoginIdentifier &&
+      customerLoginIdentifier === actorLoginIdentifier) ||
+    (customerPhone && actorPhone && customerPhone === actorPhone)
+  );
+}
+
 function toLookupKey(value) {
   return normalizeText(value).toLowerCase().replace(/[\s-]+/g, "_");
 }
@@ -314,6 +354,9 @@ function buildBookingLifecyclePatch(order, action, payload = {}, options = {}) {
   }
 
   if (action === "accept") {
+    if (isBookingOwnedByActor(currentOrder, actor)) {
+      throw new Error("Bạn không thể nhận đơn do chính mình đặt.");
+    }
     nextPayload.trang_thai = "dang_xu_ly";
     nextPayload.accepted_at = now;
     applyProviderOwnershipPatch();

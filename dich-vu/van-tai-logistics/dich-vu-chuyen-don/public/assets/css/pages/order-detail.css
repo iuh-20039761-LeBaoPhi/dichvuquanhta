@@ -2274,10 +2274,66 @@
   box-shadow: 0 6px 18px rgba(159, 63, 58, 0.28);
 }
 
+.customer-dialog.standalone-order-cancel-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(100%, 560px);
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  padding: 0;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.22);
+}
+
+.customer-dialog.standalone-order-cancel-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.standalone-order-cancel-dialog-card {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  background: #ffffff;
+}
+
+.standalone-order-cancel-dialog-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.standalone-order-cancel-dialog-card h2 {
+  margin: 0;
+  color: #173024;
+}
+
+.standalone-order-cancel-dialog-field {
+  display: grid;
+  gap: 8px;
+}
+
+.standalone-order-cancel-dialog-field span {
+  color: #173024;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .standalone-order-hero-support-grid {
   display: grid;
   grid-template-columns: minmax(220px, 0.38fr) minmax(0, 1fr);
   gap: 12px;
+}
+
+.standalone-order-hero-support-grid--route-only {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.standalone-order-hero-support-grid--route-only .standalone-order-hero-route-stack,
+.standalone-order-hero-support-grid--route-only .standalone-order-hero-support-card-route {
+  width: 100%;
+  max-width: none;
 }
 
 .standalone-order-hero-support-card {

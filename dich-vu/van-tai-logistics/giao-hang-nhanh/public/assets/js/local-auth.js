@@ -7,6 +7,9 @@
   };
   const dvqtUserTable = "nguoidung";
   const ghnServiceId = "7";
+  const providedServiceLabels = Object.freeze({
+    [ghnServiceId]: "Giao Hàng Nhanh",
+  });
   const authChangeEventName = "ghn:auth-changed";
   const customerPhonePattern = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
   const krudScriptUrl = "https://api.dvqt.vn/js/krud.js";
@@ -112,6 +115,12 @@
 
   function hasGhnProviderRole(row) {
     return splitServiceIds(row?.id_dichvu).includes(ghnServiceId);
+  }
+
+  function getProviderServiceLabels(row) {
+    return splitServiceIds(row?.id_dichvu)
+      .filter((serviceId) => serviceId && serviceId !== "0")
+      .map((serviceId) => providedServiceLabels[serviceId] || `Dịch vụ #${serviceId}`);
   }
 
   function isCustomerAccount(row) {
@@ -983,6 +992,9 @@
     },
     normalizeText,
     normalizePhone,
+    splitServiceIds,
+    hasGhnProviderRole,
+    getProviderServiceLabels,
     getUsers,
     getSession,
     saveSession,

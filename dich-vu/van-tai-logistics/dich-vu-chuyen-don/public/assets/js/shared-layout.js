@@ -71,13 +71,13 @@
         key: "svc-thue-xe",
         label: "Thuê Xe",
         group: "van-tai-logistics",
-        href: `${parentBase}dich-vu/van-tai-logistics/thue-xe/views/pages/public/dich-vu.html`,
+        href: `${parentBase}dich-vu/van-tai-logistics/thue-xe/dich-vu.html`,
       },
       {
         key: "svc-lai-xe-ho",
         label: "Dịch vụ lái xe hộ",
         group: "van-tai-logistics",
-        href: `${parentBase}dich-vu-lai-xe-ho/`,
+        href: `${parentBase}dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html`,
       },
       {
         key: "svc-cham-soc-nguoi-benh",
@@ -107,7 +107,7 @@
         key: "svc-cham-soc-vuon",
         label: "Chăm Sóc Vườn Nhà",
         group: "ve-sinh",
-        href: `${parentBase}cham-soc-vuon-nha/dichvu.html`,
+        href: `${parentBase}dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html`,
       },
       {
         key: "svc-giat-ui",
@@ -119,13 +119,13 @@
         key: "svc-tho-nha",
         label: "Thợ Nhà",
         group: "sua-chua",
-        href: `${parentBase}dich-vu/sua-chua/tho-nha/pages/public/dich-vu.html`,
+        href: `${parentBase}dich-vu/sua-chua/tho-nha/dich-vu.html`,
       },
       {
         key: "svc-sua-xe",
         label: "Sửa xe lưu động",
         group: "sua-chua",
-        href: `${parentBase}sua-xe-luu-dong/dich-vu.html`,
+        href: `${parentBase}dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html`,
       },
     ];
   }
@@ -151,6 +151,34 @@
       id_dichvu: String(payload.id_dichvu || "0").trim() || "0",
       trangthai: String(payload.trangthai || "active").trim(),
     };
+  }
+
+  function splitServiceIds(value) {
+    return String(value || "")
+      .split(",")
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+  }
+
+  function hasMovingServiceId(value) {
+    return splitServiceIds(value).includes("12");
+  }
+
+  function isProviderRole(value) {
+    const normalized = String(value || "").trim().toLowerCase();
+    return ["nha-cung-cap", "doi-tac", "provider"].includes(normalized);
+  }
+
+  function hasProviderCapability(identity) {
+    if (identity && typeof identity === "object") {
+      return (
+        hasMovingServiceId(identity.id_dichvu || "0") ||
+        isProviderRole(identity.role || identity.vaitro || "") ||
+        isProviderRole(getSavedRole())
+      );
+    }
+
+    return hasMovingServiceId(identity) || isProviderRole(identity);
   }
 
   function readIdentity() {
@@ -278,7 +306,7 @@
     });
   }
 
-  function resolveAccountLinks(role) {
+  function resolveAccountLinks(identity) {
     function readAccessCookie(name) {
       const escapedName = String(name || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const match = String(document.cookie || "").match(
@@ -324,18 +352,18 @@
       }
     }
 
-    if (role === "nha-cung-cap") {
-      return {
+    return {
+      canReceiveOrders: hasProviderCapability(identity),
+      customer: {
+        dashboard: withAuthParams(`${projectBase}khach-hang/dashboard-chuyendon.html`),
+        orders: withAuthParams(`${projectBase}khach-hang/danh-sach-don-hang-chuyendon.html`),
+        profile: withAuthParams(`${projectBase}khach-hang/ho-so-chuyendon.html`),
+      },
+      provider: {
         dashboard: withAuthParams(`${projectBase}nha-cung-cap/dashboard-chuyendon.html`),
         orders: withAuthParams(`${projectBase}nha-cung-cap/danh-sach-don-hang-chuyendon.html`),
         profile: withAuthParams(`${projectBase}nha-cung-cap/ho-so-chuyendon.html`),
-      };
-    }
-
-    return {
-      dashboard: withAuthParams(`${projectBase}khach-hang/dashboard-chuyendon.html`),
-      orders: withAuthParams(`${projectBase}khach-hang/danh-sach-don-hang-chuyendon.html`),
-      profile: withAuthParams(`${projectBase}khach-hang/ho-so-chuyendon.html`),
+      },
     };
   }
 
@@ -403,46 +431,44 @@
     const summary = escapeHtml(
         String(identity.sodienthoai || "").trim() ||
         String(identity.email || "").trim() ||
-        (role === "nha-cung-cap" ? "Khu vực nhà cung cấp" : "Khu vực khách hàng"),
+        (hasProviderCapability(identity)
+          ? "Tài khoản đặt đơn và nhận đơn"
+          : "Khu vực khách hàng"),
     );
-    const links = resolveAccountLinks(role);
+    const links = resolveAccountLinks(identity);
 
     loginItem.hidden = false;
     loginItem.className = "dropdown has-submenu customer-nav-dropdown";
     loginItem.innerHTML =
-      role === "nha-cung-cap"
-        ? `
-          <a data-layout-link="account" href="#" aria-haspopup="true" aria-expanded="false">Xin chào, ${firstName}</a>
-          <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
-            <li class="customer-nav-dropdown-summary">
-              <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
-              <div class="customer-nav-dropdown-user">
-                <strong>${firstName}</strong>
-                <span>${summary}</span>
-              </div>
-            </li>
-            <li><a href="${links.dashboard}"><i class="fas fa-chart-line"></i> Dashboard nhà cung cấp</a></li>
-            <li><a href="${links.orders}"><i class="fas fa-box"></i> Danh sách đơn hàng</a></li>
-            <li><a href="${links.profile}"><i class="fas fa-user"></i> Hồ sơ nhà cung cấp</a></li>
-            <li class="customer-nav-logout-wrapper"><a href="${buildSharedAuthUrl("dang-nhap.html")}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
-          </ul>
-        `
-        : `
-          <a data-layout-link="account" href="#" aria-haspopup="true" aria-expanded="false">Xin chào, ${firstName}</a>
-          <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
-            <li class="customer-nav-dropdown-summary">
-              <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
-              <div class="customer-nav-dropdown-user">
-                <strong>${firstName}</strong>
-                <span>${summary}</span>
-              </div>
-            </li>
-            <li><a href="${links.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
-            <li><a href="${links.orders}"><i class="fas fa-box"></i> Danh sách đơn hàng</a></li>
-            <li><a href="${links.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
-            <li class="customer-nav-logout-wrapper"><a href="${buildSharedAuthUrl("dang-nhap.html")}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
-          </ul>
-        `;
+      `
+        <a data-layout-link="account" href="#" aria-haspopup="true" aria-expanded="false">Xin chào, ${firstName}</a>
+        <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
+          <li class="customer-nav-dropdown-summary">
+            <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
+            <div class="customer-nav-dropdown-user">
+              <strong>${firstName}</strong>
+              <span>${summary}</span>
+            </div>
+          </li>
+          <li><a href="${links.customer.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan đặt đơn</a></li>
+          <li><a href="${links.customer.orders}"><i class="fas fa-box"></i> Đơn hàng tôi đã đặt</a></li>
+          ${
+            links.canReceiveOrders
+              ? ""
+              : `<li><a href="${links.customer.profile}"><i class="fas fa-user"></i> Hồ sơ khách hàng</a></li>`
+          }
+          ${
+            links.canReceiveOrders
+              ? `
+                <li><a href="${links.provider.dashboard}"><i class="fas fa-truck-ramp-box"></i> Tổng quan nhận đơn</a></li>
+                <li><a href="${links.provider.orders}"><i class="fas fa-clipboard-list"></i> Đơn hàng khách hàng đặt cho tôi</a></li>
+                <li><a href="${links.provider.profile}"><i class="fas fa-id-card"></i> Hồ sơ nhà cung cấp</a></li>
+              `
+              : ""
+          }
+          <li class="customer-nav-logout-wrapper"><a href="${buildSharedAuthUrl("dang-nhap.html")}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+        </ul>
+      `;
 
     registerItem.hidden = true;
     registerItem.innerHTML = "";

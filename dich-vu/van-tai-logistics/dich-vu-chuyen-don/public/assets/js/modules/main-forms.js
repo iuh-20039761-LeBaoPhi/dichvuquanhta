@@ -401,6 +401,16 @@ const partialPaths = {
 
   function getBookingPayload(scope, portalStore, mediaLinks = {}) {
     const identity = portalStore?.readIdentity?.() || {};
+    const access =
+      core.getOrderDetailAccessCredentials?.() ||
+      core.getUrlAuthCredentials?.() || {
+        loginIdentifier: "",
+        username: "",
+      };
+    const customerOwnerId = String(identity.id || "").trim();
+    const customerOwnerLogin = String(
+      access.loginIdentifier || access.username || "",
+    ).trim();
     const form = scope.querySelector("form[data-loai-bieu-mau='dat-lich']");
     const formData = form ? new FormData(form) : new FormData();
     const serviceSelect = scope.querySelector("#loai-dich-vu-dat-lich");
@@ -485,6 +495,8 @@ const partialPaths = {
       anh_dinh_kem: imageLinks.join(" | "),
       video_dinh_kem: videoLinks.join(" | "),
       customer_email: String(identity.email || "").trim(),
+      customer_id: customerOwnerId,
+      customer_login_identifier: customerOwnerLogin,
     };
   }
 
@@ -580,11 +592,10 @@ const partialPaths = {
     };
     let accountSetup = null;
     const authService = authModule || null;
-    const savedRole = portalStore?.getSavedRole?.() || "";
     const bookingPhone = normalizePhoneValue(bookingContact.sodienthoai);
     let hasMatchingCustomerSession = false;
 
-    if (savedRole === "khach-hang" && portalStore?.fetchProfile) {
+    if (portalStore?.fetchProfile) {
       try {
         const verifiedProfile = await portalStore.fetchProfile();
         const profilePhone = normalizePhoneValue(
@@ -1302,7 +1313,11 @@ const partialPaths = {
     const orderDetailIdentifier =
       String(bookingResult?.remoteId || "").trim() || requestCode;
     const statusMessage = String(options.statusMessage || "").trim();
-    const isLoggedIn = !!(customerPortalStore?.getSavedRole?.() === "khach-hang");
+    const savedIdentity =
+      typeof customerPortalStore?.readIdentity === "function"
+        ? customerPortalStore.readIdentity()
+        : null;
+    const isLoggedIn = !!String(savedIdentity?.id || "").trim();
     const historyUrl = getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html");
     const secondaryActionHref = isLoggedIn
       ? (typeof core.buildOrderDetailUrl === "function"

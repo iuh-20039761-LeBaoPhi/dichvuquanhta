@@ -22,19 +22,7 @@ const customerInvoiceDetailModule = (function (window, document) {
   let inlineFeedbackTimer = 0;
   const DEFAULT_CANCEL_REASON =
     "Khách hàng chủ động hủy yêu cầu chuyển dọn.";
-  let cancelConfirmState = createInitialCancelConfirmState();
-
-  function createInitialCancelConfirmState() {
-    return {
-      open: false,
-      reason: DEFAULT_CANCEL_REASON,
-      submitting: false,
-    };
-  }
-
-  function resetCancelConfirmState() {
-    cancelConfirmState = createInitialCancelConfirmState();
-  }
+  let cancelReasonDraft = DEFAULT_CANCEL_REASON;
 
   function escapeHtml(value) {
     if (typeof core.escapeHtml === "function") {
@@ -336,51 +324,85 @@ const customerInvoiceDetailModule = (function (window, document) {
     `;
   }
 
-  function renderCancelConfirmBlock(invoice) {
-    if (!cancelConfirmState.open || !canCancelInvoice(invoice)) {
-      return "";
-    }
-
+  function openCancelConfirmDialog(invoice) {
     const orderCode = normalizeText(invoice?.code || "chưa có mã");
 
-    return `
-      <section class="standalone-order-cancel-confirm" data-cancel-confirm-block>
-        <div class="standalone-order-cancel-confirm-copy">
-          <p class="standalone-order-cancel-confirm-kicker">Xác nhận hủy yêu cầu</p>
-          <h2 class="standalone-order-cancel-confirm-title">Hủy đơn ${escapeHtml(orderCode)}</h2>
-          <p class="standalone-order-cancel-confirm-text">
-            Bạn đang chuẩn bị hủy yêu cầu chuyển dọn này. Hành động này không thể hoàn tác sau khi xác nhận.
-          </p>
-        </div>
-        <form class="standalone-order-cancel-confirm-form" data-cancel-confirm-form>
-          <label class="standalone-order-cancel-confirm-field">
+    return new Promise((resolve) => {
+      if (
+        typeof window.HTMLDialogElement === "undefined" ||
+        typeof document.createElement("dialog").showModal !== "function"
+      ) {
+        const confirmed = window.confirm(
+          `Bạn có chắc muốn hủy đơn ${orderCode} không?`,
+        );
+        if (!confirmed) {
+          resolve(null);
+          return;
+        }
+
+        const reason = window.prompt(
+          "Nhập lý do hủy đơn (có thể để trống nếu không cần):",
+          cancelReasonDraft || DEFAULT_CANCEL_REASON,
+        );
+        if (reason === null) {
+          resolve(null);
+          return;
+        }
+
+        cancelReasonDraft = String(reason || "").trim() || DEFAULT_CANCEL_REASON;
+        resolve(cancelReasonDraft);
+        return;
+      }
+
+      const dialog = document.createElement("dialog");
+      dialog.className = "customer-dialog standalone-order-cancel-dialog";
+      dialog.innerHTML = `
+        <form method="dialog" class="customer-dialog-card standalone-order-cancel-dialog-card">
+          <div class="customer-dialog-copy standalone-order-cancel-dialog-copy">
+            <p class="customer-section-kicker">Xác nhận hủy yêu cầu</p>
+            <h2>Hủy đơn ${escapeHtml(orderCode)}</h2>
+            <p class="customer-panel-subtext">Bạn đang chuẩn bị hủy yêu cầu chuyển dọn này. Hành động này không thể hoàn tác sau khi xác nhận.</p>
+          </div>
+          <label class="customer-form-stack standalone-order-cancel-dialog-field">
             <span>Lý do hủy</span>
-            <textarea
-              name="cancel_reason"
-              class="standalone-order-cancel-confirm-textarea"
-              data-cancel-confirm-reason
-              rows="4"
-              placeholder="Nhập lý do hủy đơn"
-            >${escapeHtml(cancelConfirmState.reason || DEFAULT_CANCEL_REASON)}</textarea>
+            <textarea name="cancel_reason" rows="4" class="standalone-order-cancel-confirm-textarea" placeholder="Nhập lý do hủy nếu cần...">${escapeHtml(
+              cancelReasonDraft || DEFAULT_CANCEL_REASON,
+            )}</textarea>
           </label>
-          <div class="standalone-order-cancel-confirm-actions">
-            <button type="button" class="customer-btn customer-btn-ghost" data-cancel-confirm-close>
-              Quay lại
-            </button>
-            <button
-              type="submit"
-              class="customer-btn customer-btn-danger"
-              data-cancel-confirm-submit
-              data-order-id="${escapeHtml(invoice.remote_id || "")}"
-              data-order-code="${escapeHtml(invoice.code || "")}"
-              ${cancelConfirmState.submitting ? "disabled" : ""}
-            >
-              ${cancelConfirmState.submitting ? "Đang hủy..." : "Xác nhận hủy"}
-            </button>
+          <div class="customer-inline-actions customer-dialog-actions">
+            <button type="button" class="customer-btn customer-btn-ghost" data-dialog-close>Quay lại</button>
+            <button type="submit" class="customer-btn customer-btn-danger" value="confirm">Xác nhận hủy</button>
           </div>
         </form>
-      </section>
-    `;
+      `;
+
+      const cleanup = () => {
+        if (dialog.isConnected) {
+          dialog.remove();
+        }
+      };
+
+      dialog.addEventListener("close", () => {
+        if (dialog.returnValue === "confirm") {
+          const reasonField = dialog.querySelector("[name='cancel_reason']");
+          cancelReasonDraft =
+            String(reasonField?.value || "").trim() || DEFAULT_CANCEL_REASON;
+          resolve(cancelReasonDraft);
+        } else {
+          resolve(null);
+        }
+        cleanup();
+      });
+
+      dialog
+        .querySelector("[data-dialog-close]")
+        ?.addEventListener("click", () => {
+          dialog.close("cancel");
+        });
+
+      document.body.appendChild(dialog);
+      dialog.showModal();
+    });
   }
 
   function renderHeroScheduleCard(invoice) {
@@ -1171,16 +1193,6 @@ const customerInvoiceDetailModule = (function (window, document) {
   }
 
   function renderInvoice(data) {
-    const role = store.getSavedRole();
-    if (!role || role !== "khach-hang") {
-      if (role === "nha-cung-cap") {
-        redirectToMatchingDetail(role, data?.invoice?.remote_id || data?.invoice?.raw_row?.id || "");
-        return;
-      }
-      redirectToLogin();
-      return;
-    }
-
     if (!data?.profile) {
       store.clearAuthSession?.();
       redirectToLogin();
@@ -1194,9 +1206,6 @@ const customerInvoiceDetailModule = (function (window, document) {
       return;
     }
     const canCancel = canCancelInvoice(invoice);
-    if (!canCancel && cancelConfirmState.open) {
-      resetCancelConfirmState();
-    }
 
     const progressMeta = getProgressMeta(invoice);
     const timeline = buildTimeline(invoice);
@@ -1295,7 +1304,6 @@ const customerInvoiceDetailModule = (function (window, document) {
                       getProjectUrl("khach-hang/danh-sach-don-hang-chuyendon.html"),
                     )}">Về lịch sử đơn</a>
                   </div>
-                  ${renderCancelConfirmBlock(invoice)}
                   ${renderHeroRouteCard(invoice)}
                 </div>
               </div>
@@ -1448,57 +1456,29 @@ const customerInvoiceDetailModule = (function (window, document) {
 
     root
       .querySelector("[data-invoice-cancel]")
-      ?.addEventListener("click", function () {
-        if (cancelConfirmState.submitting) {
+      ?.addEventListener("click", async function (event) {
+        const trigger = event.currentTarget;
+        if (trigger.disabled) {
           return;
         }
 
-        cancelConfirmState.open = true;
-        if (!normalizeText(cancelConfirmState.reason)) {
-          cancelConfirmState.reason = DEFAULT_CANCEL_REASON;
-        }
-        renderInvoice(data);
-      });
-
-    root
-      .querySelector("[data-cancel-confirm-close]")
-      ?.addEventListener("click", function () {
-        resetCancelConfirmState();
-        renderInvoice(data);
-      });
-
-    root
-      .querySelector("[data-cancel-confirm-reason]")
-      ?.addEventListener("input", function (event) {
-        cancelConfirmState.reason = event.currentTarget?.value || "";
-      });
-
-    root
-      .querySelector("[data-cancel-confirm-form]")
-      ?.addEventListener("submit", async function (event) {
-        event.preventDefault();
-        if (cancelConfirmState.submitting) {
+        const reason = await openCancelConfirmDialog(invoice);
+        if (reason === null) {
           return;
         }
-
-        const form = event.currentTarget;
-        const submitButton =
-          form.querySelector("[data-cancel-confirm-submit]") || null;
-        const formData = new FormData(form);
-        cancelConfirmState.reason =
-          String(formData.get("cancel_reason") || "").trim() ||
-          DEFAULT_CANCEL_REASON;
-        cancelConfirmState.submitting = true;
-        renderInvoice(data);
 
         try {
-          const invoiceReference = getInvoiceReference(invoice, submitButton);
-          const result = await store.cancelBooking?.(invoiceReference);
-          resetCancelConfirmState();
+          trigger.disabled = true;
+          trigger.textContent = "Đang hủy...";
+          const invoiceReference = getInvoiceReference(invoice, trigger);
+          const result = await store.cancelBooking?.(invoiceReference, {
+            cancel_reason: reason,
+          });
           renderInvoice(result || null);
+          core.notify?.("Đã hủy yêu cầu chuyển dọn.", "success");
         } catch (error) {
-          cancelConfirmState.submitting = false;
-          renderInvoice(data);
+          trigger.disabled = false;
+          trigger.textContent = "Hủy đơn";
           core.notify(
             error?.message || "Không thể hủy yêu cầu ở thời điểm hiện tại.",
             "error",

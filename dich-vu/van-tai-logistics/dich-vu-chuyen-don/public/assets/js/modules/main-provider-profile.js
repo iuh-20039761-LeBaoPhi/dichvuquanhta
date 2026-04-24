@@ -42,6 +42,11 @@ const providerProfileModule = (function (window, document) {
     });
   }
 
+  function formatNumber(value) {
+    const amount = Number(value);
+    return Number.isFinite(amount) ? amount.toLocaleString("vi-VN") : "0";
+  }
+
   function getProfileInitial(name) {
     return String(name || "").trim().charAt(0).toUpperCase() || "N";
   }
@@ -87,6 +92,27 @@ const providerProfileModule = (function (window, document) {
       className: "is-active",
       note: "Hồ sơ đang hoạt động bình thường trong khu nhà cung cấp chuyển dọn.",
     };
+  }
+
+  function renderProvidedServicesCard(profile) {
+    const labels = Array.isArray(store.getProvidedServiceLabels?.(profile))
+      ? store.getProvidedServiceLabels(profile)
+      : [];
+
+    return `
+      <article class="customer-profile-card">
+        <div class="customer-profile-card-head">
+          <i class="fas fa-briefcase"></i>
+          <h3>Dịch vụ có thể cung cấp</h3>
+        </div>
+        <div class="customer-profile-fact-list">
+          <div>
+            <span>Dịch vụ đang bật</span>
+            <strong>${escapeHtml(labels.join(", ") || "Chưa đăng ký dịch vụ cung cấp")}</strong>
+          </div>
+        </div>
+      </article>
+    `;
   }
 
   function bindMediaPreview(inputId, previewId, emptyId) {
@@ -135,8 +161,9 @@ const providerProfileModule = (function (window, document) {
       return;
     }
 
-    const role = store.getSavedRole();
-    if (role && role !== "nha-cung-cap") {
+    const canUseProviderPortal =
+      store.hasProviderCapability?.(data.profile || store.readIdentity?.()) || false;
+    if (!canUseProviderPortal) {
       window.location.href = core.getSharedLoginUrl({
         redirect: core.getCurrentRelativeUrl(),
       });
@@ -149,219 +176,256 @@ const providerProfileModule = (function (window, document) {
     const phone = String(identity.sodienthoai || "").trim();
     const email = String(identity.email || "").trim();
     const address = String(identity.diachi || identity.dia_chi || "").trim();
+    const companyName = String(identity.ten_cong_ty || identity.company_name || "").trim();
+    const taxCode = String(identity.ma_so_thue || identity.tax_code || "").trim();
+    const businessAddress = String(
+      identity.dia_chi_doanh_nghiep || identity.diachidonvi || "",
+    ).trim();
     const vehicleType = String(identity.loai_phuong_tien || identity.vehicle_type || "").trim();
     const avatarUrl = resolveMediaUrl(identity.link_avatar);
-    const cccdFrontUrl = resolveMediaUrl(
-      identity.link_cccd_truoc,
-    );
-    const cccdBackUrl = resolveMediaUrl(
-      identity.link_cccd_sau,
-    );
+    const cccdFrontUrl = resolveMediaUrl(identity.link_cccd_truoc);
+    const cccdBackUrl = resolveMediaUrl(identity.link_cccd_sau);
+    const createdAtLabel = formatDateTime(identity.created_at || identity.updated_at || "");
     const statusMeta = getStatusMeta(identity);
     const initial = getProfileInitial(displayName);
 
     root.innerHTML = `
       <div class="customer-portal-shell customer-portal-shell--simple">
-        <section class="customer-portal-profile customer-portal-profile-rich moving-profile-rich">
-          <div class="moving-profile-hero">
-            <div class="moving-profile-hero-main">
-              <div class="moving-profile-avatar">
+        <section class="customer-portal-profile customer-portal-profile-rich">
+          <div class="customer-profile-hero customer-profile-hero-rich">
+            <div class="customer-profile-hero-main">
+              <div class="customer-profile-avatar-wrapper customer-profile-avatar-wrapper-rich">
                 ${
                   avatarUrl
-                    ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(displayName)}" />`
-                    : `<span>${escapeHtml(initial)}</span>`
+                    ? `<img class="customer-profile-avatar-image" src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(displayName)}" />`
+                    : `<div class="customer-profile-avatar-large">${escapeHtml(initial)}</div>`
                 }
+                <label class="customer-profile-avatar-action" for="provider-avatar-file" aria-label="Thay đổi ảnh đại diện">
+                  <i class="fas fa-camera"></i>
+                </label>
               </div>
-              <div class="moving-profile-hero-copy">
-                <p class="moving-profile-eyebrow">Hồ sơ nhà cung cấp chuyển dọn</p>
+              <div class="customer-profile-hero-info">
+                <p class="customer-profile-eyebrow">Hồ sơ nhà cung cấp chuyển dọn</p>
                 <h2>${escapeHtml(displayName)}</h2>
-                <div class="moving-profile-meta">
-                  <span><i class="fas fa-phone"></i> ${escapeHtml(phone || "Chưa cập nhật")}</span>
-                  <span><i class="fas fa-truck-ramp-box"></i> ${escapeHtml(vehicleType || "Chưa cập nhật phương tiện")}</span>
+                <div class="customer-profile-meta-list">
+                  <span><i class="fas fa-id-badge"></i> ${escapeHtml(phone || "Nhà cung cấp")}</span>
+                  <span><i class="fas fa-truck-fast"></i> ${escapeHtml(vehicleType || "Chưa cập nhật phương tiện")}</span>
+                  <span><i class="fas fa-clock"></i> Đồng bộ: ${escapeHtml(createdAtLabel)}</span>
                 </div>
               </div>
             </div>
-            <div class="moving-profile-status-card">
-              <span class="moving-profile-status-badge ${escapeHtml(statusMeta.className)}">${escapeHtml(statusMeta.label)}</span>
-              <p>${escapeHtml(statusMeta.note)}</p>
-              <small><i class="fas fa-clock"></i> Cập nhật gần nhất: ${escapeHtml(formatDateTime(identity.updated_at || identity.created_at || ""))}</small>
-              <button class="customer-btn customer-btn-primary moving-profile-hero-save" type="submit" form="provider-profile-form" id="provider-profile-submit-btn">
-                <i class="fas fa-floppy-disk"></i> Lưu thay đổi
+            <div class="customer-profile-hero-actions">
+              <span class="customer-profile-status-badge ${escapeHtml(statusMeta.className)}">${escapeHtml(statusMeta.label)}</span>
+              <p class="customer-profile-hero-note">${escapeHtml(statusMeta.note)}</p>
+              <button class="customer-btn customer-btn-primary" type="submit" form="provider-profile-form" id="provider-profile-submit-btn">
+                <i class="fas fa-save"></i> Lưu thay đổi
               </button>
             </div>
           </div>
 
-          <div class="moving-profile-dashboard-grid">
-            <form id="provider-profile-form" class="customer-form-stack moving-profile-main" enctype="multipart/form-data">
-              <div class="customer-profile-card moving-profile-card">
-                <div class="customer-profile-card-head">
-                  <i class="fas fa-id-card"></i>
-                  <div>
+          <div class="customer-profile-dashboard-grid">
+            <div class="customer-profile-main-column">
+              <form id="provider-profile-form" class="customer-profile-form" enctype="multipart/form-data">
+                <article class="customer-profile-card">
+                  <div class="customer-profile-card-head">
+                    <i class="fas fa-id-card"></i>
                     <h3>Thông tin hành nghề</h3>
-                    <p class="customer-profile-card-note">Dữ liệu đồng bộ trực tiếp từ tài khoản nhà cung cấp trong bảng nguoidung.</p>
                   </div>
-                </div>
-                <div id="provider-profile-feedback"></div>
-                <div class="customer-form-row">
-                  <label class="customer-form-group">
-                    <span>Tên hiển thị</span>
-                    <div class="customer-form-field">
-                      <input name="hovaten" type="text" value="${escapeHtml(displayName)}" required />
-                      <i class="fas fa-user"></i>
+                  <div id="provider-profile-feedback"></div>
+                  <div class="customer-profile-form-grid">
+                    <div class="customer-form-group">
+                      <span>Họ và tên</span>
+                      <div class="customer-form-field">
+                        <i class="fas fa-user"></i>
+                        <input name="hovaten" value="${escapeHtml(displayName)}" required />
+                      </div>
                     </div>
-                  </label>
-                  <label class="customer-form-group">
-                    <span>Email</span>
-                    <div class="customer-form-field">
-                      <input name="email" type="email" value="${escapeHtml(email)}" />
-                      <i class="fas fa-envelope"></i>
+                    <div class="customer-form-group">
+                      <span>Số điện thoại tài khoản</span>
+                      <div class="customer-form-field">
+                        <i class="fas fa-phone"></i>
+                        <input name="sodienthoai" value="${escapeHtml(phone)}" readonly disabled aria-readonly="true" />
+                      </div>
                     </div>
-                  </label>
-                </div>
-                <div class="customer-form-row">
-                  <label class="customer-form-group">
-                    <span>Số điện thoại tài khoản</span>
-                    <div class="customer-form-field">
-                      <input name="sodienthoai" type="tel" value="${escapeHtml(phone)}" readonly disabled aria-readonly="true" />
-                      <i class="fas fa-phone"></i>
+                    <div class="customer-form-group">
+                      <span>Email</span>
+                      <div class="customer-form-field">
+                        <i class="fas fa-envelope"></i>
+                        <input name="email" type="email" value="${escapeHtml(email)}" placeholder="provider@example.com" />
+                      </div>
                     </div>
-                  </label>
-                  <label class="customer-form-group">
-                    <span>Địa chỉ liên hệ</span>
-                    <div class="customer-form-field">
-                      <input name="diachi" type="text" value="${escapeHtml(address)}" placeholder="Khu vực hoạt động hoặc địa chỉ kho bãi..." />
-                      <i class="fas fa-location-dot"></i>
+                    <div class="customer-form-group">
+                      <span>Loại phương tiện</span>
+                      <div class="customer-form-field">
+                        <i class="fas fa-truck"></i>
+                        <input name="loai_phuong_tien" value="${escapeHtml(vehicleType)}" placeholder="Ví dụ: Xe tải nhỏ, xe bán tải..." />
+                      </div>
                     </div>
-                  </label>
-                </div>
-                <div class="customer-form-row">
-                  <label class="customer-form-group">
-                    <span>Loại phương tiện</span>
-                    <div class="customer-form-field">
-                      <input name="loai_phuong_tien" type="text" value="${escapeHtml(vehicleType)}" placeholder="Ví dụ: Xe tải nhỏ, xe bán tải..." />
-                      <i class="fas fa-truck-ramp-box"></i>
+                    <div class="customer-form-group customer-form-group-wide">
+                      <span>Địa chỉ / Khu vực hoạt động</span>
+                      <div class="customer-form-field">
+                        <i class="fas fa-location-dot"></i>
+                        <input name="diachi" value="${escapeHtml(address)}" placeholder="Khu vực hoạt động, địa chỉ liên hệ..." />
+                      </div>
                     </div>
-                  </label>
-                </div>
-                <p class="customer-form-helper customer-form-helper-compact">
-                  <i class="fas fa-circle-info"></i> Số điện thoại là định danh tài khoản nhà cung cấp, hiện không chỉnh sửa tại đây.
-                </p>
-              </div>
+                  </div>
+                  <p class="customer-form-helper customer-form-helper-compact">
+                    <i class="fas fa-circle-info"></i> Số điện thoại là định danh tài khoản nhà cung cấp, hiện không thể chỉnh sửa tại đây.
+                  </p>
+                </article>
 
-              <div class="customer-profile-card moving-profile-card">
-                <div class="customer-profile-card-head">
-                  <i class="fas fa-shield-check"></i>
-                  <div>
+                <article class="customer-profile-card">
+                  <div class="customer-profile-card-head">
+                    <i class="fas fa-fingerprint"></i>
                     <h3>Xác minh hồ sơ</h3>
-                    <p class="customer-profile-card-note">Ảnh đại diện và CCCD giúp đội điều phối xác thực nhanh hơn.</p>
                   </div>
-                </div>
-                <div class="moving-media-grid">
-                  <article class="moving-media-card moving-media-card-avatar">
-                    <div class="moving-media-head"><strong>Ảnh đại diện</strong><span>Nhận diện</span></div>
-                    <div class="moving-media-preview moving-media-preview-avatar">
-                      <img id="provider-avatar-preview" src="${escapeHtml(avatarUrl || "")}" alt="Ảnh đại diện" ${avatarUrl ? "" : "hidden"} />
-                      <div id="provider-avatar-empty" class="moving-media-empty" ${avatarUrl ? "hidden" : ""}>Chưa có ảnh đại diện</div>
-                    </div>
-                    <label class="customer-btn customer-btn-ghost moving-upload-btn">
-                      <input id="provider-avatar-file" name="avatar_file" type="file" accept="image/*" hidden />
-                      <i class="fas fa-camera"></i> Chọn ảnh
-                    </label>
-                  </article>
+                  <div class="customer-profile-media-grid customer-profile-media-grid-identity">
+                    <article class="customer-profile-media-card customer-profile-media-card-avatar">
+                      <div class="customer-profile-media-head">
+                        <strong>Ảnh đại diện</strong>
+                        <span>Nhận diện</span>
+                      </div>
+                      <div class="customer-profile-media-preview customer-profile-media-preview-avatar">
+                        <img id="provider-avatar-preview" src="${escapeHtml(avatarUrl || "")}" alt="Ảnh đại diện" ${avatarUrl ? "" : "hidden"} />
+                        <div id="provider-avatar-empty" class="customer-profile-media-empty" ${avatarUrl ? "hidden" : ""}>Chưa có ảnh đại diện</div>
+                      </div>
+                      <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
+                        <input id="provider-avatar-file" name="avatar_file" type="file" accept="image/*" hidden />
+                        <i class="fas fa-camera"></i> Chọn ảnh
+                      </label>
+                    </article>
 
-                  <article class="moving-media-card">
-                    <div class="moving-media-head"><strong>CCCD mặt trước</strong><span>Xác minh</span></div>
-                    <div class="moving-media-preview">
-                      <img id="provider-cccd-front-preview" src="${escapeHtml(cccdFrontUrl || "")}" alt="CCCD mặt trước" ${cccdFrontUrl ? "" : "hidden"} />
-                      <div id="provider-cccd-front-empty" class="moving-media-empty" ${cccdFrontUrl ? "hidden" : ""}><i class="fas fa-cloud-arrow-up"></i><span>Tải lên mặt trước</span></div>
-                    </div>
-                    <label class="customer-btn customer-btn-ghost moving-upload-btn">
-                      <input id="provider-cccd-front-file" name="cccd_front_file" type="file" accept="image/*" hidden />
-                      <i class="fas fa-id-card"></i> Chọn ảnh
-                    </label>
-                  </article>
+                    <article class="customer-profile-media-card">
+                      <div class="customer-profile-media-head">
+                        <strong>CCCD mặt trước</strong>
+                        <span>Xác minh</span>
+                      </div>
+                      <div class="customer-profile-media-preview">
+                        <img id="provider-cccd-front-preview" src="${escapeHtml(cccdFrontUrl || "")}" alt="CCCD mặt trước" ${cccdFrontUrl ? "" : "hidden"} />
+                        <div id="provider-cccd-front-empty" class="customer-profile-media-empty" ${cccdFrontUrl ? "hidden" : ""}>
+                          <i class="fas fa-cloud-arrow-up"></i>
+                          <span>Tải lên mặt trước</span>
+                        </div>
+                      </div>
+                      <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
+                        <input id="provider-cccd-front-file" name="cccd_front_file" type="file" accept="image/*" hidden />
+                        <i class="fas fa-id-card"></i> Chọn ảnh
+                      </label>
+                    </article>
 
-                  <article class="moving-media-card">
-                    <div class="moving-media-head"><strong>CCCD mặt sau</strong><span>Xác minh</span></div>
-                    <div class="moving-media-preview">
-                      <img id="provider-cccd-back-preview" src="${escapeHtml(cccdBackUrl || "")}" alt="CCCD mặt sau" ${cccdBackUrl ? "" : "hidden"} />
-                      <div id="provider-cccd-back-empty" class="moving-media-empty" ${cccdBackUrl ? "hidden" : ""}><i class="fas fa-cloud-arrow-up"></i><span>Tải lên mặt sau</span></div>
-                    </div>
-                    <label class="customer-btn customer-btn-ghost moving-upload-btn">
-                      <input id="provider-cccd-back-file" name="cccd_back_file" type="file" accept="image/*" hidden />
-                      <i class="fas fa-id-card-clip"></i> Chọn ảnh
-                    </label>
-                  </article>
-                </div>
-              </div>
-            </form>
+                    <article class="customer-profile-media-card">
+                      <div class="customer-profile-media-head">
+                        <strong>CCCD mặt sau</strong>
+                        <span>Xác minh</span>
+                      </div>
+                      <div class="customer-profile-media-preview">
+                        <img id="provider-cccd-back-preview" src="${escapeHtml(cccdBackUrl || "")}" alt="CCCD mặt sau" ${cccdBackUrl ? "" : "hidden"} />
+                        <div id="provider-cccd-back-empty" class="customer-profile-media-empty" ${cccdBackUrl ? "hidden" : ""}>
+                          <i class="fas fa-cloud-arrow-up"></i>
+                          <span>Tải lên mặt sau</span>
+                        </div>
+                      </div>
+                      <label class="customer-btn customer-btn-ghost customer-profile-upload-btn">
+                        <input id="provider-cccd-back-file" name="cccd_back_file" type="file" accept="image/*" hidden />
+                        <i class="fas fa-id-card-clip"></i> Chọn ảnh
+                      </label>
+                    </article>
+                  </div>
+                </article>
+              </form>
+            </div>
 
-            <aside class="moving-profile-side">
-              <div class="moving-profile-stat-card">
-                <h3>Thống kê vận hành</h3>
-                <div class="moving-profile-stat-list">
-                  <div><span><i class="fas fa-box"></i> Tổng yêu cầu</span><strong>${escapeHtml(String(stats.total || 0))}</strong></div>
-                  <div><span><i class="fas fa-spinner"></i> Đang xử lý</span><strong>${escapeHtml(String(stats.active_count || stats.open_count || 0))}</strong></div>
-                  <div><span><i class="fas fa-circle-check"></i> Hoàn tất</span><strong>${escapeHtml(String(stats.confirmed_count || stats.completed_count || 0))}</strong></div>
-                </div>
-              </div>
-
-              <div class="customer-profile-card moving-profile-card">
+            <aside class="customer-profile-side-column">
+              <article class="customer-profile-card customer-profile-stats-card">
                 <div class="customer-profile-card-head">
-                  <i class="fas fa-truck-ramp-box"></i>
-                  <div>
-                    <h3>Tóm tắt phương tiện</h3>
-                    <p class="customer-profile-card-note">Thông tin này lấy từ mục loại phương tiện trong hồ sơ hành nghề.</p>
+                  <i class="fas fa-chart-line"></i>
+                  <h3>Thống kê vận hành</h3>
+                </div>
+                <div class="customer-profile-stat-list">
+                  <div><span>Tổng yêu cầu</span><strong>${escapeHtml(formatNumber(stats.total || 0))}</strong></div>
+                  <div><span>Đang xử lý</span><strong>${escapeHtml(formatNumber(stats.active_count || stats.open_count || 0))}</strong></div>
+                  <div><span>Hoàn tất</span><strong>${escapeHtml(formatNumber(stats.confirmed_count || stats.completed_count || 0))}</strong></div>
+                </div>
+              </article>
+
+              <article class="customer-profile-card">
+                <div class="customer-profile-card-head">
+                  <i class="fas fa-route"></i>
+                  <h3>Tóm tắt phương tiện</h3>
+                </div>
+                <div class="customer-profile-fact-list">
+                  <div><span>Trạng thái</span><strong>${escapeHtml(statusMeta.label)}</strong></div>
+                  <div><span>Loại phương tiện</span><strong>${escapeHtml(vehicleType || "Chưa cập nhật")}</strong></div>
+                  <div><span>Email</span><strong>${escapeHtml(email || "Chưa cập nhật")}</strong></div>
+                </div>
+              </article>
+
+              ${renderProvidedServicesCard(identity)}
+
+              <article class="customer-profile-card">
+                <div class="customer-profile-card-head">
+                  <i class="fas fa-building"></i>
+                  <h3>Thông tin doanh nghiệp</h3>
+                </div>
+                <div class="customer-form-stack">
+                  <div class="customer-form-group">
+                    <span>Tên doanh nghiệp</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-building"></i>
+                      <input form="provider-profile-form" name="ten_cong_ty" value="${escapeHtml(companyName)}" placeholder="Tên doanh nghiệp hoặc công ty" />
+                    </div>
+                  </div>
+                  <div class="customer-form-group">
+                    <span>Mã số thuế</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-receipt"></i>
+                      <input form="provider-profile-form" name="ma_so_thue" value="${escapeHtml(taxCode)}" placeholder="Mã số thuế" />
+                    </div>
+                  </div>
+                  <div class="customer-form-group">
+                    <span>Địa chỉ doanh nghiệp</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-map-location-dot"></i>
+                      <input form="provider-profile-form" name="dia_chi_doanh_nghiep" value="${escapeHtml(businessAddress)}" placeholder="Địa chỉ doanh nghiệp hoặc kho bãi" />
+                    </div>
                   </div>
                 </div>
-                <div class="moving-profile-fact-list">
-                  <div><span>Loại phương tiện</span><strong>${escapeHtml(vehicleType || "Chưa cập nhật")}</strong></div>
-                  <div><span>Khu vực liên hệ</span><strong>${escapeHtml(address || "Chưa cập nhật")}</strong></div>
-                  <div><span>Số điện thoại</span><strong>${escapeHtml(phone || "Chưa cập nhật")}</strong></div>
-                </div>
-              </div>
+              </article>
 
-              <div class="customer-profile-card customer-password-card moving-profile-card">
+              <article class="customer-profile-card customer-profile-security-card">
                 <div class="customer-profile-card-head">
                   <i class="fas fa-shield-halved"></i>
-                  <div>
-                    <h3>Bảo mật tài khoản</h3>
-                    <p class="customer-profile-card-note">Đổi mật khẩu đăng nhập cho khu nhà cung cấp chuyển dọn.</p>
-                  </div>
+                  <h3>Bảo mật</h3>
                 </div>
                 <div id="provider-password-feedback"></div>
                 <form id="provider-password-form" class="customer-form-stack">
-                  <label class="customer-form-group">
+                  <div class="customer-form-group">
                     <span>Mật khẩu hiện tại</span>
                     <div class="customer-form-field">
-                      <input name="current_password" type="password" autocomplete="current-password" required />
                       <i class="fas fa-key"></i>
+                      <input name="current_password" type="password" autocomplete="current-password" required placeholder="••••••••" />
                     </div>
-                  </label>
-                  <div class="customer-form-row">
-                    <label class="customer-form-group">
-                      <span>Mật khẩu mới</span>
-                      <div class="customer-form-field">
-                        <input name="new_password" type="password" autocomplete="new-password" required />
-                        <i class="fas fa-lock"></i>
-                      </div>
-                    </label>
-                    <label class="customer-form-group">
-                      <span>Xác nhận mật khẩu mới</span>
-                      <div class="customer-form-field">
-                        <input name="confirm_password" type="password" autocomplete="new-password" required />
-                        <i class="fas fa-lock-open"></i>
-                      </div>
-                    </label>
                   </div>
-                  <p class="customer-form-helper customer-form-helper-compact">
-                    <i class="fas fa-circle-info"></i> Mật khẩu mới cần ít nhất 8 ký tự.
-                  </p>
-                  <div class="customer-inline-actions">
-                    <button class="customer-btn customer-btn-primary" type="submit">Cập nhật mật khẩu</button>
+                  <div class="customer-form-group">
+                    <span>Mật khẩu mới</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-lock"></i>
+                      <input name="new_password" type="password" minlength="8" autocomplete="new-password" required placeholder="Nhập mật khẩu mới" />
+                    </div>
                   </div>
+                  <div class="customer-form-group">
+                    <span>Xác nhận mật khẩu</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-lock-open"></i>
+                      <input name="confirm_password" type="password" minlength="8" autocomplete="new-password" required placeholder="Cùng mật khẩu mới" />
+                    </div>
+                  </div>
+                  <p class="customer-form-helper"><i class="fas fa-circle-info"></i> Mật khẩu mới cần ít nhất 8 ký tự.</p>
+                  <button class="customer-btn customer-btn-ghost customer-profile-full-btn" type="submit">
+                    Cập nhật mật khẩu
+                  </button>
                 </form>
-              </div>
+              </article>
             </aside>
           </div>
         </section>
@@ -413,6 +477,11 @@ const providerProfileModule = (function (window, document) {
             email: nextEmail,
             sodienthoai: nextPhone,
             diachi: String(formData.get("diachi") || "").trim(),
+            ten_cong_ty: String(formData.get("ten_cong_ty") || "").trim(),
+            ma_so_thue: String(formData.get("ma_so_thue") || "").trim(),
+            dia_chi_doanh_nghiep: String(
+              formData.get("dia_chi_doanh_nghiep") || "",
+            ).trim(),
             loai_phuong_tien: String(formData.get("loai_phuong_tien") || "").trim(),
             avatar_file: formData.get("avatar_file"),
             cccd_front_file: formData.get("cccd_front_file"),
@@ -438,7 +507,7 @@ const providerProfileModule = (function (window, document) {
       } finally {
         if (submitButton) {
           submitButton.disabled = false;
-          submitButton.innerHTML = '<i class="fas fa-floppy-disk"></i> Lưu thay đổi';
+          submitButton.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
         }
       }
 

@@ -271,7 +271,14 @@
     if (Array.isArray(payload)) return payload;
     if (typeof payload !== "object") return [];
 
-    const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
+    const candidateKeys = [
+      "data",
+      "items",
+      "rows",
+      "list",
+      "result",
+      "payload",
+    ];
     for (const key of candidateKeys) {
       if (!(key in payload)) continue;
       const value = payload[key];
@@ -476,7 +483,8 @@
       );
       const areaConfig = domesticData[areaKey][levelKey];
       const domesticBase = parseFloat(areaConfig.base || 0) * quantity;
-      const domesticShipFee = parseFloat(domesticResult.shipFee || 0) * quantity;
+      const domesticShipFee =
+        parseFloat(domesticResult.shipFee || 0) * quantity;
       const domesticAddon = parseFloat(domesticResult.addonFee || 0);
       const domesticTotal = domesticShipFee + domesticAddon;
 
@@ -579,8 +587,10 @@
         authSession?.username ||
         "",
     ).trim();
-    const password = String(authSession?.password || authSession?.mat_khau || "").trim();
-    
+    const password = String(
+      authSession?.password || authSession?.mat_khau || "",
+    ).trim();
+
     try {
       const url = new URL(urlStr, window.location.href);
       URL_ACCESS_QUERY_KEYS.forEach((key) => {
@@ -597,8 +607,14 @@
   }
 
   function buildSharedAuthUrl(pageName, options = {}) {
-    const normalizedPage = String(pageName || "dang-nhap.html").replace(/^\.?\//, "");
-    const target = new URL(`${parentBasePath}public/${normalizedPage}`, window.location.origin);
+    const normalizedPage = String(pageName || "dang-nhap.html").replace(
+      /^\.?\//,
+      "",
+    );
+    const target = new URL(
+      `${parentBasePath}public/${normalizedPage}`,
+      window.location.origin,
+    );
     target.searchParams.set("service", "giaohangnhanh");
     target.searchParams.set("redirect", `${projectBasePath}index.html`);
     if (options.redirect) {
@@ -609,7 +625,10 @@
 
   function buildLoginRedirect(loginUrl = buildSharedAuthUrl("dang-nhap.html")) {
     const target = getCurrentPathWithSearch();
-    const url = new URL(String(loginUrl || buildSharedAuthUrl("dang-nhap.html")), window.location.origin);
+    const url = new URL(
+      String(loginUrl || buildSharedAuthUrl("dang-nhap.html")),
+      window.location.origin,
+    );
     url.searchParams.set("redirect", target);
     if (!url.searchParams.has("service")) {
       url.searchParams.set("service", "giaohangnhanh");
@@ -652,8 +671,12 @@
   function bindPortalLogoutActions(root, options = {}) {
     if (!root || root.dataset.portalLogoutBound === "1") return;
 
-    const selector = String(options.selector || "[data-local-logout]").trim() || "[data-local-logout]";
-    const redirectUrl = String(options.redirectUrl || `${projectBasePath}dang-nhap.html`).trim();
+    const selector =
+      String(options.selector || "[data-local-logout]").trim() ||
+      "[data-local-logout]";
+    const redirectUrl = String(
+      options.redirectUrl || `${projectBasePath}dang-nhap.html`,
+    ).trim();
     const auth = options.localAuth || window.GiaoHangNhanhLocalAuth || null;
 
     root.dataset.portalLogoutBound = "1";
@@ -690,7 +713,9 @@
   }
 
   function renderLoading(message = "Đang tải dữ liệu...") {
-    const root = document.getElementById("shipper-page-content") || document.getElementById("customer-page-content");
+    const root =
+      document.getElementById("shipper-page-content") ||
+      document.getElementById("customer-page-content");
     if (!root) return;
     root.innerHTML = `
       <div class="customer-loading">
@@ -701,7 +726,9 @@
   }
 
   function renderError(error, message = "Đã có lỗi xảy ra khi tải dữ liệu.") {
-    const root = document.getElementById("shipper-page-content") || document.getElementById("customer-page-content");
+    const root =
+      document.getElementById("shipper-page-content") ||
+      document.getElementById("customer-page-content");
     if (!root) return;
     console.error("Portal Error:", error);
     root.innerHTML = `
@@ -731,13 +758,12 @@
       typeof window.GHN_DRIVE_UPLOAD_PROXY_URLS === "object"
         ? window.GHN_DRIVE_UPLOAD_PROXY_URLS
         : null;
-    const override =
-      String(
-        (overrideMap && overrideMap[normalizedFileName]) ||
-          (normalizedFileName === "upload_to_drive.php"
-            ? window.GHN_DRIVE_UPLOAD_PROXY_URL
-            : ""),
-      ).trim();
+    const override = String(
+      (overrideMap && overrideMap[normalizedFileName]) ||
+        (normalizedFileName === "upload_to_drive.php"
+          ? window.GHN_DRIVE_UPLOAD_PROXY_URL
+          : ""),
+    ).trim();
     if (override) return override;
     return new URL(
       normalizedFileName,
@@ -782,7 +808,9 @@
       .then((payload) => {
         const maxUploadMb = Math.max(
           1,
-          Number(payload?.data?.settings?.max_upload_mb || DEFAULT_MAX_UPLOAD_MB),
+          Number(
+            payload?.data?.settings?.max_upload_mb || DEFAULT_MAX_UPLOAD_MB,
+          ),
         );
         return {
           maxUploadMb,
@@ -881,7 +909,10 @@
       id: fileId,
       fileId,
       name: normalizeText(payload.name || fileObj.name || "Tệp đính kèm"),
-      extension: getFileExtension(payload.name || fileObj.name, payload.type || fileObj.type),
+      extension: getFileExtension(
+        payload.name || fileObj.name,
+        payload.type || fileObj.type,
+      ),
       url: urls.url,
       download_url: urls.downloadUrl,
       view_url: urls.viewUrl,

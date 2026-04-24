@@ -109,6 +109,18 @@
     return String(value ?? "").replace(/\D/g, "");
   }
 
+  function hasProviderCapability(user) {
+    if (!user || typeof user !== "object") return false;
+    if (localAuth && typeof localAuth.hasGhnProviderRole === "function") {
+      return localAuth.hasGhnProviderRole(user);
+    }
+
+    return String(user.id_dichvu || "")
+      .split(",")
+      .map((item) => item.trim())
+      .includes("7");
+  }
+
   function getSessionCacheKey(session) {
     if (!session) return "anonymous";
     return [
@@ -2310,21 +2322,11 @@
   }
 
   function redirectNonCustomer(session, page) {
+    if (!session || typeof session !== "object") return false;
     const role = String(session?.role || "")
       .trim()
       .toLowerCase();
-    if (!role || role === "customer") return false;
-
-    if (role === "shipper") {
-      const targetByPage = {
-        dashboard: "../nha-cung-cap/dashboard-giaohang.html",
-        orders: "../nha-cung-cap/don-hang-giaohang.html",
-        profile: "../nha-cung-cap/ho-so-giaohang.html",
-      };
-      const target = targetByPage[page] || "../nha-cung-cap/dashboard-giaohang.html";
-      window.location.replace(target);
-      return true;
-    }
+    if (!role || role === "customer" || hasProviderCapability(session)) return false;
 
     if (localAuth && typeof localAuth.getDashboardPath === "function") {
       window.location.replace(`../../${localAuth.getDashboardPath(role)}`);
@@ -2346,11 +2348,32 @@
     const loginItem = document.getElementById("nav-login-item");
     const registerItem = document.getElementById("nav-register-item");
     const firstName = escapeHtml(getFirstName(user) || "Khách hàng");
+    const canReceiveOrders = hasProviderCapability(user);
     const accountSummary = escapeHtml(
       String(user?.phone || "").trim() ||
         String(user?.email || "").trim() ||
-        "Khu vực khách hàng",
+        (canReceiveOrders
+          ? "Tài khoản đặt đơn và nhận đơn"
+          : "Khu vực khách hàng"),
     );
+    const menuItems = [
+      `<li><a href="${routes.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan đặt đơn</a></li>`,
+      `<li><a href="${routes.orders}"><i class="fas fa-box"></i> Đơn hàng tôi đã đặt</a></li>`,
+    ];
+
+    if (!canReceiveOrders) {
+      menuItems.push(
+        `<li><a href="${routes.profile}"><i class="fas fa-user"></i> Hồ sơ khách hàng</a></li>`,
+      );
+    }
+
+    if (canReceiveOrders) {
+      menuItems.push(
+        '<li><a href="../nha-cung-cap/dashboard-giaohang.html"><i class="fas fa-truck-ramp-box"></i> Tổng quan nhận đơn</a></li>',
+        '<li><a href="../nha-cung-cap/don-hang-giaohang.html"><i class="fas fa-clipboard-list"></i> Đơn hàng khách hàng đặt cho tôi</a></li>',
+        '<li><a href="../nha-cung-cap/ho-so-giaohang.html"><i class="fas fa-id-card"></i> Hồ sơ nhà cung cấp</a></li>',
+      );
+    }
 
     if (loginItem) {
       loginItem.className = "dropdown has-submenu customer-nav-dropdown";
@@ -2364,9 +2387,7 @@
               <span>${accountSummary}</span>
             </div>
           </li>
-          <li><a href="${routes.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
-          <li><a href="${routes.orders}"><i class="fas fa-box"></i> Danh sách đơn hàng</a></li>
-          <li><a href="${routes.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
+          ${menuItems.join("")}
           <li class="customer-nav-logout-wrapper"><a href="${routes.logout}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
         </ul>
       `;
@@ -2996,8 +3017,8 @@
       <section class="customer-panel customer-panel-overview">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Tổng quan đơn hàng</p>
-            <h2>Tóm tắt nhanh để theo dõi</h2>
+            <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
+            <h2>Tóm tắt nhanh đơn hàng tôi đã đặt</h2>
             <p class="customer-panel-subtext">${escapeHtml(heroState)}. ${escapeHtml(summaryText)}</p>
           </div>
           <div class="customer-inline-actions">
@@ -3023,8 +3044,8 @@
       <section class="customer-panel customer-panel-orders customer-panel-orders-main">
           <div class="customer-panel-head customer-panel-head-dashboard">
             <div>
-              <p class="customer-section-kicker">Đơn gần đây</p>
-              <h2>Đơn gần nhất cần bạn theo dõi</h2>
+              <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
+              <h2>Đơn gần nhất cần tôi theo dõi</h2>
               <p class="customer-panel-subtext">Giữ lại danh sách ngắn để bạn nhìn ra ngay đơn mới hoặc đơn vừa đổi trạng thái.</p>
             </div>
             
@@ -3119,8 +3140,8 @@
       <section class="customer-panel customer-orders-panel">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Danh sách đơn hàng</p>
-            <h2>Tìm và lọc đơn</h2>
+            <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
+            <h2>Tìm và lọc đơn đã đặt</h2>
             <p class="customer-panel-subtext">Trang ${formatNumber(currentPage)}/${formatNumber(totalPages)} · ${formatNumber(totalResults)} đơn</p>
           </div>
         </div>
@@ -3163,7 +3184,7 @@
                       `<span class="customer-active-filter-text">${escapeHtml(item)}</span>`,
                   )
                   .join("")
-              : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn.</span>'
+              : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn tôi đã đặt.</span>'
           }
         </div>
 
@@ -3189,7 +3210,6 @@
                       <strong class="customer-order-price">${formatCurrency(order.shipping_fee)}</strong>
                     </div>
                     <div class="customer-order-actions customer-order-actions-compact">
-                      ${renderCancelButton(order, true)}
                       <a class="customer-btn customer-btn-primary customer-btn-sm" href="${buildOrderDetailUrl(order)}">Xem chi tiết</a>
                     </div>
                   </div>
@@ -3792,35 +3812,6 @@
               </form>
             </article>
 
-            <article class="customer-profile-card">
-              <div class="customer-profile-card-head">
-                <i class="fas fa-building"></i>
-                <h3>Hóa đơn / Doanh nghiệp</h3>
-              </div>
-              <div class="customer-form-stack customer-profile-company-form">
-                <div class="customer-form-group">
-                  <span>Tên công ty</span>
-                  <div class="customer-form-field">
-                    <i class="fas fa-building"></i>
-                    <input form="customer-profile-form" name="ten_cong_ty" value="${escapeHtml(profile.company_name || profile.ten_cong_ty || "")}" placeholder="Tên công ty xuất hóa đơn" />
-                  </div>
-                </div>
-                <div class="customer-form-group">
-                  <span>Mã số thuế</span>
-                  <div class="customer-form-field">
-                    <i class="fas fa-receipt"></i>
-                    <input form="customer-profile-form" name="ma_so_thue" value="${escapeHtml(profile.tax_code || profile.ma_so_thue || "")}" placeholder="Mã số thuế" />
-                  </div>
-                </div>
-                <div class="customer-form-group">
-                  <span>Địa chỉ công ty</span>
-                  <div class="customer-form-field">
-                    <i class="fas fa-location-dot"></i>
-                    <input form="customer-profile-form" name="dia_chi_cong_ty" value="${escapeHtml(profile.company_address || profile.dia_chi_cong_ty || "")}" placeholder="Địa chỉ xuất hóa đơn" />
-                  </div>
-                </div>
-              </div>
-            </article>
           </aside>
         </div>
       </section>

@@ -138,6 +138,7 @@ const providerDashboardModule = (function (window, document) {
 
     try {
       await store.autoCancelExpiredBookings?.();
+      const providerActor = store.getCurrentProviderActor?.();
       const limit = 200;
       const maxPages = 10;
       const rows = [];
@@ -157,7 +158,13 @@ const providerDashboardModule = (function (window, document) {
         const pageRows = extractRows(response);
         if (!pageRows.length) break;
 
-        rows.push(...pageRows);
+        rows.push(
+          ...pageRows.filter(
+            (row) =>
+              store.isRowAssignedToProvider?.(row, providerActor) &&
+              !store.isRowOwnedByProviderActor?.(row, providerActor),
+          ),
+        );
         if (pageRows.length < limit) break;
       }
 
@@ -195,8 +202,9 @@ const providerDashboardModule = (function (window, document) {
       return;
     }
 
-    const role = store.getSavedRole();
-    if (role && role !== "nha-cung-cap") {
+    const canUseProviderPortal =
+      store.hasProviderCapability?.(profile || store.readIdentity?.()) || false;
+    if (!canUseProviderPortal) {
       window.location.href = core.getSharedLoginUrl({
         redirect: core.getCurrentRelativeUrl(),
       });
@@ -220,19 +228,19 @@ const providerDashboardModule = (function (window, document) {
       (item) => item.statusValue === "da-hoan-thanh",
     ).length;
     const summaryText = pendingCount
-      ? "Ưu tiên rà các yêu cầu mới tiếp nhận để quyết định nhận đơn, khảo sát trước và phương án triển khai."
+      ? "Ưu tiên bám các đơn đã giao cho bạn nhưng còn mới tiếp nhận để chốt hướng triển khai."
       : acceptedCount || shippingCount
-        ? "Một phần đơn đã được nhận hoặc đang triển khai. Tiếp tục bám tiến độ và cập nhật ghi chú cho khách hàng."
+        ? "Các đơn khách hàng đã giao cho bạn đang được tiếp nhận hoặc triển khai. Tiếp tục bám tiến độ và cập nhật ghi chú."
         : allRequests.length
-          ? "Nhịp xử lý hiện khá ổn định. Có thể mở danh sách đơn hàng để kiểm tra lại các đơn đã hoàn thành hoặc đã hủy."
-          : "Chưa có yêu cầu nào trong danh sách đơn hàng gần đây của nhà cung cấp.";
+          ? "Danh sách đơn đã giao cho bạn hiện ổn định. Có thể mở danh sách để rà lại các đơn đã hoàn thành hoặc đã hủy."
+          : "Chưa có đơn nào được khách hàng giao cho tài khoản này.";
 
     root.innerHTML = `
       <div class="customer-portal-shell customer-portal-shell--simple">
         <section class="customer-panel customer-panel-overview provider-dashboard-overview">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Tổng quan công việc</p>
+              <p class="customer-section-kicker">Đơn hàng khách hàng đặt cho tôi</p>
               <h2>Xin chào, ${escapeHtml(displayName)}</h2>
               <p class="customer-panel-subtext">${escapeHtml(summaryText)}</p>
             </div>
@@ -268,9 +276,9 @@ const providerDashboardModule = (function (window, document) {
         <section class="customer-panel customer-panel-orders customer-panel-orders-main">
           <div class="customer-panel-head customer-panel-head-dashboard">
             <div>
-              <p class="customer-section-kicker">Đơn hàng gần đây</p>
-              <h2>3 yêu cầu cần nhìn trước</h2>
-              <p class="customer-panel-subtext">Giữ một danh sách ngắn để đội vận hành vào việc nhanh hơn, đúng nhịp của khu khách hàng.</p>
+              <p class="customer-section-kicker">Đơn gần đây</p>
+              <h2>3 đơn khách hàng đã giao cho tôi</h2>
+              <p class="customer-panel-subtext">Giữ một danh sách ngắn để NCC nhìn ra ngay đơn vừa được giao và bám tiến độ xử lý.</p>
             </div>
             <div class="customer-inline-actions customer-inline-actions-dashboard">
               <form action="${escapeHtml(
@@ -336,7 +344,7 @@ const providerDashboardModule = (function (window, document) {
                 : `
                   <div class="customer-empty-state">
                     <i class="fas fa-inbox"></i>
-                    <p>Chưa có yêu cầu nào trong bảng đặt lịch để hiển thị ở khu nhà cung cấp.</p>
+                    <p>Chưa có đơn nào được khách hàng giao cho tài khoản này.</p>
                   </div>
                 `
             }

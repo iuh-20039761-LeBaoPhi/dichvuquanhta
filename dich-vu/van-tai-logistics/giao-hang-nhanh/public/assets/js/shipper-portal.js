@@ -17,7 +17,7 @@
         };
 
   const storageKeys = {
-    orders: "ghn-customer-orders",
+    orders: "ghn-shipper-orders",
   };
   const AUTO_CANCEL_REASON =
     "Đơn đã quá khung giờ lấy hàng mà chưa có shipper nhận.";
@@ -80,6 +80,49 @@
       return localAuth.normalizePhone(value);
     }
     return String(value || "").replace(/\D/g, "");
+  }
+
+  function hasProviderCapability(user) {
+    if (!user || typeof user !== "object") return false;
+    if (localAuth && typeof localAuth.hasGhnProviderRole === "function") {
+      return localAuth.hasGhnProviderRole(user);
+    }
+
+    return String(user.id_dichvu || "")
+      .split(",")
+      .map((item) => item.trim())
+      .includes("7");
+  }
+
+  function getProvidedServiceLabels(user) {
+    if (!user || typeof user !== "object") return [];
+    if (localAuth && typeof localAuth.getProviderServiceLabels === "function") {
+      return localAuth.getProviderServiceLabels(user);
+    }
+
+    return hasProviderCapability(user) ? ["Giao Hàng Nhanh"] : [];
+  }
+
+  function renderProvidedServicesCard(profile, emptyText) {
+    const labels = getProvidedServiceLabels(profile);
+    const content = labels.length
+      ? labels
+          .map(
+            (label) =>
+              `<span class="customer-chip customer-chip-muted">${escapeHtml(label)}</span>`,
+          )
+          .join("")
+      : `<p class="customer-panel-subtext">${escapeHtml(emptyText)}</p>`;
+
+    return `
+      <article class="customer-profile-card">
+        <div class="customer-profile-card-head">
+          <i class="fas fa-briefcase"></i>
+          <h3>Dịch vụ có thể cung cấp</h3>
+        </div>
+        <div class="customer-active-filters">${content}</div>
+      </article>
+    `;
   }
 
   function getAccessCredentials(sessionOverride = null) {
@@ -905,14 +948,34 @@
     return ["cancelled", "canceled", "da_huy"].includes(rawStatus);
   }
 
+  function isOrderPlacedByCurrentUser(row, session) {
+    const sessionId = normalizeText(session?.id || "");
+    const sessionUsername = normalizeText(session?.username || "").toLowerCase();
+    const sessionPhone = normalizePhone(
+      session?.phone || session?.so_dien_thoai || "",
+    );
+    const customerId = normalizeText(row?.customer_id || "");
+    const customerUsername = normalizeText(row?.customer_username || "").toLowerCase();
+    const customerPhone = normalizePhone(
+      row?.so_dien_thoai_nguoi_gui ||
+        row?.nguoi_gui_so_dien_thoai ||
+        row?.sender_phone ||
+        "",
+    );
+
+    return Boolean(
+      (sessionId && customerId && sessionId === customerId) ||
+        (sessionUsername &&
+          customerUsername &&
+          sessionUsername === customerUsername) ||
+        (sessionPhone && customerPhone && sessionPhone === customerPhone),
+    );
+  }
+
   function shouldProviderSeeOrder(row, session) {
-    const assignedToCurrentProvider = isProviderAssignedToOrder(row, session);
-    if (assignedToCurrentProvider) return true;
-
-    const unassigned = isOrderUnassigned(row);
-    if (!unassigned) return false;
-
-    return !isOrderCancelled(row);
+    if (!session) return false;
+    if (isOrderPlacedByCurrentUser(row, session)) return false;
+    return isProviderAssignedToOrder(row, session);
   }
 
   async function getAllOrderDetails(session) {
@@ -944,7 +1007,8 @@
 
     const localDetails = (
       readJson(storageKeys.orders, []) || []
-    ).map((detail) => normalizeLocalOrderDetail(detail, session));
+    ).map((detail) => normalizeLocalOrderDetail(detail, session))
+     .filter((item) => shouldProviderSeeOrder(item.order, session));
     return localDetails.sort((left, right) => {
       const leftTime = new Date(left?.order?.created_at || 0).getTime();
       const rightTime = new Date(right?.order?.created_at || 0).getTime();
@@ -1134,7 +1198,7 @@
   async function requestLocalData(action, options = {}) {
     const session = getCurrentSessionUser();
 
-    if (!session || session.role !== "shipper") {
+    if (!session || !hasProviderCapability(session)) {
       window.location.href = getLoginRedirect();
       throw new Error("Phiên đăng nhập đã hết hạn.");
     }
@@ -1566,11 +1630,21 @@
     const loginItem = document.getElementById("nav-login-item");
     const registerItem = document.getElementById("nav-register-item");
     const firstName = escapeHtml(getFirstName(user) || "Nhà cung cấp");
+    const canReceiveOrders = hasProviderCapability(user);
     const accountSummary = escapeHtml(
       String(user?.phone || "").trim() ||
         String(user?.email || "").trim() ||
-        "Khu vực nhà cung cấp",
+        (canReceiveOrders
+          ? "Tài khoản đặt đơn và nhận đơn"
+          : "Khu vực nhà cung cấp"),
     );
+    const menuItems = [
+      '<li><a href="../khach-hang/dashboard-giaohang.html"><i class="fas fa-chart-line"></i> Tổng quan đặt đơn</a></li>',
+      '<li><a href="../khach-hang/danh-sach-don-hang-giaohang.html"><i class="fas fa-box"></i> Đơn hàng tôi đã đặt</a></li>',
+      `<li><a href="${routes.dashboard}"><i class="fas fa-truck-ramp-box"></i> Tổng quan nhận đơn</a></li>`,
+      `<li><a href="${routes.orders}"><i class="fas fa-clipboard-list"></i> Đơn hàng khách hàng đặt cho tôi</a></li>`,
+      `<li><a href="${routes.profile}"><i class="fas fa-id-card"></i> Hồ sơ nhà cung cấp</a></li>`,
+    ];
 
     if (loginItem) {
       loginItem.className = "dropdown has-submenu customer-nav-dropdown";
@@ -1584,9 +1658,7 @@
               <span>${accountSummary}</span>
             </div>
           </li>
-          <li><a href="${routes.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
-          <li><a href="${routes.orders}"><i class="fas fa-truck-ramp-box"></i> Đơn của tôi</a></li>
-          <li><a href="${routes.profile}"><i class="fas fa-user-gear"></i> Hồ sơ cá nhân</a></li>
+          ${menuItems.join("")}
           <li class="customer-nav-logout-wrapper">
             <a href="${routes.logout}" class="customer-nav-logout" data-local-logout="1">
               <i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất
@@ -1620,21 +1692,12 @@
   }
 
   function redirectNonShipper(session, page) {
+    if (!session || typeof session !== "object") return false;
+    if (hasProviderCapability(session)) return false;
+
     const role = String(session?.role || "")
       .trim()
       .toLowerCase();
-    if (!role || role === "shipper") return false;
-
-    if (role === "customer") {
-      const targetByPage = {
-        dashboard: "../khach-hang/dashboard-giaohang.html",
-        orders: "../khach-hang/danh-sach-don-hang-giaohang.html",
-        profile: "../khach-hang/ho-so-giaohang.html",
-      };
-      const target = targetByPage[page] || "../khach-hang/dashboard-giaohang.html";
-      window.location.replace(target);
-      return true;
-    }
 
     if (localAuth && typeof localAuth.getDashboardPath === "function") {
       window.location.replace(`../../${localAuth.getDashboardPath(role)}`);
@@ -1688,9 +1751,9 @@
       <section class="customer-panel customer-panel-overview">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Khu vực nhà cung cấp</p>
-            <h2>Tổng quan công việc</h2>
-            <p class="customer-panel-subtext">Bạn đang có ${formatNumber(activeOrders)} đơn cần theo dõi và xử lý tiến độ.</p>
+            <p class="customer-section-kicker">Đơn hàng khách hàng đặt cho tôi</p>
+            <h2>Tổng quan nhận đơn</h2>
+            <p class="customer-panel-subtext">Bạn đang có ${formatNumber(activeOrders)} đơn khách hàng đặt cho tài khoản này cần theo dõi.</p>
           </div>
           <div class="customer-inline-actions">
             <a href="${routes.orders}" class="customer-btn customer-btn-primary">Xem tất cả</a>
@@ -1715,9 +1778,9 @@
       <section class="customer-panel customer-panel-orders">
         <div class="customer-panel-head customer-panel-head-dashboard">
           <div>
-            <p class="customer-section-kicker">Đơn hàng mới</p>
-            <h2>Danh sách việc cần làm</h2>
-            <p class="customer-panel-subtext">3 đơn hàng mới nhất được phân công cho bạn.</p>
+            <p class="customer-section-kicker">Đơn khách hàng đặt cho tôi</p>
+            <h2>Danh sách việc cần theo dõi</h2>
+            <p class="customer-panel-subtext">3 đơn gần nhất đang gắn với tài khoản nhà cung cấp này.</p>
           </div>
           <div class="customer-inline-actions customer-inline-actions-dashboard">
             <form action="${routes.orders}" method="GET" class="customer-quick-search">
@@ -1761,7 +1824,7 @@
               </article>`,
                   )
                   .join("")
-              : '<div class="customer-empty">Chưa có đơn hàng nào được phân công.</div>'
+              : '<div class="customer-empty">Chưa có đơn hàng nào khách hàng đặt cho bạn.</div>'
           }
         </div>
       </section>
@@ -1803,8 +1866,8 @@
       <section class="customer-panel customer-orders-panel">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Đơn hàng của tôi</p>
-            <h2>Danh sách đơn hàng</h2>
+            <p class="customer-section-kicker">Đơn hàng khách hàng đặt cho tôi</p>
+            <h2>Danh sách đơn nhận</h2>
             <p class="customer-panel-subtext">Trang ${formatNumber(currentPage)} / ${formatNumber(totalPages)} · ${formatNumber(totalResults)} đơn phù hợp với bộ lọc hiện tại.</p>
           </div>
         </div>
@@ -1844,7 +1907,7 @@
               ? activeFilters
                   .map((item) => `<span class="customer-chip customer-chip-muted">${escapeHtml(item)}</span>`)
                   .join("")
-              : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn đã được phân công cho bạn.</span>'
+              : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn khách hàng đã đặt cho bạn.</span>'
           }
         </div>
 
@@ -2111,6 +2174,11 @@
                 <div><span>Email</span><strong>${escapeHtml(email)}</strong></div>
               </div>
             </article>
+
+            ${renderProvidedServicesCard(
+              profile,
+              "Tài khoản này chưa có dịch vụ nhận đơn nào được kích hoạt.",
+            )}
 
             <article class="customer-profile-card customer-profile-security-card">
               <div class="customer-profile-card-head">

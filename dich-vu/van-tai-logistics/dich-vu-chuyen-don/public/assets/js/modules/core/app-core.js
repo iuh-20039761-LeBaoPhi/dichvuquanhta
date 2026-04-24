@@ -167,11 +167,13 @@ function getDriveFileUrls(fileId) {
   }
 
   const encodedId = encodeURIComponent(normalizedId);
+  const directUrl = `https://lh3.googleusercontent.com/u/0/d/${encodedId}`;
+
   return {
-    url: `https://drive.google.com/uc?export=download&id=${encodedId}`,
-    downloadUrl: `https://drive.google.com/uc?export=download&id=${encodedId}`,
+    url: directUrl,
+    downloadUrl: directUrl,
     viewUrl: `https://drive.google.com/file/d/${encodedId}/view`,
-    thumbnailUrl: `https://drive.google.com/thumbnail?id=${encodedId}&sz=w2000`,
+    thumbnailUrl: directUrl,
   };
 }
 

@@ -222,6 +222,7 @@ const providerJobsModule = (function (window, document) {
 
     try {
       await store.autoCancelExpiredBookings?.();
+      const providerActor = store.getCurrentProviderActor?.();
       const limit = 200;
       const maxPages = 10;
       const rows = [];
@@ -241,7 +242,13 @@ const providerJobsModule = (function (window, document) {
         const pageRows = extractRows(response);
         if (!pageRows.length) break;
 
-        rows.push(...pageRows);
+        rows.push(
+          ...pageRows.filter(
+            (row) =>
+              store.isRowAssignedToProvider?.(row, providerActor) &&
+              !store.isRowOwnedByProviderActor?.(row, providerActor),
+          ),
+        );
         if (pageRows.length < limit) break;
       }
 
@@ -258,7 +265,9 @@ const providerJobsModule = (function (window, document) {
 
   function renderJobs(data) {
     const role = store.getSavedRole();
-    if (role && role !== "nha-cung-cap") {
+    const canUseProviderPortal =
+      store.hasProviderCapability?.(store.readIdentity?.()) || false;
+    if (!canUseProviderPortal) {
       window.location.href = core.getSharedLoginUrl({
         redirect: core.getCurrentRelativeUrl(),
       });
@@ -277,11 +286,11 @@ const providerJobsModule = (function (window, document) {
         <section class="customer-panel customer-orders-panel provider-jobs-panel">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Danh sách đơn hàng</p>
-              <h2>Tìm và lọc yêu cầu chuyển dọn</h2>
+              <p class="customer-section-kicker">Đơn hàng khách hàng đặt cho tôi</p>
+              <h2>Tìm và lọc đơn đã giao cho tôi</h2>
               <p class="customer-panel-subtext">${escapeHtml(
                 String(items.length),
-              )} đơn hàng trong danh sách hiện tại</p>
+              )} đơn hàng đang thuộc nhà cung cấp hiện tại</p>
             </div>
           </div>
 
@@ -324,8 +333,8 @@ const providerJobsModule = (function (window, document) {
           <div class="customer-panel-head">
             <div>
               <p class="customer-section-kicker">Danh sách</p>
-              <h2>Đơn hàng đang hiển thị</h2>
-              <p class="customer-panel-subtext" id="provider-job-result-text">Đang tải dữ liệu yêu cầu...</p>
+              <h2>Đơn hàng khách hàng đặt cho tôi</h2>
+              <p class="customer-panel-subtext" id="provider-job-result-text">Đang tải dữ liệu đơn hàng...</p>
             </div>
           </div>
 
@@ -659,8 +668,9 @@ const providerJobsModule = (function (window, document) {
       return;
     }
 
-    const role = store.getSavedRole();
-    if (role && role !== "nha-cung-cap") {
+    const canUseProviderPortal =
+      store.hasProviderCapability?.(profile || store.readIdentity?.()) || false;
+    if (!canUseProviderPortal) {
       window.location.href = core.getSharedLoginUrl({
         redirect: core.getCurrentRelativeUrl(),
       });
@@ -671,7 +681,7 @@ const providerJobsModule = (function (window, document) {
       <div class="customer-portal-shell customer-portal-shell--simple">
           <div class="customer-empty-state">
             <i class="fas fa-spinner fa-spin"></i>
-          <p>Đang tải danh sách đơn hàng nhà cung cấp...</p>
+          <p>Đang tải danh sách đơn khách hàng đặt cho tôi...</p>
         </div>
       </div>
     `;

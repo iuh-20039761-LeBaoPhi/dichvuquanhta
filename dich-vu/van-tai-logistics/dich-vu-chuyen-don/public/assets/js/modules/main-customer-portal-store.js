@@ -72,6 +72,28 @@ const customerPortalStoreModule = (function (window) {
     return splitServiceIds(value).includes(movingServiceId);
   }
 
+  function hasProviderCapability(source) {
+    if (source && typeof source === "object") {
+      return hasMovingServiceId(source.id_dichvu || "0");
+    }
+
+    return hasMovingServiceId(source);
+  }
+
+  const providedServiceLabelMap = Object.freeze({
+    [movingServiceId]: "Dịch Vụ Chuyển Dọn",
+  });
+
+  function getProvidedServiceLabels(source) {
+    const serviceIds = splitServiceIds(
+      source && typeof source === "object" ? source.id_dichvu || "0" : source,
+    );
+
+    return serviceIds
+      .map((serviceId) => providedServiceLabelMap[serviceId] || "")
+      .filter(Boolean);
+  }
+
   function readCookie(name) {
     const escapedName = String(name || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const match = String(document.cookie || "").match(
@@ -505,6 +527,69 @@ const customerPortalStoreModule = (function (window) {
     );
   }
 
+  function getAccessLoginIdentifier(access) {
+    return normalizeText(
+      access?.loginIdentifier || access?.username || access?.sodienthoai || "",
+    );
+  }
+
+  function resolveCustomerBookingOwnership(row) {
+    return {
+      id: normalizeText(
+        row?.customer_id || row?.booking_owner_id || row?.owner_customer_id || "",
+      ),
+      loginIdentifier: normalizeLowerText(
+        row?.customer_username ||
+          row?.customer_login_identifier ||
+          row?.booking_owner_login ||
+          row?.owner_customer_login ||
+          "",
+      ),
+      phone: normalizePhone(row?.so_dien_thoai || row?.phone || ""),
+    };
+  }
+
+  function getCurrentProviderActor(profile, access) {
+    const identity =
+      profile && typeof profile === "object" ? profile : readIdentity();
+    const currentAccess =
+      access && typeof access === "object" ? access : readStoredAccess();
+
+    return {
+      id: normalizeText(identity?.id || ""),
+      loginIdentifier: normalizeLowerText(
+        getAccessLoginIdentifier(currentAccess),
+      ),
+      phone: normalizePhone(identity?.sodienthoai || ""),
+      name: normalizeText(
+        identity?.hovaten || identity?.sodienthoai || "Nhà cung cấp",
+      ),
+    };
+  }
+
+  function isRowAssignedToProvider(row, actor = getCurrentProviderActor()) {
+    const providerId = normalizeText(row?.provider_id || "");
+    return !!(providerId && actor?.id && providerId === actor.id);
+  }
+
+  function isRowOwnedByProviderActor(row, actor = getCurrentProviderActor()) {
+    const customerOwner = resolveCustomerBookingOwnership(row);
+    const providerActor =
+      actor && typeof actor === "object" ? actor : getCurrentProviderActor();
+
+    return !!(
+      (customerOwner.id &&
+        providerActor.id &&
+        customerOwner.id === providerActor.id) ||
+      (customerOwner.loginIdentifier &&
+        providerActor.loginIdentifier &&
+        customerOwner.loginIdentifier === providerActor.loginIdentifier) ||
+      (customerOwner.phone &&
+        providerActor.phone &&
+        customerOwner.phone === providerActor.phone)
+    );
+  }
+
   function syncIdentityFromProfile(profile) {
     if (!profile || typeof profile !== "object") {
       return readIdentity();
@@ -556,7 +641,9 @@ const customerPortalStoreModule = (function (window) {
   }
 
   function getDisplayName(identity) {
-    const role = getSavedRole();
+    const role = hasProviderCapability(identity)
+      ? "nha-cung-cap"
+      : getSavedRole();
     return (
       normalizeText(identity?.hovaten || "") ||
       normalizeText(identity?.sodienthoai || "") ||
@@ -1120,12 +1207,16 @@ const customerPortalStoreModule = (function (window) {
     return nowMs - createdMs >= AUTO_CANCEL_PENDING_MS;
   }
 
-  async function updateBookingAsCancelled(rawRow, cancelledAt) {
+  async function updateBookingAsCancelled(rawRow, cancelledAt, cancelReason = "") {
     const rowId = normalizeText(rawRow?.id || "");
     if (!rowId) return false;
+    const resolvedCancelReason =
+      normalizeText(cancelReason) || "Khách hàng chủ động hủy yêu cầu chuyển dọn.";
 
     const statusPayload = {
       trang_thai: "da_huy",
+      ly_do_huy: resolvedCancelReason,
+      cancel_reason: resolvedCancelReason,
       updated_at: cancelledAt,
     };
     const milestonePayload = {
@@ -1449,10 +1540,27 @@ const customerPortalStoreModule = (function (window) {
     };
   }
 
-  function isRowOwnedByIdentity(row, identity) {
+  function isRowOwnedByIdentity(
+    row,
+    identity = readIdentity(),
+    access = readStoredAccess(),
+  ) {
+    const customerOwner = resolveCustomerBookingOwnership(row);
+    const identityId = normalizeText(identity?.id || "");
+    const accessLoginIdentifier = normalizeLowerText(
+      getAccessLoginIdentifier(access),
+    );
     const identityPhone = normalizePhone(identity?.sodienthoai || "");
-    const rowPhone = normalizePhone(row?.so_dien_thoai || row?.phone || "");
-    return !!(identityPhone && rowPhone && identityPhone === rowPhone);
+
+    return !!(
+      (customerOwner.id && identityId && customerOwner.id === identityId) ||
+      (customerOwner.loginIdentifier &&
+        accessLoginIdentifier &&
+        customerOwner.loginIdentifier === accessLoginIdentifier) ||
+      (customerOwner.phone &&
+        identityPhone &&
+        customerOwner.phone === identityPhone)
+    );
   }
 
   function mergeHistoryItems(items) {
@@ -1479,7 +1587,11 @@ const customerPortalStoreModule = (function (window) {
 
     const profile =
       identity && typeof identity === "object" ? identity : readIdentity();
-    const hasLookupIdentity = normalizeText(profile?.sodienthoai || "");
+    const access = readStoredAccess();
+    const hasLookupIdentity =
+      normalizeText(profile?.id || "") ||
+      getAccessLoginIdentifier(access) ||
+      normalizeText(profile?.sodienthoai || "");
     if (!hasLookupIdentity) return [];
 
     const limit = 200;
@@ -1508,7 +1620,9 @@ const customerPortalStoreModule = (function (window) {
       const pageRows = extractRows(response);
       if (!pageRows.length) break;
 
-      rows.push(...pageRows.filter((row) => isRowOwnedByIdentity(row, profile)));
+      rows.push(
+        ...pageRows.filter((row) => isRowOwnedByIdentity(row, profile, access)),
+      );
       if (pageRows.length < limit) break;
     }
 
@@ -1529,7 +1643,11 @@ const customerPortalStoreModule = (function (window) {
 
     const profile =
       identity && typeof identity === "object" ? identity : readIdentity();
-    const hasLookupIdentity = normalizeText(profile?.sodienthoai || "");
+    const access = readStoredAccess();
+    const hasLookupIdentity =
+      normalizeText(profile?.id || "") ||
+      getAccessLoginIdentifier(access) ||
+      normalizeText(profile?.sodienthoai || "");
     if (!hasLookupIdentity) return null;
 
     const limit = 200;
@@ -1560,7 +1678,7 @@ const customerPortalStoreModule = (function (window) {
       const matchedRow = pageRows.find((row) => {
         const rowId = normalizeText(row?.id || row?.remote_id || "");
         return (
-          isRowOwnedByIdentity(row, profile) &&
+          isRowOwnedByIdentity(row, profile, access) &&
           ((normalizedId && rowId === normalizedId) ||
             (normalizedCode && matchesBookingCode(row, normalizedCode)))
         );
@@ -1668,7 +1786,7 @@ const customerPortalStoreModule = (function (window) {
     };
   }
 
-  async function cancelBooking(reference) {
+  async function cancelBooking(reference, options = {}) {
     const bookingRef = normalizeBookingReference(reference);
     if (!bookingRef.id && !bookingRef.code) {
       throw new Error("Thiếu mã yêu cầu để hủy đơn.");
@@ -1692,12 +1810,17 @@ const customerPortalStoreModule = (function (window) {
     }
 
     const updatedAt = new Date().toISOString();
+    const cancelReason =
+      normalizeText(options?.cancel_reason || options?.reason || "") ||
+      "Khách hàng chủ động hủy yêu cầu chuyển dọn.";
     await ensureBookingVehicleLabelMapLoaded();
 
-    await updateBookingAsCancelled(rawRow, updatedAt);
+    await updateBookingAsCancelled(rawRow, updatedAt, cancelReason);
     const patchedRow = {
       ...rawRow,
       trang_thai: "da_huy",
+      ly_do_huy: cancelReason,
+      cancel_reason: cancelReason,
       cancelled_at: updatedAt,
       updated_at: updatedAt,
     };
@@ -2008,6 +2131,12 @@ const customerPortalStoreModule = (function (window) {
     saveIdentity,
     syncIdentityFromProfile,
     getSavedRole,
+    hasProviderCapability,
+    getProvidedServiceLabels,
+    resolveCustomerBookingOwnership,
+    getCurrentProviderActor,
+    isRowAssignedToProvider,
+    isRowOwnedByProviderActor,
     getDisplayName,
     getBookingDisplayStatus,
     getDashboardStats,
@@ -2054,9 +2183,15 @@ export const {
   getDashboardStats,
   getDisplayName,
   getSavedRole,
+  getProvidedServiceLabels,
+  getCurrentProviderActor,
+  hasProviderCapability,
   isExpiredPendingBookingRow,
+  isRowAssignedToProvider,
+  isRowOwnedByProviderActor,
   matchesBookingCode,
   readIdentity,
+  resolveCustomerBookingOwnership,
   resolveBookingRowCode,
   saveIdentity,
   storageKeys: portalStorageKeys,

@@ -54,6 +54,10 @@ footer {
   position: relative;
 }
 
+.footer-subtitle {
+  margin-top: 32px;
+}
+
 .contact-section {
   margin-top: 30px;
 }

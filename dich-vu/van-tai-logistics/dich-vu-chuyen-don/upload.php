@@ -62,9 +62,12 @@ if ($response === false) {
 
 $decoded = json_decode($response, true);
 if (is_array($decoded) && isset($decoded['status']) && $decoded['status'] === 'success' && !empty($decoded['fileId'])) {
+    $fileId = (string) $decoded['fileId'];
+    $viewLink = "https://lh3.googleusercontent.com/u/0/d/" . $fileId;
     echo json_encode([
         'success' => true,
-        'fileId' => (string) $decoded['fileId'],
+        'fileId' => $fileId,
+        'url' => $viewLink,
         'name' => $name !== '' ? $name : (string) ($file['name'] ?? 'media'),
         'type' => $mime !== '' ? $mime : 'application/octet-stream',
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -72,9 +75,12 @@ if (is_array($decoded) && isset($decoded['status']) && $decoded['status'] === 's
 }
 
 if ($httpCode >= 200 && $httpCode < 300 && is_array($decoded) && !empty($decoded['fileId'])) {
+    $fileId = (string) $decoded['fileId'];
+    $viewLink = "https://lh3.googleusercontent.com/u/0/d/" . $fileId;
     echo json_encode([
         'success' => true,
-        'fileId' => (string) $decoded['fileId'],
+        'fileId' => $fileId,
+        'url' => $viewLink,
         'name' => $name !== '' ? $name : (string) ($file['name'] ?? 'media'),
         'type' => $mime !== '' ? $mime : 'application/octet-stream',
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

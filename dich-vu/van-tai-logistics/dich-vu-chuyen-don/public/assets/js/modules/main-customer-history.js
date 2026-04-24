@@ -121,14 +121,6 @@ const customerHistoryModule = (function (window, document) {
       return;
     }
 
-    const role = store.getSavedRole();
-    if (role && role !== "khach-hang") {
-      window.location.href = core.getSharedLoginUrl({
-        redirect: core.getCurrentRelativeUrl(),
-      });
-      return;
-    }
-
     const items = Array.isArray(data?.history) ? data.history : [];
     const params = new URLSearchParams(window.location.search);
     const initialKeyword = String(params.get("search") || "").trim();
@@ -140,8 +132,8 @@ const customerHistoryModule = (function (window, document) {
         <section class="customer-panel customer-orders-panel">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Danh sách đơn hàng</p>
-              <h2>Tìm và lọc đơn</h2>
+              <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
+              <h2>Tìm và lọc đơn đã đặt</h2>
               <p class="customer-panel-subtext">${escapeHtml(String(items.length))} đơn trong tài khoản hiện tại</p>
             </div>
           </div>

@@ -323,18 +323,14 @@ const providerOrderDetailModule = (function (window, document) {
   }
 
   function getCurrentProviderActor() {
-    const identity =
-      currentProfile ||
-      store.readIdentity?.() ||
-      {};
-
-    return {
-      id: normalizeText(identity?.id || ""),
-      phone: normalizePhone(identity?.sodienthoai || ""),
-      name: normalizeText(
-        identity?.hovaten || store.getDisplayName?.(identity) || "",
-      ),
-    };
+    return (
+      store.getCurrentProviderActor?.(currentProfile) || {
+        id: "",
+        loginIdentifier: "",
+        phone: "",
+        name: "",
+      }
+    );
   }
 
   function resolveProviderOwnership(row) {
@@ -502,6 +498,16 @@ const providerOrderDetailModule = (function (window, document) {
     `;
   }
 
+  function getCustomerOwnershipMeta(row) {
+    return (
+      store.resolveCustomerBookingOwnership?.(row) || {
+        id: "",
+        loginIdentifier: "",
+        phone: normalizePhone(row?.so_dien_thoai || row?.phone || ""),
+      }
+    );
+  }
+
   function renderHeroRouteCard(order) {
     return `
       <article class="standalone-order-hero-support-card standalone-order-hero-support-card-route">
@@ -655,11 +661,16 @@ const providerOrderDetailModule = (function (window, document) {
   function buildActionButtons(detail) {
     const action = getShipperAction(detail);
     const isLockedByOtherProvider = detail?.order?.is_locked_by_other_provider === true;
+    const isSelfOwnedBooking = detail?.order?.is_self_owned_booking === true;
     const buttons = [];
 
     if (action && isLockedByOtherProvider) {
       buttons.push(
         '<button type="button" class="customer-btn customer-btn-ghost" disabled aria-disabled="true">Đơn đã có NCC khác nhận</button>',
+      );
+    } else if (action === "accept" && isSelfOwnedBooking) {
+      buttons.push(
+        '<button type="button" class="customer-btn customer-btn-ghost" disabled aria-disabled="true">Không thể nhận đơn do chính mình đặt</button>',
       );
     } else if (action === "accept") {
       buttons.push(
@@ -678,7 +689,7 @@ const providerOrderDetailModule = (function (window, document) {
     }
 
     buttons.push(
-      `<a href="${escapeHtml(getProjectUrl("nha-cung-cap/danh-sach-don-hang-chuyendon.html"))}" class="customer-btn customer-btn-ghost">Về danh sách đơn hàng</a>`,
+      `<a href="${escapeHtml(getProjectUrl("nha-cung-cap/danh-sach-don-hang-chuyendon.html"))}" class="customer-btn customer-btn-ghost">Về đơn khách hàng đặt cho tôi</a>`,
     );
 
     return buttons.join("");
@@ -710,6 +721,7 @@ const providerOrderDetailModule = (function (window, document) {
       row?.pricing_breakdown_json,
     );
     const ownership = getProviderOwnershipMeta(row);
+    const customerOwnership = getCustomerOwnershipMeta(row);
     return {
       order: {
         id: normalizeText(row?.id || ""),
@@ -729,6 +741,8 @@ const providerOrderDetailModule = (function (window, document) {
         customer_name: normalizeText(row?.ho_ten || ""),
         customer_phone: normalizeText(row?.so_dien_thoai || ""),
         customer_email: normalizeText(row?.customer_email || ""),
+        customer_id: customerOwnership.id,
+        customer_login_identifier: customerOwnership.loginIdentifier,
         company_name: normalizeText(row?.ten_cong_ty || ""),
         from_address: normalizeText(row?.dia_chi_di || ""),
         to_address: normalizeText(row?.dia_chi_den || ""),
@@ -780,6 +794,10 @@ const providerOrderDetailModule = (function (window, document) {
         provider_owner_name: "",
         is_owned_by_current_provider: ownership.isOwnedByCurrentProvider,
         is_locked_by_other_provider: ownership.isLockedByOtherProvider,
+        is_self_owned_booking: !!store.isRowOwnedByProviderActor?.(
+          row,
+          getCurrentProviderActor(),
+        ),
       },
       rawRow: row,
     };
@@ -816,7 +834,11 @@ const providerOrderDetailModule = (function (window, document) {
       const rows = extractRows(response);
       if (!rows.length) break;
 
-      const matched = rows.find((row) => store.matchesBookingCode?.(row, normalizedCode));
+      const matched = rows.find((row) => {
+        if (!store.matchesBookingCode?.(row, normalizedCode)) return false;
+        const ownership = getProviderOwnershipMeta(row);
+        return !ownership.isLockedByOtherProvider;
+      });
 
       if (matched) return matched;
       if (rows.length < limit) break;
@@ -1524,9 +1546,13 @@ const providerOrderDetailModule = (function (window, document) {
     }
     currentProfile = profile;
 
-    const role = store.getSavedRole();
-    if (role && role !== "nha-cung-cap") {
-      redirectToMatchingDetail(role, core.getOrderIdentifierFromUrl?.() || "");
+    const canUseProviderPortal =
+      store.hasProviderCapability?.(profile || store.readIdentity?.()) || false;
+    if (!canUseProviderPortal) {
+      redirectToMatchingDetail(
+        store.getSavedRole(),
+        core.getOrderIdentifierFromUrl?.() || "",
+      );
       return;
     }
 

@@ -45,13 +45,13 @@
         key: "svc-thue-xe",
         label: "Thuê Xe",
         group: "van-tai-logistics",
-        href: `${parentBase}dich-vu/van-tai-logistics/thue-xe/views/pages/public/dich-vu.html`,
+        href: `${parentBase}dich-vu/van-tai-logistics/thue-xe/dich-vu.html`,
       },
       {
         key: "svc-lai-xe-ho",
         label: "Dịch vụ lái xe hộ",
         group: "van-tai-logistics",
-        href: `${parentBase}dich-vu-lai-xe-ho/`,
+        href: `${parentBase}dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html`,
       },
       {
         key: "svc-cham-soc-nguoi-benh",
@@ -81,7 +81,7 @@
         key: "svc-cham-soc-vuon",
         label: "Chăm Sóc Vườn Nhà",
         group: "ve-sinh",
-        href: `${parentBase}cham-soc-vuon-nha/dichvu.html`,
+        href: `${parentBase}dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html`,
       },
       {
         key: "svc-giat-ui",
@@ -93,13 +93,13 @@
         key: "svc-tho-nha",
         label: "Thợ Nhà",
         group: "sua-chua",
-        href: `${parentBase}dich-vu/sua-chua/tho-nha/pages/public/dich-vu.html`,
+        href: `${parentBase}dich-vu/sua-chua/tho-nha/dich-vu.html`,
       },
       {
         key: "svc-sua-xe",
         label: "Sửa xe lưu động",
         group: "sua-chua",
-        href: `${parentBase}sua-xe-luu-dong/dich-vu.html`,
+        href: `${parentBase}dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html`,
       },
     ];
   }
@@ -228,6 +228,17 @@
     };
   }
 
+  function hasProviderCapability(session) {
+    if (window.GiaoHangNhanhLocalAuth?.hasGhnProviderRole) {
+      return window.GiaoHangNhanhLocalAuth.hasGhnProviderRole(session);
+    }
+
+    return String(session?.id_dichvu || "")
+      .split(",")
+      .map((item) => item.trim())
+      .includes("7");
+  }
+
   function ensureLocalAuthLoaded() {
     if (window.GiaoHangNhanhLocalAuth) {
       return Promise.resolve(window.GiaoHangNhanhLocalAuth);
@@ -300,34 +311,91 @@
   }
 
   function resolveAccountLinks(session) {
-    const role = String(session?.role || "").trim().toLowerCase();
-    let baseLinks;
-    if (role === "shipper") {
-      baseLinks = {
-        dashboard: `${projectBase}public/nha-cung-cap/dashboard-giaohang.html`,
-        orders: `${projectBase}public/nha-cung-cap/don-hang-giaohang.html`,
-        profile: `${projectBase}public/nha-cung-cap/ho-so-giaohang.html`,
-        ordersLabel: "Đơn của tôi",
-        profileLabel: "Hồ sơ cá nhân",
-        summaryLabel: "Khu vực nhà cung cấp",
-      };
-    } else {
-      baseLinks = {
+    const linkGroups = {
+      customer: {
         dashboard: `${projectBase}public/khach-hang/dashboard-giaohang.html`,
         orders: `${projectBase}public/khach-hang/danh-sach-don-hang-giaohang.html`,
         profile: `${projectBase}public/khach-hang/ho-so-giaohang.html`,
-        ordersLabel: "Danh sách đơn hàng",
-        profileLabel: "Hồ sơ cá nhân",
-        summaryLabel: "Khu vực khách hàng",
-      };
+      },
+      provider: {
+        dashboard: `${projectBase}public/nha-cung-cap/dashboard-giaohang.html`,
+        orders: `${projectBase}public/nha-cung-cap/don-hang-giaohang.html`,
+        profile: `${projectBase}public/nha-cung-cap/ho-so-giaohang.html`,
+      },
+    };
+
+    if (
+      window.GiaoHangNhanhCore &&
+      typeof window.GiaoHangNhanhCore.appendAuthParamsToUrl === "function"
+    ) {
+      Object.values(linkGroups).forEach((group) => {
+        group.dashboard = window.GiaoHangNhanhCore.appendAuthParamsToUrl(
+          group.dashboard,
+          session,
+        );
+        group.orders = window.GiaoHangNhanhCore.appendAuthParamsToUrl(
+          group.orders,
+          session,
+        );
+        group.profile = window.GiaoHangNhanhCore.appendAuthParamsToUrl(
+          group.profile,
+          session,
+        );
+      });
     }
 
-    if (window.GiaoHangNhanhCore && typeof window.GiaoHangNhanhCore.appendAuthParamsToUrl === "function") {
-      baseLinks.dashboard = window.GiaoHangNhanhCore.appendAuthParamsToUrl(baseLinks.dashboard, session);
-      baseLinks.orders = window.GiaoHangNhanhCore.appendAuthParamsToUrl(baseLinks.orders, session);
-      baseLinks.profile = window.GiaoHangNhanhCore.appendAuthParamsToUrl(baseLinks.profile, session);
+    return {
+      ...linkGroups,
+      canReceiveOrders: hasProviderCapability(session),
+      summaryLabel: hasProviderCapability(session)
+        ? "Tài khoản đặt đơn và nhận đơn"
+        : "Khu vực khách hàng",
+    };
+  }
+
+  function buildAccountMenuItems(accountLinks) {
+    const items = [
+      {
+        href: accountLinks.customer.dashboard,
+        icon: "fas fa-chart-line",
+        label: "Tổng quan đặt đơn",
+      },
+      {
+        href: accountLinks.customer.orders,
+        icon: "fas fa-box",
+        label: "Đơn hàng tôi đã đặt",
+      },
+    ];
+
+    if (!accountLinks.canReceiveOrders) {
+      items.push({
+        href: accountLinks.customer.profile,
+        icon: "fas fa-user",
+        label: "Hồ sơ khách hàng",
+      });
     }
-    return baseLinks;
+
+    if (accountLinks.canReceiveOrders) {
+      items.push(
+        {
+          href: accountLinks.provider.dashboard,
+          icon: "fas fa-truck-ramp-box",
+          label: "Tổng quan nhận đơn",
+        },
+        {
+          href: accountLinks.provider.orders,
+          icon: "fas fa-clipboard-list",
+          label: "Đơn hàng khách hàng đặt cho tôi",
+        },
+        {
+          href: accountLinks.provider.profile,
+          icon: "fas fa-id-card",
+          label: "Hồ sơ nhà cung cấp",
+        },
+      );
+    }
+
+    return items;
   }
 
   function syncAuthNav(root) {
@@ -360,6 +428,12 @@
         String(session.email || "").trim() ||
         accountLinks.summaryLabel,
     );
+    const menuItems = buildAccountMenuItems(accountLinks)
+      .map(
+        (item) =>
+          `<li><a href="${item.href}"><i class="${item.icon}"></i> ${item.label}</a></li>`,
+      )
+      .join("");
 
     loginItem.className = "dropdown has-submenu customer-nav-dropdown";
     loginItem.innerHTML = `
@@ -372,9 +446,7 @@
             <span>${accountSummary}</span>
           </div>
         </li>
-        <li><a href="${accountLinks.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
-        <li><a href="${accountLinks.orders}"><i class="fas fa-box"></i> ${accountLinks.ordersLabel}</a></li>
-        <li><a href="${accountLinks.profile}"><i class="fas fa-user"></i> ${accountLinks.profileLabel}</a></li>
+        ${menuItems}
         <li class="customer-nav-logout-wrapper"><a href="${buildSharedAuthUrl("dang-nhap.html")}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
       </ul>
     `;

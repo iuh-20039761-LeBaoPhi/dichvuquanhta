@@ -86,6 +86,40 @@
       .trim();
   }
 
+  function normalizePhone(value) {
+    if (localAuth && typeof localAuth.normalizePhone === "function") {
+      return localAuth.normalizePhone(value);
+    }
+    return String(value || "").replace(/\D/g, "");
+  }
+
+  function isSelfPlacedOrder(detail, session) {
+    const order = detail?.order || {};
+    const customer = detail?.customer || {};
+    const sessionId = normalizeText(session?.id || "");
+    const sessionUsername = normalizeText(session?.username || "").toLowerCase();
+    const sessionPhone = normalizePhone(
+      session?.phone || session?.so_dien_thoai || "",
+    );
+    const customerId = normalizeText(
+      order.customer_id || customer.customer_id || "",
+    );
+    const customerUsername = normalizeText(
+      order.customer_username || customer.username || "",
+    ).toLowerCase();
+    const customerPhone = normalizePhone(
+      order.sender_phone || customer.phone || "",
+    );
+
+    return Boolean(
+      (sessionId && customerId && sessionId === customerId) ||
+        (sessionUsername &&
+          customerUsername &&
+          sessionUsername === customerUsername) ||
+        (sessionPhone && customerPhone && sessionPhone === customerPhone),
+    );
+  }
+
   const formatCurrency =
     typeof core.formatCurrency === "function"
       ? (value) => core.formatCurrency(value)
@@ -1193,6 +1227,8 @@
           record.so_dien_thoai_nguoi_gui ||
           record.nguoi_gui_so_dien_thoai ||
           "",
+        customer_id: record.customer_id || "",
+        customer_username: record.customer_username || "",
         receiver_name:
           record.ho_ten_nguoi_nhan || record.nguoi_nhan_ho_ten || "",
         receiver_phone:
@@ -1377,6 +1413,8 @@
       },
       customer: {
         fullname: record.ho_ten_nguoi_gui || record.nguoi_gui_ho_ten || "",
+        customer_id: record.customer_id || "",
+        username: record.customer_username || "",
         phone:
           record.so_dien_thoai_nguoi_gui ||
           record.nguoi_gui_so_dien_thoai ||
@@ -1411,8 +1449,13 @@
 
   function getViewer(session) {
     const params = new URLSearchParams(window.location.search);
-    if (session && session.role === "shipper") return "shipper";
-    if (session && session.role === "admin") return "admin";
+    const currentPath = String(window.location.pathname || "")
+      .replace(/\\/g, "/")
+      .toLowerCase();
+
+    if (currentPath.includes("/public/khach-hang/")) return "customer";
+    if (currentPath.includes("/public/nha-cung-cap/")) return "shipper";
+
     if (session) return "customer";
     return (
       normalizeText(params.get("viewer") || "public").toLowerCase() || "public"
@@ -2001,6 +2044,9 @@
       }
 
       if (action === "accept") {
+        if (isSelfPlacedOrder(nextDetail, currentSession)) {
+          throw new Error("Bạn không thể nhận đơn hàng do chính mình đặt.");
+        }
         nextOrder.thoidiemnhandon = nextOrder.thoidiemnhandon || now;
         nextOrder.ngaynhan = nextOrder.ngaynhan || now;
         nextOrder.status = "pending";
