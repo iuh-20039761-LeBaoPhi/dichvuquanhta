@@ -1,38 +1,23 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Dịch Vụ Quanh Ta cung cấp dịch vụ chăm sóc mẹ và bé, chăm sóc người già, chăm sóc bệnh nhân, vệ sinh, giặt ủi, giao hàng, thuê xe và sửa chữa tại nhà nhanh chóng, uy tín."
-    />
-    <meta
-      name="keywords"
-      content="dịch vụ quanh ta, chăm sóc mẹ và bé, chăm sóc người già, chăm sóc bệnh nhân, dịch vụ vệ sinh, chăm sóc vườn nhà, giặt ủi nhanh, giao hàng nhanh, thuê xe toàn quốc, sửa xe lưu động, thợ nhà"
-    />
-    <title>Dịch Vụ Quanh Ta - Nhanh, An toàn, Chất Lượng</title>
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="public/asset/image/logo-dich-vu-quanh-ta.png"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="public/asset/css/style.css" />
-    <script src="/ga.js"></script>
 
-    <script type="application/ld+json">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Dịch Vụ Quanh Ta cung cấp dịch vụ chăm sóc mẹ và bé, chăm sóc người già, chăm sóc bệnh nhân, vệ sinh, giặt ủi, giao hàng, thuê xe và sửa chữa tại nhà nhanh chóng, uy tín." />
+  <meta name="keywords"
+    content="dịch vụ quanh ta, chăm sóc mẹ và bé, chăm sóc người già, chăm sóc bệnh nhân, dịch vụ vệ sinh, chăm sóc vườn nhà, giặt ủi nhanh, giao hàng nhanh, thuê xe toàn quốc, sửa xe lưu động, thợ nhà" />
+  <title>Dịch Vụ Quanh Ta - Nhanh, An toàn, Chất Lượng</title>
+  <link rel="shortcut icon" type="image/x-icon" href="public/asset/image/logo-dich-vu-quanh-ta.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="public/asset/css/style.css" />
+  <script src="/ga.js"></script>
+
+  <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
@@ -178,869 +163,641 @@
         ]
       }
     </script>
-    <style>
-      /* ===== Welcome Popup ===== */
+  <style>
+    /* ===== Welcome Popup ===== */
 
-      .modal-backdrop.show {
-        backdrop-filter: blur(6px);
-      }
+    .modal-backdrop.show {
+      backdrop-filter: blur(6px);
+    }
 
-      .welcome-modal {
-        background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
-        border-radius: 20px;
-        color: white;
-        animation: popupZoom 0.6s ease;
-      }
+    .welcome-modal {
+      background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+      border-radius: 20px;
+      color: white;
+      animation: popupZoom 0.6s ease;
+    }
 
-      @keyframes popupZoom {
-        from {
-          transform: scale(0.7);
-          opacity: 0;
-        }
-        to {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
-
-      /* chữ lớn */
-      .welcome-title {
-        font-size: 42px;
-        font-weight: 800;
-        letter-spacing: 3px;
-        margin-bottom: 25px;
-
-        background: linear-gradient(90deg, #22d3ee, #38bdf8, #22c55e);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-
-        animation: glow 2s infinite alternate;
-      }
-
-      @keyframes glow {
-        from {
-          text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-        }
-        to {
-          text-shadow: 0 0 25px rgba(34, 211, 238, 0.9);
-        }
-      }
-
-      /* chữ nhỏ */
-      .welcome-sub {
-        font-size: 20px;
+    @keyframes popupZoom {
+      from {
+        transform: scale(0.7);
         opacity: 0;
       }
 
-      /* dòng 1 */
-      .sub1 {
-        animation: slideUp 1s ease forwards;
-        animation-delay: 0.8s;
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* chữ lớn */
+    .welcome-title {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      margin-bottom: 25px;
+
+      background: linear-gradient(90deg, #22d3ee, #38bdf8, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
       }
 
-      /* dòng 2 */
-      .sub2 {
-        animation: slideUp 1s ease forwards;
-        animation-delay: 1.6s;
+      to {
+        text-shadow: 0 0 25px rgba(34, 211, 238, 0.9);
+      }
+    }
+
+    /* chữ nhỏ */
+    .welcome-sub {
+      font-size: 20px;
+      opacity: 0;
+    }
+
+    /* dòng 1 */
+    .sub1 {
+      animation: slideUp 1s ease forwards;
+      animation-delay: 0.8s;
+    }
+
+    /* dòng 2 */
+    .sub2 {
+      animation: slideUp 1s ease forwards;
+      animation-delay: 1.6s;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(40px);
+        opacity: 0;
       }
 
-      @keyframes slideUp {
-        from {
-          transform: translateY(40px);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
+      to {
+        transform: translateY(0);
+        opacity: 1;
       }
-      /* fix backdrop mobile */
-      .modal-backdrop {
-        position: fixed !important;
-        inset: 0 !important;
-        width: 100vw;
-        height: 100vh;
+    }
+
+    /* fix backdrop mobile */
+    .modal-backdrop {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    html,
+    body {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    .modal-backdrop.show {
+      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    /* ===== Mobile ===== */
+    @media (max-width: 768px) {
+      .welcome-modal {
+        padding: 30px 20px !important;
+        border-radius: 16px;
       }
-      html,
-      body {
-        width: 100%;
-        overflow-x: hidden;
+
+      .welcome-title {
+        font-size: 26px;
+        letter-spacing: 1.5px;
+        line-height: 1.3;
       }
-      .modal-backdrop.show {
-        backdrop-filter: blur(6px);
-        background: rgba(0, 0, 0, 0.6);
+
+      .welcome-sub {
+        font-size: 15px;
       }
-      /* ===== Mobile ===== */
-      @media (max-width: 768px) {
-        .welcome-modal {
-          padding: 30px 20px !important;
-          border-radius: 16px;
-        }
 
-        .welcome-title {
-          font-size: 26px;
-          letter-spacing: 1.5px;
-          line-height: 1.3;
-        }
-
-        .welcome-sub {
-          font-size: 15px;
-        }
-
-        .btn-close {
-          transform: scale(0.8);
-        }
+      .btn-close {
+        transform: scale(0.8);
       }
-    </style>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="index.html">
-          <img
-            style="width: 80px; height: 60px"
-            src="public/asset/image/logo-dich-vu-quanh-ta.png"
-            alt="Logo Dịch Vụ Quanh Ta"
-          />
-          <!-- <span class="logo-icon">D</span> -->
-          <span class="logo-text"
-            >Dịch Vụ <span class="text-cyan">Quanh Ta</span></span
-          >
-        </a>
-        <button
-          class="navbar-toggler border-0 text-white btn-mobile-menu"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <i data-lucide="menu"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Trang Chủ</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="servicesDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Dịch Vụ
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
-                <!-- Chăm sóc -->
-                <li class="dropdown-submenu">
-                  <a
-                    class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center"
-                    href="#"
-                  >
-                    Chăm Sóc
-                    <i
-                      class="fas fa-chevron-right ms-2"
-                      style="font-size: 0.8rem"
-                    ></i>
-                  </a>
-                  <ul class="dropdown-menu border-0 shadow-sm">
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/cham-soc/me-va-be/dich-vu.html"
-                        >Chăm Sóc Mẹ &amp; Bé</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/cham-soc/nguoi-gia/dich-vu.html"
-                        >Chăm Sóc Người Già</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/cham-soc/nguoi-benh/dich-vu.html"
-                        >Chăm Sóc Bệnh Nhân</a
-                      >
-                    </li>
-                  </ul>
-                </li>
-                <!-- Vệ sinh -->
-                <li class="dropdown-submenu">
-                  <a
-                    class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center"
-                    href="#"
-                  >
-                    Vệ Sinh
-                    <i
-                      class="fas fa-chevron-right ms-2"
-                      style="font-size: 0.8rem"
-                    ></i>
-                  </a>
-                  <ul class="dropdown-menu border-0 shadow-sm">
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html"
-                        >Dịch Vụ Vệ Sinh</a
-                      >
-                    </li>
-                  </ul>
-                </li>
-                <!-- Sân vườn -->
-                <li class="dropdown-submenu">
-                  <a
-                    class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center"
-                    href="#"
-                  >
-                    Sân Vườn & Cây Cảnh
-                    <i
-                      class="fas fa-chevron-right ms-2"
-                      style="font-size: 0.8rem"
-                    ></i>
-                  </a>
-                  <ul class="dropdown-menu border-0 shadow-sm">
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html"
-                        >Chăm Sóc Vườn Nhà</a
-                      >
-                    </li>
-                  </ul>
-                </li>
-                <!-- Giặt ủi -->
-                <li class="dropdown-submenu">
-                  <a
-                    class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center"
-                    href="#"
-                  >
-                    Giặt Ủi
-                    <i
-                      class="fas fa-chevron-right ms-2"
-                      style="font-size: 0.8rem"
-                    ></i>
-                  </a>
-                  <ul class="dropdown-menu border-0 shadow-sm">
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html"
-                        >Giặt Ủi Nhanh</a
-                      >
-                    </li>
-                  </ul>
-                </li>
-                <!-- Vận tải logistics -->
-                <li class="dropdown-submenu">
-                  <a
-                    class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center"
-                    href="#"
-                  >
-                    Vận Tải & Logistics
-                    <i
-                      class="fas fa-chevron-right ms-2"
-                      style="font-size: 0.8rem"
-                    ></i>
-                  </a>
-                  <ul class="dropdown-menu border-0 shadow-sm">
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html"
-                        >Giao Hàng Nhanh</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html"
-                        >Dịch Vụ Chuyển Dọn</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/van-tai-logistics/thue-xe/index.html"
-                        >Thuê Xe</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html"
-                        >Lái Xe Hộ</a
-                      >
-                    </li>
-                  </ul>
-                </li>
-                <!-- Sửa chữa -->
-                <li class="dropdown-submenu">
-                  <a
-                    class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center"
-                    href="#"
-                  >
-                    Sửa Chữa
-                    <i
-                      class="fas fa-chevron-right ms-2"
-                      style="font-size: 0.8rem"
-                    ></i>
-                  </a>
-                  <ul class="dropdown-menu border-0 shadow-sm">
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html"
-                        >Sửa Xe Lưu Động</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        href="dich-vu/sua-chua/tho-nha/index.html"
-                        >Thợ Nhà</a
-                      >
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#about">Về Chúng Tôi</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#contact">Liên Hệ</a>
-            </li>
+    }
+  </style>
+</head>
 
-            <!-- AUTH SECTION -->
-            <li class="nav-item ms-lg-2" id="auth-loading">
-              <a class="nav-link disabled" href="#"
-                ><span class="spinner-border spinner-border-sm me-1"></span>
-                Đang tải...</a
-              >
-            </li>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img style="width: 80px; height: 60px" src="public/asset/image/logo-dich-vu-quanh-ta.png"
+          alt="Logo Dịch Vụ Quanh Ta" />
+        <!-- <span class="logo-icon">D</span> -->
+        <span class="logo-text">Dịch Vụ <span class="text-cyan">Quanh Ta</span></span>
+      </a>
+      <button class="navbar-toggler border-0 text-white btn-mobile-menu" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav">
+        <i data-lucide="menu"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Trang Chủ</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Dịch Vụ
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+              <!-- Chăm sóc -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center" href="#">
+                  Chăm Sóc
+                  <i class="fas fa-chevron-right ms-2" style="font-size: 0.8rem"></i>
+                </a>
+                <ul class="dropdown-menu border-0 shadow-sm">
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/cham-soc/me-va-be/dich-vu.html">Chăm Sóc Mẹ &amp; Bé</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/cham-soc/nguoi-gia/dich-vu.html">Chăm Sóc Người Già</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/cham-soc/nguoi-benh/dich-vu.html">Chăm Sóc Bệnh Nhân</a>
+                  </li>
+                </ul>
+              </li>
+              <!-- Vệ sinh -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center" href="#">
+                  Vệ Sinh
+                  <i class="fas fa-chevron-right ms-2" style="font-size: 0.8rem"></i>
+                </a>
+                <ul class="dropdown-menu border-0 shadow-sm">
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html">Dịch Vụ Vệ
+                      Sinh</a>
+                  </li>
+                </ul>
+              </li>
+              <!-- Sân vườn -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center" href="#">
+                  Sân Vườn & Cây Cảnh
+                  <i class="fas fa-chevron-right ms-2" style="font-size: 0.8rem"></i>
+                </a>
+                <ul class="dropdown-menu border-0 shadow-sm">
+                  <li>
+                    <a class="dropdown-item"
+                      href="dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html">Chăm Sóc Vườn Nhà</a>
+                  </li>
+                </ul>
+              </li>
+              <!-- Giặt ủi -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center" href="#">
+                  Giặt Ủi
+                  <i class="fas fa-chevron-right ms-2" style="font-size: 0.8rem"></i>
+                </a>
+                <ul class="dropdown-menu border-0 shadow-sm">
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html">Giặt Ủi Nhanh</a>
+                  </li>
+                </ul>
+              </li>
+              <!-- Vận tải logistics -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center" href="#">
+                  Vận Tải & Logistics
+                  <i class="fas fa-chevron-right ms-2" style="font-size: 0.8rem"></i>
+                </a>
+                <ul class="dropdown-menu border-0 shadow-sm">
+                  <li>
+                    <a class="dropdown-item"
+                      href="dich-vu/van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html">Giao Hàng Nhanh</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item"
+                      href="dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html">Dịch Vụ Chuyển Dọn</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/van-tai-logistics/thue-xe/dich-vu.html">Thuê Xe</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html">Lái Xe
+                      Hộ</a>
+                  </li>
+                </ul>
+              </li>
+              <!-- Sửa chữa -->
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle d-flex justify-content-between align-items-center" href="#">
+                  Sửa Chữa
+                  <i class="fas fa-chevron-right ms-2" style="font-size: 0.8rem"></i>
+                </a>
+                <ul class="dropdown-menu border-0 shadow-sm">
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html">Sửa Xe Lưu Động</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="dich-vu/sua-chua/tho-nha/dich-vu.html">Thợ Nhà</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">Về Chúng Tôi</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contact">Liên Hệ</a>
+          </li>
 
-            <!-- GUEST: Hiện khi chưa đăng nhập -->
-            <li
-              class="nav-item dropdown ms-lg-2"
-              id="auth-guest"
-              style="display: none"
-            >
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="guestDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <i class="fas fa-user-circle me-1"></i> Tài khoản
-              </a>
-              <ul
-                class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                aria-labelledby="guestDropdown"
-              >
-                <li>
-                  <a class="dropdown-item py-2" href="public/dang-nhap.html">
-                    <i class="fas fa-sign-in-alt me-2 text-primary"></i> Đăng
-                    nhập
-                  </a>
-                </li>
-                <li>
-                  <hr class="dropdown-divider" />
-                </li>
-                <li>
-                  <a class="dropdown-item py-2" href="public/dang-ky.html">
-                    <i class="fas fa-user-plus me-2 text-info"></i> Đăng ký ngay
-                  </a>
-                </li>
-              </ul>
-            </li>
+          <!-- AUTH SECTION -->
+          <li class="nav-item ms-lg-2" id="auth-loading">
+            <a class="nav-link disabled" href="#"><span class="spinner-border spinner-border-sm me-1"></span>
+              Đang tải...</a>
+          </li>
 
-            <!-- USER: Hiện khi ĐÃ đăng nhập -->
-            <li
-              class="nav-item dropdown ms-lg-2"
-              id="auth-user"
-              style="display: none"
-            >
-              <a
-                class="nav-link dropdown-toggle d-flex align-items-center gap-2"
-                href="#"
-                id="userDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <div
-                  id="auth-avatar"
-                  class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm"
-                  style="width: 32px; height: 32px; font-size: 14px"
-                >
-                  U
-                </div>
-                <span id="auth-name" class="d-none d-xl-inline">Tài khoản</span>
-              </a>
-              <ul
-                class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                aria-labelledby="userDropdown"
-              >
-                <li class="px-3 py-2 d-xl-none border-bottom mb-1">
-                  <span class="fw-bold small" id="auth-name-mobile"
-                    >Tài khoản</span
-                  >
-                </li>
-                <li>
-                  <a
-                    class="dropdown-item py-2"
-                    href="public/trang-ca-nhan.html"
-                  >
-                    <i class="fas fa-user-cog me-2 text-primary"></i> Hồ sơ cá
-                    nhân
-                  </a>
-                </li>
-                <li>
-                  <hr class="dropdown-divider" />
-                </li>
-                <li>
-                  <a
-                    class="dropdown-item py-2 text-danger"
-                    href="#"
-                    id="auth-logout-link"
-                  >
-                    <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+          <!-- GUEST: Hiện khi chưa đăng nhập -->
+          <li class="nav-item dropdown ms-lg-2" id="auth-guest" style="display: none">
+            <a class="nav-link dropdown-toggle" href="#" id="guestDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i> Tài khoản
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="guestDropdown">
+              <li>
+                <a class="dropdown-item py-2" href="public/dang-nhap.html">
+                  <i class="fas fa-sign-in-alt me-2 text-primary"></i> Đăng
+                  nhập
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a class="dropdown-item py-2" href="public/dang-ky.html">
+                  <i class="fas fa-user-plus me-2 text-info"></i> Đăng ký ngay
+                </a>
+              </li>
+            </ul>
+          </li>
 
-    <!-- Hero Section -->
-    <header class="hero-section text-center">
-      <img
-        src="public/asset/image/cac-dich-vu-cua-dich-vu-quanh-ta.jpg"
-        alt="Các Dịch Vụ Của Dịch Vụ Quanh Ta"
-        class="hero-bg"
-      />
-      <div class="hero-overlay"></div>
-
-      <div class="container position-relative z-1 mt-5">
-        <div
-          class="d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill bg-white bg-opacity-10 border border-white border-opacity-25 mb-4"
-        >
-          <i
-            data-lucide="star"
-            class="text-warning"
-            style="width: 16px; height: 16px; fill: #ffc107"
-          ></i>
-          <small class="text-white fw-medium"
-            >Dịch Vụ Được Khách Hàng Tin Tưởng</small
-          >
-        </div>
-
-        <h1 class="hero-title">
-          Mang Sự Tiện Nghi <br />
-          <span class="text-gradient-span">Đến Đời Sống Của Bạn</span>
-        </h1>
-
-        <p class="lead text-light mb-5 mx-auto" style="max-width: 700px">
-          Chúng tôi cung cấp giải pháp toàn diện từ chăm sóc mẹ & bé, vệ sinh
-          nhà cửa đến bảo trì sân vườn,... Với những người thợ lành nghề, tận
-          tâm, tân tình trong công việc.
-        </p>
-
-        <div
-          class="d-flex flex-column flex-sm-row justify-content-center gap-3"
-        >
-          <a
-            href="#services"
-            class="btn btn-gradient d-flex align-items-center justify-content-center gap-2"
-          >
-            Khám Phá Dịch Vụ
-            <i data-lucide="arrow-right" style="width: 20px"></i>
-          </a>
-          <a href="#contact" class="btn btn-outline-light-custom"
-            >Liên Hệ Tư Vấn</a
-          >
-        </div>
-      </div>
-    </header>
-
-    <!-- Services Section -->
-    <section class="py-5 bg-light" id="services">
-      <div class="container py-5">
-        <div class="text-center mb-5 mx-auto" style="max-width: 700px">
-          <span class="text-info fw-bold text-uppercase small ls-1"
-            >Dịch Vụ Của Chúng Tôi</span
-          >
-          <h4 class="display-5 fw-bold mt-2 mb-3">
-            Giải Pháp Toàn Diện Cho <br />
-            <span class="gradient-text-header">Cuộc Sống Hiện Đại</span>
-          </h4>
-          <p class="text-muted lead">
-            Cam kết mang đến trải nghiệm dịch vụ xuất sắc, đáp ứng mọi nhu cầu
-            khắt khe nhất của khách hàng.
-          </p>
-        </div>
-
-        <div class="row g-4">
-          <!-- Mom & Baby Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/cham-soc-me-va-be.jpg"
-                  alt="Chăm Sóc Mẹ & Bé"
-                />
-                <div class="icon-box" style="color: #ec4899">
-                  <i data-lucide="baby"></i>
-                </div>
+          <!-- USER: Hiện khi ĐÃ đăng nhập -->
+          <li class="nav-item dropdown ms-lg-2" id="auth-user" style="display: none">
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <div id="auth-avatar"
+                class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm"
+                style="width: 32px; height: 32px; font-size: 14px">
+                U
               </div>
-              <div
-                class="card-body"
-                style="
+              <span id="auth-name" class="d-none d-xl-inline">Tài khoản</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="userDropdown">
+              <li class="px-3 py-2 d-xl-none border-bottom mb-1">
+                <span class="fw-bold small" id="auth-name-mobile">Tài khoản</span>
+              </li>
+              <li>
+                <a class="dropdown-item py-2" href="public/trang-ca-nhan.html">
+                  <i class="fas fa-user-cog me-2 text-primary"></i> Hồ sơ cá
+                  nhân
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a class="dropdown-item py-2 text-danger" href="#" id="auth-logout-link">
+                  <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section text-center">
+    <img src="public/asset/image/cac-dich-vu-cua-dich-vu-quanh-ta.jpg" alt="Các Dịch Vụ Của Dịch Vụ Quanh Ta"
+      class="hero-bg" />
+    <div class="hero-overlay"></div>
+
+    <div class="container position-relative z-1 mt-5">
+      <div
+        class="d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill bg-white bg-opacity-10 border border-white border-opacity-25 mb-4">
+        <i data-lucide="star" class="text-warning" style="width: 16px; height: 16px; fill: #ffc107"></i>
+        <small class="text-white fw-medium">Dịch Vụ Được Khách Hàng Tin Tưởng</small>
+      </div>
+
+      <h1 class="hero-title">
+        Mang Sự Tiện Nghi <br />
+        <span class="text-gradient-span">Đến Đời Sống Của Bạn</span>
+      </h1>
+
+      <p class="lead text-light mb-5 mx-auto" style="max-width: 700px">
+        Chúng tôi cung cấp giải pháp toàn diện từ chăm sóc mẹ & bé, vệ sinh
+        nhà cửa đến bảo trì sân vườn,... Với những người thợ lành nghề, tận
+        tâm, tân tình trong công việc.
+      </p>
+
+      <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+        <a href="#services" class="btn btn-gradient d-flex align-items-center justify-content-center gap-2">
+          Khám Phá Dịch Vụ
+          <i data-lucide="arrow-right" style="width: 20px"></i>
+        </a>
+        <a href="#contact" class="btn btn-outline-light-custom">Liên Hệ Tư Vấn</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Services Section -->
+  <section class="py-5 bg-light" id="services">
+    <div class="container py-5">
+      <div class="text-center mb-5 mx-auto" style="max-width: 700px">
+        <span class="text-info fw-bold text-uppercase small ls-1">Dịch Vụ Của Chúng Tôi</span>
+        <h4 class="display-5 fw-bold mt-2 mb-3">
+          Giải Pháp Toàn Diện Cho <br />
+          <span class="gradient-text-header">Cuộc Sống Hiện Đại</span>
+        </h4>
+        <p class="text-muted lead">
+          Cam kết mang đến trải nghiệm dịch vụ xuất sắc, đáp ứng mọi nhu cầu
+          khắt khe nhất của khách hàng.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Mom & Baby Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/cham-soc-me-va-be.jpg" alt="Chăm Sóc Mẹ & Bé" />
+              <div class="icon-box" style="color: #ec4899">
+                <i data-lucide="baby"></i>
+              </div>
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #ffe1ec 0%,
                     #ffffff 50%,
                     #f7e0f4 100%
                   );
-                "
-              >
-                <h3 class="h5 card-title" style="color: #ec4899">
-                  Chăm Sóc Mẹ & Bé
-                </h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Đội ngũ điều dưỡng giàu kinh nghiệm, tận tâm chăm sóc sức khỏe
-                  cho mẹ và bé sau sinh.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/cham-soc/me-va-be/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2"
-                    style="color: #ec4899"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/cham-soc/me-va-be/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2"
-                    style="color: #ec4899"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
+                ">
+              <h3 class="h5 card-title" style="color: #ec4899">
+                Chăm Sóc Mẹ & Bé
+              </h3>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Đội ngũ điều dưỡng giàu kinh nghiệm, tận tâm chăm sóc sức khỏe
+                cho mẹ và bé sau sinh.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/cham-soc/me-va-be/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2" style="color: #ec4899">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/cham-soc/me-va-be/cam-nang.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2" style="color: #ec4899">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
               </div>
-              <div class="card-bottom-border bg-grad-secondary"></div>
             </div>
+            <div class="card-bottom-border bg-grad-secondary"></div>
           </div>
+        </div>
 
-          <!-- Elderly Care Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/cham-soc-nguoi-gia.jpg"
-                  alt="Chăm Sóc Người Già"
-                />
-                <div class="icon-box" style="color: #2e7d32">
-                  <i data-lucide="heart-handshake"></i>
-                </div>
+        <!-- Elderly Care Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/cham-soc-nguoi-gia.jpg" alt="Chăm Sóc Người Già" />
+              <div class="icon-box" style="color: #2e7d32">
+                <i data-lucide="heart-handshake"></i>
               </div>
-              <div
-                class="card-body"
-                style="
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #f1f8e9 0%,
                     #ffffff 50%,
                     #e3f2fd 100%
                   );
-                "
-              >
-                <h3 class="h5 card-title" style="color: #2e7d32">
-                  Chăm Sóc Người Già
-                </h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Chăm sóc, trò chuyện và hỗ trợ sinh hoạt hàng ngày cho người
-                  cao tuổi với sự tận tâm và kính trọng.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/cham-soc/nguoi-gia/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2"
-                    style="color: #2e7d32"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/cham-soc/nguoi-gia/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2"
-                    style="color: #2e7d32"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
+                ">
+              <h3 class="h5 card-title" style="color: #2e7d32">
+                Chăm Sóc Người Già
+              </h3>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Chăm sóc, trò chuyện và hỗ trợ sinh hoạt hàng ngày cho người
+                cao tuổi với sự tận tâm và kính trọng.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/cham-soc/nguoi-gia/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2" style="color: #2e7d32">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/cham-soc/nguoi-gia/cam-nang.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2" style="color: #2e7d32">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
               </div>
-              <div class="card-bottom-border bg-grad-success"></div>
             </div>
+            <div class="card-bottom-border bg-grad-success"></div>
           </div>
+        </div>
 
-          <!-- Patient Care Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/cham-soc-benh-nhan.jpg"
-                  alt="Chăm Sóc Bệnh Nhân"
-                />
-                <div class="icon-box text-primary">
-                  <i data-lucide="activity"></i>
-                </div>
+        <!-- Patient Care Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/cham-soc-benh-nhan.jpg" alt="Chăm Sóc Bệnh Nhân" />
+              <div class="icon-box text-primary">
+                <i data-lucide="activity"></i>
               </div>
-              <div
-                class="card-body"
-                style="
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #e3f2fd 0%,
                     #ffffff 50%,
                     #e8f5e9 100%
                   );
-                "
-              >
-                <h3 class="h5 card-title" style="color: #007bff">
-                  Chăm Sóc Bệnh Nhân
-                </h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Hỗ trợ y tế tại nhà, theo dõi sức khỏe và phục hồi chức năng
-                  bởi đội ngũ điều dưỡng chuyên nghiệp.
-                </p>
+                ">
+              <h3 class="h5 card-title" style="color: #007bff">
+                Chăm Sóc Bệnh Nhân
+              </h3>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Hỗ trợ y tế tại nhà, theo dõi sức khỏe và phục hồi chức năng
+                bởi đội ngũ điều dưỡng chuyên nghiệp.
+              </p>
 
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/cham-soc/nguoi-benh/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2"
-                    style="color: 007bff"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/cham-soc/nguoi-benh/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-primary"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/cham-soc/nguoi-benh/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2" style="color: 007bff">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/cham-soc/nguoi-benh/cam-nang.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-primary">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
               </div>
-              <div class="card-bottom-border bg-grad-primary"></div>
             </div>
+            <div class="card-bottom-border bg-grad-primary"></div>
           </div>
+        </div>
 
-          <!-- Cleaning Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/dich-vu-ve-sinh.jpg"
-                  alt="Dịch Vụ Vệ Sinh"
-                />
-                <div class="icon-box text-primary">
-                  <i data-lucide="sparkles"></i>
-                </div>
+        <!-- Cleaning Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/dich-vu-ve-sinh.jpg" alt="Dịch Vụ Vệ Sinh" />
+              <div class="icon-box text-primary">
+                <i data-lucide="sparkles"></i>
               </div>
-              <div
-                class="card-body"
-                style="
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #e8eff8,
                     #ffffff,
                     #d1def2
                   );
-                "
-              >
-                <h3 class="h5 card-title" style="color: #007bff">
-                  Dịch Vụ Vệ Sinh
-                </h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Vệ sinh nhà ở, văn phòng chuyên nghiệp với quy trình chuẩn
-                  quốc tế, thiết bị hiện đại.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-primary"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-primary"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
+                ">
+              <h3 class="h5 card-title" style="color: #007bff">
+                Dịch Vụ Vệ Sinh
+              </h3>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Vệ sinh nhà ở, văn phòng chuyên nghiệp với quy trình chuẩn
+                quốc tế, thiết bị hiện đại.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-primary">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/cam-nang.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-primary">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
               </div>
-              <div class="card-bottom-border bg-grad-primary"></div>
             </div>
+            <div class="card-bottom-border bg-grad-primary"></div>
           </div>
+        </div>
 
-          <!-- Gardening Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/cham-soc-vuon-nha.jpg"
-                  alt="Chăm Sóc Vườn Nhà"
-                />
-                <div class="icon-box text-success">
-                  <i data-lucide="shovel"></i>
-                </div>
+        <!-- Gardening Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/cham-soc-vuon-nha.jpg" alt="Chăm Sóc Vườn Nhà" />
+              <div class="icon-box text-success">
+                <i data-lucide="shovel"></i>
               </div>
-              <div class="card-body" style="background: #e6f1eb">
-                <h3 class="h5 card-title" style="color: #349b62">
-                  Chăm Sóc Vườn Nhà
-                </h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Cắt tỉa cây cảnh, chăm sóc sân vườn, thiết kế cảnh quan xanh
-                  mát cho ngôi nhà.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-success"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/bai-viet.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-success"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
-              </div>
-              <div class="card-bottom-border bg-grad-success"></div>
             </div>
-          </div>
-
-          <!-- Laundry Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/giat-ui-nhanh.jpg"
-                  alt="Giặt Ủi Nhanh"
-                />
-                <div class="icon-box text-primary">
-                  <i data-lucide="shirt"></i>
-                </div>
+            <div class="card-body" style="background: #e6f1eb">
+              <h3 class="h5 card-title" style="color: #349b62">
+                Chăm Sóc Vườn Nhà
+              </h3>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Cắt tỉa cây cảnh, chăm sóc sân vườn, thiết kế cảnh quan xanh
+                mát cho ngôi nhà.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-success">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/bai-viet.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-success">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
               </div>
-              <div
-                class="card-body"
-                style="background: linear-gradient(to bottom, #eff6ff, white)"
-              >
-                <div
-                  class="d-flex align-items-center justify-content-between gap-2 mb-2"
-                >
-                  <h3 class="h5 card-title text-primary mb-0">Giặt Ủi Nhanh</h3>
-                  <!-- <a
+            </div>
+            <div class="card-bottom-border bg-grad-success"></div>
+          </div>
+        </div>
+
+        <!-- Laundry Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/giat-ui-nhanh.jpg" alt="Giặt Ủi Nhanh" />
+              <div class="icon-box text-primary">
+                <i data-lucide="shirt"></i>
+              </div>
+            </div>
+            <div class="card-body" style="background: linear-gradient(to bottom, #eff6ff, white)">
+              <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                <h3 class="h5 card-title text-primary mb-0">Giặt Ủi Nhanh</h3>
+                <!-- <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     onclick="loadPage('giat-ui-nhanh/dat-dich-vu.html', this)"
                     >Đặt lịch</a
                   > -->
-                </div>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Công nghệ giặt là tiên tiến, xử lý vết bẩn hiệu quả, giao nhận
-                  tận nơi nhanh chóng.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-primary"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/giat-ui/giat-ui-nhanh/bai-viet.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-primary"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
               </div>
-              <div class="card-bottom-border bg-grad-primary"></div>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Công nghệ giặt là tiên tiến, xử lý vết bẩn hiệu quả, giao nhận
+                tận nơi nhanh chóng.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-primary">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/giat-ui/giat-ui-nhanh/bai-viet.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-primary">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
+              </div>
             </div>
+            <div class="card-bottom-border bg-grad-primary"></div>
           </div>
+        </div>
 
-          <!-- Delivery Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/giao-hang-nhanh.jpg"
-                  alt="Giao Hàng Nhanh"
-                />
-                <div class="icon-box" style="color: #0a2a66">
-                  <i data-lucide="truck"></i>
-                </div>
+        <!-- Delivery Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/giao-hang-nhanh.jpg" alt="Giao Hàng Nhanh" />
+              <div class="icon-box" style="color: #0a2a66">
+                <i data-lucide="truck"></i>
               </div>
-              <div
-                class="card-body"
-                style="
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #eaf2ff 0%,
                     #ffffff 50%,
                     #fff4ea 100%
                   );
-                "
-              >
-                <div
-                  class="d-flex align-items-center justify-content-between gap-2 mb-2"
-                >
-                  <h3 class="h5 card-title mb-0" style="color: #0a2a66">
-                    Giao Hàng Nhanh
-                  </h3>
-                  <!-- <a
+                ">
+              <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                <h3 class="h5 card-title mb-0" style="color: #0a2a66">
+                  Giao Hàng Nhanh
+                </h3>
+                <!-- <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     style="
                       background: linear-gradient(90deg, #0a2a66, #ff7a00);
@@ -1055,69 +812,50 @@
                     "
                     >Đặt lịch</a
                   > -->
-                </div>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Dịch vụ giao nhận hàng hóa siêu tốc, đảm bảo an toàn, uy tín
-                  với chi phí hợp lý.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2"
-                    style="color: #0a2a66"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/van-tai-logistics/giao-hang-nhanh/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2"
-                    style="color: #0a2a66"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
               </div>
-              <div
-                class="card-bottom-border"
-                style="background: linear-gradient(90deg, #0a2a66, #ff7a00)"
-              ></div>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Dịch vụ giao nhận hàng hóa siêu tốc, đảm bảo an toàn, uy tín
+                với chi phí hợp lý.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2" style="color: #0a2a66">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/van-tai-logistics/giao-hang-nhanh/cam-nang.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2" style="color: #0a2a66">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
+              </div>
             </div>
+            <div class="card-bottom-border" style="background: linear-gradient(90deg, #0a2a66, #ff7a00)"></div>
           </div>
+        </div>
 
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/dich-vu-chuyen-don.jpg"
-                  alt="Dịch Vụ Chuyển Dọn"
-                />
-                <div class="icon-box" style="color: #1b4332">
-                  <i data-lucide="truck"></i>
-                </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/dich-vu-chuyen-don.jpg" alt="Dịch Vụ Chuyển Dọn" />
+              <div class="icon-box" style="color: #1b4332">
+                <i data-lucide="truck"></i>
               </div>
-              <div
-                class="card-body"
-                style="
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #f0fdf4 0%,
                     #ffffff 50%,
                     #fefce8 100%
                   );
-                "
-              >
-                <div
-                  class="d-flex align-items-center justify-content-between gap-2 mb-2"
-                >
-                  <h3 class="h5 card-title mb-0" style="color: #1b4332">
-                    Dịch Vụ Chuyển Dọn
-                  </h3>
-                  <!-- <a
+                ">
+              <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                <h3 class="h5 card-title mb-0" style="color: #1b4332">
+                  Dịch Vụ Chuyển Dọn
+                </h3>
+                <!-- <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     style="
                       background-color: #1b4332;
@@ -1127,505 +865,388 @@
                     onclick="loadPage('dich-vu/van-tai-logistics/dich-vu-chuyen-don/dat-lich-chuyendon.html', this)"
                     >Đặt lịch</a
                   > -->
-                </div>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Dịch vụ chuyển nhà, văn phòng, kho bãi chuyên nghiệp. Hỗ trợ
-                  tháo lắp IT, đóng gói bảo mật và vận chuyển an toàn.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2"
-                    style="color: #1b4332"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/van-tai-logistics/dich-vu-chuyen-don/cam-nang-chuyendon.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2"
-                    style="color: #1b4332"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
               </div>
-              <div
-                class="card-bottom-border"
-                style="background: linear-gradient(90deg, #1b4332, #ffb703)"
-              ></div>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Dịch vụ chuyển nhà, văn phòng, kho bãi chuyên nghiệp. Hỗ trợ
+                tháo lắp IT, đóng gói bảo mật và vận chuyển an toàn.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2" style="color: #1b4332">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/van-tai-logistics/dich-vu-chuyen-don/cam-nang-chuyendon.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2" style="color: #1b4332">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
+              </div>
             </div>
+            <div class="card-bottom-border" style="background: linear-gradient(90deg, #1b4332, #ffb703)"></div>
           </div>
+        </div>
 
-          <!-- Car Rental Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img src="public/asset/image/thue-xe.jpg" alt="Thuê Xe" />
-                <div class="icon-box text-info">
-                  <i data-lucide="car"></i>
-                </div>
+        <!-- Car Rental Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/thue-xe.jpg" alt="Thuê Xe" />
+              <div class="icon-box text-info">
+                <i data-lucide="car"></i>
               </div>
-              <div
-                class="card-body"
-                style="
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #e0f7fa 0%,
                     #ffffff 50%,
                     #e0f2fe 100%
                   );
-                "
-              >
-                <h3 class="h5 card-title">Thuê Xe</h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Dịch vụ thuê xe tự lái đa dạng, xe mới hiện đại, giá cả hợp
-                  lý, thủ tục nhanh chóng, phục vụ 24/7.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/van-tai-logistics/thue-xe/index.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-info"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/van-tai-logistics/thue-xe/views/pages/public/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-info"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
+                ">
+              <h3 class="h5 card-title">Thuê Xe</h3>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Dịch vụ thuê xe tự lái đa dạng, xe mới hiện đại, giá cả hợp
+                lý, thủ tục nhanh chóng, phục vụ 24/7.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/van-tai-logistics/thue-xe/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-info">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/van-tai-logistics/thue-xe/cam-nang.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-info">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
               </div>
-              <div
-                class="card-bottom-border"
-                style="background: linear-gradient(90deg, #0ea5e9, #06b6d4)"
-              ></div>
             </div>
+            <div class="card-bottom-border" style="background: linear-gradient(90deg, #0ea5e9, #06b6d4)"></div>
           </div>
+        </div>
 
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/dich-vu-lai-xe-ho.jpg"
-                  alt="Dịch Vụ Lái Xe Hộ"
-                />
-                <div class="icon-box text-info">
-                  <i data-lucide="car"></i>
-                </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/dich-vu-lai-xe-ho.jpg" alt="Dịch Vụ Lái Xe Hộ" />
+              <div class="icon-box text-info">
+                <i data-lucide="car"></i>
               </div>
-              <div
-                class="card-body"
-                style="
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #e3f2fd 0%,
                     #ffffff 50%,
                     #fff3e0 100%
                   );
-                "
-              >
-                <h3 class="h5 card-title">Lái Xe Hộ</h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Dịch vụ lái xe hộ – an tâm mọi hành trình, phục vụ mọi lúc bạn
-                  cần.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-info"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-info"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
+                ">
+              <h3 class="h5 card-title">Lái Xe Hộ</h3>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Dịch vụ lái xe hộ – an tâm mọi hành trình, phục vụ mọi lúc bạn
+                cần.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-info">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/cam-nang.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-info">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
               </div>
-              <div
-                class="card-bottom-border"
-                style="background: linear-gradient(90deg, #0ea5e9, #06b6d4)"
-              ></div>
             </div>
+            <div class="card-bottom-border" style="background: linear-gradient(90deg, #0ea5e9, #06b6d4)"></div>
           </div>
+        </div>
 
-          <!-- Mobile Car Repair Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/sua-xe-luu-dong.jpg"
-                  alt="Sửa Xe Lưu Động"
-                />
-                <div class="icon-box text-warning">
-                  <i data-lucide="wrench"></i>
-                </div>
+        <!-- Mobile Car Repair Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/sua-xe-luu-dong.jpg" alt="Sửa Xe Lưu Động" />
+              <div class="icon-box text-warning">
+                <i data-lucide="wrench"></i>
               </div>
-              <div
-                class="card-body"
-                style="background: linear-gradient(to right, #3a6073, #16222a)"
-              >
-                <div
-                  class="d-flex align-items-center justify-content-between gap-2 mb-2"
-                >
-                  <h3 class="h5 card-title text-warning mb-0">
-                    Sửa Xe Lưu Động
-                  </h3>
-                  <!-- <a
+            </div>
+            <div class="card-body" style="background: linear-gradient(to right, #3a6073, #16222a)">
+              <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                <h3 class="h5 card-title text-warning mb-0">
+                  Sửa Xe Lưu Động
+                </h3>
+                <!-- <a
                     class="btn btn-warning btn-sm rounded-pill px-3 py-1"
                     onclick="loadPage('sua-xe-luu-dong/dat-dich-vu.html', this)"
                     >Đặt lịch</a
                   > -->
-                </div>
-                <p class="text-light small mb-4 flex-grow-1">
-                  Sửa chữa, vá lốp - thay lốp xe tại chỗ đảm bảo tiết kiệm thời
-                  gian và chi phí kéo xe.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-warning"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/sua-chua/sua-xe-luu-dong/bai-viet.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-warning"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
               </div>
-              <div class="card-bottom-border bg-grad-orange"></div>
+              <p class="text-light small mb-4 flex-grow-1">
+                Sửa chữa, vá lốp - thay lốp xe tại chỗ đảm bảo tiết kiệm thời
+                gian và chi phí kéo xe.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-warning">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/sua-chua/sua-xe-luu-dong/bai-viet.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-warning">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
+              </div>
             </div>
+            <div class="card-bottom-border bg-grad-orange"></div>
           </div>
+        </div>
 
-          <!-- Handyman Service -->
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img src="public/asset/image/tho-nha.jpg" alt="Thợ Nhà" />
-                <div class="icon-box" style="color: #11998e">
-                  <i data-lucide="hammer"></i>
-                </div>
+        <!-- Handyman Service -->
+        <div class="col-md-6 col-lg-4">
+          <div class="service-card">
+            <div class="card-img-wrapper">
+              <div class="card-overlay"></div>
+              <img src="public/asset/image/tho-nha.jpg" alt="Thợ Nhà" />
+              <div class="icon-box" style="color: #11998e">
+                <i data-lucide="hammer"></i>
               </div>
-              <div
-                class="card-body"
-                style="
+            </div>
+            <div class="card-body" style="
                   background: linear-gradient(
                     135deg,
                     #e6f7f5 0%,
                     #ffffff 50%,
                     #e8fef3 100%
                   );
-                "
-              >
-                <h3 class="h5 card-title" style="color: #11998e">Thợ Nhà</h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Sửa chữa điện nước, lắp đặt thiết bị, bảo trì nội thất với đội
-                  ngũ kỹ thuật viên lành nghề.
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu/sua-chua/tho-nha/dich-vu.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2"
-                    style="color: #11998e"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu/sua-chua/tho-nha/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2"
-                    style="color: #11998e"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
+                ">
+              <h3 class="h5 card-title" style="color: #11998e">Thợ Nhà</h3>
+              <p class="text-muted small mb-4 flex-grow-1">
+                Sửa chữa điện nước, lắp đặt thiết bị, bảo trì nội thất với đội
+                ngũ kỹ thuật viên lành nghề.
+              </p>
+              <div class="d-flex align-items-center gap-3 flex-wrap justify-content-between">
+                <a href="dich-vu/sua-chua/tho-nha/dich-vu.html"
+                  class="text-decoration-none fw-bold d-flex align-items-center gap-2" style="color: #11998e">
+                  Xem Chi Tiết
+                  <i data-lucide="arrow-right" style="width: 16px"></i>
+                </a>
+                <a href="dich-vu/sua-chua/tho-nha/cam-nang.html"
+                  class="text-decoration-none fw-semibold d-flex align-items-center gap-2" style="color: #11998e">
+                  Cẩm Nang
+                  <i data-lucide="book-open" style="width: 16px"></i>
+                </a>
               </div>
-              <div
-                class="card-bottom-border"
-                style="background: linear-gradient(90deg, #11998e, #38ef7d)"
-              ></div>
             </div>
+            <div class="card-bottom-border" style="background: linear-gradient(90deg, #11998e, #38ef7d)"></div>
           </div>
-          <!-- Custom Request -->
-          <div class="col-md-6 col-lg-4">
-            <div
-              class="h-100 rounded-4 border border-2 border-secondary border-opacity-25 border-dashed d-flex flex-column align-items-center justify-content-center p-4 text-center"
-              style="
+        </div>
+        <!-- Custom Request -->
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="h-100 rounded-4 border border-2 border-secondary border-opacity-25 border-dashed d-flex flex-column align-items-center justify-content-center p-4 text-center"
+            style="
                 background-color: #f8fafc;
                 transition: all 0.3s;
                 cursor: pointer;
-              "
-            >
-              <div class="bg-white rounded-circle p-3 mb-3 shadow-sm">
-                <i
-                  data-lucide="check-circle"
-                  class="text-secondary"
-                  style="width: 32px; height: 32px"
-                ></i>
-              </div>
-              <h3 class="h5 fw-bold text-dark">Dịch Vụ Theo Yêu Cầu</h3>
-              <p class="text-muted small mb-3">
-                Bạn cần dịch vụ đặc biệt khác? Hãy liên hệ với chúng tôi.
-              </p>
-              <span class="text-primary fw-bold">Liên Hệ Ngay</span>
+              ">
+            <div class="bg-white rounded-circle p-3 mb-3 shadow-sm">
+              <i data-lucide="check-circle" class="text-secondary" style="width: 32px; height: 32px"></i>
             </div>
+            <h3 class="h5 fw-bold text-dark">Dịch Vụ Theo Yêu Cầu</h3>
+            <p class="text-muted small mb-3">
+              Bạn cần dịch vụ đặc biệt khác? Hãy liên hệ với chúng tôi.
+            </p>
+            <span class="text-primary fw-bold">Liên Hệ Ngay</span>
           </div>
         </div>
       </div>
-      <div id="bookingForm"></div>
-    </section>
+    </div>
+    <div id="bookingForm"></div>
+  </section>
 
-    <!-- Features Section -->
-    <section class="py-5 bg-white" id="about">
-      <div class="container py-5">
-        <div class="row align-items-center g-5">
-          <div class="col-lg-6">
-            <span class="text-primary fw-bold text-uppercase small ls-1"
-              >Tại Sao Chọn Chúng Tôi</span
-            >
-            <h2 class="display-5 fw-bold mt-2 mb-4">
-              Nâng Tầm Chất Lượng <br />
-              <span class="gradient-text-header">Cuộc Sống Gia Đình</span>
-            </h2>
-            <p class="text-muted lead mb-5">
-              Dịch Vụ Quanh Ta không chỉ cung cấp dịch vụ, chúng tôi mang đến sự
-              an tâm. Với kinh nghiệm phục vụ khách hàng, chúng tôi hiểu rõ
-              những tiêu chuẩn khắt khe nhất.
-            </p>
+  <!-- Features Section -->
+  <section class="py-5 bg-white" id="about">
+    <div class="container py-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <span class="text-primary fw-bold text-uppercase small ls-1">Tại Sao Chọn Chúng Tôi</span>
+          <h2 class="display-5 fw-bold mt-2 mb-4">
+            Nâng Tầm Chất Lượng <br />
+            <span class="gradient-text-header">Cuộc Sống Gia Đình</span>
+          </h2>
+          <p class="text-muted lead mb-5">
+            Dịch Vụ Quanh Ta không chỉ cung cấp dịch vụ, chúng tôi mang đến sự
+            an tâm. Với kinh nghiệm phục vụ khách hàng, chúng tôi hiểu rõ
+            những tiêu chuẩn khắt khe nhất.
+          </p>
 
-            <div class="row g-4">
-              <div class="col-sm-6">
-                <div
-                  class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50"
-                >
-                  <div class="feature-icon-wrapper bg-grad-primary">
-                    <i data-lucide="shield"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-1">An Toàn</h5>
-                    <p class="text-muted small mb-0">
-                      Tuyển chọn khắt khe, lý lịch rõ ràng.
-                    </p>
-                  </div>
+          <div class="row g-4">
+            <div class="col-sm-6">
+              <div class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50">
+                <div class="feature-icon-wrapper bg-grad-primary">
+                  <i data-lucide="shield"></i>
                 </div>
-              </div>
-              <div class="col-sm-6">
-                <div
-                  class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50"
-                >
-                  <div class="feature-icon-wrapper bg-grad-secondary">
-                    <i data-lucide="star"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-1">Trách nhiệm, uy tín</h5>
-                    <p class="text-muted small mb-0">
-                      Đảm bảo trách nhiệm, uy tín đối với khách hàng.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6">
-                <div
-                  class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50"
-                >
-                  <div class="feature-icon-wrapper bg-grad-purple">
-                    <i data-lucide="zap"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-1">Nhanh chóng</h5>
-                    <p class="text-muted small mb-0">
-                      Có mặt ngay khi bạn cần.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6">
-                <div
-                  class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50"
-                >
-                  <div class="feature-icon-wrapper bg-grad-orange">
-                    <i data-lucide="clock"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-1">Phục Vụ 24/7</h5>
-                    <p class="text-muted small mb-0">
-                      Hỗ trợ mọi lúc, kể cả lễ tết.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6">
-                <div
-                  class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50"
-                >
-                  <div class="feature-icon-wrapper bg-grad-success">
-                    <i data-lucide="users"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-1">Chuyên Nghiệp</h5>
-                    <p class="text-muted small mb-0">
-                      Đào tạo bài bản, tận tâm.
-                    </p>
-                  </div>
+                <div>
+                  <h5 class="fw-bold mb-1">An Toàn</h5>
+                  <p class="text-muted small mb-0">
+                    Tuyển chọn khắt khe, lý lịch rõ ràng.
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="col-lg-6 position-relative">
-            <div class="row g-3">
-              <div class="col-6">
-                <img
-                  src="public/asset/image/dich-vu-quanh-ta-mang-den.jpg"
-                  class="img-fluid rounded-4 shadow-lg mt-5"
-                  alt="Dịch Vụ Quanh Ta mang đến"
-                />
+            <div class="col-sm-6">
+              <div class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50">
+                <div class="feature-icon-wrapper bg-grad-secondary">
+                  <i data-lucide="star"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">Trách nhiệm, uy tín</h5>
+                  <p class="text-muted small mb-0">
+                    Đảm bảo trách nhiệm, uy tín đối với khách hàng.
+                  </p>
+                </div>
               </div>
-              <div class="col-6">
-                <img
-                  src="public/asset/image/su-an-tam-cho-khach-hang.jpg"
-                  class="img-fluid rounded-4 shadow-lg"
-                  alt="Sự an tâm cho khách hàng"
-                />
+            </div>
+            <div class="col-sm-6">
+              <div class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50">
+                <div class="feature-icon-wrapper bg-grad-purple">
+                  <i data-lucide="zap"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">Nhanh chóng</h5>
+                  <p class="text-muted small mb-0">
+                    Có mặt ngay khi bạn cần.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50">
+                <div class="feature-icon-wrapper bg-grad-orange">
+                  <i data-lucide="clock"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">Phục Vụ 24/7</h5>
+                  <p class="text-muted small mb-0">
+                    Hỗ trợ mọi lúc, kể cả lễ tết.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="d-flex align-items-start p-3 rounded-3 bg-light bg-opacity-50">
+                <div class="feature-icon-wrapper bg-grad-success">
+                  <i data-lucide="users"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">Chuyên Nghiệp</h5>
+                  <p class="text-muted small mb-0">
+                    Đào tạo bài bản, tận tâm.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <div class="col-lg-6 position-relative">
+          <div class="row g-3">
+            <div class="col-6">
+              <img src="public/asset/image/dich-vu-quanh-ta-mang-den.jpg" class="img-fluid rounded-4 shadow-lg mt-5"
+                alt="Dịch Vụ Quanh Ta mang đến" />
+            </div>
+            <div class="col-6">
+              <img src="public/asset/image/su-an-tam-cho-khach-hang.jpg" class="img-fluid rounded-4 shadow-lg"
+                alt="Sự an tâm cho khách hàng" />
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Contact Section -->
-    <section class="contact-section py-5" id="contact">
-      <div class="contact-bg-overlay"></div>
-      <div class="container py-5 position-relative z-1">
-        <div class="row align-items-center g-5">
-          <div class="col-lg-6">
-            <span class="text-info fw-bold text-uppercase small"
-              >Liên Hệ Với Chúng Tôi</span
-            >
-            <h2 class="display-5 fw-bold mt-2 mb-4">Bạn Cần Tư Vấn Ngay?</h2>
-            <p class="lead text-light opacity-75 mb-5">
-              Để lại thông tin, đội ngũ tư vấn viên của Dịch Vụ Quanh Ta sẽ liên
-              hệ với bạn trong vòng 15 phút. <br />
-              CÔNG TY TNHH DỊCH VỤ QUANH TA KERI. <br />
-              MST: 0315609853
-            </p>
+  <!-- Contact Section -->
+  <section class="contact-section py-5" id="contact">
+    <div class="contact-bg-overlay"></div>
+    <div class="container py-5 position-relative z-1">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <span class="text-info fw-bold text-uppercase small">Liên Hệ Với Chúng Tôi</span>
+          <h2 class="display-5 fw-bold mt-2 mb-4">Bạn Cần Tư Vấn Ngay?</h2>
+          <p class="lead text-light opacity-75 mb-5">
+            Để lại thông tin, đội ngũ tư vấn viên của Dịch Vụ Quanh Ta sẽ liên
+            hệ với bạn trong vòng 15 phút. <br />
+            CÔNG TY TNHH DỊCH VỤ QUANH TA KERI. <br />
+            MST: 0315609853
+          </p>
 
-            <div class="d-flex align-items-center mb-4">
-              <div
-                class="rounded-circle bg-white bg-opacity-10 p-3 me-3 text-info"
-              >
-                <i data-lucide="phone"></i>
-              </div>
-              <div>
-                <div class="small text-light opacity-75">Hotline 24/7</div>
-                <div class="h5 fw-bold mb-0">0775 472 347</div>
-              </div>
+          <div class="d-flex align-items-center mb-4">
+            <div class="rounded-circle bg-white bg-opacity-10 p-3 me-3 text-info">
+              <i data-lucide="phone"></i>
             </div>
-
-            <div class="d-flex align-items-center mb-4">
-              <div
-                class="rounded-circle bg-white bg-opacity-10 p-3 me-3"
-                style="color: #a855f7"
-              >
-                <i data-lucide="mail"></i>
-              </div>
-              <div>
-                <div class="small text-light opacity-75">Email Hỗ Trợ</div>
-                <div class="h5 fw-bold mb-0">dichvuquanhta.vn@gmail.com</div>
-              </div>
-            </div>
-
-            <div class="d-flex align-items-center">
-              <div
-                class="rounded-circle bg-white bg-opacity-10 p-3 me-3"
-                style="color: #f43f5e"
-              >
-                <i data-lucide="map-pin"></i>
-              </div>
-              <div>
-                <div class="small text-light opacity-75">Địa chỉ</div>
-                <div class="h5 fw-bold mb-0">
-                  Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang
-                  Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh,
-                  Việt Nam
-                </div>
-              </div>
+            <div>
+              <div class="small text-light opacity-75">Hotline 24/7</div>
+              <div class="h5 fw-bold mb-0">0775 472 347</div>
             </div>
           </div>
 
-          <div class="col-lg-6">
-            <div class="contact-form-card">
-              <h3 class="h4 fw-bold mb-4 text-dark">
-                Gửi yêu cầu cho cúng tôi
-              </h3>
-              <form
-                onsubmit="
+          <div class="d-flex align-items-center mb-4">
+            <div class="rounded-circle bg-white bg-opacity-10 p-3 me-3" style="color: #a855f7">
+              <i data-lucide="mail"></i>
+            </div>
+            <div>
+              <div class="small text-light opacity-75">Email Hỗ Trợ</div>
+              <div class="h5 fw-bold mb-0">dichvuquanhta.vn@gmail.com</div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-white bg-opacity-10 p-3 me-3" style="color: #f43f5e">
+              <i data-lucide="map-pin"></i>
+            </div>
+            <div>
+              <div class="small text-light opacity-75">Địa chỉ</div>
+              <div class="h5 fw-bold mb-0">
+                Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang
+                Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh,
+                Việt Nam
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="contact-form-card">
+            <h3 class="h4 fw-bold mb-4 text-dark">
+              Gửi yêu cầu cho cúng tôi
+            </h3>
+            <form onsubmit="
                   event.preventDefault();
                   alert('Cảm ơn! Chúng tôi sẽ liên hệ sớm.');
-                "
-              >
-                <div class="row g-3 mb-3">
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold text-muted"
-                      >Họ và Tên</label
-                    >
-                    <input type="text" class="form-control" required />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold text-muted"
-                      >Số Điện Thoại</label
-                    >
-                    <input type="tel" class="form-control" required />
-                  </div>
+                ">
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">Họ và Tên</label>
+                  <input type="text" class="form-control" required />
                 </div>
-                <div class="mb-3 position-relative">
-                  <label class="form-label small fw-bold text-muted"
-                    >Dịch Vụ Quan Tâm</label
-                  >
-                  <!-- input that triggers dropdown -->
-                  <input
-                    type="text"
-                    id="serviceInput"
-                    class="form-control"
-                    placeholder="Chọn dịch vụ..."
-                    readonly
-                  />
-                  <!-- hidden multi‑select positioned under input -->
-                  <select
-                    class="form-select"
-                    id="serviceSelect"
-                    multiple
-                    style="
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold text-muted">Số Điện Thoại</label>
+                  <input type="tel" class="form-control" required />
+                </div>
+              </div>
+              <div class="mb-3 position-relative">
+                <label class="form-label small fw-bold text-muted">Dịch Vụ Quan Tâm</label>
+                <!-- input that triggers dropdown -->
+                <input type="text" id="serviceInput" class="form-control" placeholder="Chọn dịch vụ..." readonly />
+                <!-- hidden multi‑select positioned under input -->
+                <select class="form-select" id="serviceSelect" multiple style="
                       position: absolute;
                       top: 100%;
                       left: 0;
@@ -1634,533 +1255,407 @@
                       z-index: 1000;
                       max-height: 200px;
                       overflow: auto;
-                    "
-                  >
-                    <option>Dịch Vụ Vệ Sinh</option>
-                    <option>Chăm Sóc Mẹ & Bé</option>
-                    <option>Chăm Sóc Vườn Nhà</option>
-                    <option>Giặt Ủi Nhanh</option>
-                    <option>Thợ Nhà</option>
-                    <option>Chăm Sóc Người Già</option>
-                    <option>Chăm Sóc Bệnh Nhân</option>
-                    <option>Giao Hàng Nhanh</option>
-                    <option>Thuê Xe</option>
-                    <option>Lái Xe Hộ</option>
-                    <option>Sửa Xe Lưu Động</option>
-                  </select>
-                </div>
-                <div class="mb-4">
-                  <label class="form-label small fw-bold text-muted"
-                    >Ghi Chú</label
-                  >
-                  <textarea
-                    class="form-control"
-                    rows="4"
-                    placeholder="Nội dung yêu cầu..."
-                  ></textarea>
-                </div>
-                <button
-                  type="submit"
-                  class="btn btn-gradient w-100 py-3 d-flex align-items-center justify-content-center gap-2"
-                >
-                  Gửi Yêu Cầu <i data-lucide="send" style="width: 18px"></i>
-                </button>
-              </form>
-            </div>
+                    ">
+                  <option>Dịch Vụ Vệ Sinh</option>
+                  <option>Chăm Sóc Mẹ & Bé</option>
+                  <option>Chăm Sóc Vườn Nhà</option>
+                  <option>Giặt Ủi Nhanh</option>
+                  <option>Thợ Nhà</option>
+                  <option>Chăm Sóc Người Già</option>
+                  <option>Chăm Sóc Bệnh Nhân</option>
+                  <option>Giao Hàng Nhanh</option>
+                  <option>Thuê Xe</option>
+                  <option>Lái Xe Hộ</option>
+                  <option>Sửa Xe Lưu Động</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label class="form-label small fw-bold text-muted">Ghi Chú</label>
+                <textarea class="form-control" rows="4" placeholder="Nội dung yêu cầu..."></textarea>
+              </div>
+              <button type="submit"
+                class="btn btn-gradient w-100 py-3 d-flex align-items-center justify-content-center gap-2">
+                Gửi Yêu Cầu <i data-lucide="send" style="width: 18px"></i>
+              </button>
+            </form>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="pt-5 pb-3">
-      <div class="container">
-        <div class="row g-4 mb-5" style="justify-content: space-between">
-          <div class="col-lg-4">
-            <div class="d-flex align-items-center mb-3">
-              <img
-                style="width: 80px; height: 60px"
-                src="public/asset/image/logo-dich-vu-quanh-ta.png"
-                alt="Logo"
-              />
-              <span class="fw-bold fs-4"
-                >Dịch Vụ <span class="text-cyan">Quanh Ta</span></span
-              >
-            </div>
-            <p class="text-muted small mb-6">
-              Dịch vụ tiện ích trong đời sống của bạn. Chúng tôi cam kết mang
-              lại cuộc sống tiện nghi.
-            </p>
-            <div class="d-flex gap-2">
-              <a href="#" class="social-btn"
-                ><i class="fa-brands fa-facebook-f" style="font-size: 20px"></i
-              ></a>
-              <a href="#" class="social-btn"
-                ><i class="fa-brands fa-instagram" style="font-size: 20px"></i
-              ></a>
-              <a href="#" class="social-btn"
-                ><i class="fa-brands fa-twitter" style="font-size: 20px"></i
-              ></a>
-            </div>
-            <h5 class="h6 my-3">Tải Ứng Dụng</h5>
-            <div class="d-flex gap-2">
-              <a
-                href="#"
-                class="btn btn-primary d-flex align-items-center p-2 rounded-3 text-decoration-none"
-                style="flex: 1"
-              >
-                <i
-                  data-lucide="apple"
-                  class="me-2"
-                  style="width: 24px; height: 24px"
-                ></i>
-                <div class="text-start lh-1">
-                  <small class="d-block text-white-50" style="font-size: 10px"
-                    >Download on</small
-                  >
-                  <span class="fw-bold text-white" style="font-size: 12px"
-                    >App Store</span
-                  >
-                </div>
-              </a>
-              <a
-                href="#"
-                class="btn btn-dark d-flex align-items-center p-2 rounded-3 text-decoration-none"
-                style="flex: 1"
-              >
-                <i
-                  data-lucide="play"
-                  class="me-2"
-                  style="width: 24px; height: 24px; fill: white"
-                ></i>
-                <div class="text-start lh-1">
-                  <small class="d-block text-white-50" style="font-size: 10px"
-                    >Get it on</small
-                  >
-                  <span class="fw-bold text-white" style="font-size: 12px"
-                    >Google Play</span
-                  >
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-3">
-            <h5 class="h6">Dịch Vụ</h5>
-            <div class="footer-services-accordion" id="footerServices">
-              <!-- Chăm sóc -->
-              <div class="footer-cat-item mb-2">
-                <a
-                  href="javascript:void(0)"
-                  class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#footer-cham-soc"
-                >
-                  <span>Chăm Sóc</span>
-                  <i
-                    class="fas fa-chevron-down opacity-50"
-                    style="font-size: 0.75rem"
-                  ></i>
-                </a>
-                <ul
-                  class="collapse show list-unstyled ps-3 mt-1 small"
-                  id="footer-cham-soc"
-                  data-bs-parent="#footerServices"
-                >
-                  <li>
-                    <a href="dich-vu/cham-soc/me-va-be/dich-vu.html"
-                      >Chăm Sóc Mẹ & Bé</a
-                    >
-                  </li>
-                  <li>
-                    <a href="dich-vu/cham-soc/nguoi-gia/dich-vu.html"
-                      >Chăm Sóc Người Già</a
-                    >
-                  </li>
-                  <li>
-                    <a href="dich-vu/cham-soc/nguoi-benh/dich-vu.html"
-                      >Chăm Sóc Bệnh Nhân</a
-                    >
-                  </li>
-                </ul>
-              </div>
-              <!-- Vệ sinh -->
-              <div class="footer-cat-item mb-2">
-                <a
-                  href="javascript:void(0)"
-                  class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#footer-ve-sinh"
-                >
-                  <span>Vệ Sinh</span>
-                  <i
-                    class="fas fa-chevron-down opacity-50"
-                    style="font-size: 0.75rem"
-                  ></i>
-                </a>
-                <ul
-                  class="collapse show list-unstyled ps-3 mt-1 small"
-                  id="footer-ve-sinh"
-                  data-bs-parent="#footerServices"
-                >
-                  <li>
-                    <a
-                      href="dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html"
-                      >Dịch Vụ Vệ Sinh</a
-                    >
-                  </li>
-                </ul>
-              </div>
-              <!-- Sân vườn -->
-              <div class="footer-cat-item mb-2">
-                <a
-                  href="javascript:void(0)"
-                  class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#footer-san-vuon"
-                >
-                  <span>Sân Vườn & Cây Cảnh</span>
-                  <i
-                    class="fas fa-chevron-down opacity-50"
-                    style="font-size: 0.75rem"
-                  ></i>
-                </a>
-                <ul
-                  class="collapse show list-unstyled ps-3 mt-1 small"
-                  id="footer-san-vuon"
-                  data-bs-parent="#footerServices"
-                >
-                  <li>
-                    <a
-                      href="dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html"
-                      >Chăm Sóc Vườn Nhà</a
-                    >
-                  </li>
-                </ul>
-              </div>
-              <!-- Giặt ủi -->
-              <div class="footer-cat-item mb-2">
-                <a
-                  href="javascript:void(0)"
-                  class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#footer-giat-ui"
-                >
-                  <span>Giặt Ủi</span>
-                  <i
-                    class="fas fa-chevron-down opacity-50"
-                    style="font-size: 0.75rem"
-                  ></i>
-                </a>
-                <ul
-                  class="collapse show list-unstyled ps-3 mt-1 small"
-                  id="footer-giat-ui"
-                  data-bs-parent="#footerServices"
-                >
-                  <li>
-                    <a href="dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html"
-                      >Giặt Ủi Nhanh</a
-                    >
-                  </li>
-                </ul>
-              </div>
-              <!-- Vận tải logistics -->
-              <div class="footer-cat-item mb-2">
-                <a
-                  href="javascript:void(0)"
-                  class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#footer-logistics"
-                >
-                  <span>Vận Tải & Logistics</span>
-                  <i
-                    class="fas fa-chevron-down opacity-50"
-                    style="font-size: 0.75rem"
-                  ></i>
-                </a>
-                <ul
-                  class="collapse show list-unstyled ps-3 mt-1 small"
-                  id="footer-logistics"
-                  data-bs-parent="#footerServices"
-                >
-                  <li>
-                    <a
-                      href="dich-vu/van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html"
-                      >Giao Hàng Nhanh</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html"
-                      >Dịch Vụ Chuyển Dọn</a
-                    >
-                  </li>
-                  <li>
-                    <a href="dich-vu/van-tai-logistics/thue-xe/index.html"
-                      >Thuê Xe</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html"
-                      >Lái Xe Hộ</a
-                    >
-                  </li>
-                </ul>
-              </div>
-              <!-- Sửa chữa -->
-              <div class="footer-cat-item mb-2">
-                <a
-                  href="javascript:void(0)"
-                  class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#footer-sua-chua"
-                >
-                  <span>Sửa Chữa</span>
-                  <i
-                    class="fas fa-chevron-down opacity-50"
-                    style="font-size: 0.75rem"
-                  ></i>
-                </a>
-                <ul
-                  class="collapse show list-unstyled ps-3 mt-1 small"
-                  id="footer-sua-chua"
-                  data-bs-parent="#footerServices"
-                >
-                  <li>
-                    <a href="dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html"
-                      >Sửa Xe Lưu Động</a
-                    >
-                  </li>
-                  <li>
-                    <a href="dich-vu/sua-chua/tho-nha/index.html">Thợ Nhà</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-3">
-            <h5 class="h6">Hỗ Trợ</h5>
-            <ul class="list-unstyled small">
-              <li><a href="#">Trung tâm trợ giúp</a></li>
-              <li><a href="#">Chính sách bảo mật</a></li>
-              <li><a href="#">Điều khoản sử dụng</a></li>
-              <li><a href="#">Câu hỏi thường gặp</a></li>
-              <li><a href="#">Liên hệ</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="border-top pt-3 text-muted small">
-          <p class="mb-0" style="text-align: center">
-            © 2026 Dịch Vụ Quanh Ta. Đã đăng ký Bản quyền. Sản xuất tại ❤️ Việt
-            Nam
-          </p>
-          <!-- <div class="d-flex align-items-center gap-1">
-            <i data-lucide="globe" style="width: 14px"></i> Tiếng Việt
-          </div> -->
-        </div>
-      </div>
-    </footer>
-
-    <!-- Welcome Popup -->
-    <div class="modal fade" id="welcomeModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content welcome-modal text-center p-5 border-0">
-          <button
-            type="button"
-            class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-            data-bs-dismiss="modal"
-          ></button>
-
-          <h1 class="welcome-title">LAO ĐỘNG LÀ VINH QUANG</h1>
-
-          <p class="welcome-sub sub1">Ai cũng có việc làm</p>
-          <p class="welcome-sub sub2">Ai cũng được phục vụ giá rẻ</p>
         </div>
       </div>
     </div>
-    <script>
-      window.addEventListener("load", function () {
-        const STORAGE_KEY = "dvqt_welcome_modal_last_shown";
-        const today = new Date().toISOString().slice(0, 10);
-        const lastShownDate = localStorage.getItem(STORAGE_KEY);
+  </section>
 
-        if (lastShownDate === today) {
-          return;
-        }
+  <!-- Footer -->
+  <footer class="pt-5 pb-3">
+    <div class="container">
+      <div class="row g-4 mb-5" style="justify-content: space-between">
+        <div class="col-lg-4">
+          <div class="d-flex align-items-center mb-3">
+            <img style="width: 80px; height: 60px" src="public/asset/image/logo-dich-vu-quanh-ta.png" alt="Logo" />
+            <span class="fw-bold fs-4">Dịch Vụ <span class="text-cyan">Quanh Ta</span></span>
+          </div>
+          <p class="text-muted small mb-6">
+            Dịch vụ tiện ích trong đời sống của bạn. Chúng tôi cam kết mang
+            lại cuộc sống tiện nghi.
+          </p>
+          <div class="d-flex gap-2">
+            <a href="#" class="social-btn"><i class="fa-brands fa-facebook-f" style="font-size: 20px"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-instagram" style="font-size: 20px"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-twitter" style="font-size: 20px"></i></a>
+          </div>
+          <h5 class="h6 my-3">Tải Ứng Dụng</h5>
+          <div class="d-flex gap-2">
+            <a href="#" class="btn btn-primary d-flex align-items-center p-2 rounded-3 text-decoration-none"
+              style="flex: 1">
+              <i data-lucide="apple" class="me-2" style="width: 24px; height: 24px"></i>
+              <div class="text-start lh-1">
+                <small class="d-block text-white-50" style="font-size: 10px">Download on</small>
+                <span class="fw-bold text-white" style="font-size: 12px">App Store</span>
+              </div>
+            </a>
+            <a href="#" class="btn btn-dark d-flex align-items-center p-2 rounded-3 text-decoration-none"
+              style="flex: 1">
+              <i data-lucide="play" class="me-2" style="width: 24px; height: 24px; fill: white"></i>
+              <div class="text-start lh-1">
+                <small class="d-block text-white-50" style="font-size: 10px">Get it on</small>
+                <span class="fw-bold text-white" style="font-size: 12px">Google Play</span>
+              </div>
+            </a>
+          </div>
+        </div>
 
-        setTimeout(function () {
-          const modalElement = document.getElementById("welcomeModal");
-          if (!modalElement || typeof bootstrap === "undefined") {
-            return;
-          }
+        <div class="col-md-6 col-lg-3">
+          <h5 class="h6">Dịch Vụ</h5>
+          <div class="footer-services-accordion" id="footerServices">
+            <!-- Chăm sóc -->
+            <div class="footer-cat-item mb-2">
+              <a href="javascript:void(0)"
+                class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
+                data-bs-toggle="collapse" data-bs-target="#footer-cham-soc">
+                <span>Chăm Sóc</span>
+                <i class="fas fa-chevron-down opacity-50" style="font-size: 0.75rem"></i>
+              </a>
+              <ul class="collapse show list-unstyled ps-3 mt-1 small" id="footer-cham-soc"
+                data-bs-parent="#footerServices">
+                <li>
+                  <a href="dich-vu/cham-soc/me-va-be/dich-vu.html">Chăm Sóc Mẹ & Bé</a>
+                </li>
+                <li>
+                  <a href="dich-vu/cham-soc/nguoi-gia/dich-vu.html">Chăm Sóc Người Già</a>
+                </li>
+                <li>
+                  <a href="dich-vu/cham-soc/nguoi-benh/dich-vu.html">Chăm Sóc Bệnh Nhân</a>
+                </li>
+              </ul>
+            </div>
+            <!-- Vệ sinh -->
+            <div class="footer-cat-item mb-2">
+              <a href="javascript:void(0)"
+                class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
+                data-bs-toggle="collapse" data-bs-target="#footer-ve-sinh">
+                <span>Vệ Sinh</span>
+                <i class="fas fa-chevron-down opacity-50" style="font-size: 0.75rem"></i>
+              </a>
+              <ul class="collapse show list-unstyled ps-3 mt-1 small" id="footer-ve-sinh"
+                data-bs-parent="#footerServices">
+                <li>
+                  <a href="dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html">Dịch Vụ Vệ Sinh</a>
+                </li>
+              </ul>
+            </div>
+            <!-- Sân vườn -->
+            <div class="footer-cat-item mb-2">
+              <a href="javascript:void(0)"
+                class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
+                data-bs-toggle="collapse" data-bs-target="#footer-san-vuon">
+                <span>Sân Vườn & Cây Cảnh</span>
+                <i class="fas fa-chevron-down opacity-50" style="font-size: 0.75rem"></i>
+              </a>
+              <ul class="collapse show list-unstyled ps-3 mt-1 small" id="footer-san-vuon"
+                data-bs-parent="#footerServices">
+                <li>
+                  <a href="dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html">Chăm Sóc Vườn Nhà</a>
+                </li>
+              </ul>
+            </div>
+            <!-- Giặt ủi -->
+            <div class="footer-cat-item mb-2">
+              <a href="javascript:void(0)"
+                class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
+                data-bs-toggle="collapse" data-bs-target="#footer-giat-ui">
+                <span>Giặt Ủi</span>
+                <i class="fas fa-chevron-down opacity-50" style="font-size: 0.75rem"></i>
+              </a>
+              <ul class="collapse show list-unstyled ps-3 mt-1 small" id="footer-giat-ui"
+                data-bs-parent="#footerServices">
+                <li>
+                  <a href="dich-vu/giat-ui/giat-ui-nhanh/dich-vu.html">Giặt Ủi Nhanh</a>
+                </li>
+              </ul>
+            </div>
+            <!-- Vận tải logistics -->
+            <div class="footer-cat-item mb-2">
+              <a href="javascript:void(0)"
+                class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
+                data-bs-toggle="collapse" data-bs-target="#footer-logistics">
+                <span>Vận Tải & Logistics</span>
+                <i class="fas fa-chevron-down opacity-50" style="font-size: 0.75rem"></i>
+              </a>
+              <ul class="collapse show list-unstyled ps-3 mt-1 small" id="footer-logistics"
+                data-bs-parent="#footerServices">
+                <li>
+                  <a href="dich-vu/van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html">Giao Hàng Nhanh</a>
+                </li>
+                <li>
+                  <a href="dich-vu/van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html">Dịch Vụ Chuyển Dọn</a>
+                </li>
+                <li>
+                  <a href="dich-vu/van-tai-logistics/thue-xe/dich-vu.html">Thuê Xe</a>
+                </li>
+                <li>
+                  <a href="dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html">Lái Xe Hộ</a>
+                </li>
+              </ul>
+            </div>
+            <!-- Sửa chữa -->
+            <div class="footer-cat-item mb-2">
+              <a href="javascript:void(0)"
+                class="footer-cat-link d-flex justify-content-between align-items-center text-decoration-none"
+                data-bs-toggle="collapse" data-bs-target="#footer-sua-chua">
+                <span>Sửa Chữa</span>
+                <i class="fas fa-chevron-down opacity-50" style="font-size: 0.75rem"></i>
+              </a>
+              <ul class="collapse show list-unstyled ps-3 mt-1 small" id="footer-sua-chua"
+                data-bs-parent="#footerServices">
+                <li>
+                  <a href="dich-vu/sua-chua/sua-xe-luu-dong/dich-vu.html">Sửa Xe Lưu Động</a>
+                </li>
+                <li>
+                  <a href="dich-vu/sua-chua/tho-nha/dich-vu.html">Thợ Nhà</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
-          const modal = new bootstrap.Modal(modalElement);
-          modal.show();
-          localStorage.setItem(STORAGE_KEY, today);
-        }, 300);
-      });
-    </script>
-    <script>
-      function loadPage(page, triggerEl = null) {
-        const container = document.getElementById("bookingForm");
-        if (!container) {
-          console.error("Không tìm thấy #bookingForm");
-          return;
-        }
+        <div class="col-md-6 col-lg-3">
+          <h5 class="h6">Hỗ Trợ</h5>
+          <ul class="list-unstyled small">
+            <li><a href="#">Trung tâm trợ giúp</a></li>
+            <li><a href="#">Chính sách bảo mật</a></li>
+            <li><a href="#">Điều khoản sử dụng</a></li>
+            <li><a href="#">Câu hỏi thường gặp</a></li>
+            <li><a href="#">Liên hệ</a></li>
+          </ul>
+        </div>
+      </div>
 
-        const currentIframe = container.querySelector("iframe");
-        if (
-          currentIframe &&
-          currentIframe.dataset.loadedPage &&
-          currentIframe.dataset.loadedPage === page
-        ) {
-          currentIframe.src = "about:blank";
-          container.innerHTML = "";
-          if (triggerEl) {
-            triggerEl.textContent = "Đặt lịch";
-          }
-          return;
-        }
+      <div class="border-top pt-3 text-muted small">
+        <p class="mb-0" style="text-align: center">
+          © 2026 Dịch Vụ Quanh Ta. Đã đăng ký Bản quyền. Sản xuất tại ❤️ Việt
+          Nam
+        </p>
+        <!-- <div class="d-flex align-items-center gap-1">
+            <i data-lucide="globe" style="width: 14px"></i> Tiếng Việt
+          </div> -->
+      </div>
+    </div>
+  </footer>
 
-        if (currentIframe) {
-          currentIframe.src = "about:blank";
-        }
+  <!-- Welcome Popup -->
+  <div class="modal fade" id="welcomeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content welcome-modal text-center p-5 border-0">
+        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+          data-bs-dismiss="modal"></button>
 
-        const iframe = document.createElement("iframe");
-        iframe.src = page;
-        iframe.dataset.loadedPage = page;
-        iframe.title = "Đặt lịch Giặt Ủi Nhanh";
-        iframe.loading = "lazy";
-        iframe.style.width = "100%";
-        iframe.style.minHeight = "1100px";
-        iframe.style.border = "0";
-        iframe.style.borderRadius = "0px";
-        iframe.style.background = "#fff";
+        <h1 class="welcome-title">LAO ĐỘNG LÀ VINH QUANG</h1>
 
-        iframe.addEventListener("error", () => {
-          container.innerHTML = "Lỗi load trang";
-          if (triggerEl) {
-            triggerEl.textContent = "Đặt lịch";
-          }
-        });
+        <p class="welcome-sub sub1">Ai cũng có việc làm</p>
+        <p class="welcome-sub sub2">Ai cũng được phục vụ giá rẻ</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.addEventListener("load", function () {
+      const STORAGE_KEY = "dvqt_welcome_modal_last_shown";
+      const today = new Date().toISOString().slice(0, 10);
+      const lastShownDate = localStorage.getItem(STORAGE_KEY);
 
-        container.innerHTML = "";
-        container.appendChild(iframe);
-        if (triggerEl) {
-          triggerEl.textContent = "Tắt đặt lịch";
-        }
-        container.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (lastShownDate === today) {
+        return;
       }
-    </script>
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="public/asset/js/style.js"></script>
-    <script src="public/asset/js/dvqt-krud.js"></script>
-    <script src="public/asset/js/dvqt-app.js"></script>
-    <script>
-      /**
-       * home-auth.js logic tích hợp trực tiếp vào index.html
-       */
-      (function () {
-        const loadingEl = document.getElementById("auth-loading");
-        const guestEl = document.getElementById("auth-guest");
-        const userEl = document.getElementById("auth-user");
 
-        async function initHomeAuth() {
-          try {
-            const data = await window.DVQTApp.checkSession();
-            if (loadingEl) loadingEl.style.display = "none";
+      setTimeout(function () {
+        const modalElement = document.getElementById("welcomeModal");
+        if (!modalElement || typeof bootstrap === "undefined") {
+          return;
+        }
 
-            if (data && data.logged_in) {
-              if (userEl) userEl.style.display = "";
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        localStorage.setItem(STORAGE_KEY, today);
+      }, 300);
+    });
+  </script>
+  <script>
+    function loadPage(page, triggerEl = null) {
+      const container = document.getElementById("bookingForm");
+      if (!container) {
+        console.error("Không tìm thấy #bookingForm");
+        return;
+      }
 
-              const name = data.name || "Người dùng";
-              const initial = name.charAt(0).toUpperCase();
+      const currentIframe = container.querySelector("iframe");
+      if (
+        currentIframe &&
+        currentIframe.dataset.loadedPage &&
+        currentIframe.dataset.loadedPage === page
+      ) {
+        currentIframe.src = "about:blank";
+        container.innerHTML = "";
+        if (triggerEl) {
+          triggerEl.textContent = "Đặt lịch";
+        }
+        return;
+      }
 
-              const nameEl = document.getElementById("auth-name");
-              const nameMb = document.getElementById("auth-name-mobile");
-              const avatEl = document.getElementById("auth-avatar");
+      if (currentIframe) {
+        currentIframe.src = "about:blank";
+      }
 
-              if (nameEl) nameEl.textContent = name;
-              if (nameMb) nameMb.textContent = name;
+      const iframe = document.createElement("iframe");
+      iframe.src = page;
+      iframe.dataset.loadedPage = page;
+      iframe.title = "Đặt lịch Giặt Ủi Nhanh";
+      iframe.loading = "lazy";
+      iframe.style.width = "100%";
+      iframe.style.minHeight = "1100px";
+      iframe.style.border = "0";
+      iframe.style.borderRadius = "0px";
+      iframe.style.background = "#fff";
 
-              if (avatEl) {
-                const avatarLink = data.link_avatar;
-                if (avatarLink) {
-                  if (avatarLink.startsWith("http")) {
-                    avatEl.innerHTML = `<img src="${avatarLink}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                  } else {
-                    // Cùng kỹ thuật Zoom & Crop để giấu thanh công cụ Google Drive
-                    avatEl.innerHTML = `
+      iframe.addEventListener("error", () => {
+        container.innerHTML = "Lỗi load trang";
+        if (triggerEl) {
+          triggerEl.textContent = "Đặt lịch";
+        }
+      });
+
+      container.innerHTML = "";
+      container.appendChild(iframe);
+      if (triggerEl) {
+        triggerEl.textContent = "Tắt đặt lịch";
+      }
+      container.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  </script>
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="public/asset/js/style.js"></script>
+  <script src="public/asset/js/dvqt-krud.js"></script>
+  <script src="public/asset/js/dvqt-app.js"></script>
+  <script>
+    /**
+     * home-auth.js logic tích hợp trực tiếp vào index.html
+     */
+    (function () {
+      const loadingEl = document.getElementById("auth-loading");
+      const guestEl = document.getElementById("auth-guest");
+      const userEl = document.getElementById("auth-user");
+
+      async function initHomeAuth() {
+        try {
+          const data = await window.DVQTApp.checkSession();
+          if (loadingEl) loadingEl.style.display = "none";
+
+          if (data && data.logged_in) {
+            if (userEl) userEl.style.display = "";
+
+            const name = data.name || "Người dùng";
+            const initial = name.charAt(0).toUpperCase();
+
+            const nameEl = document.getElementById("auth-name");
+            const nameMb = document.getElementById("auth-name-mobile");
+            const avatEl = document.getElementById("auth-avatar");
+
+            if (nameEl) nameEl.textContent = name;
+            if (nameMb) nameMb.textContent = name;
+
+            if (avatEl) {
+              const avatarLink = data.link_avatar;
+              if (avatarLink) {
+                if (avatarLink.startsWith("http")) {
+                  avatEl.innerHTML = `<img src="${avatarLink}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                } else {
+                  // Cùng kỹ thuật Zoom & Crop để giấu thanh công cụ Google Drive
+                  avatEl.innerHTML = `
                       <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
                         <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
                                 frameborder="0" scrolling="no"
                                 style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
                       </div>`;
-                  }
-                } else {
-                  avatEl.textContent = initial;
                 }
+              } else {
+                avatEl.textContent = initial;
               }
-
-              // Xử lý đăng xuất
-              const logoutLink = document.getElementById("auth-logout-link");
-              if (logoutLink) {
-                logoutLink.onclick = async function (e) {
-                  e.preventDefault();
-                  const success = await window.DVQTApp.logout();
-                  if (success) {
-                    window.location.reload();
-                  }
-                };
-              }
-            } else {
-              if (guestEl) guestEl.style.display = "";
             }
-          } catch (e) {
-            if (loadingEl) loadingEl.style.display = "none";
+
+            // Xử lý đăng xuất
+            const logoutLink = document.getElementById("auth-logout-link");
+            if (logoutLink) {
+              logoutLink.onclick = async function (e) {
+                e.preventDefault();
+                const success = await window.DVQTApp.logout();
+                if (success) {
+                  window.location.reload();
+                }
+              };
+            }
+          } else {
             if (guestEl) guestEl.style.display = "";
           }
+        } catch (e) {
+          if (loadingEl) loadingEl.style.display = "none";
+          if (guestEl) guestEl.style.display = "";
         }
+      }
 
-        document.addEventListener("DOMContentLoaded", initHomeAuth);
-      })();
-      // Handle multi-level dropdowns
-      (function () {
-        document
-          .querySelectorAll(".dropdown-submenu .dropdown-toggle")
-          .forEach(function (element) {
-            element.addEventListener("click", function (e) {
-              const nextEl = this.nextElementSibling;
-              if (nextEl && nextEl.classList.contains("dropdown-menu")) {
-                e.preventDefault();
-                e.stopPropagation();
+      document.addEventListener("DOMContentLoaded", initHomeAuth);
+    })();
+    // Handle multi-level dropdowns
+    (function () {
+      document
+        .querySelectorAll(".dropdown-submenu .dropdown-toggle")
+        .forEach(function (element) {
+          element.addEventListener("click", function (e) {
+            const nextEl = this.nextElementSibling;
+            if (nextEl && nextEl.classList.contains("dropdown-menu")) {
+              e.preventDefault();
+              e.stopPropagation();
 
-                // Toggle 'show' class on the parent li
-                const parentLi = this.closest(".dropdown-submenu");
+              // Toggle 'show' class on the parent li
+              const parentLi = this.closest(".dropdown-submenu");
 
-                // Close other submenus in the same menu level
-                const siblingSubmenus =
-                  parentLi.parentElement.querySelectorAll(".dropdown-submenu");
-                siblingSubmenus.forEach((sub) => {
-                  if (sub !== parentLi) sub.classList.remove("show");
-                });
+              // Close other submenus in the same menu level
+              const siblingSubmenus =
+                parentLi.parentElement.querySelectorAll(".dropdown-submenu");
+              siblingSubmenus.forEach((sub) => {
+                if (sub !== parentLi) sub.classList.remove("show");
+              });
 
-                parentLi.classList.toggle("show");
-              }
-            });
+              parentLi.classList.toggle("show");
+            }
           });
-
-        // Close submenus when the main dropdown is closed
-        document.addEventListener("hidden.bs.dropdown", function (e) {
-          const submenus = e.target.querySelectorAll(".dropdown-submenu");
-          submenus.forEach((sub) => sub.classList.remove("show"));
         });
-      })();
-    </script>
-  </body>
+
+      // Close submenus when the main dropdown is closed
+      document.addEventListener("hidden.bs.dropdown", function (e) {
+        const submenus = e.target.querySelectorAll(".dropdown-submenu");
+        submenus.forEach((sub) => sub.classList.remove("show"));
+      });
+    })();
+  </script>
+</body>
+
 </html>
