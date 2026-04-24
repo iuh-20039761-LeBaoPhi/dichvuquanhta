@@ -554,11 +554,11 @@ function loadArticle(a) {
     document.title = 'Dịch Vụ Quanh Ta - Thợ Nhà - ' + a.title;
     document.querySelector('meta[name="description"]').content = a.description;
     document.querySelector('meta[name="keywords"]').content = (a.tags || []).join(', ') + ', thợ nhà, sửa chữa nhà tphcm';
-    document.getElementById('canonicalUrl').href = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/chi-tiet-cam-nang.html?slug=' + a.slug;
+    document.getElementById('canonicalUrl').href = 'https://dichvuquanhta.vn/dich-vu/sua-chua/tho-nha/chi-tiet-cam-nang.html?slug=' + a.slug;
     document.getElementById('ogTitle').content = a.title;
     document.getElementById('ogDesc').content = a.description;
     // og:image requires absolute URL for some parsers, but here we use relative to root domain
-    const absoluteBase = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/';
+    const absoluteBase = 'https://dichvuquanhta.vn/dich-vu/sua-chua/tho-nha/';
     document.getElementById('ogImage').content = absoluteBase + a.image;
 
     // JSON-LD Article Schema
@@ -567,13 +567,13 @@ function loadArticle(a) {
         "@type": "Article",
         "headline": a.title,
         "description": a.description,
-        "image": 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/' + a.image,
+        "image": 'https://dichvuquanhta.vn/dich-vu/sua-chua/tho-nha/' + a.image,
         "datePublished": a.date,
         "author": { "@type": "Organization", "name": "Thợ Nhà" },
         "publisher": {
             "@type": "Organization",
             "name": "Thợ Nhà – GlobalCare",
-            "logo": { "@type": "ImageObject", "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/image/tho-nha-logo-thuong-hieu-cropped.jpg" }
+            "logo": { "@type": "ImageObject", "url": "https://dichvuquanhta.vn/dich-vu/sua-chua/tho-nha/image/tho-nha-logo-thuong-hieu-cropped.jpg" }
         }
     };
     const schemaEl = document.createElement('script');

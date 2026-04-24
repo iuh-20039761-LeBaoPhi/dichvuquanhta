@@ -64,6 +64,61 @@
     </div>
 </div>
 
+<!-- Modal Xem chi tiết xe (Admin) -->
+<div class="modal fade" id="viewCarModalAdmin" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-light p-4"  style="border-radius: 20px 20px 0 0;">
+                <h5 class="fw-bold mb-0" id="vTitle">Thông tin chi tiết xe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-5">
+                        <img id="vMainImg" src="" class="img-fluid rounded-4 shadow-sm w-100" style="height:220px; object-fit:cover;">
+                        <div class="row g-2 mt-2" id="vGallery"></div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless align-middle mb-0">
+                                <tbody>
+                                    <tr><td class="text-muted py-1" style="width: 130px;">Tên xe:</td><td class="fw-bold py-1" id="vName"></td></tr>
+                                    <tr><td class="text-muted py-1">Hãng & Dòng:</td><td class="py-1"><span id="vBrand"></span> · <span id="vModel"></span></td></tr>
+                                    <tr><td class="text-muted py-1">Năm sản xuất:</td><td id="vYear"></td></tr>
+                                    <tr><td class="text-muted py-1">Biển số:</td><td class="fw-bold text-primary py-1" id="vPlate"></td></tr>
+                                    <tr><td class="text-muted py-1">Loại & Ghế:</td><td><span id="vType"></span> · <span id="vSeats"></span> chỗ</td></tr>
+                                    <tr><td class="text-muted py-1">Hộp số:</td><td id="vTrans"></td></tr>
+                                    <tr><td class="text-muted py-1">Nhiên liệu:</td><td id="vFuel"></td></tr>
+                                    <tr><td class="text-muted py-1">Số ODO:</td><td><span id="vOdo"></span> km</td></tr>
+                                    <tr><td class="text-muted py-1">Màu sắc:</td><td id="vColor"></td></tr>
+                                    <tr><td class="text-muted py-1">Số khung:</td><td class="small fw-bold" id="vFrame"></td></tr>
+                                    <tr><td class="text-muted py-1">Số máy:</td><td class="small fw-bold" id="vEngine"></td></tr>
+                                    <tr><td class="text-muted py-1">Giá thuê:</td><td class="fw-bold text-danger py-1"><span id="vPrice"></span> <small>đ/ngày</small></td></tr>
+                                    <tr><td class="text-muted py-1">Địa chỉ xe:</td><td class="small py-1 text-wrap" id="vAddr"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <h6 class="fw-bold small text-muted mb-2">Tiện nghi:</h6>
+                            <div id="vFeatures" class="d-flex flex-wrap gap-1"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Khối mô tả rộng ở dưới -->
+                <div class="mt-4 p-3 bg-light rounded-3">
+                    <h6 class="fw-bold small text-uppercase text-muted mb-2">Mô tả chi tiết:</h6>
+                    <div id="vDesc" class="small text-dark overflow-hidden" style="max-height: 100px; transition: 0.3s;"></div>
+                    <button class="btn btn-link btn-sm p-0 text-primary d-none" id="vDescBtn" onclick="toggleAdminText('vDesc')">Xem thêm</button>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
+                <div id="vActions"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 (function() {
     'use strict';
@@ -149,7 +204,7 @@
                 <td class="ps-4">
                     <div class="d-flex align-items-center gap-3">
                         <div class="bg-light rounded overflow-hidden shadow-sm" style="width:50px; height:50px;">
-                            <img src="../public/assets/images/cars/${c.anhngoaitruoc}" onerror="this.src='https://placehold.co/100x100?text=Auto'" class="w-100 h-100 object-fit-cover">
+                            <img src="${resolveImg(c.anhngoaitruoc)}" onerror="this.src='../public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'" class="w-100 h-100 object-fit-cover">
                         </div>
                         <div><div class="fw-bold text-dark">${c.tenxe}</div><div class="text-muted small">ID: ${c.id}</div></div>
                     </div>
@@ -179,7 +234,7 @@
                     <div class="mobile-card shadow-sm">
                         <div class="mobile-card-head">
                             <div class="bg-light rounded overflow-hidden" style="width:40px; height:40px;">
-                                <img src="../public/assets/images/cars/${c.anhngoaitruoc}" onerror="this.src='https://placehold.co/100x100?text=Car'" class="w-100 h-100 object-fit-cover">
+                                <img src="${resolveImg(c.anhngoaitruoc)}" onerror="this.src='../public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'" class="w-100 h-100 object-fit-cover">
                             </div>
                             <h4 class="mobile-title">${c.tenxe}</h4>
                             <span class="badge ${statusCls}">${st}</span>
@@ -219,9 +274,73 @@
     window.approveCarAdmin = async (id) => { if(await ThueXeAdmin.updateStatus(TABLE, id, 'available', 'Đã duyệt hiện xe!')) loadAllCars(); };
     window.rejectCarAdmin = async (id) => { if(await ThueXeAdmin.rejectCar(id)) loadAllCars(); };
 
+    function resolveImg(val) {
+        if (!val) return '../public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg';
+        if (val.startsWith('http')) return val;
+        if (val.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${val}`;
+        return '../public/assets/images/cars/' + val;
+    }
+
     window.viewCarDetail = function(id) {
-        // Link sang trang chi tiết xe ngoài public để xem
-        window.open('../public/chi-tiet-xe.html?id=' + id, '_blank');
+        const car = allCarsRaw.find(c => c.id == id);
+        if(!car) return;
+
+        // Reset collapse
+        const el = document.getElementById('vDesc');
+        if(el){el.style.maxHeight='100px'; el.classList.remove('expanded');}
+
+        document.getElementById('vTitle').textContent = 'Kiểm tra xe: ' + car.tenxe;
+        document.getElementById('vName').textContent = car.tenxe;
+        document.getElementById('vBrand').textContent = car.hangxe || 'N/A';
+        document.getElementById('vModel').textContent = car.dongxe || 'N/A';
+        document.getElementById('vYear').textContent = car.namsanxuat || 'N/A';
+        document.getElementById('vPlate').textContent = car.bienso || 'N/A';
+        document.getElementById('vPrice').textContent = Number(car.giathue || 0).toLocaleString();
+        document.getElementById('vType').textContent = car.loaixe || 'Du lịch';
+        document.getElementById('vSeats').textContent = car.socho || '4';
+        document.getElementById('vTrans').textContent = car.hopso || 'N/A';
+        document.getElementById('vFuel').textContent = car.nhienlieu || 'N/A';
+        document.getElementById('vOdo').textContent = Number(car.odo || 0).toLocaleString();
+        document.getElementById('vColor').textContent = car.mausac || 'N/A';
+        document.getElementById('vFrame').textContent = car.sokhung || 'N/A';
+        document.getElementById('vEngine').textContent = car.somay || 'N/A';
+        document.getElementById('vAddr').textContent = car.diachi_xe || 'N/A';
+        document.getElementById('vMainImg').src = resolveImg(car.anhdaidien || car.anhngoaitruoc);
+
+        const setLongText = (id, txt, btnId) => {
+            const el = document.getElementById(id); const btn = document.getElementById(btnId);
+            el.textContent = txt || 'Không có';
+            if (txt && txt.length > 130) { btn.classList.remove('d-none'); btn.textContent = 'Xem thêm'; } else { btn.classList.add('d-none'); }
+        };
+        setLongText('vDesc', car.mota, 'vDescBtn');
+
+        // Tiện nghi (Amenities)
+        const feats = (car.features || '').split(',').filter(x => x.trim());
+        document.getElementById('vFeatures').innerHTML = feats.map(f => `<span class="badge bg-white text-primary border fw-normal p-1 px-2 mb-1">${f.trim()}</span>`).join('') || '<small class="text-muted">Mặc định</small>';
+
+        // Gallery
+        const galleryFields = ['anhngoaitruoc', 'anhsau', 'anhtrai', 'anhphai', 'anhnoithat'];
+        let gHtml = '';
+        galleryFields.forEach(f => {
+            if(car[f]) {
+                gHtml += `<div class="col-4"><img src="${resolveImg(car[f])}" class="img-fluid rounded border shadow-sm" style="height:45px; width:100%; object-fit:cover; cursor:pointer;" onclick="document.getElementById('vMainImg').src=this.src"></div>`;
+            }
+        });
+        document.getElementById('vGallery').innerHTML = gHtml;
+
+        // Hành động nhanh
+        const isApp = ['available', 'active', 'approved'].includes(String(car.trangthai).toLowerCase());
+        document.getElementById('vActions').innerHTML = isApp ? '' : 
+            `<button class="btn btn-success rounded-pill px-4" onclick="approveCarAdmin(${car.id}); bootstrap.Modal.getInstance(document.getElementById('viewCarModalAdmin')).hide();">Phê duyệt ngay</button>`;
+
+        const modal = new bootstrap.Modal(document.getElementById('viewCarModalAdmin'));
+        modal.show();
+    };
+
+    window.toggleAdminText = (id) => {
+        const el = document.getElementById(id); const btn = document.getElementById(id + 'Btn');
+        if (el.classList.contains('expanded')) { el.style.maxHeight = '50px'; el.classList.remove('expanded'); btn.textContent = 'Xem thêm'; }
+        else { el.style.maxHeight = '1000px'; el.classList.add('expanded'); btn.textContent = 'Thu gọn'; }
     };
 
     loadAllCars();

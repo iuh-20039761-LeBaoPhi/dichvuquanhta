@@ -162,12 +162,12 @@
       ),
       orderLinks: Array.from(
         document.querySelectorAll(
-          '.nav-menu .auth-user-dropdown a[href*="khachhang/danh-sach-don-hang.html"]',
+          '.nav-menu .auth-user-dropdown a[href*="nguoidung/danh-sach-don-hang.html"]',
         ),
       ),
       dashboardLinks: Array.from(
         document.querySelectorAll(
-          '.nav-menu .auth-user-dropdown a[href*="nhacungcap/danh-sach-don-hang.html"]',
+          '.nav-menu .auth-user-dropdown a[href*="nguoidung/danh-sach-don-nhan.html"]',
         ),
       ),
     };
@@ -261,7 +261,7 @@
 
   function applyAccountMenuByType(nodes, accountType) {
     var isProvider = accountType === "provider";
-    setMenuItemVisibility(nodes.orderLinks, !isProvider);
+    setMenuItemVisibility(nodes.orderLinks, true);
     setMenuItemVisibility(nodes.dashboardLinks, isProvider);
   }
 

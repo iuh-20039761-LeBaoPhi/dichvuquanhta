@@ -57,12 +57,7 @@ window.BookingAuthHelper = (function() {
         if (user) {
             console.log('[BookingAuth] Tài khoản đã tồn tại cho:', normalizedPhone, '-', name);
 
-            // Kiểm tra nếu là nhà cung cấp (id_dichvu chứa '8')
-            const idDichvu = String(user.id_dichvu || "").trim();
-            const serviceIds = idDichvu.split(",").map((s) => s.trim());
-            if (serviceIds.includes("8")) {
-                throw new Error("Tài khoản nhà cung cấp không được phép đặt lịch dịch vụ này.");
-            }
+
 
             // Kiểm tra trạng thái tài khoản (nếu trangthai = 1 thì không cho đăng nhập)
             if (String(user.trangthai) === '1') {

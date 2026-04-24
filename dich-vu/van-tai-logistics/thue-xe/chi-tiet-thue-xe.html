@@ -917,7 +917,7 @@
                     if(_reviewMediaStore.length > 0) {
                         for(const m of _reviewMediaStore) {
                             try {
-                                const up = await DVQTApp.uploadFile(m.file);
+                                const up = await DVQTApp.uploadFile(m.file, { folderKey: 30 });
                                 if(up && up.success) driveIds.push(up.fileId);
                             } catch(err) { console.error('Upload media review failed:', err); }
                         }
@@ -1002,14 +1002,10 @@
 
             function goBackToDashboard() {
                 const role = window._currentSessionRole;
-                if (role === 'provider') {
-                    window.location.href = 'nhacungcap/trang-ca-nhan.html';
-                } else if (role === 'customer') {
-                    window.location.href = 'khachhang/trang-ca-nhan.html';
-                } else if (role === 'admin') {
+                if (role === 'admin') {
                     window.location.href = 'admin/quan-tri.html';
                 } else {
-                    window.history.back();
+                    window.location.href = 'nguoidung/trang-ca-nhan.html';
                 }
             }
 

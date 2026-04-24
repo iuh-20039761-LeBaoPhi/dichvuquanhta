@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<script src="/ga.js"></script>
+    <script src="/ga.js"></script>
+    <script type="application/ld+json">
+    {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Thợ nhà (điện nước, sửa chữa)",
+    "url": "https://dichvuquanhta.vn/dich-vu/sua-chua/tho-nha/dich-vu.html",
+    "serviceType": "Sửa chữa",
+    "provider": {
+        "@type": "Organization",
+        "name": "Dịch Vụ Quanh Ta"
+    },
+    "areaServed": "Vietnam"
+    }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dịch Vụ Quanh Ta - Thợ Nhà - Dịch Vụ</title>
-    <meta name="description" content="Dịch Vụ Quanh Ta cung cấp đa dạng dịch vụ sửa chữa nhà uy tín tại TP.HCM: máy lạnh, máy giặt, điện nước, vệ sinh, đồ gia dụng, cải tạo nội thất.">
-    <meta property="og:description" content="Dịch Vụ Quanh Ta cung cấp đa dạng dịch vụ sửa chữa nhà uy tín tại TP.HCM: máy lạnh, máy giặt, điện nước, vệ sinh, đồ gia dụng, cải tạo nội thất.">
+    <meta name="description"
+        content="Dịch Vụ Quanh Ta cung cấp đa dạng dịch vụ sửa chữa nhà uy tín tại TP.HCM: máy lạnh, máy giặt, điện nước, vệ sinh, đồ gia dụng, cải tạo nội thất.">
+    <meta property="og:description"
+        content="Dịch Vụ Quanh Ta cung cấp đa dạng dịch vụ sửa chữa nhà uy tín tại TP.HCM: máy lạnh, máy giặt, điện nước, vệ sinh, đồ gia dụng, cải tạo nội thất.">
     <link rel="icon" type="image/png" href="public/assets/images/tho-nha-logo-thuong-hieu-cropped.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,22 +53,54 @@
             position: relative;
             overflow: hidden;
         }
+
         .dich-vu-hero::before {
             content: '';
             position: absolute;
             inset: 0;
             background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
-        .dich-vu-hero h1 { color: #fff; font-weight: 800; font-size: 2.5rem; position: relative; }
-        .dich-vu-hero p { color: rgba(255,255,255,0.85); font-size: 1.1rem; position: relative; }
-        .dich-vu-hero .breadcrumb { background: none; justify-content: center; }
-        .dich-vu-hero .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
-        .dich-vu-hero .breadcrumb-item.active { color: #fff; }
-        .dich-vu-hero .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
-        @media (max-width: 768px) { .dich-vu-hero h1 { font-size: 1.8rem; } }
+
+        .dich-vu-hero h1 {
+            color: #fff;
+            font-weight: 800;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .dich-vu-hero p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .dich-vu-hero .breadcrumb {
+            background: none;
+            justify-content: center;
+        }
+
+        .dich-vu-hero .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .dich-vu-hero .breadcrumb-item.active {
+            color: #fff;
+        }
+
+        .dich-vu-hero .breadcrumb-item+.breadcrumb-item::before {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .dich-vu-hero h1 {
+                font-size: 1.8rem;
+            }
+        }
     </style>
 
 </head>
+
 <body>
 
     <!-- Header -->
@@ -85,14 +134,16 @@
                 <div class="col-lg-4 col-md-6 service-item" data-category="Sửa máy lạnh">
                     <div class="service-card" data-service-id="1">
                         <div class="service-image">
-                            <img src="public/assets/images/tho-nha-dich-vu-sua-may-lanh-gia-dinh.jpg" alt="Sửa Máy Lạnh">
+                            <img src="public/assets/images/tho-nha-dich-vu-sua-may-lanh-gia-dinh.jpg"
+                                alt="Sửa Máy Lạnh">
                             <div class="service-image-overlay"></div>
                             <div class="service-icon"><i class="fas fa-wind"></i></div>
                         </div>
                         <div class="service-content">
                             <h3 class="service-title">Sửa Máy Lạnh</h3>
                             <p class="service-description">
-                                Sửa chữa, vệ sinh, bảo dưỡng máy lạnh các loại. Thay linh kiện chính hãng, nạp gas R410A, R32.
+                                Sửa chữa, vệ sinh, bảo dưỡng máy lạnh các loại. Thay linh kiện chính hãng, nạp gas
+                                R410A, R32.
                             </p>
                             <div class="service-card-actions">
                                 <button class="btn btn-gradient booking-btn" data-service-name="Sửa máy lạnh">
@@ -110,14 +161,16 @@
                 <div class="col-lg-4 col-md-6 service-item" data-category="Sửa máy giặt">
                     <div class="service-card" data-service-id="2">
                         <div class="service-image">
-                            <img src="public/assets/images/tho-nha-dich-vu-sua-may-giat-chuyen-nghiep.jpg" alt="Sửa Máy Giặt">
+                            <img src="public/assets/images/tho-nha-dich-vu-sua-may-giat-chuyen-nghiep.jpg"
+                                alt="Sửa Máy Giặt">
                             <div class="service-image-overlay"></div>
                             <div class="service-icon"><i class="fas fa-tshirt"></i></div>
                         </div>
                         <div class="service-content">
                             <h3 class="service-title">Sửa Máy Giặt</h3>
                             <p class="service-description">
-                                Sửa máy giặt cửa trên, cửa ngang, máy giặt sấy. Thay motor, board mạch, cảm biến chính hãng.
+                                Sửa máy giặt cửa trên, cửa ngang, máy giặt sấy. Thay motor, board mạch, cảm biến chính
+                                hãng.
                             </p>
                             <div class="service-card-actions">
                                 <button class="btn btn-gradient booking-btn" data-service-name="Sửa máy giặt">
@@ -135,7 +188,8 @@
                 <div class="col-lg-4 col-md-6 service-item" data-category="Nhà vệ sinh">
                     <div class="service-card" data-service-id="3">
                         <div class="service-image">
-                            <img src="public/assets/images/tho-nha-dich-vu-nha-ve-sinh-thong-tac-chong-tham.jpg" alt="Nhà vệ sinh">
+                            <img src="public/assets/images/tho-nha-dich-vu-nha-ve-sinh-thong-tac-chong-tham.jpg"
+                                alt="Nhà vệ sinh">
                             <div class="service-image-overlay"></div>
                             <div class="service-icon"><i class="fas fa-droplet"></i></div>
                         </div>
@@ -160,7 +214,8 @@
                 <div class="col-lg-4 col-md-6 service-item" data-category="Điện nước">
                     <div class="service-card" data-service-id="4">
                         <div class="service-image">
-                            <img src="public/assets/images/tho-nha-dich-vu-sua-dien-nuoc-gia-dinh.jpg" alt="Sửa Điện - Nước">
+                            <img src="public/assets/images/tho-nha-dich-vu-sua-dien-nuoc-gia-dinh.jpg"
+                                alt="Sửa Điện - Nước">
                             <div class="service-image-overlay"></div>
                             <div class="service-icon"><i class="fas fa-bolt"></i></div>
                         </div>
@@ -192,7 +247,8 @@
                         <div class="service-content">
                             <h3 class="service-title">Sửa Tủ Lạnh</h3>
                             <p class="service-description">
-                                Sửa chữa tủ lạnh không lạnh, rò gas, vệ sinh dàn lạnh, thay ron cửa. Bảo hành chính hãng.
+                                Sửa chữa tủ lạnh không lạnh, rò gas, vệ sinh dàn lạnh, thay ron cửa. Bảo hành chính
+                                hãng.
                             </p>
                             <div class="service-card-actions">
                                 <button class="btn btn-gradient booking-btn" data-service-name="Sửa tủ lạnh">
@@ -309,14 +365,10 @@
                 <div class="modal-body">
                     <form id="viewOrderForm">
                         <div class="input-group">
-                            <input
-                                type="text"
-                                id="orderPhone"
-                                class="form-control"
-                                placeholder="Nhập số điện thoại đặt lịch"
-                                required
-                            >
-                            <button type="submit" class="btn btn-gradient" style="border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 12px 24px;">
+                            <input type="text" id="orderPhone" class="form-control"
+                                placeholder="Nhập số điện thoại đặt lịch" required>
+                            <button type="submit" class="btn btn-gradient"
+                                style="border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 12px 24px;">
                                 <i class="fas fa-search me-1"></i> Tra cứu
                             </button>
                         </div>
@@ -350,7 +402,7 @@
             .then(r => r.text())
             .then(html => {
                 document.getElementById('header-container').innerHTML = html;
-                
+
                 // Cập nhật trạng thái đăng nhập ngay khi có header
                 if (typeof initAuthNav === 'function') initAuthNav();
 
@@ -390,8 +442,8 @@
 
             try {
                 // Đợi DVQTKrud sẵn sàng
-                while(!window.DVQTKrud) await new Promise(r => setTimeout(r, 100));
-                
+                while (!window.DVQTKrud) await new Promise(r => setTimeout(r, 100));
+
                 const krud = window.DVQTKrud;
                 const [categories, services] = await Promise.all([
                     krud.listTable('danhmuc_thonha', { limit: 100 }),
@@ -407,6 +459,8 @@
                     const fixPath = (p) => {
                         if (!p) return '';
                         if (p.includes('http')) return p;
+                        // Hỗ trợ Drive fileId
+                        if (p.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${p}`;
                         // Xử lý các đường dẫn cũ trong DB hoặc JSON
                         let path = p.replace('../../assets/', 'public/assets/');
                         if (path.startsWith('assets/') && !path.startsWith('public/')) {
@@ -417,7 +471,7 @@
                     // Ưu tiên ảnh của danh mục, nếu không có thì lấy ảnh của dịch vụ đầu tiên
                     const firstSvcWithImg = services.find(s => String(s.id_danhmuc) === String(c.id) && s.anh_dichvu);
                     const image = fixPath(c.anh_dai_dien) || (firstSvcWithImg ? fixPath(firstSvcWithImg.anh_dichvu) : 'public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg');
-                    const icon = c.icon || 'fa-tools'; 
+                    const icon = c.icon || 'fa-tools';
 
                     return `
                         <div class="col-lg-4 col-md-6 service-item">
@@ -460,4 +514,5 @@
         }
     </script>
 </body>
+
 </html>

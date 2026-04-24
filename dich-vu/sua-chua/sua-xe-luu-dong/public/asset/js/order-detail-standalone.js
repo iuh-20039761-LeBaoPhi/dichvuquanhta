@@ -146,7 +146,7 @@
       if (isUrgent) {
           targetLoaiphi = "Gấp";
       } else if (hour >= 6 && hour < 18) {
-          targetLoaiphi = "Thưởng";
+          targetLoaiphi = "Thường";
       } else {
           targetLoaiphi = "Buổi tối";
       }
@@ -860,16 +860,17 @@
     if (!textValue) return;
 
     if (isGDrive) {
-      var iframe = document.createElement("iframe");
-      iframe.src = "https://drive.google.com/file/d/" + textValue + "/preview";
-      iframe.setAttribute("allow", "autoplay");
-      iframe.style.border = "0";
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-      iframe.style.display = "block";
+      var img = document.createElement("img");
+      img.src = "https://lh3.googleusercontent.com/d/" + textValue;
+      img.style.border = "0";
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.display = "block";
+      img.style.objectFit = "cover";
+      img.loading = "lazy";
       
       node.textContent = "";
-      node.appendChild(iframe);
+      node.appendChild(img);
       node.classList.add("has-image");
       return;
     }
@@ -1194,7 +1195,7 @@
       if (isGoogleDrive) {
         preview = document.createElement("div");
         preview.className = "ratio ratio-1x1 border rounded overflow-hidden bg-light";
-        preview.innerHTML = '<iframe src="https://drive.google.com/file/d/' + item + '/preview" allow="autoplay" style="border:0; width:100%; height:100%;"></iframe>';
+        preview.innerHTML = '<img src="https://lh3.googleusercontent.com/d/' + item + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />';
       } else if (isVideo) {
         preview = document.createElement("video");
         preview.controls = true;
@@ -1509,9 +1510,7 @@
           col.className = "col-6 col-md-4";
           col.innerHTML =
             '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm bg-light">' +
-            '<iframe src="https://drive.google.com/file/d/' +
-            id +
-            '/preview" allow="autoplay" style="border:0"></iframe>' +
+            '<img src="https://lh3.googleusercontent.com/d/' + id + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />' +
             "</div>";
           grid.appendChild(col);
         });
@@ -1530,9 +1529,7 @@
           wrapper.className = "mb-2 border rounded overflow-hidden shadow-sm bg-light";
           wrapper.innerHTML =
             '<div class="ratio ratio-16x9">' +
-            '<iframe src="https://drive.google.com/file/d/' +
-            id +
-            '/preview" allow="autoplay" style="border:0"></iframe>' +
+            '<img src="https://lh3.googleusercontent.com/d/' + id + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />' +
             "</div>";
           videoMount.appendChild(wrapper);
         });
@@ -1602,10 +1599,11 @@
       var formData = new FormData();
       formData.append("upload", "1");
       formData.append("file", file);
+      formData.append("folderKey", "28");
       formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
 
       try {
-        var res = await fetch("upload.php", {
+        var res = await fetch("../../../public/upload_to_drive.php", {
           method: "POST",
           body: formData,
         });

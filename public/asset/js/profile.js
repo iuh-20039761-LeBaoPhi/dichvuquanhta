@@ -516,21 +516,25 @@
                 const cccdTruocFile = document.getElementById('cccdTruoc').files[0];
                 const cccdSauFile = document.getElementById('cccdSau').files[0];
 
+                const uName = payload.hovaten || currentUser.hovaten || 'user';
+                const uPhone = currentUser.sdt || currentUser.sodienthoai || '';
+                const baseSlug = `${uName}-${uPhone}`;
+
                 if (avatarFile) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải lên ảnh đại diện...';
-                    const up = await app.uploadFile(avatarFile);
+                    const up = await app.uploadFile(avatarFile, { folderKey: 33, customName: baseSlug + '-avatar' });
                     if (up.success) payload.link_avatar = up.fileId;
                 }
 
                 if (cccdTruocFile) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải lên CCCD (mặt trước)...';
-                    const up = await app.uploadFile(cccdTruocFile);
+                    const up = await app.uploadFile(cccdTruocFile, { folderKey: 33, customName: baseSlug + '-cccd-truoc' });
                     if (up.success) payload.link_cccd_truoc = up.fileId;
                 }
 
                 if (cccdSauFile) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải lên CCCD (mặt sau)...';
-                    const up = await app.uploadFile(cccdSauFile);
+                    const up = await app.uploadFile(cccdSauFile, { folderKey: 33, customName: baseSlug + '-cccd-sau' });
                     if (up.success) payload.link_cccd_sau = up.fileId;
                 }
             } catch (uploadErr) {

@@ -216,7 +216,7 @@
     if (creds.phone && creds.password) {
       return authenticateByUrlCredentials(creds.phone, creds.password).then(
         function (row) {
-          if (row && !isProviderAccount(row)) {
+          if (row) {
             fillBookingFormUser(row);
             return row;
           }

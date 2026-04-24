@@ -7,7 +7,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
 // Script URL (Inherited from the existing ecosystem config)
-$scriptUrl = "https://script.google.com/macros/s/AKfycbxThLPP2mI062gddeEyAAy3XYzUMJ-CIzMP3dMFWQ7v31t5H10ZESvx_i-ZKzWO5A_pog/exec";
+$scriptUrl = "https://script.google.com/macros/s/AKfycbzTT7c7pINUsAd9k3z_zP-TBaR7h0s1GXd4ylsWOhBFeijeD3z37el1pzVRfiuJb7DFag/exec";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Yêu cầu không hợp lệ']);
@@ -20,10 +20,11 @@ if (!isset($_FILES['file'])) {
     exit;
 }
 
-$file    = $_FILES['file'];
-$name    = isset($_POST['name']) ? trim($_POST['name']) : $file['name'];
-$mime    = $file['type'];
-$tmpPath = $file['tmp_name'];
+$file      = $_FILES['file'];
+$name      = isset($_POST['name']) ? trim($_POST['name']) : $file['name'];
+$folderKey = isset($_POST['folderKey']) ? $_POST['folderKey'] : null;
+$mime      = $file['type'];
+$tmpPath   = $file['tmp_name'];
 
 if ($file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($tmpPath)) {
     echo json_encode(['success' => false, 'message' => 'File upload lỗi: ' . $file['error']]);
@@ -33,11 +34,16 @@ if ($file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($tmpPath)) {
 // Convert to Base64
 $fileContent = base64_encode(file_get_contents($tmpPath));
 
-$payload = json_encode([
+$payloadArr = [
     'name' => $name,
     'file' => $fileContent,
     'type' => $mime,
-]);
+];
+// Chỉ gửi folderKey nếu có — để Google Apps Script phân loại thư mục lưu trữ
+if ($folderKey !== null) {
+    $payloadArr['folderKey'] = $folderKey;
+}
+$payload = json_encode($payloadArr);
 
 // Forward to Google Apps Script
 $ch = curl_init($scriptUrl);

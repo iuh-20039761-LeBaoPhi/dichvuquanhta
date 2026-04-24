@@ -3,7 +3,7 @@
 
   var ORDER_TABLE = "datlich_giatuinhanh";
   var USER_TABLE = "nguoidung";
-  var REVIEW_UPLOAD_ENDPOINT = "upload.php";
+  var REVIEW_UPLOAD_ENDPOINT = "../../../public/upload_to_drive.php";
   var REVIEW_FIELD_MAP = {
     customer: {
       text: ["danhgia_khachhang"],
@@ -1730,9 +1730,10 @@
       const formData = new FormData();
       formData.append("upload", "1");
       formData.append("file", file);
+      formData.append("folderKey", "31");
       formData.append("name", `REVIEW_${Date.now()}_${file.name}`);
 
-      const res = await fetch("upload.php", {
+      const res = await fetch(REVIEW_UPLOAD_ENDPOINT, {
         method: "POST",
         body: formData,
       });

@@ -377,9 +377,10 @@
           const uploadOne = async (file) => {
             const fd = new FormData();
             fd.append("file", file);
+            fd.append("folderKey", "28");
             fd.append("name", file.name);
             try {
-              const resp = await fetch("upload.php", {
+              const resp = await fetch("../../../public/upload_to_drive.php", {
                 method: "POST",
                 body: fd,
               });
@@ -440,7 +441,7 @@
         clearConfirmMedia();
 
         setTimeout(function () {
-          window.location.href = "khachhang/danh-sach-don-hang.html";
+          window.location.href = "nguoidung/danh-sach-don-hang.html";
         }, 1200);
       } catch (err) {
         console.error("Lỗi gửi dữ liệu sửa xe:", err);
@@ -489,19 +490,7 @@
 
         if (!user) return false;
 
-        // Nếu là nhà cung cấp (id_dichvu chứa '8') thì không cho đặt
-        const idDichvu = String(user.id_dichvu || "").trim();
-        const serviceIds = idDichvu.split(",").map((s) => s.trim());
 
-        if (serviceIds.indexOf("8") !== -1) {
-          if (typeof utils.showToast === "function") {
-            utils.showToast(
-              "Tài khoản nhà cung cấp không được phép đặt dịch vụ.",
-              "error",
-            );
-          }
-          return false;
-        }
 
         // Nếu đăng nhập bằng URL, lưu vào cookie để duy trì phiên
         if (urlU && urlP) {

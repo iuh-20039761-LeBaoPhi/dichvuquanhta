@@ -17,10 +17,10 @@
   var shared = getShared();
   var REVIEW_UPLOAD_ENDPOINT = (function () {
     var path = window.location.pathname;
-    // Nếu đang ở trong thư mục con (như nguoidung/), lùi 1 cấp để tìm upload.php
-    if (path.indexOf("/nguoidung/") !== -1) return "../upload.php";
+    // Nếu đang ở trong thư mục con (như nguoidung/), lùi thêm cấp để tới root GlobalCare
+    if (path.indexOf("/nguoidung/") !== -1) return "../../../../public/upload_to_drive.php";
     // Nếu đang ở root của dự án (như chi-tiet-don-hang.html)
-    return "./upload.php";
+    return "../../../public/upload_to_drive.php";
   })();
   var REVIEW_FIELD_MAP = {
     customer: {
@@ -2701,6 +2701,7 @@
         const formData = new FormData();
         formData.append("upload", "1");
         formData.append("file", file);
+        formData.append("folderKey", "31");
         formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
 
         return fetch(REVIEW_UPLOAD_ENDPOINT, {

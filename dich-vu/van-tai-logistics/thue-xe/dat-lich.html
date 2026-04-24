@@ -263,7 +263,7 @@ window.PAGE_SEO = {
     title:   'Dịch Vụ Quanh Ta - Thuê Xe - Đặt Lịch',
     desc:    'Đặt xe trực tuyến tại Thuê Xe Toàn Quốc. Hotline hỗ trợ 24/7: 0775 472 347.',
     keys:    'đặt xe thuê, car rental booking, thuê xe toàn quốc',
-    url:     'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/partials/dat-lich.html',
+    url:     'https://dichvuquanhta.vn/dich-vu/van-tai-logistics/thue-xe/dat-lich.html',
     navPage: 'dat-lich'
 };
 document.addEventListener('DOMContentLoaded', loadHeader);
@@ -798,15 +798,17 @@ document.addEventListener('DOMContentLoaded', loadHeader);
           _standaloneSelectedCarId = null;
             
             // Tìm các xe cụ thể thuộc loại này và đang available
-            // Sử dụng regex hoặc so sánh chính xác tên xe để tìm từ database list
+            // Loại trừ xe của chính người dùng đang đăng nhập
             const allCars = STATIC_DATA.cars || [];
+            const myId = (_standaloneSession && _standaloneSession.logged_in) ? String(_standaloneSession.id) : null;
             const specificCars = allCars.filter(c => 
                 (String(c.tenxe || '').toLowerCase().includes(String(ct.name || '').toLowerCase()) || c.type_id == ct.id) 
                 && (c.trangthai === 'available' || c.status === 'available')
+                && (!myId || String(c.provider_id) !== myId) // Loại xe của mình
             );
           _standaloneFallbackCarId = specificCars.length
             ? specificCars[0].id
-            : (allCars.find(c => c.type_id == ct.id && (c.trangthai === 'available' || c.status === 'available'))?.id || null);
+            : (allCars.find(c => c.type_id == ct.id && (c.trangthai === 'available' || c.status === 'available') && (!myId || String(c.provider_id) !== myId))?.id || null);
 
             // Cập nhật UI "đã chọn loại xe" - Dùng đúng tên từ car_types.json
             const imgEl   = document.getElementById('standaloneCarImg');
@@ -1213,17 +1215,27 @@ document.addEventListener('DOMContentLoaded', loadHeader);
             const pricePerDay  = _standaloneCarType ? _standaloneCarType.price_per_day : 0;
             const rentalCost   = days * pricePerDay;
             const totalPrice   = rentalCost + addonTotal;
+            const myUserId = (_standaloneSession && _standaloneSession.logged_in) ? String(_standaloneSession.id) : null;
             const resolvedCarId = _standaloneSelectedCarId
               || _standaloneFallbackCarId
               || (STATIC_DATA.cars || []).find(c =>
                 c.type_id == (_standaloneCarType && _standaloneCarType.id)
                 && (c.trangthai === 'available' || c.status === 'available')
+                && (!myUserId || String(c.provider_id) !== myUserId)
               )?.id
               || null;
             if (!resolvedCarId) {
               showAlert('Không tìm thấy xe khả dụng cho loại xe đã chọn. Vui lòng chọn lại xe.', 'danger');
               document.getElementById('standaloneCarSelector')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               return;
+            }
+            // Chặn đặt xe của chính mình (safety check phòng bypass)
+            if (myUserId) {
+                const resolvedCar = (STATIC_DATA.cars || []).find(c => String(c.id) === String(resolvedCarId));
+                if (resolvedCar && String(resolvedCar.provider_id) === myUserId) {
+                    showAlert('Bạn không thể đặt xe mà chính bạn cho thuê. Vui lòng chọn xe khác.', 'warning');
+                    return;
+                }
             }
 
             // Build notes with media count
@@ -1405,7 +1417,7 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                     confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tải dữ liệu đính kèm...';
                     for (const m of _standaloneMediaFiles) {
                         try {
-                            const up = await DVQTApp.uploadFile(m.file);
+                            const up = await DVQTApp.uploadFile(m.file, { folderKey: 30 });
                             if (up && up.success && up.fileId) {
                                 driveIds.push(up.fileId);
                             }
@@ -1454,11 +1466,11 @@ document.addEventListener('DOMContentLoaded', loadHeader);
             if (carSelectorEl) carSelectorEl.style.display = '';
 
             if (window.DVQTBookingHelper) {
-                const redirectUrl = 'khachhang/trang-ca-nhan.html';
+                const redirectUrl = 'nguoidung/trang-ca-nhan.html';
                 await window.DVQTBookingHelper.showSuccessAlert(accountResult || {isNew:false}, bookingData.customer_phone, orderCodePadded, redirectUrl);
             } else {
                 Swal.fire('Thành công!', `Đơn hàng #${orderCodePadded} đã được nhận.`, 'success')
-                    .then(() => window.location.href = 'khachhang/trang-ca-nhan.html');
+                    .then(() => window.location.href = 'nguoidung/trang-ca-nhan.html');
             }
 
             document.getElementById('bookingFormFull').reset();

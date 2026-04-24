@@ -92,7 +92,7 @@ body {
   box-shadow: 0 18px 30px -12px rgba(15, 23, 42, 0.45);
 }
 
-.navbar .dropdown-item {
+.navbar .dropdown-item, .navbar #auth-name-mobile {
   border-radius: 10px;
   color: rgba(255, 255, 255, 0.96);
   font-weight: 500;
@@ -117,7 +117,7 @@ body {
   box-shadow: 0 16px 28px -14px rgba(15, 23, 42, 0.28);
 }
 
-.navbar.scrolled .dropdown-item {
+.navbar.scrolled .dropdown-item, .navbar.scrolled #auth-name-mobile {
   color: #0f172a;
 }
 

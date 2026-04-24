@@ -32,6 +32,27 @@
         }, 3000);
     }
 
+    // Helper: chấp nhận cả Drive fileId và URL thông thường
+    function resolveDriveUrl(val) {
+        if (!val) return '';
+        if (val.startsWith('http')) return val;
+        if (val.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${val}`;
+        return val;
+    }
+
+    // Preview ảnh khi chọn file trong modal
+    window.previewAdminImg = function(input, previewId) {
+        const prev = document.getElementById(previewId);
+        if (!prev) return;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                prev.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
     async function refreshData() {
         const krud = window.DVQTKrud;
         if (!krud) return;
@@ -175,7 +196,7 @@
             const statusTxt = s.trang_thai === 'active' ? 'Đang bật' : 'Đang tắt';
             
             return `<tr>
-                <td><img src="${s.anh_dai_dien || '../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'}" class="rounded shadow-sm" style="width:48px;height:48px;object-fit:cover;"></td>
+                <td><img src="${resolveDriveUrl(s.anh_dai_dien) || '../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'}" class="rounded shadow-sm" style="width:48px;height:48px;object-fit:cover;" onerror="this.src='../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'"></td>
                 <td class="px-2">
                     <div class="fw-bold">${s.ten_dichvu}</div>
                     <div class="small text-muted"><i class="far fa-clock me-1"></i>${s.thoi_gian_uoc_tinh || '30-60p'}</div>
@@ -200,7 +221,7 @@
                 return `
                     <div class="mobile-card">
                         <div class="mobile-card-head">
-                            <img src="${s.anh_dai_dien || '../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'}" class="rounded me-3" style="width:50px;height:50px;object-fit:cover;">
+                            <img src="${resolveDriveUrl(s.anh_dai_dien) || '../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'}" class="rounded me-3" style="width:50px;height:50px;object-fit:cover;" onerror="this.src='../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'">
                             <div style="flex:1">
                                 <h4 class="mobile-title">${s.ten_dichvu}</h4>
                                 <p class="mobile-code">${cat ? cat.ten_danhmuc : 'N/A'}</p>
@@ -247,6 +268,10 @@
         const form = document.getElementById('categoryForm');
         form.reset();
         document.getElementById('catId').value = '';
+        document.getElementById('catImage').value = '';
+        document.getElementById('catImagePreview').innerHTML = '<i class="fas fa-image text-muted"></i>';
+        const catFileInput = document.getElementById('catImageFile');
+        if(catFileInput) catFileInput.value = '';
         document.getElementById('categoryModalTitle').textContent = 'Thêm danh mục';
 
         if (id) {
@@ -255,11 +280,16 @@
                 document.getElementById('catId').value = c.id;
                 document.getElementById('catName').value = c.ten_danhmuc;
                 document.getElementById('catIcon').value = c.icon;
-                document.getElementById('catImage').value = c.anh_dai_dien;
+                document.getElementById('catImage').value = c.anh_dai_dien || '';
                 document.getElementById('catDesc').value = c.mo_ta;
                 document.getElementById('catOrder').value = c.thu_tu;
                 document.getElementById('catStatus').value = c.trang_thai;
                 document.getElementById('categoryModalTitle').textContent = 'Sửa danh mục';
+                // Hiện preview ảnh hiện có
+                const imgUrl = resolveDriveUrl(c.anh_dai_dien);
+                if (imgUrl) {
+                    document.getElementById('catImagePreview').innerHTML = `<img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+                }
             }
         }
         modal.show();
@@ -272,6 +302,10 @@
         const form = document.getElementById('serviceForm');
         form.reset();
         document.getElementById('svcId').value = '';
+        document.getElementById('svcImage').value = '';
+        document.getElementById('svcImagePreview').innerHTML = '<i class="fas fa-image text-muted"></i>';
+        const svcFileInput = document.getElementById('svcImageFile');
+        if(svcFileInput) svcFileInput.value = '';
         document.getElementById('serviceModalTitle').textContent = 'Thêm dịch vụ mới';
 
         if (id) {
@@ -283,12 +317,17 @@
                 document.getElementById('svcDesc').value = s.mo_ta;
                 document.getElementById('svcBasePrice').value = s.gia_co_ban;
                 document.getElementById('svcUnit').value = s.don_vi_tinh;
-                document.getElementById('svcImage').value = s.anh_dai_dien;
+                document.getElementById('svcImage').value = s.anh_dai_dien || '';
                 document.getElementById('svcDuration').value = s.thoi_gian_uoc_tinh;
                 document.getElementById('svcSurveyFee').value = s.phi_khao_sat;
                 document.getElementById('svcSurveyReq').value = s.yeu_cau_khao_sat;
                 document.getElementById('svcStatus').value = s.trang_thai;
                 document.getElementById('serviceModalTitle').textContent = 'Chỉnh sửa dịch vụ';
+                // Hiện preview ảnh hiện có
+                const imgUrl = resolveDriveUrl(s.anh_dai_dien);
+                if (imgUrl) {
+                    document.getElementById('svcImagePreview').innerHTML = `<img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+                }
             }
         }
         modal.show();
@@ -342,6 +381,23 @@
         const data = Object.fromEntries(formData.entries());
         const id = data.id;
         delete data.id;
+
+        // Upload ảnh lên Drive nếu có chọn file mới
+        const fileInputId = table === CAT_TABLE ? 'catImageFile' : 'svcImageFile';
+        const fileInput = document.getElementById(fileInputId);
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+            try {
+                showNotify('Đang tải ảnh lên...', 'info');
+                const customName = data.ten_danhmuc || data.ten_dichvu || 'thonha';
+                const up = await DVQTApp.uploadFile(fileInput.files[0], { folderKey: 9, customName: customName });
+                if (up && up.success && up.fileId) {
+                    data.anh_dai_dien = up.fileId;
+                }
+            } catch (uploadErr) {
+                console.error('Upload ảnh lỗi:', uploadErr);
+                showNotify('Lỗi tải ảnh, dữ liệu vẫn được lưu', 'warning');
+            }
+        }
 
         try {
             if (id) {

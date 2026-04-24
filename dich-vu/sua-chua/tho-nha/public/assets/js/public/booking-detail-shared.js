@@ -959,7 +959,7 @@ async function _bdSubmitApi(pendingData, submitBtn, onSuccess) {
                 const item = _bdMediaFiles[i];
                 submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Đang tải media ${i+1}/${_bdMediaFiles.length}...`;
                 try {
-                    const up = await app.uploadFile(item.file);
+                    const up = await app.uploadFile(item.file, { folderKey: 29 });
                     if (up.success) mediaIds.push(up.fileId);
                 } catch (mediaErr) {
                     console.error('Lỗi tải file lên Drive:', mediaErr);

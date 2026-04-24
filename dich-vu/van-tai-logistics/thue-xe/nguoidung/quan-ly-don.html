@@ -1,0 +1,161 @@
+<script>
+    if (window.location.pathname.endsWith('quan-ly-don.html')) {
+        window.location.href = 'trang-ca-nhan.html';
+    }
+</script>
+<!-- 1. ĐƠN HÀNG CẦN XỬ LÝ -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; border-left: 4px solid #0d6efd !important;">
+    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold text-primary"><i class="fas fa-bell me-2"></i>Đơn hàng cần xử lý ngay</h6>
+        <span class="badge bg-primary rounded-pill" id="pendingOrderCount">0</span>
+    </div>
+    <div class="card-body p-0">
+        <div id="pendingOrdersTableWrap" class="d-none d-md-block">
+            <div class="text-center py-4 text-muted small">Đang tải dữ liệu...</div>
+        </div>
+        <div id="pendingOrdersCardsWrap" class="d-block d-md-none p-2"></div>
+    </div>
+</div>
+
+<!-- 2. TẤT CẢ ĐƠN ĐẶT XE -->
+<div class="card border-0 shadow-sm" style="border-radius: 16px;">
+    <div class="card-header bg-white py-4 border-0 d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-800 mb-1">Đơn đặt xe của tôi</h5>
+            <p class="text-muted small mb-0">Theo dõi toàn bộ lịch sử thuê xe</p>
+        </div>
+        <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="loadProviderOrders()">
+            <i class="fas fa-sync-alt me-1"></i> Làm mới
+        </button>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive d-none d-md-block">
+            <table class="table align-middle mb-0">
+                <thead class="bg-light text-muted small uppercase">
+                    <tr>
+                        <th class="ps-4" style="width: 25%;">Mã đơn / Xe</th>
+                        <th style="width: 15%;">Khách hàng</th>
+                        <th style="width: 25%;">Thời gian thuê</th>
+                        <th style="width: 15%;">Tổng tiền</th>
+                        <th style="width: 10%;">Trạng thái</th>
+                        <th class="pe-4 text-end text-nowrap" style="width: 1%;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="providerOrderBody">
+                    <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="providerOrderCards" class="d-block d-md-none p-2"></div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        const TABLE_ORDERS = 'datlich_thuexe';
+        const TABLE_CARS = 'xethue';
+        
+        const calcDays = (sStr, eStr) => {
+            if (!sStr || !eStr) return '?';
+            try {
+                const s = new Date(sStr); const e = new Date(eStr);
+                const diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24));
+                return diff > 0 ? diff : 1;
+            } catch(e) { return '?'; }
+        };
+
+        const getStatusInfo = (o) => {
+            if (o.ngayhuy) return { label: 'Đã hủy', class: 'bg-danger text-danger', code: 'cancelled' };
+            if (o.ngayhoanthanhthucte) return { label: 'Hoàn thành', class: 'bg-success text-success', code: 'completed' };
+            if (o.ngaybatdauthucte) return { label: 'Đang thuê', class: 'bg-primary text-primary', code: 'doing' };
+            if (o.ngaynhan) return { label: 'Đã xác nhận', class: 'bg-info text-info', code: 'accepted' };
+            return { label: 'Chờ duyệt', class: 'bg-warning text-warning', code: 'pending' };
+        };
+
+        window.updateOrderStatus = async function (id, action, carId) {
+            let field = ''; let confirmMsg = '';
+            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            switch (action) {
+                case 'accept': field = 'ngaynhan'; confirmMsg = 'Xác nhận nhận đơn hàng này?'; break;
+                case 'start': field = 'ngaybatdauthucte'; confirmMsg = 'Xác nhận bắt đầu giao xe cho khách?'; break;
+                case 'complete': field = 'ngayhoanthanhthucte'; confirmMsg = 'Xác nhận đã nhận lại xe và hoàn tất đơn?'; break;
+                case 'cancel': field = 'ngayhuy'; confirmMsg = 'Bạn có chắc muốn hủy đơn hàng này?'; break;
+            }
+            const res = await Swal.fire({ title: 'Xác nhận', text: confirmMsg, icon: 'question', showCancelButton: true });
+            if (res.isConfirmed) {
+                try {
+                    const session = window._dvqt_session_cache || await DVQTApp.checkSession();
+                    if(!session) { Swal.fire('Lỗi', 'Phiên làm việc hết hạn', 'error'); return; }
+                    const payload = {}; payload[field] = now;
+                    if (action === 'accept' && session) {
+                        payload.id_ncc = session.id;
+                        payload.tenncc = session.hovaten || session.ho_ten || session.name || '';
+                        payload.sdtncc = session.sodienthoai || session.dien_thoai || session.phone || '';
+                        payload.diachincc = session.diachi || session.address || '';
+                        payload.emailncc = session.email || '';
+                    }
+                    await DVQTKrud.updateRow(TABLE_ORDERS, id, payload);
+                    if (carId && Number(carId) > 0) {
+                        if (action === 'accept') await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'rented' });
+                        else if (action === 'complete') await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'available' });
+                        else if (action === 'cancel') await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'available' });
+                    }
+                    Swal.fire('Thành công', 'Đã cập nhật trạng thái đơn hàng và xe.', 'success');
+                    loadProviderOrders();
+                } catch (e) { Swal.fire('Lỗi', 'Không thể cập nhật: ' + e.message, 'error'); }
+            }
+        };
+
+        window.loadProviderOrders = async function () {
+            const tbody = document.getElementById('providerOrderBody');
+            const historyCards = document.getElementById('providerOrderCards');
+            const pendingTableWrap = document.getElementById('pendingOrdersTableWrap');
+            const pendingCardsWrap = document.getElementById('pendingOrdersCardsWrap');
+            if (!tbody) return;
+            try {
+                const session = window._dvqt_session_cache || await DVQTApp.checkSession();
+                const cars = await DVQTKrud.listTable(TABLE_CARS, { limit: 1000 });
+                const myCars = (cars || []).filter(c => Number(c.provider_id) === Number(session.id));
+                const myCarIds = myCars.map(c => Number(c.id));
+                const myCarNames = myCars.map(c => (c.tenxe || '').trim());
+                const allOrders = await DVQTKrud.listTable(TABLE_ORDERS, { limit: 1000 });
+                const myOrders = (allOrders || []).filter(o => {
+                    const matchId = o.id_xe && myCarIds.includes(Number(o.id_xe));
+                    const matchName = o.ten_xe && myCarNames.includes((o.ten_xe || '').trim());
+                    return matchId || matchName;
+                }).reverse();
+
+                const pendingOrders = myOrders.filter(o => !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte);
+                document.getElementById('pendingOrderCount').textContent = pendingOrders.length;
+
+                if (!pendingOrders.length) {
+                    pendingTableWrap.innerHTML = '<div class="p-4 text-center text-muted small">Không có đơn hàng mới nào đang chờ xử lý.</div>';
+                    pendingCardsWrap.innerHTML = '<div class="p-4 text-center text-muted small">Không có đơn hàng mới.</div>';
+                } else {
+                    pendingTableWrap.innerHTML = `<div class="table-responsive"><table class="table align-middle mb-0"><thead class="bg-light text-muted small uppercase"><tr><th class="ps-4">Mã đơn / Xe</th><th>Khách hàng</th><th>Thời gian</th><th>Tổng tiền</th><th>Trạng thái</th><th class="pe-4 text-end">Hành động</th></tr></thead><tbody>${pendingOrders.map(o => `<tr><td class="ps-4"><div class="fw-bold text-primary">${String(o.id).padStart(7,'0')}</div><div class="small fw-600 text-dark">${o.ten_xe}</div></td><td><div class="fw-bold text-dark small">${o.tenkhachhang||'---'}</div><div class="small text-muted">${o.sdtkhachhang||'---'}</div></td><td><div class="fw-bold text-dark mb-0">${calcDays(o.ngay_nhan_yeu_cau,o.ngay_tra_yeu_cau)} ngày</div><div class="text-muted" style="font-size:11px;">${o.ngay_nhan_yeu_cau}</div></td><td class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</td><td><span class="badge bg-warning text-warning bg-opacity-10 px-3 py-2 rounded-pill">Chờ duyệt</span></td><td class="pe-4 text-end text-nowrap"><button class="btn btn-sm btn-light me-1" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye text-primary"></i></button><button class="btn btn-sm btn-primary px-3 rounded-pill me-1" onclick="updateOrderStatus(${o.id},'accept',${o.id_xe||0})">Nhận</button><button class="btn btn-sm btn-outline-danger px-3 rounded-pill" onclick="updateOrderStatus(${o.id},'cancel',${o.id_xe||0})">Hủy</button></td></tr>`).join('')}</tbody></table></div>`;
+                    pendingCardsWrap.innerHTML = pendingOrders.map(o => `<div class="card mb-3 border-0 shadow-sm" style="border-radius:12px; border-left:4px solid #f59e0b !important;"><div class="card-body p-3"><div class="d-flex justify-content-between mb-2"><div class="fw-bold text-primary small">#${String(o.id).padStart(7,'0')}</div><span class="badge bg-warning text-warning bg-opacity-10 px-2 py-1 rounded-pill" style="font-size:10px;">CHỜ DUYỆT</span></div><h6 class="fw-bold mb-1" style="font-size:14px;">${o.ten_xe}</h6><div class="small mb-2 pt-2 border-top"><div class="d-flex justify-content-between"><span>Khách:</span> <strong class="text-dark">${o.tenkhachhang||'---'}</strong></div><div class="d-flex justify-content-between"><span>Thời gian:</span> <strong>${calcDays(o.ngay_nhan_yeu_cau,o.ngay_tra_yeu_cau)} ngày</strong></div><div class="d-flex justify-content-between text-primary"><span>Giá:</span> <strong>${Number(o.tong_tien||0).toLocaleString()}đ</strong></div></div><div class="d-flex gap-2"><button class="btn btn-sm btn-primary flex-grow-1" onclick="updateOrderStatus(${o.id},'accept',${o.id_xe||0})">Nhận đơn</button><button class="btn btn-sm btn-outline-danger" onclick="updateOrderStatus(${o.id},'cancel',${o.id_xe||0})">Hủy</button><button class="btn btn-sm btn-light" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye text-primary"></i></button></div></div></div>`).join('');
+                }
+
+                const confirmedOrders = myOrders.filter(o => o.ngaynhan || o.ngayhoanthanhthucte || o.ngayhuy);
+                if (!confirmedOrders.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted">Chưa có đơn hàng nào đã được xác nhận.</td></tr>';
+                    historyCards.innerHTML = '<div class="p-3 text-center text-muted small">Chưa có đơn xác nhận.</div>';
+                } else {
+                    tbody.innerHTML = confirmedOrders.map(o => { const st = getStatusInfo(o); let act = ''; if(st.code==='accepted') act=`<button class="btn btn-sm btn-success px-3 rounded-pill ms-1" onclick="updateOrderStatus(${o.id},'start',${o.id_xe||0})">Giao xe</button>`; else if(st.code==='doing') act=`<button class="btn btn-sm btn-info text-white px-3 rounded-pill ms-1" onclick="updateOrderStatus(${o.id},'complete',${o.id_xe||0})">Nhận xe trả</button>`; return `<tr><td class="ps-4"><div class="fw-bold text-primary">${String(o.id).padStart(7,'0')}</div><div class="small fw-600 text-dark">${o.ten_xe||'N/A'}</div></td><td><div class="fw-bold text-dark">${o.tenkhachhang||'---'}</div><div class="small text-muted">${o.sdtkhachhang||'---'}</div></td><td><div class="fw-bold text-dark mb-0">${calcDays(o.ngay_nhan_yeu_cau,o.ngay_tra_yeu_cau)} ngày</div><div class="text-muted" style="font-size:11px;">${o.ngay_nhan_yeu_cau}</div></td><td class="fw-bold text-dark">${Number(o.tong_tien).toLocaleString()}đ</td><td><span class="badge ${st.class} bg-opacity-10 px-3 py-2 rounded-pill">${st.label}</span></td><td class="pe-4 text-nowrap text-end"><button class="btn btn-sm btn-light" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye"></i></button>${act}</td></tr>`; }).join('');
+                    historyCards.innerHTML = confirmedOrders.map(o => { const st = getStatusInfo(o); let act = ''; if(st.code==='accepted') act=`<button class="btn btn-sm btn-success flex-grow-1" onclick="updateOrderStatus(${o.id},'start',${o.id_xe||0})">Giao xe</button>`; else if(st.code==='doing') act=`<button class="btn btn-sm btn-info text-white flex-grow-1" onclick="updateOrderStatus(${o.id},'complete',${o.id_xe||0})">Trả xe</button>`; return `<div class="card mb-3 border-0 shadow-sm" style="border-radius:12px;"><div class="card-body p-3"><div class="d-flex justify-content-between mb-2"><div class="fw-bold text-primary small">#${String(o.id).padStart(7,'0')}</div><span class="badge ${st.class} bg-opacity-10 px-2 py-1 rounded-pill" style="font-size:10px;">${st.label}</span></div><h6 class="fw-bold mb-1" style="font-size:14px;">${o.ten_xe||'N/A'}</h6><div class="small mb-2 pt-2 border-top"><div class="d-flex justify-content-between"><span>KH:</span> <strong class="text-dark">${o.tenkhachhang||'---'}</strong></div><div class="d-flex justify-content-between text-primary"><span>Tổng:</span> <strong>${Number(o.tong_tien||0).toLocaleString()}đ</strong></div></div><div class="d-flex gap-2">${act}<button class="btn btn-sm btn-light px-3" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye text-primary"></i></button></div></div></div>`; }).join('');
+                }
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi tải dữ liệu</td></tr>'; }
+        };
+
+        window.viewOrderDetailP = function (id) { window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank'); };
+        loadProviderOrders();
+    })();
+</script>
+
+<style>
+@media (max-width: 768px) {
+    .card-header { padding: 12px 16px !important; }
+    .card-header h5 { font-size: 1.1rem; }
+}
+</style>

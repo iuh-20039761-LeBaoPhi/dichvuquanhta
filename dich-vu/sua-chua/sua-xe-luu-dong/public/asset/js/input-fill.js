@@ -216,7 +216,7 @@
     if (creds.phone && creds.password) {
       return authenticateByUrlCredentials(creds.phone, creds.password).then(
         function (row) {
-          if (row && !isProviderAccount(row)) {
+          if (row) {
             fillBookingFormUser(row);
             return row;
           }
@@ -258,16 +258,6 @@
           showStandaloneAccessError("Thông tin không đúng");
           bookingAccessState.isAuthenticated = false;
           bookingAccessState.source = "invalid-" + source;
-          setBookingInteractionDisabled(true);
-          return;
-        }
-
-        if (isProviderAccount(row)) {
-          showStandaloneAccessError(
-            "Trang này chỉ dành cho khách hàng đặt lịch.",
-          );
-          bookingAccessState.isAuthenticated = false;
-          bookingAccessState.source = "provider-not-allowed";
           setBookingInteractionDisabled(true);
           return;
         }

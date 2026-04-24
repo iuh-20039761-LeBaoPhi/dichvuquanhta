@@ -332,16 +332,17 @@
     if (!textValue) return;
 
     if (isGDrive) {
-      var iframe = document.createElement("iframe");
-      iframe.src = "https://drive.google.com/file/d/" + textValue + "/preview";
-      iframe.setAttribute("allow", "autoplay");
-      iframe.style.border = "0";
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-      iframe.style.display = "block";
+      var img = document.createElement("img");
+      img.src = "https://lh3.googleusercontent.com/d/" + textValue;
+      img.style.border = "0";
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.display = "block";
+      img.style.objectFit = "cover";
+      img.loading = "lazy";
       
       node.textContent = "";
-      node.appendChild(iframe);
+      node.appendChild(img);
       node.classList.add("has-image");
       return;
     }
@@ -1054,6 +1055,16 @@
 
         (rows || []).forEach(function (row) {
           var mappedOrder = mapDbOrderToPanelOrder(row);
+          // KHÔNG cho hiển thị đơn của chính mình đặt trong mục Đơn nhận làm
+          var currentPhone = user && normalizePhone(user.user_tel || user.sodienthoai || user.phone);
+          var orderPhone = mappedOrder.customer && normalizePhone(mappedOrder.customer.phone);
+          var isSelf = (mappedOrder.customer && mappedOrder.customer.id === providerId) || 
+                       (currentPhone && orderPhone && currentPhone === orderPhone);
+
+          if (isSelf) {
+            return;
+          }
+
           var status = String(mappedOrder.status || "").toLowerCase();
 
           if (status === "pending") {
@@ -2380,7 +2391,7 @@
         if (isGoogleDrive) {
           preview = document.createElement("div");
           preview.className = "ratio ratio-1x1 border rounded overflow-hidden bg-light";
-          preview.innerHTML = '<iframe src="https://drive.google.com/file/d/' + item + '/preview" allow="autoplay" style="border:0; width:100%; height:100%;"></iframe>';
+          preview.innerHTML = '<img src="https://lh3.googleusercontent.com/d/' + item + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />';
         } else if (isVideo) {
           preview = document.createElement("video");
           preview.controls = true;
@@ -2493,9 +2504,10 @@
         var formData = new FormData();
         formData.append("upload", "1");
         formData.append("file", file);
+        formData.append("folderKey", "28");
         formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
 
-        return fetch("upload.php", {
+        return fetch("../../../public/upload_to_drive.php", {
           method: "POST",
           body: formData,
         })
@@ -2661,9 +2673,7 @@
             col.className = "col-6 col-md-4";
             col.innerHTML =
               '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm bg-light">' +
-              '<iframe src="https://drive.google.com/file/d/' +
-              id +
-              '/preview" allow="autoplay" style="border:0"></iframe>' +
+              '<img src="https://lh3.googleusercontent.com/d/' + id + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />' +
               "</div>";
             grid.appendChild(col);
           });
@@ -2683,9 +2693,7 @@
               "mb-2 border rounded overflow-hidden shadow-sm bg-light";
             wrapper.innerHTML =
               '<div class="ratio ratio-16x9">' +
-              '<iframe src="https://drive.google.com/file/d/' +
-              id +
-              '/preview" allow="autoplay" style="border:0"></iframe>' +
+              '<img src="https://lh3.googleusercontent.com/d/' + id + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />' +
               "</div>";
             videoMount.appendChild(wrapper);
           });
@@ -2899,11 +2907,6 @@
     if (role === "customer") {
       if (!user) {
         window.location.href = CUSTOMER_LOGIN_PAGE;
-        return;
-      }
-
-      if (isProviderUser(user)) {
-        window.location.href = "../nhacungcap/danh-sach-don-hang.html";
         return;
       }
 

@@ -154,7 +154,7 @@
       if (isUrgent) {
           targetLoaiphi = "Gấp";
       } else if (hour >= 6 && hour < 18) {
-          targetLoaiphi = "Thưởng";
+          targetLoaiphi = "Thường";
       } else {
           targetLoaiphi = "Buổi tối";
       }

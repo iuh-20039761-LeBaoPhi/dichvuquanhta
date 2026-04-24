@@ -90,7 +90,13 @@
     var currentPath = window.location.pathname.split("/").pop().toLowerCase();
     var activePath = currentPath;
     if (currentPath === "chi-tiet-don-hang.html") {
-      activePath = "danh-sach-don-hang.html";
+      var params = new URLSearchParams(window.location.search);
+      var role = params.get("role");
+      if (role === "provider") {
+        activePath = "danh-sach-don-nhan.html";
+      } else {
+        activePath = "danh-sach-don-hang.html";
+      }
     }
     var navItems = aside.querySelectorAll(".sidebar-nav .nav-item");
 
@@ -138,9 +144,60 @@
         fixLinks(aside, config.linkPrefix);
         bindLogout(aside, config);
         markActiveNav(aside);
+        checkProviderVisibility(aside);
       })
       .catch(function (error) {
         console.error("Load aside failed:", error);
+      });
+  }
+
+  function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return "";
+  }
+
+  function checkProviderVisibility(aside) {
+    if (!aside) return;
+
+    var u = getCookie("dvqt_u");
+    var p = getCookie("dvqt_p");
+
+    if (!u || !p || typeof window.krudList !== "function") {
+      return;
+    }
+
+    window
+      .krudList({
+        table: "nguoidung",
+        where: [
+          { field: "sodienthoai", operator: "=", value: u },
+          { field: "matkhau", operator: "=", value: p },
+        ],
+        limit: 1,
+      })
+      .then(function (result) {
+        var rows = (result && result.data) || result || [];
+        if (Array.isArray(rows) && rows.length > 0) {
+          var user = rows[0];
+          var idDichVu = String(user.id_dichvu || "")
+            .split(",")
+            .map(function (v) {
+              return v.trim();
+            });
+
+          var isProvider = idDichVu.indexOf("8") !== -1;
+          if (!isProvider) {
+            var navDonNhan = aside.querySelector("#nav-don-nhan");
+            if (navDonNhan) {
+              navDonNhan.style.setProperty("display", "none", "important");
+            }
+          }
+        }
+      })
+      .catch(function (err) {
+        console.error("Check provider visibility failed:", err);
       });
   }
 
