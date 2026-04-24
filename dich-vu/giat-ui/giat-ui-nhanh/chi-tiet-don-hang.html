@@ -471,25 +471,25 @@
           `;
           backBtn.setAttribute('href', 'admin/danh-sach-don-hang.html');
         } else if (role === 'provider') {
-          mount.setAttribute('data-aside-src', 'nhacungcap/partials/aside.html');
+          mount.setAttribute('data-aside-src', 'nguoidung/partials/aside.html');
           mount.setAttribute('data-logout-href', 'index.html');
-          mount.setAttribute('data-link-prefix', 'nhacungcap/');
+          mount.setAttribute('data-link-prefix', 'nguoidung/');
           breadcrumb.innerHTML = `
             <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a href="nhacungcap/danh-sach-don-hang.html">Danh sách hóa đơn</a></li>
+            <li class="breadcrumb-item"><a href="nguoidung/danh-sach-don-nhan.html">Danh sách đơn nhận</a></li>
             <li class="breadcrumb-item active">Chi tiết hóa đơn</li>
           `;
-          backBtn.setAttribute('href', 'nhacungcap/danh-sach-don-hang.html');
+          backBtn.setAttribute('href', 'nguoidung/danh-sach-don-nhan.html');
         } else {
-          mount.setAttribute('data-aside-src', 'khachhang/partials/aside.html');
+          mount.setAttribute('data-aside-src', 'nguoidung/partials/aside.html');
           mount.setAttribute('data-logout-href', 'index.html');
-          mount.setAttribute('data-link-prefix', 'khachhang/');
+          mount.setAttribute('data-link-prefix', 'nguoidung/');
           breadcrumb.innerHTML = `
             <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a href="khachhang/danh-sach-don-hang.html">Danh sách hóa đơn</a></li>
+            <li class="breadcrumb-item"><a href="nguoidung/danh-sach-don-hang.html">Danh sách đơn đặt</a></li>
             <li class="breadcrumb-item active">Chi tiết hóa đơn</li>
           `;
-          backBtn.setAttribute('href', 'khachhang/danh-sach-don-hang.html');
+          backBtn.setAttribute('href', 'nguoidung/danh-sach-don-hang.html');
         }
       })();
     </script>

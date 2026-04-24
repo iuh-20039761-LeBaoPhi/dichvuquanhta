@@ -1038,16 +1038,17 @@
     if (!textValue) return;
 
     if (isGDrive) {
-      var iframe = document.createElement("iframe");
-      iframe.src = "https://drive.google.com/file/d/" + textValue + "/preview";
-      iframe.setAttribute("allow", "autoplay");
-      iframe.style.border = "0";
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-      iframe.style.display = "block";
+      var img = document.createElement("img");
+      img.src = "https://lh3.googleusercontent.com/d/" + textValue;
+      img.className = "avatar-image";
+      img.alt = fallback;
+      img.onerror = function() {
+        node.classList.remove("has-image");
+        node.textContent = fallback;
+      };
       
       node.textContent = "";
-      node.appendChild(iframe);
+      node.appendChild(img);
       node.classList.add("has-image");
       return;
     }
@@ -1386,10 +1387,19 @@
       const isDriveId = item && !item.includes("/") && !item.includes(".") && !item.includes(":");
       
       if (isDriveId) {
-        const url = "https://drive.google.com/file/d/" + item + "/preview";
+        // Sử dụng link lh3 làm ảnh đại diện (thumbnail) để tránh lỗi CSP frame-ancestors
+        const thumbUrl = "https://lh3.googleusercontent.com/d/" + item;
+        const fullUrl = "https://drive.google.com/file/d/" + item + "/view";
+        
         const wrapper = document.createElement("div");
-        wrapper.className = "ratio ratio-16x9 mb-2 border rounded overflow-hidden shadow-sm";
-        wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
+        wrapper.className = "ratio ratio-1x1 mb-2 border rounded overflow-hidden shadow-sm position-relative";
+        // Cho phép nhấn vào để xem chi tiết trên Drive nếu không load được frame
+        wrapper.innerHTML = `
+          <a href="${fullUrl}" target="_blank" class="d-block w-100 h-100">
+            <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover;" alt="Đánh giá" onerror="this.src='../../../../public/asset/image/no-image.png'">
+            <div class="position-absolute bottom-0 end-0 bg-dark text-white p-1" style="font-size:10px; opacity:0.7;">Drive</div>
+          </a>
+        `;
         grid.appendChild(wrapper);
         return;
       }
@@ -2287,12 +2297,13 @@
     if (anhIds.length > 0) {
       containerImages.className = "row g-2";
       anhIds.forEach((id) => {
-        const url = "https://drive.google.com/file/d/" + id + "/preview";
+        // Sử dụng link trực tiếp ảnh của Google Drive để tránh lỗi frame-ancestors CSP
+        const url = "https://lh3.googleusercontent.com/d/" + id;
         const col = document.createElement("div");
         col.className = "col-4";
         col.innerHTML = `
           <div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm">
-            <iframe src="${url}" allow="autoplay" style="border:none;"></iframe>
+            <img src="${url}" style="width:100%; height:100%; object-fit:cover;" alt="Hình ảnh hiện trường" onerror="this.src='../../../../public/asset/image/no-image.png'">
           </div>`;
         containerImages.appendChild(col);
       });

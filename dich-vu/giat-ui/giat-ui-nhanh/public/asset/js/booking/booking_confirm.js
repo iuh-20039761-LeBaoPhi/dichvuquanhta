@@ -347,15 +347,16 @@
         const idDichvu = String(user.id_dichvu || "").trim();
         const serviceIds = idDichvu.split(",").map((s) => s.trim());
 
-        if (serviceIds.indexOf("11") !== -1) {
-          if (typeof utils.showToast === "function") {
-            utils.showToast(
-              "Tài khoản nhà cung cấp không được phép đặt dịch vụ.",
-              "error",
-            );
-          }
-          return false;
-        }
+        // Cho phép cả tài khoản nhà cung cấp đặt dịch vụ
+        // if (serviceIds.indexOf("11") !== -1) {
+        //   if (typeof utils.showToast === "function") {
+        //     utils.showToast(
+        //       "Tài khoản nhà cung cấp không được phép đặt dịch vụ.",
+        //       "error",
+        //     );
+        //   }
+        //   return false;
+        // }
 
         if (urlU && urlP) {
           document.cookie = `dvqt_u=${urlU}; path=/; max-age=604800`;

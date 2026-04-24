@@ -262,15 +262,15 @@
           return;
         }
 
-        if (isProviderAccount(row)) {
-          showStandaloneAccessError(
-            "Trang này chỉ dành cho khách hàng đặt lịch.",
-          );
-          bookingAccessState.isAuthenticated = false;
-          bookingAccessState.source = "provider-not-allowed";
-          setBookingInteractionDisabled(true);
-          return;
-        }
+        // if (isProviderAccount(row)) {
+        //   showStandaloneAccessError(
+        //     "Trang này chỉ dành cho khách hàng đặt lịch.",
+        //   );
+        //   bookingAccessState.isAuthenticated = false;
+        //   bookingAccessState.source = "provider-not-allowed";
+        //   setBookingInteractionDisabled(true);
+        //   return;
+        // }
 
         fillBookingFormUser(row);
         bookingAccessState.isAuthenticated = true;

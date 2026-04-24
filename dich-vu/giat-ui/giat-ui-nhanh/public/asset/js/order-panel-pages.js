@@ -1,6 +1,9 @@
 (function (window, document) {
   "use strict";
 
+  // ==========================================
+  // 1. CẤU HÌNH & HẰNG SỐ
+  // ==========================================
   var PAGE_SIZE = 6;
   var BOOKING_TABLE = "datlich_giatuinhanh";
   var USER_TABLE = "nguoidung";
@@ -12,7 +15,13 @@
     return window.SharedOrderUtils || {};
   };
   var shared = getShared();
-  var REVIEW_UPLOAD_ENDPOINT = "../upload.php";
+  var REVIEW_UPLOAD_ENDPOINT = (function () {
+    var path = window.location.pathname;
+    // Nếu đang ở trong thư mục con (như nguoidung/), lùi 1 cấp để tìm upload.php
+    if (path.indexOf("/nguoidung/") !== -1) return "../upload.php";
+    // Nếu đang ở root của dự án (như chi-tiet-don-hang.html)
+    return "./upload.php";
+  })();
   var REVIEW_FIELD_MAP = {
     customer: {
       text: ["danhgia_khachhang"],
@@ -26,6 +35,9 @@
     },
   };
 
+  // ==========================================
+  // 2. TIỆN ÍCH CỐT LÕI (ĐỊNH DẠNG & TRỢ GIÚP)
+  // ==========================================
   function hasDateValue(value) {
     if (value == null) return false;
     var text = String(value).trim().toLowerCase();
@@ -49,14 +61,6 @@
 
     return phone;
   }
-
-  // function hasOrderLifecycleDates(row) {
-  //   return (
-  //     hasDateValue(row && row.ngayhuy) ||
-  //     hasDateValue(row && row.ngaynhan) ||
-  //     hasDateValue(row && row.ngayhoanthanh)
-  //   );
-  // }
 
   function getRole() {
     var role = String(
@@ -128,16 +132,6 @@
     var date = new Date(value);
     if (!Number.isFinite(date.getTime())) return "--/--/----";
     return date.toLocaleDateString("vi-VN");
-  }
-
-  function formatTime(value) {
-    if (!value) return "--:--";
-    var date = new Date(value);
-    if (!Number.isFinite(date.getTime())) return "--:--";
-    return date.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   }
 
   function addDays(value, days) {
@@ -332,16 +326,17 @@
     if (!textValue) return;
 
     if (isGDrive) {
-      var iframe = document.createElement("iframe");
-      iframe.src = "https://drive.google.com/file/d/" + textValue + "/preview";
-      iframe.setAttribute("allow", "autoplay");
-      iframe.style.border = "0";
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-      iframe.style.display = "block";
+      var img = document.createElement("img");
+      img.src = "https://lh3.googleusercontent.com/d/" + textValue;
+      img.className = "avatar-image";
+      img.alt = fallback;
+      img.onerror = function() {
+        node.classList.remove("has-image");
+        node.textContent = fallback;
+      };
       
       node.textContent = "";
-      node.appendChild(iframe);
+      node.appendChild(img);
       node.classList.add("has-image");
       return;
     }
@@ -904,6 +899,9 @@
     return row;
   }
 
+  // ==========================================
+  // 3. XÁC THỰC & PHIÊN LÀM VIỆC
+  // ==========================================
   function getSessionUser() {
     if (shared && typeof shared.getSessionUser === "function") {
       return shared.getSessionUser().then(function (row) {
@@ -1035,6 +1033,9 @@
     return toNumber(row && row.idnhacungcap);
   }
 
+  // ==========================================
+  // 4. LỚP DỮ LIỆU (ÁNH XẠ & TRUY VẤN)
+  // ==========================================
   function loadProviderOrders(user) {
     if (
       typeof shared.fetchAllOrders !== "function" ||
@@ -1064,6 +1065,17 @@
 
         (rows || []).forEach(function (row) {
           var mappedOrder = mapDbOrderToPanelOrder(row);
+          
+          // KHÔNG cho hiển thị đơn của chính mình đặt trong mục Đơn nhận làm
+          var currentPhone = user && normalizePhone(user.user_tel || user.sodienthoai || user.phone);
+          var orderPhone = mappedOrder.customer && normalizePhone(mappedOrder.customer.phone);
+          var isSelf = (mappedOrder.customer && mappedOrder.customer.id === providerId) || 
+                       (currentPhone && orderPhone && currentPhone === orderPhone);
+
+          if (isSelf) {
+            return;
+          }
+
           var status = String(mappedOrder.status || "").toLowerCase();
 
           if (status === "pending") {
@@ -1298,21 +1310,6 @@
       .join("");
   }
 
-  function setAcceptButtonLoading(button, isLoading) {
-    if (!button) return;
-    if (isLoading) {
-      if (!button.dataset.originalText) {
-        button.dataset.originalText = button.textContent || "Nhận đơn";
-      }
-      button.disabled = true;
-      button.textContent = "Đang nhận...";
-      return;
-    }
-
-    button.disabled = false;
-    button.textContent = button.dataset.originalText || "Nhận đơn";
-  }
-
   function setActionButtonLoading(
     button,
     isLoading,
@@ -1348,9 +1345,6 @@
 
   function handleCompleteOrder(orderId) {
     var sh = getShared();
-    // if (typeof sh.completeProviderOrder === "function") {
-    //   return sh.completeProviderOrder(orderId, BOOKING_TABLE);
-    // }
     if (typeof sh.updateOrder === "function") {
       return sh.updateOrder(BOOKING_TABLE, orderId, {
         ngayhoanthanh: new Date().toISOString(),
@@ -1362,9 +1356,6 @@
 
   function handleStartOrder(orderId) {
     var sh = getShared();
-    // if (typeof sh.startProviderOrder === "function") {
-    //   return sh.startProviderOrder(orderId, BOOKING_TABLE);
-    // }
     if (typeof sh.updateOrder === "function") {
       return sh.updateOrder(BOOKING_TABLE, orderId, {
         ngaybatdau: new Date().toISOString(),
@@ -1375,14 +1366,14 @@
 
   function handleCancelOrder(orderId) {
     var sh = getShared();
-    // if (typeof sh.updateOrder !== "function") {
-    //   return Promise.reject(new Error("Chưa sẵn sàng chức năng hủy đơn."));
-    // }
     return sh.updateOrder(BOOKING_TABLE, orderId, {
       ngayhuy: new Date().toISOString(),
     });
   }
 
+  // ==========================================
+  // 5. MÔ-ĐUN TRANG DANH SÁCH
+  // ==========================================
   function initListPage(role, sourceOrders) {
     var providerSource =
       role === "provider" && sourceOrders && !Array.isArray(sourceOrders)
@@ -1399,9 +1390,9 @@
     var statsOrders = providerSource
       ? providerSource.statsOrders || allOrders
       : allOrders;
-    var providerContextUser = providerSource
-      ? providerSource.providerUser || { id: providerSource.providerId }
-      : null;
+    // var providerContextUser = providerSource
+    //   ? providerSource.providerUser || { id: providerSource.providerId }
+    //   : null;
 
     var state = {
       page: 1,
@@ -1434,52 +1425,6 @@
     );
 
     renderStats(statsOrders, role);
-
-    function patchOrderLocally(orderId, updater) {
-      function patchList(list) {
-        (list || []).forEach(function (item) {
-          if (Number(item.id) !== Number(orderId)) return;
-          updater(item);
-        });
-      }
-
-      patchList(state.all);
-      patchList(state.filtered);
-      patchList(assignedState.all);
-      patchList(assignedState.filtered);
-      patchList(statsOrders);
-    }
-
-    function refreshProviderOrders() {
-      if (role !== "provider") {
-        return Promise.resolve();
-      }
-
-      return loadProviderOrders(providerContextUser).then(function (bundle) {
-        var nextBundle = bundle || {};
-        state.all = (Array.isArray(nextBundle.pendingOrders)
-          ? nextBundle.pendingOrders
-          : []).sort((a, b) => b.id - a.id);
-        state.filtered = state.all.slice();
-        assignedOrders = (Array.isArray(nextBundle.assignedOrders)
-          ? nextBundle.assignedOrders
-          : []).sort((a, b) => b.id - a.id);
-        assignedState.all = assignedOrders.slice();
-        assignedState.filtered = assignedOrders.slice();
-        assignedState.page = 1;
-        statsOrders = Array.isArray(nextBundle.statsOrders)
-          ? nextBundle.statsOrders
-          : state.all.slice();
-        state.page = 1;
-        renderStats(statsOrders, role);
-        renderRows();
-        renderAssignedRows();
-        renderPagination();
-        renderAssignedPagination();
-        updateCount();
-        updateAssignedCount();
-      });
-    }
 
     function updateCount() {
       if (countNode) {
@@ -1881,6 +1826,9 @@
     updateAssignedCount();
   }
 
+  // ==========================================
+  // 6. MÔ-ĐUN TRANG CHI TIẾT
+  // ==========================================
   function setText(id, value) {
     var node = document.getElementById(id);
     if (node) {
@@ -1897,6 +1845,9 @@
       .filter(Boolean);
   }
 
+  // ==========================================
+  // 6.1 HIỂN THỊ TIẾN TRÌNH & DỊCH VỤ
+  // ==========================================
   function taskLinesFromOrder(order) {
     var apiItems = splitListText(order && order.workItemsText);
     if (apiItems.length) {
@@ -1978,6 +1929,56 @@
       .join("");
   }
 
+  function renderSourceMedia(order) {
+    const section = document.getElementById("detailMediaSection");
+    const containerImages = document.getElementById("detailMediaImages");
+    const containerVideos = document.getElementById("detailMediaVideos");
+    if (!section || !containerImages || !containerVideos) return;
+
+    const anhIds = splitListText(order.anh_id);
+    const videoIds = splitListText(order.video_id);
+
+    containerImages.innerHTML = "";
+    containerVideos.innerHTML = "";
+
+    if (anhIds.length === 0 && videoIds.length === 0) {
+      section.classList.add("d-none");
+      return;
+    }
+
+    section.classList.remove("d-none");
+
+    if (anhIds.length > 0) {
+      containerImages.className = "row g-2";
+      anhIds.forEach(function (id) {
+        // Sử dụng link trực tiếp ảnh của Google Drive để tránh lỗi frame-ancestors CSP
+        const url = "https://lh3.googleusercontent.com/d/" + id;
+        const col = document.createElement("div");
+        col.className = "col-4";
+        col.innerHTML =
+          '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm">' +
+          '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;" alt="Hình ảnh hiện trường" onerror="this.src=\'../../../../public/asset/image/no-image.png\'">' +
+          "</div>";
+        containerImages.appendChild(col);
+      });
+    } else {
+      containerImages.innerHTML =
+        '<p class="text-muted small italic">Không có hình ảnh hiện trường.</p>';
+    }
+
+    if (videoIds.length > 0) {
+      videoIds.forEach((id) => {
+        const url = "https://drive.google.com/file/d/" + id + "/preview";
+        const wrapper = document.createElement("div");
+        wrapper.className = "ratio ratio-16x9 mb-2 border rounded overflow-hidden shadow-sm";
+        wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
+        containerVideos.appendChild(wrapper);
+      });
+    } else {
+      containerVideos.innerHTML = '<p class="text-muted small italic">Không có video.</p>';
+    }
+  }
+
   function renderTimeline(order) {
     var mount = document.getElementById("detailTimeline");
     if (!mount) return;
@@ -2008,6 +2009,9 @@
       .join("");
   }
 
+  // ==========================================
+  // 6.2 LUỒNG XỬ LÝ & HIỂN THỊ CHI TIẾT
+  // ==========================================
   function showNotFound(orderId) {
     var foundNode = document.getElementById("detailStateFound");
     var missingNode = document.getElementById("detailStateNotFound");
@@ -2556,10 +2560,19 @@
         const isDriveId = item && !item.includes("/") && !item.includes(".") && !item.includes(":");
         
         if (isDriveId) {
-          const url = "https://drive.google.com/file/d/" + item + "/preview";
+          // Sử dụng link lh3 làm ảnh đại diện (thumbnail) để tránh lỗi CSP frame-ancestors
+          const thumbUrl = "https://lh3.googleusercontent.com/d/" + item;
+          const fullUrl = "https://drive.google.com/file/d/" + item + "/view";
+          
           const wrapper = document.createElement("div");
-          wrapper.className = "ratio ratio-1x1 mb-2 border rounded overflow-hidden shadow-sm";
-          wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
+          wrapper.className = "ratio ratio-1x1 mb-2 border rounded overflow-hidden shadow-sm position-relative";
+          // Cho phép nhấn vào để xem chi tiết trên Drive nếu không load được frame
+          wrapper.innerHTML = `
+            <a href="${fullUrl}" target="_blank" class="d-block w-100 h-100">
+              <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover;" alt="Đánh giá" onerror="this.src='../../../../public/asset/image/no-image.png'">
+              <div class="position-absolute bottom-0 end-0 bg-dark text-white p-1" style="font-size:10px; opacity:0.7;">Drive</div>
+            </a>
+          `;
           grid.appendChild(wrapper);
           return;
         }
@@ -2690,7 +2703,7 @@
         formData.append("file", file);
         formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
 
-        return fetch("upload.php", {
+        return fetch(REVIEW_UPLOAD_ENDPOINT, {
           method: "POST",
           body: formData
         })
@@ -2827,6 +2840,9 @@
     renderSourceMedia(order);
   }
 
+  // ==========================================
+  // 7. VÒNG ĐỜI ỨNG DỤNG
+  // ==========================================
   async function init() {
     var pageType = getPageType();
     var role = getRole();
@@ -2839,10 +2855,11 @@
         return;
       }
 
-      if (isProviderUser(user)) {
-        window.location.href = "../nhacungcap/danh-sach-don-hang.html";
-        return;
-      }
+      // Bỏ qua chuyển hướng: cho phép nhà cung cấp cũng có thể xem trang đặt đơn của mình
+      // if (isProviderUser(user)) {
+      //   window.location.href = "../nhacungcap/danh-sach-don-hang.html";
+      //   return;
+      // }
 
       syncCustomerChip(user);
       sourceOrders = await loadCustomerOrders(user);
@@ -2904,56 +2921,6 @@
     });
   }
 
-  function renderSourceMedia(order) {
-    const section = document.getElementById("detailMediaSection");
-    const containerImages = document.getElementById("detailMediaImages");
-    const containerVideos = document.getElementById("detailMediaVideos");
-    if (!section || !containerImages || !containerVideos) return;
-
-    const anhIds = splitListText(order.anh_id);
-    const videoIds = splitListText(order.video_id);
-
-    containerImages.innerHTML = "";
-    containerVideos.innerHTML = "";
-
-    if (anhIds.length === 0 && videoIds.length === 0) {
-      section.classList.add("d-none");
-      return;
-    }
-
-    section.classList.remove("d-none");
-
-    if (anhIds.length > 0) {
-      containerImages.className = "row g-2";
-      anhIds.forEach(function (id) {
-        const url = "https://drive.google.com/file/d/" + id + "/preview";
-        const col = document.createElement("div");
-        col.className = "col-4";
-        col.innerHTML =
-          '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm">' +
-          '<iframe src="' +
-          url +
-          '" allow="autoplay" style="border:none;"></iframe>' +
-          "</div>";
-        containerImages.appendChild(col);
-      });
-    } else {
-      containerImages.innerHTML =
-        '<p class="text-muted small italic">Không có hình ảnh hiện trường.</p>';
-    }
-
-    if (videoIds.length > 0) {
-      videoIds.forEach((id) => {
-        const url = "https://drive.google.com/file/d/" + id + "/preview";
-        const wrapper = document.createElement("div");
-        wrapper.className = "ratio ratio-16x9 mb-2 border rounded overflow-hidden shadow-sm";
-        wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
-        containerVideos.appendChild(wrapper);
-      });
-    } else {
-      containerVideos.innerHTML = '<p class="text-muted small italic">Không có video.</p>';
-    }
-  }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", start);

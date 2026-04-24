@@ -30,7 +30,7 @@
           return Number.isFinite(numericId) && numericId > 0 ? numericId : null;
         };
 
-  function extractKrudRows(result) {
+  function extractRows(result) {
     if (Array.isArray(result)) return result;
     if (result && Array.isArray(result.data)) return result.data;
     if (result && Array.isArray(result.items)) return result.items;
@@ -47,6 +47,18 @@
       .replace(/,/g, ".");
     var parsed = Number(text);
     return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function normalizePhone(value) {
+    var phone = String(value || "")
+      .replace(/\s+/g, "")
+      .trim();
+
+    if (phone.indexOf("+84") === 0) return "0" + phone.slice(3);
+    if (phone.indexOf("84") === 0 && phone.length >= 11)
+      return "0" + phone.slice(2);
+
+    return phone;
   }
 
   function parseWeight(order) {
@@ -138,7 +150,7 @@
       }),
     );
 
-    var rows = extractKrudRows(result);
+    var rows = extractRows(result);
     if (!rows.length) throw new Error("Khong tim thay don hang");
     return rows[0];
   }
@@ -223,6 +235,18 @@
 
     var supplier = await getCurrentSupplier();
     var order = await getOrderById(orderId);
+
+    // Kiểm tra nếu là đơn của chính mình đặt
+    var customerId = Number(order.idkhachhang || order.makhachhang || order.user_id);
+    var currentPhone = normalizePhone(supplier.sodienthoai || supplier.phone);
+    var orderPhone = normalizePhone(order.sodienthoai || order.phone);
+    
+    var isSelf = (customerId === supplier.id) || 
+                 (currentPhone && orderPhone && currentPhone === orderPhone);
+
+    if (isSelf) {
+      throw new Error("Bạn không thể nhận đơn hàng do chính mình đặt.");
+    }
 
     var supplierLat = Number(supplier.maplat);
     var supplierLng = Number(supplier.maplng);

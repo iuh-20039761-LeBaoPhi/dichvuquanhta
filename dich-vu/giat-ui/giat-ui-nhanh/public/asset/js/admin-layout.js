@@ -94,7 +94,13 @@
     var currentPath = window.location.pathname.split("/").pop().toLowerCase();
     var activePath = currentPath;
     if (currentPath === "chi-tiet-don-hang.html") {
-      activePath = "danh-sach-don-hang.html";
+      var params = new URLSearchParams(window.location.search);
+      var role = params.get("role");
+      if (role === "provider") {
+        activePath = "danh-sach-don-nhan.html";
+      } else {
+        activePath = "danh-sach-don-hang.html";
+      }
     }
     var navItems = aside.querySelectorAll(".sidebar-nav .nav-item");
 
