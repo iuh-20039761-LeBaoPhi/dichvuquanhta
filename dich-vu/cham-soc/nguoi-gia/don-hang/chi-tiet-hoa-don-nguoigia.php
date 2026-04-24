@@ -1851,21 +1851,32 @@ include 'layout-header.php';
 			));
 			if (!matched) return null;
 
-			// Xác định role dựa vào id_dichvu:
-			// Nếu id_dichvu chứa '1' → nhà cung cấp (staff), ngược lại → khách hàng (customer)
-			const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
-			const isProvider = idDichvuList.includes('3');
-			const role = isProvider ? 'staff' : 'customer';
+			
+			// Cần có đơn hàng để xác định role
+			if (!app.$datlich_mevabe) return null;
 
-			// Bổ sung: Nếu là khách hàng, phải khớp SĐT trong đơn hàng
-			if (role === 'customer' && app.$datlich_nguoigia) {
-				const customerPhone = String(app.$datlich_nguoigia.sdtkhachhang || '').trim();
-				if (customerPhone !== sodienthoai.trim()) {
-					return null;
-				}
+			const sdt = sodienthoai.trim();
+			const customerPhone = String(app.$datlich_mevabe.sdtkhachhang || '').trim();
+			const sdtncc = String(app.$datlich_mevabe.sdtncc || '').trim();
+
+			// Ưu tiên 1: Nếu SĐT đăng nhập trùng với SĐT khách hàng trong đơn → khách hàng
+			if (sdt === customerPhone) {
+				return { role: 'customer', $user: matched };
 			}
 
-			return { role: role, $user: matched };
+			// Ưu tiên 2: Nếu SĐT đăng nhập khác SĐT khách hàng → kiểm tra nhà cung cấp
+			// Điều kiện: tài khoản phải có id_dichvu chứa '1'
+			//           VÀ (sdtncc trong đơn hàng trùng SĐT đăng nhập HOẶC sdtncc trong đơn hàng rỗng/null)
+			const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
+			const isProviderAccount = idDichvuList.includes('3');
+			const sdtnccMatchOrEmpty = !sdtncc || sdtncc === sdt;
+
+			if (isProviderAccount && sdtnccMatchOrEmpty) {
+				return { role: 'staff', $user: matched };
+			}
+
+			// Không thỏa điều kiện nào → không cho xem đơn hàng
+			return null;
 		}
 
 
