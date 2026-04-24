@@ -157,17 +157,15 @@
                 const avatarLink = authData.link_avatar || authData.avatar || authData.avatartenfile || '';
                 
                 if (avatarLink) {
-                    if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
-                        const finalUrl = avatarLink.startsWith('http') ? avatarLink : (getRoot() + '/public/uploads/users/' + avatarLink);
-                        avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                    } else {
-                        avatarEl.innerHTML = `
-                            <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
-                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
-                                        frameborder="0" scrolling="no"
-                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
-                            </div>`;
-                    }
+                    const resolveAvatar = (link) => {
+                        if (link.startsWith('http')) return link;
+                        // Nếu là Drive ID (không chứa dấu gạch chéo và đủ dài)
+                        if (link.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${link}`;
+                        // Đường dẫn local cũ
+                        return (getRoot() + '/public/uploads/users/' + link);
+                    };
+                    const finalUrl = resolveAvatar(avatarLink);
+                    avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.src='${getRoot()}/public/asset/images/default-avatar.png'">`;
                 } else {
                     avatarEl.textContent = initial;
                 }

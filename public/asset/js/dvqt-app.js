@@ -236,16 +236,46 @@
         setCookie: (name, value, days) => Utils.setCookie(name, value, days),
         getApiPath: (suffix) => Utils.getApiPath(suffix),
         /**
+         * Chuẩn hóa tên file: Không dấu, không khoảng trắng, không ký tự lạ
+         */
+        sanitizeName: (str) => {
+            if (!str) return 'file';
+            let s = str.toLowerCase();
+            s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Xóa dấu tiếng Việt
+            s = s.replace(/[đĐ]/g, "d");
+            s = s.replace(/[^a-z0-9.]/g, "-"); // Thay ký tự lạ bằng dấu -
+            s = s.replace(/-+/g, "-"); // Xóa nhiều dấu - liên tiếp
+            s = s.replace(/^-+|-+$/g, ""); // Xóa dấu - ở đầu/cuối
+            return s;
+        },
+
+        /**
          * Tải file lên Google Drive thông qua Proxy PHP
          * @param {File} fileObj - Đối tượng File lấy từ input[type=file]
+         * @param {Object} [options] - Tùy chọn bổ sung
+         * @param {number|string} [options.folderKey] - Mã thư mục Drive
+         * @param {string} [options.customName] - Tên gợi nhớ (ví dụ: "Sửa máy lạnh")
          * @returns {Promise<Object>} - { success: true, url: '...', fileId: '...' }
          */
-        uploadFile: async (fileObj) => {
+        uploadFile: async (fileObj, options) => {
             if (!fileObj) throw new Error('Không có file để tải lên');
+
+            const opts = options || {};
+            const timestamp = Math.floor(Date.now() / 1000);
+            
+            // Lấy phần mở rộng (đuôi file)
+            const ext = fileObj.name.split('.').pop().toLowerCase();
+            
+            // Xử lý tên file cuối cùng
+            let baseName = opts.customName || fileObj.name.substring(0, fileObj.name.lastIndexOf('.'));
+            let finalName = DVQTCore.sanitizeName(baseName) + '-' + timestamp + '.' + ext;
 
             const formData = new FormData();
             formData.append('file', fileObj);
-            formData.append('name', fileObj.name);
+            formData.append('name', finalName);
+            if (opts.folderKey) {
+                formData.append('folderKey', opts.folderKey);
+            }
 
             const uploadPath = window.location.origin + ROOT_URL + '/public/upload_to_drive.php';
 

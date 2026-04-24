@@ -154,8 +154,17 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label small fw-bold">Ảnh đại diện (URL)</label>
-                    <input type="text" class="form-control rounded-3" name="anh_dai_dien" id="catImage">
+                    <label class="form-label small fw-bold">Ảnh đại diện</label>
+                    <input type="hidden" name="anh_dai_dien" id="catImage">
+                    <div class="d-flex align-items-center gap-3">
+                        <div id="catImagePreview" style="width:64px;height:64px;border-radius:12px;overflow:hidden;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-image text-muted"></i>
+                        </div>
+                        <label class="btn btn-sm btn-outline-primary rounded-pill px-3 mb-0" style="cursor:pointer;">
+                            <i class="fas fa-upload me-1"></i>Chọn ảnh
+                            <input type="file" id="catImageFile" accept="image/*" class="d-none" onchange="previewAdminImg(this, 'catImagePreview')">
+                        </label>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Mô tả</label>
@@ -212,8 +221,17 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label small fw-bold">Ảnh đại diện (URL)</label>
-                    <input type="text" class="form-control rounded-3" name="anh_dai_dien" id="svcImage">
+                    <label class="form-label small fw-bold">Ảnh đại diện</label>
+                    <input type="hidden" name="anh_dai_dien" id="svcImage">
+                    <div class="d-flex align-items-center gap-3">
+                        <div id="svcImagePreview" style="width:64px;height:64px;border-radius:12px;overflow:hidden;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-image text-muted"></i>
+                        </div>
+                        <label class="btn btn-sm btn-outline-primary rounded-pill px-3 mb-0" style="cursor:pointer;">
+                            <i class="fas fa-upload me-1"></i>Chọn ảnh
+                            <input type="file" id="svcImageFile" accept="image/*" class="d-none" onchange="previewAdminImg(this, 'svcImagePreview')">
+                        </label>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">

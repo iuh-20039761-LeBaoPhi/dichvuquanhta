@@ -1,0 +1,681 @@
+<script>
+    if (window.location.pathname.endsWith('quan-ly-xe.html')) {
+        window.location.href = 'trang-ca-nhan.html';
+    }
+</script>
+<!-- Quản lý xe (NCC) -->
+<div class="container-fluid p-0">
+    
+    <!-- 0. THANH ĐIỀU HƯỚNG NHANH -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold mb-0">Quản lý xe</h5>
+        <button class="btn btn-primary fw-bold px-4 shadow-sm" id="btnToggleForm">
+            <i class="fas fa-plus-circle me-2"></i>Đăng ký xe mới
+        </button>
+    </div>
+
+    <!-- 1. FORM ĐĂNG KÝ (Mặc định ẩn) -->
+    <div id="registerForm" style="display: none;">
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+            <div class="card-header bg-white py-3 border-bottom-0 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0 text-primary">
+                    <i class="fas fa-edit me-2"></i>Nhập thông tin phương tiện
+                </h6>
+                <button class="btn-close" onclick="toggleRegForm()"></button>
+            </div>
+            <div class="card-body p-4 pt-0">
+                <div class="row g-3">
+                    <div class="col-12"><div class="fw-bold text-muted small border-bottom pb-1 mb-2">1. THÔNG TIN CƠ BẢN</div></div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-600">Tên hiển thị (VD: Toyota Vios 2023)</label>
+                        <input type="text" id="carName" class="form-control" placeholder="Tên xe đầy đủ" list="listNames">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Hãng xe</label>
+                        <input type="text" id="carBrand" class="form-control" placeholder="Toyota" list="listBrands">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Dòng xe (Model)</label>
+                        <input type="text" id="carModel" class="form-control" placeholder="Vios" list="listModels">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Năm sản xuất</label>
+                        <input type="number" id="carYear" class="form-control" placeholder="2024" list="listYears">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Biển số xe</label>
+                        <input type="text" id="carPlate" class="form-control" placeholder="51H-123.45">
+                    </div>
+
+                    <div class="col-12 mt-4"><div class="fw-bold text-muted small border-bottom pb-1 mb-2">2. THÔNG SỐ KỸ THUẬT & GIÁ</div></div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Loại xe</label>
+                        <input type="text" id="carType" class="form-control" placeholder="Sedan" list="listTypes">
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label small fw-600">Số chỗ</label>
+                        <input type="number" id="carSeats" class="form-control" placeholder="5" list="listSeats">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Hộp số</label>
+                        <input type="text" id="carTransmission" class="form-control" placeholder="Tự động" list="listTransmissions">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Nhiên liệu</label>
+                        <input type="text" id="carFuel" class="form-control" placeholder="Xăng" list="listFuels">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Số ODO (km)</label>
+                        <input type="number" id="carOdo" class="form-control" placeholder="7100">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-600 text-primary">Giá thuê (VNĐ/Ngày)</label>
+                        <input type="number" id="carPrice" class="form-control border-primary" placeholder="700000">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-600">Số khung</label>
+                        <input type="text" id="carFrame" class="form-control" placeholder="RLHK...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-600">Số máy</label>
+                        <input type="text" id="carEngine" class="form-control" placeholder="2NR...">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-600">Màu sắc</label>
+                        <input type="text" id="carColor" class="form-control" placeholder="Đỏ" list="listColors">
+                    </div>
+
+                    <div class="col-12 mt-4"><div class="fw-bold text-muted small border-bottom pb-1 mb-2">3. HÌNH ẢNH & VIDEO</div></div>
+                    <div class="col-12">
+                        <div class="row g-2">
+                            <div class="col-md-2 col-4">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#f8f9fa;">
+                                    <div id="prev_front" class="mb-1"><i class="fas fa-camera fa-2x text-muted"></i></div>
+                                    <div class="small fw-bold">Mặt trước</div>
+                                    <input type="file" id="file_front" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_front')">
+                                </label>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#f8f9fa;">
+                                    <div id="prev_back" class="mb-1"><i class="fas fa-camera fa-2x text-muted"></i></div>
+                                    <div class="small fw-bold">Mặt sau</div>
+                                    <input type="file" id="file_back" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_back')">
+                                </label>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#f8f9fa;">
+                                    <div id="prev_left" class="mb-1"><i class="fas fa-camera fa-2x text-muted"></i></div>
+                                    <div class="small fw-bold">Bên trái</div>
+                                    <input type="file" id="file_left" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_left')">
+                                </label>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#f8f9fa;">
+                                    <div id="prev_right" class="mb-1"><i class="fas fa-camera fa-2x text-muted"></i></div>
+                                    <div class="small fw-bold">Bên phải</div>
+                                    <input type="file" id="file_right" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_right')">
+                                </label>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#f8f9fa;">
+                                    <div id="prev_inner" class="mb-1"><i class="fas fa-camera fa-2x text-muted"></i></div>
+                                    <div class="small fw-bold">Nội thất</div>
+                                    <input type="file" id="file_inner" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_inner')">
+                                </label>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <label class="upload-box d-block text-center border border-primary border-dashed rounded p-2" style="cursor:pointer; background:#eef2ff;">
+                                    <div id="prev_video" class="mb-1"><i class="fas fa-video fa-2x text-primary"></i></div>
+                                    <div class="small fw-bold text-primary">Tải Video</div>
+                                    <input type="file" id="file_video" class="d-none" accept="video/*" onchange="previewVideo(this, 'prev_video')">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4"><div class="fw-bold text-muted small border-bottom pb-1 mb-2">4. MÔ TẢ & TIỆN NGHI</div></div>
+                    <div class="col-md-12">
+                        <label class="form-label small fw-600"><i class="fas fa-map-marker-alt text-danger me-1"></i> Địa chỉ xe (Nơi giao nhận xe) <span class="text-danger">*</span></label>
+                        <div class="input-group mb-2">
+                            <input type="text" id="carAddress" class="form-control" placeholder="Số nhà, tên đường, Phường/Xã, Quận/Huyện..." required>
+                            <button class="btn btn-outline-primary" type="button" onclick="getCurrentLocManually()" title="Vị trí hiện tại"><i class="fas fa-location-arrow"></i></button>
+                            <button class="btn btn-outline-primary" type="button" onclick="togglePickerMap()" title="Chọn trên bản đồ"><i class="fas fa-map"></i> Bản đồ</button>
+                        </div>
+                        <div id="pickerMapArea" class="border rounded-3 mb-2 overflow-hidden" style="display:none; height: 280px; position: relative;">
+                            <div id="pMap" style="width:100%; height:100%;"></div>
+                            <div class="position-absolute bottom-0 start-50 translate-middle-x mb-2" style="z-index:1000;">
+                                <button class="btn btn-primary btn-sm rounded-pill px-4 shadow" type="button" onclick="confirmMapLocManually()">Xác nhận vị trí này</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="carLat">
+                        <input type="hidden" id="carLng">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small fw-600">Tiện nghi (Phân cách bằng dấu phẩy)</label>
+                        <input type="text" id="carFeatures" class="form-control" list="listFeatures">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-600">Mô tả chi tiết</label>
+                        <textarea id="carDesc" class="form-control" rows="2" placeholder="Toyota Vios..."></textarea>
+                    </div>
+
+                    <div class="col-12 text-end mt-3">
+                        <button class="btn btn-primary px-5 py-2 fw-bold shadow" id="btnSubmitCar">
+                            <i class="fas fa-paper-plane me-2"></i> Gửi duyệt xe ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DANH SÁCH XE -->
+    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold">Danh sách xe của tôi</h6>
+            <button class="btn btn-sm btn-light text-primary fw-bold" onclick="loadMyCars()">
+                <i class="fas fa-sync-alt"></i> Làm mới
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0" id="carTable">
+                    <thead class="bg-light text-muted small">
+                        <tr>
+                            <th class="ps-4">Phương tiện</th>
+                            <th>Thông số KT</th>
+                            <th>Pháp lý</th>
+                            <th>Giá thuê</th>
+                            <th>Trạng thái</th>
+                            <th class="pe-4 text-end">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="carListBody"></tbody>
+                </table>
+            </div>
+            <div class="px-4 pb-3 mt-3" id="carPagination"></div>
+            <div id="emptyCar" class="text-center py-5 d-none">
+                <img src="https://img.icons8.com/bubbles/100/null/car.png" class="mb-3">
+                <p class="text-muted">Chưa có xe nào được đăng ký!</p>
+            </div>
+        </div><!-- End main container -->
+    </div>
+</div>
+
+<!-- Modal Xem chi tiết xe (Dạng bảng) -->
+<div class="modal fade" id="viewCarModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-light p-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="fw-bold mb-0" id="viewCarModalTitle">Thông tin chi tiết xe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-4">
+                    <!-- Ảnh đại diện và Gallery nhỏ -->
+                    <div class="col-md-5">
+                        <div class="card border-0 bg-light h-100 overflow-hidden" style="border-radius:15px;">
+                            <img id="vCarMainImg" src="" class="img-fluid" style="height:220px; object-fit:cover;">
+                            <div class="p-3">
+                                <div class="row g-2" id="vCarGallery">
+                                    <!-- Gallery thumbnails -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Bảng thông tin -->
+                    <div class="col-md-7">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless align-middle mb-0">
+                                <tbody>
+                                    <tr><td class="text-muted py-1" style="width: 130px;">Tên xe:</td><td class="fw-bold py-1" id="vCarName"></td></tr>
+                                    <tr><td class="text-muted py-1">Hãng xe:</td><td id="vCarBrand"></td></tr>
+                                    <tr><td class="text-muted py-1">Dòng xe:</td><td id="vCarModel"></td></tr>
+                                    <tr><td class="text-muted py-1">Năm sản xuất:</td><td id="vCarYear"></td></tr>
+                                    <tr><td class="text-muted py-1">Biển số:</td><td class="fw-bold text-primary py-1" id="vCarPlate"></td></tr>
+                                    <tr><td class="text-muted py-1">Loại xe:</td><td id="vCarType"></td></tr>
+                                    <tr><td class="text-muted py-1">Số chỗ:</td><td><span id="vCarSeats"></span> chỗ</td></tr>
+                                    <tr><td class="text-muted py-1">Hộp số:</td><td id="vCarTrans"></td></tr>
+                                    <tr><td class="text-muted py-1">Nhiên liệu:</td><td id="vCarFuel"></td></tr>
+                                    <tr><td class="text-muted py-1">Số ODO:</td><td><span id="vCarOdo"></span> km</td></tr>
+                                    <tr><td class="text-muted py-1">Màu sắc:</td><td id="vCarColor"></td></tr>
+                                    <tr><td class="text-muted py-1">Số khung:</td><td class="small fw-bold" id="vCarFrame"></td></tr>
+                                    <tr><td class="text-muted py-1">Số máy:</td><td class="small fw-bold" id="vCarEngine"></td></tr>
+                                    <tr><td class="text-muted py-1">Giá thuê:</td><td class="fw-bold text-danger py-1"><span id="vCarPrice"></span> <small>đ/ngày</small></td></tr>
+                                    <tr><td class="text-muted py-1">Địa chỉ xe:</td><td class="small py-1 text-wrap" id="vCarAddress"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <h6 class="fw-bold small text-muted mb-2">Tiện nghi:</h6>
+                            <div id="vCarFeatures" class="d-flex flex-wrap gap-1"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-3 mt-2">
+                    <div class="col-12">
+                        <div class="p-3 bg-light rounded-3 h-100">
+                            <h6 class="fw-bold small text-uppercase text-muted mb-2">Mô tả chi tiết:</h6>
+                            <div id="vCarDesc" class="small text-dark collapse-text" style="max-height: 60px; overflow: hidden; transition: max-height 0.3s ease;"></div>
+                            <button class="btn btn-link btn-sm p-0 text-primary d-none" id="vCarDescBtn" onclick="toggleTextCollapse('vCarDesc')">Xem thêm</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" id="vCarEditBtn">Chỉnh sửa ngay</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<datalist id="listNames"></datalist><datalist id="listBrands"></datalist><datalist id="listModels"></datalist><datalist id="listYears"></datalist><datalist id="listTypes"></datalist><datalist id="listSeats"></datalist><datalist id="listTransmissions"></datalist><datalist id="listFuels"></datalist><datalist id="listColors"></datalist><datalist id="listFeatures"></datalist>
+
+<style>
+    .upload-box:hover { border-color: #0d6efd !important; background: #fff !important; }
+    .img-preview { width: 100%; height: 50px; object-fit: cover; border-radius: 4px; }
+</style>
+
+<script>
+(function() {
+    'use strict';
+    const TABLE = 'xethue';
+    let myCarsRaw = [];
+    let currentPage = 1;
+    const itemsPerPage = 6;
+    let currentEditId = null;
+
+    window.toggleRegForm = function() {
+        const form = document.getElementById('registerForm');
+        const btn = document.getElementById('btnToggleForm');
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-times me-2"></i>Đóng Form';
+            btn.classList.replace('btn-primary', 'btn-light');
+            form.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            form.style.display = 'none';
+            btn.innerHTML = '<i class="fas fa-plus-circle me-2"></i>Đăng ký xe mới';
+            btn.classList.replace('btn-light', 'btn-primary');
+            resetForm();
+        }
+    };
+    document.getElementById('btnToggleForm').onclick = window.toggleRegForm;
+
+    function resetForm() {
+        currentEditId = null;
+        document.getElementById('btnSubmitCar').innerHTML = '<i class="fas fa-paper-plane me-2"></i> Gửi duyệt xe ngay';
+        document.querySelectorAll('input:not(#btnSubmitCar), textarea').forEach(el => el.value = '');
+        ['front','back','left','right','inner'].forEach(id => {
+            const el = document.getElementById('prev_'+id);
+            if(el) el.innerHTML = `<i class="fas fa-camera fa-2x text-muted"></i>`;
+        });
+        const vprev = document.getElementById('prev_video');
+        if(vprev) vprev.innerHTML = `<i class="fas fa-video fa-2x text-primary"></i>`;
+    }
+
+    async function initAutoSuggest() {
+        try {
+            const allCars = await DVQTKrud.listTable(TABLE, { limit: 1000 });
+            if (!allCars) return;
+            const build = (lid, field) => {
+                const el = document.getElementById(lid);
+                if(!el) return;
+                const vals = [...new Set(allCars.map(c => c[field]).filter(v => !!v))].sort();
+                el.innerHTML = vals.map(v => `<option value="${v}">`).join('');
+            };
+            build('listNames','tenxe'); build('listBrands','hangxe'); build('listModels','dongxe');
+            build('listYears','namsanxuat'); build('listTypes','loaixe'); build('listSeats','socho');
+            build('listTransmissions','hopso'); build('listFuels','nhienlieu'); build('listColors','mausac');
+        } catch(e) {}
+    }
+
+    window.loadMyCars = async function() {
+        const tbody = document.getElementById('carListBody');
+        if(!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+        try {
+            const session = window._dvqt_session_cache || await DVQTApp.checkSession();
+            const cars = await DVQTKrud.listTable(TABLE, { limit: 1000 });
+            myCarsRaw = (cars || []).filter(c => String(c.provider_id) === String(session.id)).reverse();
+            if(!myCarsRaw.length) {
+                tbody.innerHTML = ''; document.getElementById('emptyCar').classList.remove('d-none');
+                renderPagination(0); return;
+            }
+            document.getElementById('emptyCar').classList.add('d-none');
+            renderPage(1); renderPagination(myCarsRaw.length);
+        } catch(e) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi dữ liệu.</td></tr>'; }
+    };
+
+    function renderPage(page) {
+        currentPage = page;
+        const tbody = document.getElementById('carListBody');
+        const items = myCarsRaw.slice((page-1)*itemsPerPage, page*itemsPerPage);
+        tbody.innerHTML = items.map(c => {
+            const st = String(c.trangthai || '').toLowerCase();
+            let badge = `<span class="badge bg-secondary bg-opacity-10 text-secondary">N/A</span>`;
+            if (st === 'pending') badge = `<span class="badge bg-warning bg-opacity-10 text-warning">Chờ duyệt</span>`;
+            if (st === 'rejected') badge = `<span class="badge bg-danger bg-opacity-10 text-danger">Từ chối</span>`;
+            if (st === 'hidden') badge = `<span class="badge bg-dark bg-opacity-25 text-dark">Đã ẩn</span>`;
+            if (['available', 'active', 'approved', 'hot_dong', '1'].includes(st)) badge = `<span class="badge bg-success bg-opacity-10 text-success">Hoạt động</span>`;
+
+            const isHidden = c.trangthai === 'hidden';
+            return `<tr>
+                <td class="ps-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-light rounded-2 p-2"><i class="fas fa-car text-primary"></i></div>
+                        <div><div class="fw-bold">${c.tenxe}</div><div class="small text-muted">${c.hangxe} · ${c.namsanxuat}</div></div>
+                    </div>
+                </td>
+                <td><div class="small">${c.loaixe} · ${c.socho} chỗ</div><div class="small text-muted">${c.hopso}</div></td>
+                <td><div class="small">BS: <b>${c.bienso}</b></div></td>
+                <td class="fw-bold">${Number(c.giathue).toLocaleString()}đ</td>
+                <td>${badge}</td>
+                <td class="pe-4 text-end">
+                    <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="showCarDetail(${c.id})" title="Xem"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-sm btn-outline-primary border-0 me-1" onclick="editCar(${c.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm ${isHidden ? 'btn-success' : 'btn-outline-secondary'} border-0" onclick="toggleHideCar(${c.id}, '${c.trangthai}')" title="${isHidden ? 'Hiện xe' : 'Ẩn xe'}"><i class="fas ${isHidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function renderPagination(total) {
+        const container = document.getElementById('carPagination');
+        const pages = Math.ceil(total/itemsPerPage);
+        if(pages<=1) { container.innerHTML=''; return; }
+        let h = `<nav><ul class="pagination pagination-sm justify-content-end">`;
+        for(let i=1; i<=pages; i++) h += `<li class="page-item ${i===currentPage?'active':''}"><a class="page-link" href="#" onclick="event.preventDefault(); window.changeCarsPage(${i})">${i}</a></li>`;
+        container.innerHTML = h + `</ul></nav>`;
+    }
+    window.changeCarsPage = (p) => { renderPage(p); renderPagination(myCarsRaw.length); };
+
+    // Helper xử lý hiển thị ảnh (Hỗ trợ cả Drive và Local)
+    function resolveImg(val) {
+        if (!val) return '../public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg';
+        if (val.startsWith('http')) return val;
+        if (val.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${val}`;
+        return '../public/assets/images/cars/' + val;
+    }
+
+    // Hàm hiển thị chi tiết xe trong Modal (Dạng bảng đầy đủ)
+    window.showCarDetail = (id) => {
+        const car = myCarsRaw.find(c => c.id == id);
+        if(!car) return;
+
+        // Reset trạng thái collapse
+        const el = document.getElementById('vCarDesc');
+        if(el) { el.style.maxHeight = '60px'; el.classList.remove('expanded'); }
+
+        document.getElementById('viewCarModalTitle').textContent = 'Chi tiết xe: ' + car.tenxe;
+        document.getElementById('vCarName').textContent = car.tenxe;
+        document.getElementById('vCarBrand').textContent = car.hangxe || 'N/A';
+        document.getElementById('vCarModel').textContent = car.dongxe || 'N/A';
+        document.getElementById('vCarYear').textContent = car.namsanxuat || 'N/A';
+        document.getElementById('vCarPlate').textContent = car.bienso || 'N/A';
+        document.getElementById('vCarType').textContent = car.loaixe || 'N/A';
+        document.getElementById('vCarSeats').textContent = car.socho || '4';
+        document.getElementById('vCarTrans').textContent = car.hopso || 'N/A';
+        document.getElementById('vCarFuel').textContent = car.nhienlieu || 'N/A';
+        document.getElementById('vCarOdo').textContent = Number(car.odo || 0).toLocaleString();
+        document.getElementById('vCarColor').textContent = car.mausac || 'N/A';
+        document.getElementById('vCarFrame').textContent = car.sokhung || 'N/A';
+        document.getElementById('vCarEngine').textContent = car.somay || 'N/A';
+        document.getElementById('vCarPrice').textContent = Number(car.giathue || 0).toLocaleString();
+        document.getElementById('vCarAddress').textContent = car.diachi_xe || 'Chưa cập nhật địa chỉ';
+        
+        // Xử lý text dài & nút xem thêm
+        const handleLongText = (elId, text, btnId) => {
+            const el = document.getElementById(elId);
+            const btn = document.getElementById(btnId);
+            el.textContent = text || 'Không có thông tin';
+            if (text && text.length > 120) {
+                btn.classList.remove('d-none');
+                btn.textContent = 'Xem thêm';
+            } else {
+                btn.classList.add('d-none');
+            }
+        };
+        handleLongText('vCarDesc', car.mota, 'vCarDescBtn');
+
+        // Tiện nghi (Amenities)
+        const features = (car.features || '').split(',').filter(f => f.trim());
+        document.getElementById('vCarFeatures').innerHTML = features.map(f => 
+            `<span class="badge bg-white text-primary border fw-normal py-1 px-2 mb-1">${f.trim()}</span>`
+        ).join('') || '<span class="small text-muted italic">Mặc định</span>';
+
+        // Ảnh chính & Gallery
+        document.getElementById('vCarMainImg').src = resolveImg(car.anhdaidien);
+        const galleryFields = ['anhdaidien', 'anhsau', 'anhtrai', 'anhphai', 'anhnoithat'];
+        let galleryHtml = '';
+        galleryFields.forEach(f => {
+            if(car[f]) {
+                galleryHtml += `
+                    <div class="col-4">
+                        <img src="${resolveImg(car[f])}" class="img-fluid rounded border shadow-sm" 
+                             style="height:45px; width:100%; object-fit:cover; cursor:pointer;"
+                             onclick="showFullImg(this.src)">
+                    </div>`;
+            }
+        });
+        document.getElementById('vCarGallery').innerHTML = galleryHtml;
+
+        const modal = new bootstrap.Modal(document.getElementById('viewCarModal'));
+        modal.show();
+    };
+
+    window.showFullImg = (src) => { document.getElementById('vCarMainImg').src = src; };
+
+    window.toggleTextCollapse = (id) => {
+        const el = document.getElementById(id);
+        const btn = document.getElementById(id + 'Btn');
+        if (el.classList.contains('expanded')) {
+            el.style.maxHeight = '60px';
+            el.classList.remove('expanded');
+            btn.textContent = 'Xem thêm';
+        } else {
+            el.style.maxHeight = '1000px';
+            el.classList.add('expanded');
+            btn.textContent = 'Thu gọn';
+        }
+    };
+
+    window.editCar = function(id) {
+        const car = myCarsRaw.find(c => String(c.id) === String(id));
+        if(!car) return;
+        currentEditId = id;
+        if(document.getElementById('registerForm').style.display==='none') window.toggleRegForm();
+        document.getElementById('carName').value = car.tenxe || '';
+        document.getElementById('carBrand').value = car.hangxe || '';
+        document.getElementById('carModel').value = car.dongxe || '';
+        document.getElementById('carYear').value = car.namsanxuat || '';
+        document.getElementById('carPlate').value = car.bienso || '';
+        document.getElementById('carType').value = car.loaixe || '';
+        document.getElementById('carSeats').value = car.socho || '';
+        document.getElementById('carTransmission').value = car.hopso || '';
+        document.getElementById('carFuel').value = car.nhienlieu || '';
+        document.getElementById('carOdo').value = car.odo || '';
+        document.getElementById('carPrice').value = car.giathue || '';
+        document.getElementById('carFrame').value = car.sokhung || '';
+        document.getElementById('carEngine').value = car.somay || '';
+        document.getElementById('carColor').value = car.mausac || '';
+        document.getElementById('carFeatures').value = car.features || '';
+        document.getElementById('carDesc').value = car.mota || '';
+        const driveUrl = (val) => {
+            if(!val) return '';
+            if(val.startsWith('http')) return val;
+            // Nếu là đường dẫn local cũ (chứa dấu chấm), giữ nguyên
+            if(val.includes('.') && !val.match(/^[a-zA-Z0-9_-]{20,}$/)) return '../public/assets/images/cars/' + val;
+            // Nếu là Drive fileId
+            return DVQTApp.getDriveUrl ? DVQTApp.getDriveUrl(val) : `https://lh3.googleusercontent.com/u/0/d/${val}`;
+        };
+        document.getElementById('carAddress').value = car.diachi_xe || '';
+        document.getElementById('carLat').value = car.lat || '';
+        document.getElementById('carLng').value = car.lng || '';
+        
+        // Reset map preview
+        document.getElementById('pickerMapArea').style.display = 'none';
+
+        if(car.anhdaidien) document.getElementById('prev_front').innerHTML = `<img src="${resolveImg(car.anhdaidien)}" class="img-preview">`;
+        if(car.anhsau) document.getElementById('prev_back').innerHTML = `<img src="${driveUrl(car.anhsau)}" class="img-preview">`;
+        if(car.anhtrai) document.getElementById('prev_left').innerHTML = `<img src="${driveUrl(car.anhtrai)}" class="img-preview">`;
+        if(car.anhphai) document.getElementById('prev_right').innerHTML = `<img src="${driveUrl(car.anhphai)}" class="img-preview">`;
+        if(car.anhnoithat) document.getElementById('prev_inner').innerHTML = `<img src="${driveUrl(car.anhnoithat)}" class="img-preview">`;
+        if(car.videourl) document.getElementById('prev_video').innerHTML = `<i class="fas fa-video fa-2x text-success"></i>`;
+        document.getElementById('btnSubmitCar').innerHTML = '<i class="fas fa-save me-2"></i> Lưu thay đổi';
+        document.getElementById('registerForm').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.previewImg = (input, pid) => {
+        if(input.files && input.files[0]) {
+            const r = new FileReader();
+            r.onload = (e) => { document.getElementById(pid).innerHTML = `<img src="${e.target.result}" class="img-preview">`; };
+            r.readAsDataURL(input.files[0]);
+        }
+    };
+    window.previewVideo = (input, pid) => {
+        if(input.files && input.files[0]) document.getElementById(pid).innerHTML = `<i class="fas fa-video fa-2x text-success"></i>`;
+    };
+
+    document.getElementById('btnSubmitCar').onclick = async function() {
+        const btn = this;
+        const session = await DVQTApp.checkSession();
+        const data = {
+            provider_id: session.id,
+            tenxe: document.getElementById('carName').value.trim(),
+            hangxe: document.getElementById('carBrand').value.trim(),
+            dongxe: document.getElementById('carModel').value.trim(),
+            namsanxuat: document.getElementById('carYear').value,
+            loaixe: document.getElementById('carType').value.trim(),
+            socho: document.getElementById('carSeats').value,
+            hopso: document.getElementById('carTransmission').value.trim(),
+            nhienlieu: document.getElementById('carFuel').value.trim(),
+            giathue: document.getElementById('carPrice').value,
+            bienso: document.getElementById('carPlate').value.trim(),
+            mausac: document.getElementById('carColor').value,
+            sokhung: document.getElementById('carFrame').value.trim().toUpperCase(),
+            somay: document.getElementById('carEngine').value.trim().toUpperCase(),
+            odo: document.getElementById('carOdo').value,
+            mota: document.getElementById('carDesc').value.trim(),
+            diachi_xe: document.getElementById('carAddress').value.trim(),
+            lat: document.getElementById('carLat').value,
+            lng: document.getElementById('carLng').value,
+            features: document.getElementById('carFeatures').value.trim(),
+            trangthai: 'pending',
+            created_date: new Date().toISOString().slice(0, 19).replace('T', ' ')
+        };
+        if(!data.tenxe || !data.bienso || !data.giathue) { Swal.fire('Thiếu tin','Tên, biển số, giá là bắt buộc','warning'); return; }
+        btn.disabled = true; btn.innerHTML = 'Đang xử lý...';
+        try {
+            let carId = currentEditId;
+            if(currentEditId) await DVQTKrud.updateRow(TABLE, currentEditId, data);
+            else { const res = await DVQTKrud.insertRow(TABLE, data); carId = res.id || res.data?.id; }
+            const fileMap = { 'file_front':'anhdaidien','file_back':'anhsau','file_left':'anhtrai','file_right':'anhphai','file_inner':'anhnoithat','file_video':'videourl' };
+            const upData = {};
+            for(const [inputId, dbField] of Object.entries(fileMap)) {
+                const el = document.getElementById(inputId);
+                if(el && el.files[0]) {
+                    try {
+                        const customName = (data.tenxe || 'xe') + '-' + dbField;
+                        const up = await DVQTApp.uploadFile(el.files[0], { folderKey: 10, customName: customName });
+                        if(up && up.success && up.fileId) upData[dbField] = up.fileId;
+                    } catch(err) { console.warn('Upload ' + dbField + ' failed:', err); }
+                }
+            }
+            if(Object.keys(upData).length > 0) {
+                await DVQTKrud.updateRow(TABLE, carId, upData);
+            }
+            Swal.fire('Xong', currentEditId?'Cập nhật thành công':'Đã lưu xe', 'success');
+            resetForm(); loadMyCars(); initAutoSuggest();
+            if(typeof window.toggleRegForm==='function' && document.getElementById('registerForm').style.display!=='none') window.toggleRegForm();
+        } catch(e) { Swal.fire('Lỗi', e.message, 'error'); } finally { btn.disabled = false; }
+    };
+
+    window.toggleHideCar = async function(id, currentStatus) {
+        const isHidden = currentStatus === 'hidden';
+        const msg = isHidden ? 'Hiện lại xe này để cho thuê?' : 'Tạm ẩn xe này (khách sẽ không thấy)?';
+        const res = await Swal.fire({ 
+            title: isHidden ? 'Hiện xe' : 'Ẩn xe', text: msg, icon: 'question',
+            showCancelButton: true, confirmButtonText: isHidden ? 'Hiện ngay' : 'Ẩn ngay'
+        });
+        if (res.isConfirmed) {
+            try {
+                const nextStatus = isHidden ? 'approved' : 'hidden';
+                await DVQTKrud.updateRow(TABLE, id, { trangthai: nextStatus });
+                loadMyCars();
+            } catch (e) { Swal.fire('Lỗi', 'Không thể thay đổi trạng thái.', 'error'); }
+        }
+    };
+
+    // === Map Logic cho Địa chỉ xe ===
+    let pMap, pMarker;
+    window.togglePickerMap = () => {
+        const area = document.getElementById('pickerMapArea');
+        if(area.style.display === 'none') {
+            area.style.display = 'block';
+            if(!pMap) {
+                pMap = L.map('pMap').setView([10.8231, 106.6297], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(pMap);
+                pMarker = L.marker([10.8231, 106.6297], {draggable: true}).addTo(pMap);
+                pMap.on('click', (e) => pMarker.setLatLng(e.latlng));
+            }
+            setTimeout(() => pMap.invalidateSize(), 200);
+        } else {
+            area.style.display = 'none';
+        }
+    };
+
+    window.getCurrentLocManually = () => {
+        if (!navigator.geolocation) return Swal.fire('Lỗi', 'Trình duyệt không hỗ trợ định vị', 'error');
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            document.getElementById('carLat').value = latitude;
+            document.getElementById('carLng').value = longitude;
+            if(pMap) { pMap.setView([latitude, longitude], 15); pMarker.setLatLng([latitude, longitude]); }
+            
+            // Revert Geocoding (Lấy địa chỉ từ tọa độ)
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=vi`);
+                const data = await res.json();
+                if(data.display_name) document.getElementById('carAddress').value = data.display_name;
+            } catch(e) {}
+        });
+    };
+
+    window.confirmMapLocManually = async () => {
+        const latlng = pMarker.getLatLng();
+        document.getElementById('carLat').value = latlng.lat;
+        document.getElementById('carLng').value = latlng.lng;
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}&accept-language=vi`);
+            const data = await res.json();
+            if(data.display_name) document.getElementById('carAddress').value = data.display_name;
+        } catch(e) {}
+        document.getElementById('pickerMapArea').style.display = 'none';
+    };
+
+    initAutoSuggest(); loadMyCars();
+})();
+</script>
+
+<style>
+@media (max-width: 768px) {
+    #registerForm .row.g-3 > [class*="col-md"] { flex: 0 0 100%; max-width: 100%; }
+    #registerForm .col-md-1, #registerForm .col-md-2, #registerForm .col-md-3, 
+    #registerForm .col-md-4 { flex: 0 0 50%; max-width: 50%; }
+    .upload-box { padding: 8px !important; }
+    .upload-box .small { font-size: 0.7rem; }
+    .d-flex.justify-content-between.align-items-center { flex-direction: column; gap: 8px; }
+    #carTable th, #carTable td { font-size: 0.78rem; padding: 8px 6px !important; }
+    #carTable th:nth-child(2), #carTable td:nth-child(2),
+    #carTable th:nth-child(3), #carTable td:nth-child(3) { display: none; }
+}
+@media (max-width: 480px) {
+    #registerForm .col-md-1, #registerForm .col-md-2, #registerForm .col-md-3, 
+    #registerForm .col-md-4 { flex: 0 0 100%; max-width: 100%; }
+    .upload-box .fa-2x { font-size: 1.2rem !important; }
+    #carTable th:nth-child(4), #carTable td:nth-child(4) { display: none; }
+}
+</style>

@@ -3,6 +3,20 @@
 
 <head>
     <script src="../../../ga.js"></script>
+    <script type="application/ld+json">
+    {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Thuê xe",
+    "url": "https://dichvuquanhta.vn/dich-vu/van-tai-logistics/thue-xe/dich-vu.html",
+    "serviceType": "Vận tải",
+    "provider": {
+        "@type": "Organization",
+        "name": "Dịch Vụ Quanh Ta"
+    },
+    "areaServed": "Vietnam"
+    }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dịch Vụ Quanh Ta - Thuê Xe - Dịch Vụ</title>
@@ -36,16 +50,6 @@
 
 <body>
     <script src="public/assets/js/load-template.js"></script>
-    <script>
-        window.PAGE_SEO = {
-            title: 'Dịch Vụ Quanh Ta - Thuê Xe - Dịch Vụ',
-            desc: 'Các dịch vụ thuê xe đa dạng tại CarRental trên toàn quốc: giao xe tận nơi, bảo hiểm mở rộng, xe có tài xế, thuê xe theo tháng. Liên hệ: 0775 472 347.',
-            keys: 'dịch vụ thuê xe, giao xe tận nơi, xe có tài xế toàn quốc, bảo hiểm xe thuê',
-            url: 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/dich-vu.html',
-            navPage: 'services'
-        };
-        document.addEventListener('DOMContentLoaded', loadHeader);
-    </script>
 
     <section class="hero-section" style="padding: 80px 0;">
         <div class="container">
@@ -272,7 +276,7 @@
                 const img = car.anhdaidien || 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
                 const price = Number(car.giathue) || 0;
                 const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
-                
+
                 return `
                 <div class="col-lg-4 col-md-6">
                     <div class="card car-card h-100">
@@ -444,10 +448,10 @@
                 });
 
                 // Xử lý khi chọn item (Event delegation cho các item được thêm động)
-                menu.addEventListener('click', function(e) {
+                menu.addEventListener('click', function (e) {
                     const li = e.target.closest('li');
                     if (!li) return;
-                    
+
                     menu.querySelectorAll('li').forEach(x => x.classList.remove('active'));
                     li.classList.add('active');
                     label.textContent = li.textContent;

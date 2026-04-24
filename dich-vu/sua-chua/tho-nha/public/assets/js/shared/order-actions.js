@@ -138,7 +138,7 @@ const ThoNhaOrderActions = (() => {
                     
                     let driveFileId = '';
                     if (fileInput && fileInput.files.length > 0) {
-                        const up = await DVQTApp.uploadFile(fileInput.files[0]);
+                        const up = await DVQTApp.uploadFile(fileInput.files[0], { folderKey: 29 });
                         if (up.success) driveFileId = up.fileId;
                     }
                     payload = { danhgiakhachhang: text, hinhanhminhchung_kh: driveFileId };
@@ -152,7 +152,7 @@ const ThoNhaOrderActions = (() => {
                     
                     let driveFileId = '';
                     if (fileInput && fileInput.files.length > 0) {
-                        const up = await DVQTApp.uploadFile(fileInput.files[0]);
+                        const up = await DVQTApp.uploadFile(fileInput.files[0], { folderKey: 29 });
                         if (up.success) driveFileId = up.fileId;
                     }
                     payload = { danhgiancc: text, hinhanhminhchung_ncc: driveFileId };

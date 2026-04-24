@@ -1,7 +1,7 @@
 // Helper functions to get common paths
 function getPathPrefix() {
     const currentPath = window.location.pathname;
-    if (currentPath.includes('/admin/') || currentPath.includes('/khachhang/') || currentPath.includes('/nhacungcap/')) {
+    if (currentPath.includes('/admin/') || currentPath.includes('/khachhang/') || currentPath.includes('/nhacungcap/') || currentPath.includes('/nguoidung/')) {
         return '../';
     }
     return '';
@@ -150,19 +150,17 @@ function initAuthNav(pathPrefix, BASE) {
             
             if (avatarEl) {
                 const avatarLink = data.link_avatar || data.avatar || data.avatartenfile || '';
+                
                 if (avatarLink) {
-                    if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
-                        const finalUrl = avatarLink.startsWith('http') ? avatarLink : (ROOT + '/public/uploads/users/' + avatarLink);
-                        avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                    } else {
-                        // Kỹ thuật Zoom & Crop 300% cho Drive ID
-                        avatarEl.innerHTML = `
-                             <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
-                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
-                                        frameborder="0" scrolling="no"
-                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
-                            </div>`;
-                    }
+                    const resolveAvatar = (link) => {
+                        if (link.startsWith('http')) return link;
+                        // Nếu là Drive ID
+                        if (link.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${link}`;
+                        // Đường dẫn local cũ
+                        return (ROOT + '/public/uploads/users/' + link);
+                    };
+                    const finalUrl = resolveAvatar(avatarLink);
+                    avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.src='${ROOT}/public/asset/images/default-avatar.png'">`;
                 } else {
                     avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
                 }
@@ -170,8 +168,8 @@ function initAuthNav(pathPrefix, BASE) {
 
             // 2. Cấu hình Dashboard cục bộ của module Thuê xe
             const dashMap = {
-                customer: pathPrefix + 'khachhang/trang-ca-nhan.html',
-                provider: pathPrefix + 'nhacungcap/trang-ca-nhan.html',
+                customer: pathPrefix + 'nguoidung/trang-ca-nhan.html',
+                provider: pathPrefix + 'nguoidung/trang-ca-nhan.html',
                 admin:    pathPrefix + 'admin/quan-tri.html'
             };
             
@@ -321,7 +319,7 @@ function loadFooter() {
 
     const currentPath = window.location.pathname;
     let pathPrefix = '';
-    if (currentPath.includes('/admin/') || currentPath.includes('/khachhang/') || currentPath.includes('/nhacungcap/')) {
+    if (currentPath.includes('/admin/') || currentPath.includes('/khachhang/') || currentPath.includes('/nhacungcap/') || currentPath.includes('/nguoidung/')) {
         pathPrefix = '../';
     }
 
@@ -424,7 +422,7 @@ function injectBackBar() {
 
     const currentPath = window.location.pathname;
     let pathPrefix = '';
-    if (currentPath.includes('/admin/') || currentPath.includes('/khachhang/') || currentPath.includes('/nhacungcap/')) {
+    if (currentPath.includes('/admin/') || currentPath.includes('/khachhang/') || currentPath.includes('/nhacungcap/') || currentPath.includes('/nguoidung/')) {
         pathPrefix = '../';
     }
 

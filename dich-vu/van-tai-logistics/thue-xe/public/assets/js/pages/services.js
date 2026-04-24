@@ -57,17 +57,19 @@ function displayRentalCars(carList) {
         const avail = car.count || 0;
         
         const imgBase = 'public/assets/images/cars/';
+        const fallbackImg = imgBase + 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
         
-        const carImg = car.anhdaidien || 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
+        const rawImg = car.anhdaidien || '';
+        const carImg = rawImg.startsWith('http') ? rawImg : (rawImg.match(/^[a-zA-Z0-9_-]{20,}$/) ? `https://lh3.googleusercontent.com/u/0/d/${rawImg}` : imgBase + (rawImg || 'thue-xe-xe-anh-mac-dinh-fallback.jpg'));
 
         return `
             <div class="col-lg-4 col-md-6">
                 <div class="card car-card h-100">
                     <div class="position-relative">
-                        <img src="${imgBase}${carImg}"
+                        <img src="${carImg}"
                             class="card-img-top car-card-img"
                             alt="${car.tenxe}"
-                            onerror="this.src='${imgBase}thue-xe-xe-anh-mac-dinh-fallback.jpg'">
+                            onerror="this.src='${fallbackImg}'">
                         ${avail > 0 
                             ? `<span class="badge badge-status badge-available">Còn ${avail} xe</span>`
                             : `<span class="badge badge-status" style="background:linear-gradient(135deg,#6c757d,#495057);">Hết xe</span>`}

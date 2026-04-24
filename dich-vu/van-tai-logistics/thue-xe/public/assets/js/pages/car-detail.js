@@ -158,6 +158,14 @@
     function buildGalleryHtml(car) {
         const base = 'public/assets/images/cars/';
         const fallback = `onerror="this.src='${base}thue-xe-xe-anh-mac-dinh-fallback.jpg'"`;
+        // Hỗ trợ cả ảnh cũ (local) và ảnh mới (Drive fileId)
+        const resolveImg = (val) => {
+            if(!val) return '';
+            if(val.startsWith('http')) return val;
+            // Drive fileId: chuỗi dài >= 20 ký tự không chứa dấu chấm mở rộng
+            if(val.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${val}`;
+            return base + val;
+        };
         const thumbs = [
             { key: 'avatar', label: 'Trước', src: car.anhdaidien },
             { key: 'back', label: 'Sau', src: car.anhsau },
@@ -166,10 +174,12 @@
             { key: 'interior', label: 'Nội thất', src: car.anhnoithat },
         ].filter(t => t.src);
 
+        const mainSrc = thumbs[0] ? resolveImg(thumbs[0].src) : (base + 'default.jpg');
+
         return `
             <div class="card border-0 shadow-sm mb-4 gallery-wrap position-relative">
                 <div class="position-relative">
-                    <img id="galleryMainImg" class="gallery-main-img" src="${base + (thumbs[0]?.src || 'default.jpg')}" ${fallback}>
+                    <img id="galleryMainImg" class="gallery-main-img" src="${mainSrc}" ${fallback}>
                     <iframe id="galleryMainVideo" class="gallery-main-video" allowfullscreen></iframe>
                     <button class="gallery-main-nav prev" id="galleryPrevBtn" onclick="galleryPrev()"><i class="fas fa-chevron-left"></i></button>
                     <button class="gallery-main-nav next" id="galleryNextBtn" onclick="galleryNext()"><i class="fas fa-chevron-right"></i></button>
@@ -180,8 +190,8 @@
                 </div>
                 <div class="gallery-thumbs" id="galleryThumbsWrap">
                     ${thumbs.map((t, i) => `
-                        <div class="gallery-thumb ${i===0?'active':''}" data-angle="${t.key}" onclick="gallerySwitch('img','${base+t.src}',this)">
-                            <img src="${base+t.src}" ${fallback}>
+                        <div class="gallery-thumb ${i===0?'active':''}" data-angle="${t.key}" onclick="gallerySwitch('img','${resolveImg(t.src)}',this)">
+                            <img src="${resolveImg(t.src)}" ${fallback}>
                             <div class="gallery-thumb-label">${t.label}</div>
                         </div>
                     `).join('')}
@@ -189,20 +199,30 @@
             </div>`;
     }
 
-    function renderCarDetail(car, avail, allSameType = []) {
+    function renderCarDetail(car, avail, allSameType = [], isOwnCar = false) {
         const hasAvailable = avail.length > 0;
         const features = (car.features || '').split(',').filter(f => f.trim());
         const container = document.getElementById('carContent');
         if (!container) return;
 
+        // Xác định nút đặt xe: NCC không được đặt xe của chính mình
+        let bookingBtnHtml;
+        if (isOwnCar) {
+            bookingBtnHtml = `<div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-2 mb-0 py-2 px-3" style="border-radius:12px; background:linear-gradient(135deg,#eff6ff,#dbeafe);">
+                <i class="fas fa-info-circle text-primary"></i>
+                <span class="small fw-bold text-primary">Đây là xe của bạn. Bạn không thể tự đặt xe mình cho thuê.</span>
+            </div>`;
+        } else if (hasAvailable) {
+            bookingBtnHtml = '<button class="btn btn-gradient px-4" onclick="txBpOpen()"><i class="fas fa-calendar-check me-2"></i>Đặt ngay</button>';
+        } else {
+            bookingBtnHtml = '<button class="btn btn-secondary px-4" disabled><i class="fas fa-ban me-2"></i>Hết xe</button>';
+        }
+
         container.innerHTML = `
             <div class="col-12">
                 ${buildGalleryHtml(car)}
                 <div class="mb-4 d-grid d-sm-flex">
-                    ${hasAvailable
-                        ? '<button class="btn btn-gradient px-4" onclick="txBpOpen()"><i class="fas fa-calendar-check me-2"></i>Đặt ngay</button>'
-                        : '<button class="btn btn-secondary px-4" disabled><i class="fas fa-ban me-2"></i>Hết xe</button>'
-                    }
+                    ${bookingBtnHtml}
                 </div>
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body p-4">
@@ -333,11 +353,20 @@
         const car = allCars.find(c => String(c.id) == String(id));
         if (!car) throw new Error('Empty result');
 
+        // Kiểm tra: người dùng hiện tại có phải chủ xe này không?
+        let isOwnCar = false;
+        try {
+            const sess = window._dvqt_session_cache || (window.DVQTApp ? await DVQTApp.checkSession() : null);
+            if (sess && sess.logged_in && car.provider_id) {
+                isOwnCar = String(sess.id) === String(car.provider_id);
+            }
+        } catch(_e) {}
+
         // Tìm các xe cùng loại (cùng tên xe)
         const allSameType = allCars.filter(c => String(c.tenxe).toLowerCase() === String(car.tenxe).toLowerCase());
 
         updateSEO(car);
-        renderCarDetail(car, [car], allSameType);
+        renderCarDetail(car, [car], allSameType, isOwnCar);
     } catch (e) {
         console.error(e);
         document.getElementById('carContent').innerHTML = '<div class="text-center py-5"><h4>Không tìm thấy xe</h4><a href="index.html" class="btn btn-primary mt-3">Quay lại</a></div>';
@@ -557,7 +586,11 @@
             }
 
             const imgEl = document.getElementById('tx-cf-car-front-img');
-            if(imgEl) { imgEl.src = 'public/assets/images/cars/' + car.anhdaidien; imgEl.style.display='block'; }
+            if(imgEl) {
+                const av = car.anhdaidien || '';
+                const imgSrc = av.startsWith('http') ? av : (av.match(/^[a-zA-Z0-9_-]{20,}$/) ? `https://lh3.googleusercontent.com/u/0/d/${av}` : 'public/assets/images/cars/' + av);
+                imgEl.src = imgSrc; imgEl.style.display='block';
+            }
             const carRow = document.getElementById('tx-cf-car-front-row');
             if(carRow) carRow.style.display = 'flex';
 
@@ -566,6 +599,15 @@
             
             // Final Database Submission — TỰ ĐỘNG TẠO TÀI KHOẢN
             document.getElementById('txConfirmSubmitBtn').onclick = async function() {
+                // Safety check: chặn đặt xe chính mình (phòng bypass UI)
+                try {
+                    const _sess = window._dvqt_session_cache || await DVQTApp.checkSession();
+                    if (_sess && _sess.logged_in && car.provider_id && String(_sess.id) === String(car.provider_id)) {
+                        Swal.fire('Không thể đặt', 'Bạn không thể đặt xe mà chính bạn cho thuê.', 'warning');
+                        return;
+                    }
+                } catch(_e) {}
+
                 this.disabled = true;
                 this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
                 
@@ -618,7 +660,7 @@
                             this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tải ảnh...';
                             for (const m of _modalMediaFiles) {
                                 try {
-                                    const up = await DVQTApp.uploadFile(m.file);
+                                    const up = await DVQTApp.uploadFile(m.file, { folderKey: 30 });
                                     if (up && up.success) driveIds.push(up.fileId);
                                 } catch (err) {
                                     console.warn('Upload failed for 1 file:', err);
@@ -697,7 +739,7 @@
                     const orderCodePadded = String(rawId).padStart(7, '0');
                     if (window.DVQTBookingHelper) {
                         const helper = window.DVQTBookingHelper;
-                        const redirectUrl = 'khachhang/trang-ca-nhan.html';
+                        const redirectUrl = 'nguoidung/trang-ca-nhan.html';
                         await helper.showSuccessAlert(accountResult || {isNew:false}, custPhone, orderCodePadded, redirectUrl);
                     } else {
                         if (accountResult && accountResult.isNew) {
@@ -716,10 +758,10 @@
                                 confirmButtonText: 'Xem đơn hàng',
                                 confirmButtonColor: '#0ea5e9'
                             });
-                            window.location.href = 'khachhang/trang-ca-nhan.html';
+                            window.location.href = 'nguoidung/trang-ca-nhan.html';
                         } else {
                             Swal.fire('Thành công!', `Đơn hàng #${orderCodePadded} đã được tiếp nhận.`, 'success')
-                                .then(() => window.location.href = 'khachhang/trang-ca-nhan.html');
+                                .then(() => window.location.href = 'nguoidung/trang-ca-nhan.html');
                         }
                     }
                 } catch(err) {
