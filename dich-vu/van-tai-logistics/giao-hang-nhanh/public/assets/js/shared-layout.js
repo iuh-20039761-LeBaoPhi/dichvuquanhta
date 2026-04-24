@@ -541,6 +541,13 @@
           element.setAttribute("src", linkMap[key]);
         } else {
           element.setAttribute("href", linkMap[key]);
+          if (key.startsWith("svc-")) {
+            element.setAttribute("target", "_blank");
+            element.setAttribute("rel", "noopener noreferrer");
+          } else {
+            element.setAttribute("target", "_self");
+            element.removeAttribute("rel");
+          }
         }
       }
     });
