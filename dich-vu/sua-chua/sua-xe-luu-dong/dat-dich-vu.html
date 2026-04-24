@@ -471,9 +471,11 @@
         border: none;
         color: white;
         font-weight: 600;
-        padding: 0.75rem 1.5rem;
+        padding: 0.75rem 0.5rem;
         border-radius: 12px;
         transition: all 0.2s;
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
       }
 
       #bookingConfirmModal #confirmSubmitBtn {
@@ -481,10 +483,12 @@
         border: none;
         color: white;
         font-weight: 700;
-        padding: 0.75rem 2.5rem;
+        padding: 0.75rem 0.5rem;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         transition: all 0.2s;
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
       }
 
       #bookingConfirmModal #confirmSubmitBtn:hover {
@@ -1000,9 +1004,10 @@
                         style="padding-left: 0;"
                       />
                     </div>
-                    <div class="d-flex gap-2 flex-wrap mb-2">
+                    <div class="d-flex gap-2 flex-nowrap mb-2">
                       <button
-                        class="btn btn-info text-white flex-grow-1"
+                        class="btn btn-info text-white"
+                        style="flex: 1 1 0% !important; min-width: 0 !important;"
                         type="button"
                         id="nutmobando"
                         name="nutmobando"
@@ -1010,8 +1015,8 @@
                         <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
                       </button>
                       <button
-                        class="btn flex-grow-1 text-white"
-                        style="background-color: #8b5cf6; border-color: #8b5cf6;"
+                        class="btn text-white"
+                        style="background-color: #8b5cf6; border-color: #8b5cf6; flex: 1 1 0% !important; min-width: 0 !important;"
                         type="button"
                         id="nutvitricuatoi"
                         name="nutvitricuatoi"
@@ -1190,10 +1195,11 @@
                       multiple
                       hidden
                     />
-                    <div class="d-flex gap-2 flex-nowrap" style="justify-content: space-around;">
+                    <div class="d-flex gap-2 flex-nowrap">
                       <button
                         type="button"
-                        class="btn btn-outline-primary flex-grow-1"
+                        class="btn btn-outline-primary"
+                        style="flex: 1 1 0% !important; min-width: 0 !important;"
                         id="nutchupanh"
                         name="nutchupanh"
                       >
@@ -1201,7 +1207,8 @@
                       </button>
                       <button
                         type="button"
-                        class="btn btn-outline-danger flex-grow-1"
+                        class="btn btn-outline-danger"
+                        style="flex: 1 1 0% !important; min-width: 0 !important;"
                         id="nutquayvideo"
                         name="nutquayvideo"
                       >
@@ -1363,10 +1370,10 @@
             </div>
           </div>
           <div class="modal-footer d-flex gap-2 flex-nowrap">
-            <button type="button" class="btn btn-secondary flex-grow-1" id="confirmBackBtn">
+            <button type="button" class="btn btn-secondary" id="confirmBackBtn">
               Quay lại
             </button>
-            <button type="button" class="btn btn-primary flex-grow-1" id="confirmSubmitBtn">
+            <button type="button" class="btn btn-primary" id="confirmSubmitBtn">
               Xác nhận đặt lịch
             </button>
           </div>
