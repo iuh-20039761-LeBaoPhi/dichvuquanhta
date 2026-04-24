@@ -29,45 +29,14 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "LocalBusiness",
-            "@id": "https://dichvuquanhta.vn/#business",
-            "name": "Dịch Vụ Quanh Ta",
-            "url": "https://dichvuquanhta.vn",
-            "telephone": "0775472347"
-          },
-          {
-            "@type": "Service",
-            "name": "Giặt ủi nhanh",
-            "url": "https://dichvuquanhta.vn/giat-ui-nhanh/",
-            "description": "Dịch vụ giặt ủi nhanh, sạch sẽ, giao nhận tận nơi tại TP.HCM",
-            "areaServed": {
-              "@type": "Place",
-              "name": "TP.HCM"
-            },
-            "provider": {
-              "@id": "https://dichvuquanhta.vn/#business"
-            }
-          },
-          {
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Trang chủ",
-                "item": "https://dichvuquanhta.vn"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Giặt ủi nhanh",
-                "item": "https://dichvuquanhta.vn/giat-ui-nhanh/"
-              }
-            ]
-          }
-        ]
+        "@type": "CollectionPage",
+        "name": "Giặt ủi nhanh",
+        "url": "https://dichvuquanhta.vn/dich-vu/giat-ui/giat-ui-nhanh/",
+        "description": "Dịch vụ giặt ủi nhanh giao nhận tận nơi.",
+        "about": {
+          "@type": "Service",
+          "name": "Giặt ủi"
+        }
       }
     </script>
   </head>
