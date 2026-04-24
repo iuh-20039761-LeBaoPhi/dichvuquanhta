@@ -1,11 +1,13 @@
 <!doctype html>
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #007bff">
+    <!-- Logo trái: Link về trang chủ chính Dịch Vụ Quanh Ta (ĐÃ SỬA) -->
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="https://iuh-20039761-lebaophi.github.io/dichvuquanhta/" style="color: #007bff">
       <img style="width: 80px; height: 60px" src="assets/logo-he-thong.png" alt="thue-tai-xe-lai-xe-ho" />
     </a>
     <span style="color: #007bff; font-weight: bold;">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</span>
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #007bff">
+    <!-- Logo phải: Link về trang chủ chính Dịch Vụ Quanh Ta (ĐÃ SỬA) -->
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="https://iuh-20039761-lebaophi.github.io/dichvuquanhta/" style="color: #007bff">
       <img style="width: 80px; height: 60px" src="assets/logo_main.png" alt="thue-tai-xe-lai-xe-ho" />
     </a>
     <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse" data-bs-target="#navMenu">
@@ -22,30 +24,30 @@
         <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="contact" href="lien-he.html">Liên Hệ</a></li>
         
         <li class="nav-item ms-lg-3" id="loginNavItem">
-    <a href="login.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #007bff" onmouseover="
-        this.style.backgroundColor = '#0056b3';
-        this.style.transform = 'scale(1.05)';
-    " onmouseout="
-        this.style.backgroundColor = '#007bff';
-        this.style.transform = 'scale(1)';
-    ">Đăng Nhập</a>
-</li>
-<li class="nav-item ms-lg-2" id="registerNavItem">
-    <a href="register.html" class="btn btn-outline-light rounded-pill px-4 py-2">Đăng Ký</a>
-</li>
-<li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
-    <div class="dropdown d-inline-block">
-        <button class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-            <img id="navAvatar" src="assets/logo_main.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
-            <span id="navUserName" class="fw-semibold small">Tài khoản</span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-            <li><a class="dropdown-item" href="khach_hang/danh-sach-don-hang.php">Đơn hàng của tôi</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="logout.php">Đăng xuất</a></li>
-        </ul>
-    </div>
-</li>
+          <a href="login.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #007bff" onmouseover="
+              this.style.backgroundColor = '#0056b3';
+              this.style.transform = 'scale(1.05)';
+          " onmouseout="
+              this.style.backgroundColor = '#007bff';
+              this.style.transform = 'scale(1)';
+          ">Đăng Nhập</a>
+        </li>
+        <li class="nav-item ms-lg-2" id="registerNavItem">
+          <a href="register.html" class="btn btn-outline-light rounded-pill px-4 py-2">Đăng Ký</a>
+        </li>
+        <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
+          <div class="dropdown d-inline-block">
+            <button class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+              <img id="navAvatar" src="assets/logo_main.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
+              <span id="navUserName" class="fw-semibold small">Tài khoản</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+              <li><a class="dropdown-item" href="khach_hang/danh-sach-don-hang.php">Đơn hàng của tôi</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="logout.php">Đăng xuất</a></li>
+            </ul>
+          </div>
+        </li>
       </ul>
     </div>
   </div>
