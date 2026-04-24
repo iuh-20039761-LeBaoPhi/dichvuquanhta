@@ -685,7 +685,27 @@
         }
 
         #bookingModal .media-grid {
-          grid-template-columns: 1fr;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+
+        #bookingModal .media-card {
+          min-height: 150px;
+          padding: 10px;
+        }
+
+        #bookingModal .media-empty {
+          min-height: 110px;
+        }
+
+        #bookingModal .media-empty i {
+          font-size: 1.4rem;
+          margin-bottom: 5px;
+        }
+
+        #bookingModal .media-empty .media-subtitle {
+          font-size: 0.8rem;
+          margin-top: 5px;
         }
 
         #bookingModal .modal-footer,

@@ -279,7 +279,7 @@
       .title-underline {
         width: 60px;
         height: 4px;
-        background: linear-gradient(to right, #ec4899, #f43f5e);
+        background: linear-gradient(90deg, #dc2626 0%, #f97316 100%);
         border-radius: 2px;
         margin-top: 15px;
       }
@@ -517,7 +517,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div class="service-card">
                         <div class="service-media">
-                          <img class="service-thumb" src="public/asset/image/${s.hinhanh}" alt="${s.tendichvu}" loading="lazy" />
+                          <img class="service-thumb" src="${s.hinhanh && (s.hinhanh.includes('.') || s.hinhanh.includes('/')) ? 'public/asset/image/' + s.hinhanh : 'https://lh3.googleusercontent.com/d/' + s.hinhanh}" alt="${s.tendichvu}" loading="lazy" />
                         </div>
                         <h5>${s.tendichvu}</h5>
                         <p>${s.mota}</p>

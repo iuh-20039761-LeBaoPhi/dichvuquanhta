@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sửa Xe Lưu Động - Admin - Danh sách dịch vụ</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../public/asset/image/logo-sua-xe-luu-dong.png" />
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
@@ -250,7 +251,7 @@
               (s, i) => `
             <tr>
               <td data-label="STT">${(page - 1) * limit + i + 1}</td>
-              <td data-label="Hình ảnh"><img src="../public/asset/image/${s.hinhanh}" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:1px solid #eee;"></td>
+              <td data-label="Hình ảnh"><img src="${s.hinhanh && (s.hinhanh.includes('.') || s.hinhanh.includes('/')) ? '../public/asset/image/' + s.hinhanh : 'https://lh3.googleusercontent.com/d/' + s.hinhanh}" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:1px solid #eee;"></td>
               <td data-label="Tên dịch vụ"><strong>${s.tendichvu}</strong></td>
               <td class="text-end">
                 <button class="btn btn-sm btn-outline-primary me-1" onclick="openServiceModal(${s.id})"><i class="fas fa-edit"></i></button>
@@ -290,8 +291,9 @@
           if (s) {
             form.tendichvu.value = s.tendichvu;
             form.mota.value = s.mota;
-            document.getElementById("imgPreview").src =
-              `../public/asset/image/${s.hinhanh}`;
+            document.getElementById("imgPreview").src = s.hinhanh.includes(".")
+              ? `../public/asset/image/${s.hinhanh}`
+              : `https://lh3.googleusercontent.com/d/${s.hinhanh}`;
             document.getElementById("imgPreview").classList.remove("d-none");
             document.getElementById("noImg").classList.add("d-none");
           }
@@ -344,12 +346,13 @@
               ? currentData.find((x) => x.id == editingId).hinhanh
               : "";
             if (fd.get("file").name) {
-              const upRes = await fetch("../public/upload-service.php", {
+              fd.append("folderKey", "8");
+              const upRes = await fetch("../../../../public/upload_to_drive.php", {
                 method: "POST",
                 body: fd,
               }).then((r) => r.json());
               if (!upRes.success) throw new Error(upRes.message);
-              hinhanh = upRes.filename;
+              hinhanh = upRes.fileId;
             } else if (!editingId) throw new Error("Vui lòng chọn ảnh!");
 
             const payload = {
