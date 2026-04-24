@@ -242,7 +242,8 @@
                         _prefillMeta.travelFee || null,
                         _prefillMeta.surveyFee || null,
                         _prefillMeta.catId || null,
-                        _prefillMeta.serviceId || null
+                        _prefillMeta.serviceId || null,
+                        _prefillMeta.unit || 'lượt'
                     );
                 }
             }
@@ -300,6 +301,7 @@
                                 id:    s.id,
                                 name:  s.ten_dichvu,
                                 price: Number(s.gia_co_ban || 0),
+                                unit:  s.don_vi_tinh || 'lượt',
                                 travelFee: null,
                                 surveyFee: s.phi_khao_sat ? { amount: Number(s.phi_khao_sat), required: String(s.yeu_cau_khao_sat) === '1' } : null
                             };
@@ -350,6 +352,8 @@
                                     break;
                                 }
                             }
+                            _prefillMeta = _prefillMeta || {};
+                            _prefillMeta.unit = cat.items[j].unit || 'lượt';
                             applyMetaOverrides();
                         }, 80);
                         return;
@@ -365,6 +369,8 @@
                     if (services[i].name.toLowerCase() === nameLower) {
                         mainSel.value = services[i].id;
                         mainSel.dispatchEvent(new Event('change'));
+                        _prefillMeta = _prefillMeta || {};
+                        _prefillMeta.unit = services[i].items && services[i].items[0] ? services[i].items[0].unit : 'lượt';
                         setTimeout(applyMetaOverrides, 80);
                         return;
                     }
@@ -523,6 +529,7 @@
         var card = btn.closest('.service-item-card');
         var activeBrand = card ? card.querySelector('.brand-option.active') : null;
         var rawPrice = btn.getAttribute('data-service-price');
+        var rawUnit  = btn.getAttribute('data-service-unit');
         var rawTravel = btn.getAttribute('data-travel-fee');
         var rawSurvey = btn.getAttribute('data-survey-fee');
 
@@ -539,6 +546,7 @@
                 var parsedPrice = parseInt(rawPrice, 10);
                 if (!isNaN(parsedPrice)) {
                     _prefillMeta.price = parsedPrice;
+                    _prefillMeta.unit  = rawUnit || 'lượt';
                 }
             }
             if (rawTravel) {

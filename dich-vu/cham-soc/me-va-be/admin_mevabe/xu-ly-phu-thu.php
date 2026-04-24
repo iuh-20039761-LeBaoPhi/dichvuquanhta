@@ -62,7 +62,7 @@ if ($action === 'sua') {
     $data = phu_thu_build_data($_POST);
     if ($data['ten'] === '') phu_thu_redirect('Tên phụ thu không được trống.', false);
     $result = admin_api_update_table('phu_thu_dac_biet', $id, $data);
-    phu_thu_redirect($result['success'] ? 'Cập nhật thành công!' : $result['message'], $result['success'], 'edit_id=' . $id);
+    phu_thu_redirect($result['success'] ? 'Cập nhật thành công!' : $result['message'], $result['success'], $result['success'] ? '' : 'edit_id=' . $id);
 }
 
 if ($action === 'xoa') {

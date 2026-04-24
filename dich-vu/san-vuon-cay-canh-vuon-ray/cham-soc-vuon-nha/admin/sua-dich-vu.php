@@ -19,11 +19,11 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 
 <style>
 	:root {
-		--admin-primary: #4361ee;
-		--admin-secondary: #8392a5;
-		--admin-success: #2ec4b6;
-		--admin-warning: #ff9f1c;
-		--admin-bg: #f8f9fa;
+		--admin-primary: #ec4899;
+		--admin-secondary: #be185d;
+		--admin-success: #db2777;
+		--admin-warning: #f472b6;
+		--admin-bg: #fff5f7;
 	}
 
 	.admin-main,
@@ -32,18 +32,18 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 	}
 
 	.card {
-		border-radius: 4px;
-		border: 1px solid rgba(0, 0, 0, 0.05) !important;
+		border-radius: 14px;
+		border: 1px solid var(--admin-border) !important;
 		transition: box-shadow 0.2s ease;
 	}
 
 	.card:hover {
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
+		box-shadow: 0 5px 15px rgba(131, 24, 67, 0.08) !important;
 	}
 
 	.form-label {
 		font-weight: 700;
-		color: #000;
+		color: #831843;
 		margin-bottom: 3px;
 		font-size: 0.85rem;
 		text-transform: uppercase;
@@ -52,17 +52,17 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 
 	.form-control,
 	.form-select {
-		border-radius: 4px;
-		border: 1px solid #000 !important;
+		border-radius: 8px;
+		border: 1px solid #fce7f3 !important;
 		font-size: 0.95rem;
 		padding: 0.5rem 0.75rem;
-		color: #000;
+		color: #4a044e;
 		font-weight: 500;
 	}
 
 	.form-control:focus {
 		border-color: var(--admin-primary) !important;
-		box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.1);
+		box-shadow: 0 0 0 0.2rem rgba(236, 72, 153, 0.1);
 	}
 
 	.compact-row {
@@ -89,7 +89,8 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 
 <?php if ($error !== '' || !is_array($row)): ?>
 	<div class="alert alert-warning border-0 shadow-sm" style="border-radius: 4px;">
-		<?= admin_h($error !== '' ? $error : 'Không tìm thấy dịch vụ.') ?></div>
+		<?= admin_h($error !== '' ? $error : 'Không tìm thấy dịch vụ.') ?>
+	</div>
 <?php else: ?>
 	<?php
 	$pricingRows = is_array($row['pricing'] ?? null) ? $row['pricing'] : [];
@@ -114,20 +115,24 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 							<!-- Phân bổ giống chi tiết -->
 							<div class="col-md-5 d-flex flex-column">
 								<label class="form-label">Hình ảnh dịch vụ</label>
-								<div class="service-image-container rounded-2 overflow-hidden border mb-2 bg-light d-flex align-items-center justify-content-center flex-grow-1"
+								<div class="service-image-container rounded-2 overflow-hidden border mb-2 bg-light d-flex align-items-center justify-content-center flex-grow-1 position-relative"
 									style="aspect-ratio: 1/1; min-height: 200px;">
 									<?php
 									$image = trim((string) ($row['image'] ?? ''));
-									$imageSrc = $image;
-									if ($imageSrc !== '' && !preg_match('/^https?:\/\//i', $imageSrc)) {
-										$imageSrc = '../' . ltrim($imageSrc, '/');
-									}
 									?>
-									<img id="imagePreview" src="<?= $imageSrc !== '' ? admin_h($imageSrc) : '' ?>"
-										class="img-fluid w-100 h-100 <?= $imageSrc === '' ? 'd-none' : '' ?>"
-										style="object-fit: cover;" alt="Preview">
+
+									<?php if ($image !== ''): ?>
+										<iframe id="driveFrame"
+											src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview"
+											class="w-100 h-100 position-absolute" style="top:0; left:0; border:none;"
+											scrolling="no"></iframe>
+									<?php endif; ?>
+
+									<img id="imagePreview" src="" class="img-fluid w-100 h-100 d-none position-absolute"
+										style="object-fit: cover; top:0; left:0; z-index:10;" alt="Preview">
+
 									<div id="noImageText"
-										class="text-secondary text-center p-2 <?= $imageSrc !== '' ? 'd-none' : '' ?>">
+										class="text-secondary text-center p-2 <?= $image !== '' ? 'd-none' : '' ?>">
 										<i class="bi bi-image fs-2 opacity-25 d-block"></i>
 										<span class="small d-block mt-1">Xem trước ảnh</span>
 									</div>
@@ -202,20 +207,23 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 										class="row g-2 pricing-row align-items-center bg-light bg-opacity-25 p-1 rounded-1 border border-light mx-0 mb-1">
 										<div class="col-md-3">
 											<input type="text" class="form-control form-control-sm border-0 bg-white"
-												name="pricing_label[]" value="<?= admin_h((string) ($pricing['label'] ?? '')) ?>"
-												placeholder="Tên gói" required>
+												name="pricing_label[]"
+												value="<?= admin_h((string) ($pricing['label'] ?? '')) ?>" placeholder="Tên gói"
+												required>
 										</div>
 										<div class="col-md-3">
 											<input type="number"
 												class="form-control form-control-sm border-0 bg-white fw-bold text-primary"
-												name="pricing_value[]" value="<?= admin_h((string) ($pricing['value'] ?? '')) ?>"
+												name="pricing_value[]"
+												value="<?= admin_h((string) ($pricing['value'] ?? '')) ?>"
 												placeholder="Giá tiền" min="0" step="1000" required>
 										</div>
 										<div class="col-md-2">
 											<input type="number"
 												class="form-control form-control-sm border-0 bg-white text-center"
-												name="pricing_hours[]" value="<?= admin_h((string) ($pricing['hours'] ?? '')) ?>"
-												placeholder="0" min="0.1" step="0.1" required>
+												name="pricing_hours[]"
+												value="<?= admin_h((string) ($pricing['hours'] ?? '')) ?>" placeholder="0"
+												min="0.1" step="0.1" required>
 										</div>
 										<div class="col-md-3">
 											<input type="text" class="form-control form-control-sm border-0 bg-white"
@@ -260,6 +268,8 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 						imagePreview.src = e.target.result;
 						imagePreview.classList.remove('d-none');
 						noImageText.classList.add('d-none');
+						var driveFrame = document.getElementById('driveFrame');
+						if (driveFrame) driveFrame.classList.add('d-none');
 					}
 					reader.readAsDataURL(file);
 				}

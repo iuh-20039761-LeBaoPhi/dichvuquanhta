@@ -1836,7 +1836,7 @@
 
             var base = area * Number(pricing.base_price || 0);
             var leveled = base * levelFactor;
-            var finalBase = Math.max(leveled, Number(pricing.min_price || 0));
+            var finalBase = leveled;
             var estimate = getNearestEstimate(area, pricing.estimated || []);
             var estimateStaff = estimate ? Number(estimate.staff || 0) : 0;
             var estimateHours = estimate ? Number(estimate.hours || 0) : 0;
@@ -1847,8 +1847,7 @@
               basePrice: finalBase,
               calcText:
                 'Tiền diện tích = ' + area + 'm² × ' + formatMoney(Number(pricing.base_price || 0)) +
-                '; Mức độ dọn dẹp(' + level + ') = ×' + levelFactor +
-                '; Giá công làm tối thiểu = ' + formatMoney(Number(pricing.min_price || 0)),
+                '; Mức độ dọn dẹp(' + level + ') = ×' + levelFactor,
               estimatedStaff: estimateStaff,
               estimatedHours: estimateHours,
               packageLabel: 'Mức ' + level + ' - ' + area + 'm²',

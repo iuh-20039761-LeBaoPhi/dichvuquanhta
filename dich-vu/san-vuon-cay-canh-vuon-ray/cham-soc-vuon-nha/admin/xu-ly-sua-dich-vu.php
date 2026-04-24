@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/slidebar.php';
 require_once __DIR__ . '/get_dichvu.php';
-require_once __DIR__ . '/xu-ly-upload-anh-dich-vu.php';
 
 admin_require_login();
 
@@ -28,20 +27,50 @@ if (!($payloadResult['success'] ?? false)) {
 $payloadData = (array)($payloadResult['data'] ?? []);
 $currentImage = trim((string)($_POST['current_image'] ?? ''));
 
-$uploadResult = dichvu_upload_service_image(
-    isset($_FILES['image_file']) && is_array($_FILES['image_file']) ? $_FILES['image_file'] : null,
-    (string)($payloadData['name'] ?? ''),
-    false
-);
+$hasFile = isset($_FILES['image_file']) && is_array($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK;
 
-if (!($uploadResult['success'] ?? false)) {
-    $msg = rawurlencode((string)($uploadResult['message'] ?? 'Tai anh that bai.'));
-    header('Location: sua-dich-vu.php?id=' . urlencode((string)$id) . '&ok=0&msg=' . $msg);
-    exit;
+if ($hasFile) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+    $path = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+    $baseUrl = rtrim(str_replace('\\', '/', dirname($path)), '/');
+    $uploadUrl = $protocol . "://" . $_SERVER['HTTP_HOST'] . $baseUrl . "/upload.php";
+
+    $cfile = new CURLFile($_FILES['image_file']['tmp_name'], $_FILES['image_file']['type'], $_FILES['image_file']['name']);
+    $postData = [
+        'file' => $cfile,
+        'name' => (string)($payloadData['name'] ?? '')
+    ];
+
+    $ch = curl_init($uploadUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+    $response = curl_exec($ch);
+    $curlErr = curl_error($ch);
+    curl_close($ch);
+
+    if ($response === false) {
+        $msg = rawurlencode('Loi goi upload.php: ' . $curlErr);
+        header('Location: sua-dich-vu.php?id=' . urlencode((string)$id) . '&ok=0&msg=' . $msg);
+        exit;
+    }
+
+    $res = json_decode((string)$response, true);
+    if (!($res['success'] ?? false)) {
+        $msg = rawurlencode((string)($res['message'] ?? 'Tai anh that bai.'));
+        header('Location: sua-dich-vu.php?id=' . urlencode((string)$id) . '&ok=0&msg=' . $msg);
+        exit;
+    }
+
+    $payloadData['image'] = (string)($res['fileId'] ?? '');
+} else {
+    if (isset($_FILES['image_file']['error']) && $_FILES['image_file']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $msg = rawurlencode('Loi upload file: ' . $_FILES['image_file']['error']);
+        header('Location: sua-dich-vu.php?id=' . urlencode((string)$id) . '&ok=0&msg=' . $msg);
+        exit;
+    }
+    $payloadData['image'] = $currentImage;
 }
-
-$newImage = trim((string)($uploadResult['path'] ?? ''));
-$payloadData['image'] = $newImage !== '' ? $newImage : $currentImage;
 
 $result = admin_api_update_table('dichvu_mevabe', $id, $payloadData);
 if (!($result['success'] ?? false)) {

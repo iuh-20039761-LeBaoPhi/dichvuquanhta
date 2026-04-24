@@ -2,10 +2,11 @@
 <html lang="vi">
 
 <head>
+  <script src="/ga.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chi tiết dịch vụ - Chăm Sóc Vườn Nhà</title>
-  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo1.jpg" />
+  <title>Dịch Vụ Quanh Ta - Chăm Sóc Vườn Nhà - Chi Tiết Dịch Vụ</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo2.jpg" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
@@ -190,6 +191,11 @@
 
   <script>
     $(document).ready(async function() {
+      // 1. KẾT NỐI HEADER & FOOTER
+      if ($("#site-header").is(':empty')) $("#site-header").load("header.html");
+      if ($("#site-footer").is(':empty')) $("#site-footer").load("footer.html");
+
+      // 2. XỬ LÝ DỮ LIỆU DỊCH VỤ (GIỮ NGUYÊN)
       const urlParams = new URLSearchParams(window.location.search);
       const serviceId = urlParams.get('id');
       const bookingModal = new bootstrap.Modal('#bookingFlowModal');
@@ -263,9 +269,13 @@
                       <span class="text-muted fw-bold">Độ khó:</span>
                       <span class="fw-bold text-uppercase text-success">${item.difficulty_level}</span>
                    </div>
+                   <div class="d-flex justify-content-between mb-3">
+                      <span class="text-muted fw-bold">Thời gian thực hiện:</span>
+                      <span class="fw-bold text-dark">${item.duration_estimate}</span>
+                   </div>
                    <div class="d-flex justify-content-between">
                       <span class="text-muted fw-bold">Ngày cập nhật:</span>
-                      <span class="fw-bold text-dark">${item.updated_at}</span>
+                      <span class="fw-bold text-dark">${item.updated_at || 'Mới nhất'}</span>
                    </div>
                 </div>
 
@@ -290,15 +300,8 @@
     });
   </script>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="../../../public/asset/js/dvqt-map.js"></script>
-    <script src="../../../public/asset/js/dvqt-krud.js"></script>
-    <script src="../../../public/asset/js/dvqt-app.js"></script>
-    <script src="../../../public/asset/js/driveUtil.js"></script>
-    <script>window.BD_BASE = '../../';</script>
-    <script src="../../assets/js/shared/auth-nav.js"></script>
-    <script src="../../assets/js/public/booking-panel.js"></script>
-    <script src="../../assets/js/public/booking-detail-shared.js"></script>
+  <script src="JS/shared-layout.js"></script>
+  <script src="JS/user-nav-menu.js"></script>
 </body>
 
 </html>

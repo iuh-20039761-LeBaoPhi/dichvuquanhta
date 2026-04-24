@@ -372,9 +372,8 @@ let _bdTravelAmt      = 0;      // phí đã tính (VNĐ)
 let _bdTravelDistKm   = 0;      // quãng đường (km)
 let _bdTravelTimer    = null;   // debounce handle
 let _bdCurPrice       = 0;      // giá dịch vụ hiện tại (để refresh)
-let _bdCurSurvey      = null;   // survey fee hiện tại (để refresh)
-let _bdCurCatId       = null;   // ID danh mục hiện tại
-let _bdCurServiceId   = null;   // ID dịch vụ hiện tại (nếu có 1 dịch vụ cụ thể)
+let _bdCurUnit       = 'lượt'; // Đơn vị tính: lượt, m2, máy...
+let _bdCurItems      = [];      // Danh sách item đã chọn
 let _bdPendingCoords  = null;   // tọa độ chờ nếu user chọn map trước khi chọn dịch vụ
 
 // Mọi logic Geocode và bắt sự kiện gõ phím đã được chuyển sang map-picker.js
@@ -458,10 +457,14 @@ window._bdTravelFromCoords = _bdTravelFromCoords;
  * @param {Object} surveyFee - Config phí khảo sát: { required, amount }
  * @param {string|number} [catId] - ID danh mục
  * @param {string|number} [serviceId] - ID dịch vụ cụ thể
+ * @param {string} [unit]    - Đơn vị tính (lượt, m2, bộ...)
+ * @param {Array} [items]    - Danh sách các item object đã chọn
  */
-function _bdSetBreakdown(price, travelFee, surveyFee, catId, serviceId) {
+function _bdSetBreakdown(price, travelFee, surveyFee, catId, serviceId, unit, items) {
     _bdCurPrice  = price || 0;
     _bdCurSurvey = surveyFee || null;
+    _bdCurUnit   = unit || 'lượt';
+    _bdCurItems  = items || [];
     
     // Tự động nhận diện mã danh mục từ dropdown
     if (!catId) {
@@ -532,7 +535,40 @@ function _bdUpdateBreakdown(price, travelFee, surveyFee) {
     // Hiển thị giá dịch vụ
     const bdService = document.getElementById('bd-service');
     if (bdService) {
-        bdService.innerHTML = price > 0 ? _bdFmt(price) : 'Giá thỏa thuận';
+        if (price > 0) {
+            let html = '';
+            if (_bdCurItems.length <= 1) {
+                // Chỉ có 1 dịch vụ: Hiện Giá / Đơn vị
+                html = `<div>${_bdFmt(price)} <span class="text-muted fw-normal" style="font-size:0.8rem;">/ ${_bdCurUnit}</span></div>`;
+            } else {
+                // Nhiều dịch vụ: Hiện danh sách trước -> Tổng sau
+                html += '<div style="font-size: 0.75rem; font-weight: normal; color: #64748b; line-height: 1.4;">';
+                _bdCurItems.forEach(it => {
+                    const itPrice = it.price > 0 ? _bdFmt(it.price) : '<span class="badge bg-light text-dark fw-normal border" style="font-size:0.65rem">Thỏa thuận</span>';
+                    const unitLabel = it.unit || 'lượt';
+                    const itUnit = it.price > 0 ? `/${unitLabel}` : '';
+                    html += `
+                        <div class="d-flex justify-content-between pt-1 mb-1" style="border-bottom: 1px dashed #f1f5f9;">
+                            <span>• ${it.name}:</span>
+                            <span class="text-dark fw-medium">${itPrice}${itUnit}</span>
+                        </div>`;
+                });
+                html += '</div>';
+                html += `
+                    <div class="d-flex justify-content-between mt-2 pt-2 border-top border-secondary border-opacity-10">
+                        <span class="fw-semibold text-dark" style="font-size:0.85rem;">Tổng phí dịch vụ:</span>
+                        <span class="fw-bold" style="color:var(--primary); font-size:1.05rem;">${_bdFmt(price)}</span>
+                    </div>`;
+            }
+            bdService.innerHTML = html;
+        } else {
+            bdService.innerHTML = `
+                <div class="d-inline-block px-2 py-1 bg-light border rounded text-dark fw-bold" style="font-size:0.85rem">
+                    <i class="fas fa-handshake me-1 text-primary"></i> Giá thỏa thuận
+                </div>
+                <div class="mt-1 small text-muted fw-normal" style="font-size:0.7rem">NCC sẽ báo giá cụ thể sau khi khảo sát thực tế</div>
+            `;
+        }
     }
 
     const thoigianEl = document.getElementById('thoigianphucvu');
@@ -986,7 +1022,7 @@ function _bdBuildPendingData(service) {
         if (vids > 0) parts.push(`${vids} video`);
         noteVal = (noteVal ? noteVal + '\n' : '') + `[Đính kèm: ${parts.join(', ')}]`;
     }
-    const priceRaw = Number((document.getElementById('giadichvu')?.value || '').replace(/[^\d]/g, '')) || 0;
+    const priceRaw = _bdCurPrice || 0;
 
     const brandSelections = (service || '')
         .split(' + ')
@@ -1186,6 +1222,9 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
             }
         }
 
+        const firstItem = selectedItems[0];
+        const unit = selectedItems.length === 1 ? (firstItem.unit || 'lượt') : 'lượt';
+
         // Cập nhật giá + breakdown
         if (selectedItems.length === 0) {
             if (priceEl) priceEl.value = '';
@@ -1198,16 +1237,16 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
             if (totalPrice === 0) {
                 priceEl.value = 'Giá thỏa thuận';
             } else {
-                priceEl.value = Number(totalPrice).toLocaleString('vi-VN') + 'đ';
+                priceEl.value = Number(totalPrice).toLocaleString('vi-VN') + 'đ' + (selectedItems.length === 1 ? ' / ' + unit : '');
             }
         }
-        const travelFee  = selectedItems[0].travelFee || catData.travelFee || null;
+        const travelFee  = firstItem.travelFee || catData.travelFee || null;
         const surveyItem = selectedItems.find(i => i.surveyFee);
         const surveyFee  = surveyItem ? surveyItem.surveyFee : null;
         
         const catId = catData.id || null;
         const serviceId = selectedItems.map(i => i.id).filter(id => id !== undefined && id !== null).join(',');
-        _bdSetBreakdown(totalPrice, travelFee, surveyFee, catId, serviceId);
+        _bdSetBreakdown(totalPrice, travelFee, surveyFee, catId, serviceId, unit, selectedItems);
     }
 
     items.forEach(item => {
@@ -1221,7 +1260,7 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
         if (isSurvey) {
             btn.innerHTML = `${item.name} <small style="opacity:0.75;font-size:0.78em;">(phí di chuyển + khảo sát)</small>`;
         } else {
-            btn.textContent = item.name + (item.price ? ` – ${Number(item.price).toLocaleString('vi-VN')}đ` : '');
+            btn.textContent = item.name;
         }
 
         btn.addEventListener('click', () => {
