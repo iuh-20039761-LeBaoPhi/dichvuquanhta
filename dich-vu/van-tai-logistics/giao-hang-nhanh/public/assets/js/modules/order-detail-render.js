@@ -515,19 +515,16 @@
           if (isImageExtension(extension) && canPreview) {
             content = `
               <img src="${previewUrl}" alt="Ảnh" />
-              <span>Ảnh</span>
             `;
           } else if (isVideoExtension(extension) && canPreview) {
             content = `
               <video src="${previewUrl}" controls preload="metadata"></video>
-              <span>Video</span>
             `;
           } else {
             content = `
               <div class="standalone-order-item-icon">
                 <i class="fa-solid fa-file-lines"></i>
               </div>
-              <span>${escapeHtml(extension || "Tệp")}</span>
             `;
           }
           if (!removable) {
@@ -651,7 +648,7 @@
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
               <strong>${canSubmit ? "Đánh giá dịch vụ" : "Phản hồi khách hàng"}</strong>
-              ${Number(order.rating || 0) > 0 ? renderRatingStars(order.rating) : '<span class="standalone-order-chip">Chưa đánh giá</span>'}
+              ${Number(order.rating || 0) > 0 ? renderRatingStars(order.rating) : ""}
             </div>
             ${
               canSubmit
@@ -844,12 +841,24 @@
           ? getFeePayerLabel(order.fee_payer || "gui")
           : "Người gửi");
       const milestones = getMilestones(order);
+      const isCancelled = Boolean(
+        milestones.cancelledAt ||
+          ["cancelled", "canceled"].includes(
+            String(order.status || "").trim().toLowerCase(),
+          ),
+      );
       const isCompleted = Boolean(
         milestones.completedAt ||
           ["completed", "delivered", "success"].includes(
             String(order.status || "").trim().toLowerCase(),
           ),
       );
+      const isTerminal = isCancelled || isCompleted;
+      const cancelledTimeLabel = isCancelled
+        ? formatDateTime(
+            milestones.cancelledAt || order.cancelled_at || order.updated_at,
+          )
+        : "";
       const completedTimeLabel = isCompleted
         ? formatDateTime(milestones.completedAt || order.completed_at || order.updated_at)
         : "";
@@ -945,16 +954,26 @@
                         </div>
                       </div>
                       <div class="standalone-order-progress-info">
+                        <p class="standalone-order-progress-label">Trạng thái đơn hàng</p>
                         <div class="standalone-order-progress-status-row">${statusBadge}</div>
-                        ${completedTimeLabel ? `<time>${escapeHtml(completedTimeLabel)}</time>` : ""}
+                        ${
+                          cancelledTimeLabel
+                            ? `<time>Hủy lúc ${escapeHtml(cancelledTimeLabel)}</time>`
+                            : ""
+                        }
+                        ${
+                          completedTimeLabel
+                            ? `<time>Hoàn thành lúc ${escapeHtml(completedTimeLabel)}</time>`
+                            : ""
+                        }
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="standalone-order-hero-support-grid ${isCompleted ? "standalone-order-hero-support-grid--route-only" : ""}">
-                ${isCompleted ? "" : renderHeroScheduleCard(pickupSlotLabel, estimatedDelivery)}
+              <div class="standalone-order-hero-support-grid ${isTerminal ? "standalone-order-hero-support-grid--route-only" : ""}">
+                ${isTerminal ? "" : renderHeroScheduleCard(pickupSlotLabel, estimatedDelivery)}
                 <div class="standalone-order-hero-route-stack">
                   <div class="standalone-order-actions-group standalone-order-hero-actions-group standalone-order-route-actions-group">
                     ${buildActionButtons(detail, viewer)}

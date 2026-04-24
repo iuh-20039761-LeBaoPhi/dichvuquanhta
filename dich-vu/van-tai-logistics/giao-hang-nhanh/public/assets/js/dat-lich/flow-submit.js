@@ -152,14 +152,37 @@ function xac_thuc_buoc_3() {
     hien_thi_loi(3, "Vui lòng nhập khung giờ lấy hàng.");
     return false;
   }
-  const pickupSlot = getSelectedPickupSlot();
-  if (!pickupSlot) {
+  const parsedPickupSlot =
+    findPickupSlotOptionByValue(pSlot) || parsePickupSlotInput(pSlot);
+  if (!parsedPickupSlot) {
     hien_thi_loi(3, "Khung giờ lấy hàng không hợp lệ. Vui lòng nhập theo dạng HH:mm - HH:mm.");
     return false;
   }
 
+  const pickupStartMinutes = timeTextToMinutes(parsedPickupSlot.start);
+  const pickupEndMinutes = timeTextToMinutes(parsedPickupSlot.end);
+  if (pickupEndMinutes <= pickupStartMinutes) {
+    hien_thi_loi(
+      3,
+      "Khung giờ phải kết thúc sau giờ bắt đầu trong cùng ngày.",
+    );
+    return false;
+  }
+
+  const pickupSlotResolution = resolvePickupSlot();
+  if (!pickupSlotResolution) {
+    hien_thi_loi(
+      3,
+      "Giờ bắt đầu lấy hàng chưa nằm trong khung áp giá hiện có.",
+    );
+    return false;
+  }
+
   if (pDateVal === todayDate) {
-    const pickupRange = getPickupSlotDateRange(pDateVal, pickupSlot);
+    const pickupRange = getPickupSlotDateRange(pDateVal, {
+      start: pickupSlotResolution.enteredStart,
+      end: pickupSlotResolution.enteredEnd,
+    });
     const now = getCurrentDateTime();
 
     if (!pickupRange) {
@@ -170,7 +193,7 @@ function xac_thuc_buoc_3() {
     if (now >= pickupRange.endAt) {
       hien_thi_loi(
         3,
-        `Khung giờ ${pickupSlot.label} của ngày hôm nay đã trôi qua. Vui lòng nhập khung giờ khác.`,
+        `Khung giờ ${pickupSlotResolution.rawLabel} của ngày hôm nay đã trôi qua. Vui lòng nhập khung giờ khác.`,
       );
       return false;
     }
@@ -261,10 +284,10 @@ function chuan_bi_xac_nhan() {
 
   // Lịch trình (Phần 3: Thời gian và khoảng thời gian)
   const pDate = document.getElementById("ngay_lay_hang").value;
-  const pSlot = getSelectedPickupSlot();
+  const pickupSlotResolution = resolvePickupSlot();
   const urgentCondition = getSelectedUrgentCondition();
   document.getElementById("xac_nhan_thoi_gian_lay_hang").textContent =
-    `${formatDateToDDMMYYYY(pDate)} | ${(pSlot && pSlot.label) || "—"}`;
+    `${formatDateToDDMMYYYY(pDate)} | ${pickupSlotResolution?.rawLabel || "—"}`;
   document.getElementById("xac_nhan_thoi_gian_giao_du_kien").textContent =
     selectedService.estimate;
 
@@ -556,7 +579,10 @@ async function uploadBookingMedia(orderCode) {
     throw new Error("Thiếu helper upload Google Drive cho Giao Hàng Nhanh.");
   }
 
-  return uploadFn(files, { proxyFile: "upload_booking_media.php" });
+  return uploadFn(files, {
+    proxyFile: "upload.php",
+    uploadKind: "order_media",
+  });
 }
 
 function buildBookingSheetPayload(payload, orderCode, attachments = []) {
@@ -772,6 +798,8 @@ function tao_du_lieu_gui() {
     ngay_lay_hang: quotePayload.ngay_lay_hang || "",
     khung_gio_lay_hang: quotePayload.khung_gio_lay_hang || "",
     ten_khung_gio_lay_hang: quotePayload.ten_khung_gio_lay_hang || "",
+    gio_bat_dau_lay_hang: quotePayload.gio_bat_dau_lay_hang || "",
+    gio_ket_thuc_lay_hang: quotePayload.gio_ket_thuc_lay_hang || "",
     du_kien_giao_hang: selectedService.estimate,
     ghi_chu_tai_xe,
     gia_tri_thu_ho_cod,

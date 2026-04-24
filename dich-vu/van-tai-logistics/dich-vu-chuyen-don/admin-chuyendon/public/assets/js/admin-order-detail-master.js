@@ -339,13 +339,22 @@ const adminOrderMasterModule = (function (window, document) {
 
   async function fetchRow(id) {
     const listFn = getKrudListFn();
-    const response = await listFn({
-      table: "dich_vu_chuyen_don_dat_lich",
-      page: 1, limit: 100,
-      sort: { id: "desc" }
-    });
-    const rows = extractRows(response);
-    const matched = rows.find(r => String(r.id) === String(id));
+    let matched = null;
+
+    for (let page = 1; page <= 20; page += 1) {
+      const response = await listFn({
+        table: "dich_vu_chuyen_don_dat_lich",
+        page,
+        limit: 100,
+        sort: { id: "desc" }
+      });
+      const rows = extractRows(response);
+      matched = rows.find(r => String(r.id) === String(id)) || null;
+      if (matched || rows.length < 100) {
+        break;
+      }
+    }
+
     if (!matched) return null;
 
     const providerId = String(matched.provider_id || "").trim();

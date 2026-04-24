@@ -1289,9 +1289,7 @@ const customerPortalStoreModule = (function (window) {
       summary: buildBookingSummary(row, statusMeta.status_text, surveyFirst),
       meta: surveyFirst
         ? "Đã đánh dấu cần khảo sát trước khi triển khai."
-        : vehicleLabel
-          ? `Phương án xe đã chọn: ${vehicleLabel}`
-          : normalizeText(row?.ten_cong_ty || row?.ghi_chu || ""),
+        : normalizeText(row?.ten_cong_ty || row?.ghi_chu || ""),
       from_address: normalizeText(row?.dia_chi_di || ""),
       to_address: normalizeText(row?.dia_chi_den || ""),
       created_at: normalizeText(

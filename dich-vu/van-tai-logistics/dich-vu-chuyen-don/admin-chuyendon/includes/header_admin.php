@@ -17,17 +17,23 @@ $currentPage = basename($_SERVER['PHP_SELF'] ?? '');
     <div class="admin-header__inner">
         <div class="admin-brand">
             <span class="admin-brand__eyebrow">GlobalCare</span>
-            <a href="users_manage.php" class="admin-brand__title">Admin chuyển dọn</a>
+            <a href="admin_stats.php" class="admin-brand__title">Admin chuyển dọn</a>
         </div>
 
         <nav class="admin-nav">
-            <a href="users_manage.php" class="<?php echo $currentPage === 'users_manage.php' ? 'is-active' : ''; ?>">Người dùng</a>
+            <a href="admin_stats.php" class="<?php echo $currentPage === 'admin_stats.php' ? 'is-active' : ''; ?>">Dashboard</a>
             <a href="orders_manage.php" class="<?php echo $currentPage === 'orders_manage.php' ? 'is-active' : ''; ?>">Đơn hàng</a>
+            <a href="users_manage.php" class="<?php echo $currentPage === 'users_manage.php' ? 'is-active' : ''; ?>">Nhà cung cấp & người dùng</a>
             <a href="admin_pricing.php" class="<?php echo $currentPage === 'admin_pricing.php' ? 'is-active' : ''; ?>">Bảng giá</a>
-            <a href="admin_profile.php" class="<?php echo $currentPage === 'admin_profile.php' ? 'is-active' : ''; ?>">Cấu hình upload</a>
+            <a href="contact_manage.php" class="<?php echo $currentPage === 'contact_manage.php' ? 'is-active' : ''; ?>">Liên hệ</a>
+            <a href="articles_manage.php" class="<?php echo $currentPage === 'articles_manage.php' ? 'is-active' : ''; ?>">Cẩm nang</a>
+            <a href="admin_profile.php" class="<?php echo $currentPage === 'admin_profile.php' ? 'is-active' : ''; ?>">Cấu hình</a>
         </nav>
 
         <div class="admin-header__actions">
+            <a href="notifications.php" class="button button-ghost" title="Thông báo">
+                <i class="fas fa-bell"></i>
+            </a>
             <span class="admin-user-chip"><?php echo moving_admin_escape($_SESSION['username'] ?? 'admin'); ?></span>
             <a href="logout.php" class="button button-ghost">Đăng xuất</a>
         </div>

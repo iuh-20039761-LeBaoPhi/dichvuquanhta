@@ -238,7 +238,7 @@ const customerInvoiceDetailModule = (function (window, document) {
       return {
         tone: "cancelled",
         label: "Đã hủy",
-        note: "Đơn đã bị hủy.",
+        note: "",
       };
     }
     return {
@@ -391,7 +391,7 @@ const customerInvoiceDetailModule = (function (window, document) {
             <i class="fa-solid fa-calendar-check"></i>
           </span>
           <div>
-            <span class="standalone-order-hero-support-label">Ngày thực hiện</span>
+            <span class="standalone-order-hero-support-label">Thời gian thực hiện</span>
             <strong>${escapeHtml(
               formatBookingDateOnly(invoice?.schedule_date) ||
                 invoice?.schedule_label ||
@@ -459,6 +459,18 @@ const customerInvoiceDetailModule = (function (window, document) {
           .join("")}
       </div>
     `;
+  }
+
+  function getRenderableServiceDetails(items) {
+    const list = Array.isArray(items) ? items : [];
+    return list.filter((item) => {
+      const normalized = normalizeText(item).toLowerCase();
+      if (!normalized) return false;
+      return !(
+        /phương án xe|phuong an xe|loại xe|loai xe|xe tải|xe tai/.test(normalized) ||
+        /khảo sát trước|khao sat truoc/.test(normalized)
+      );
+    });
   }
 
   function getAttachmentFileName(value) {
@@ -580,6 +592,72 @@ const customerInvoiceDetailModule = (function (window, document) {
     return merged;
   }
 
+  function filterAttachmentValuesByIndexes(values, removedIndexes) {
+    const list = Array.isArray(values) ? values : [];
+    const removed = new Set(
+      (Array.isArray(removedIndexes) ? removedIndexes : [])
+        .map((value) => Number(value))
+        .filter((value) => Number.isInteger(value) && value >= 0),
+    );
+
+    return list.filter((_, index) => !removed.has(index));
+  }
+
+  function renderEditableAttachmentGallery(items, type, options = {}) {
+    const list = (Array.isArray(items) ? items : [])
+      .map((value, index) => ({
+        value: normalizeText(value),
+        index,
+      }))
+      .filter((item) => item.value);
+
+    if (!list.length && options.hideEmpty) return "";
+    if (!list.length) {
+      return `<div class="standalone-order-note-panel"><p>${escapeHtml(
+        options.emptyMessage || "Chưa có ảnh/video.",
+      )}</p></div>`;
+    }
+
+    const removeName = options.removeName || "remove_attachment_indexes[]";
+    const removeButtonLabel = options.removeButtonLabel || "Xóa media";
+    const removedLabel = options.removedLabel || "Sẽ xóa khi lưu";
+    const labelPrefix = options.labelPrefix || (type === "video" ? "Video" : "Ảnh");
+
+    return `
+      <div class="standalone-order-media-grid">
+        ${list
+          .map((item) => {
+            const attachmentHref = getAttachmentHref(item.value);
+            const previewUrl = getAttachmentPreviewUrl(item.value, type);
+            const attachmentName = getAttachmentFileName(item.value) || item.value;
+            const mediaPreview =
+              type === "image" && previewUrl
+                ? `<img src="${escapeHtml(previewUrl)}" alt="${escapeHtml(`${labelPrefix} ${item.index + 1}`)}" />`
+                : type === "video" && previewUrl
+                  ? `<video src="${escapeHtml(previewUrl)}" controls preload="metadata"></video>`
+                  : `<div class="standalone-order-item-icon">
+                      <i class="${escapeHtml(type === "video" ? "fa-solid fa-video" : "fa-solid fa-image")}"></i>
+                    </div>`;
+
+            return `
+              <div class="standalone-order-media-item standalone-order-media-item-removable" data-removed-label="${escapeHtml(removedLabel)}">
+                <a class="standalone-order-media-preview-link" href="${escapeHtml(
+                  attachmentHref || "#",
+                )}" target="_blank" rel="noreferrer">
+                  ${mediaPreview}
+                </a>
+                <button type="button" class="standalone-order-media-remove" data-remove-media aria-label="${escapeHtml(removeButtonLabel)}" title="${escapeHtml(removeButtonLabel)}">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+                <input type="hidden" name="${escapeHtml(removeName)}" value="${escapeHtml(String(item.index))}" disabled />
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    `;
+  }
+
   async function copyText(value) {
     const normalized = String(value || "");
     if (!normalized) {
@@ -686,10 +764,6 @@ const customerInvoiceDetailModule = (function (window, document) {
               return `
               <div class="standalone-order-media-item">
                 ${mediaPreview}
-                <strong>${escapeHtml(item.label)}</strong>
-                <span class="standalone-order-media-value" title="${escapeHtml(
-                  attachmentValue,
-                )}">${escapeHtml(attachmentName)}</span>
                 <div class="standalone-order-media-actions">
                   ${
                     attachmentHref
@@ -911,20 +985,17 @@ const customerInvoiceDetailModule = (function (window, document) {
     return `
       <details class="standalone-order-fold">
         <summary class="standalone-order-fold-summary">
-          <span>Báo cáo từ đơn vị thực hiện</span>
-          <small>${escapeHtml(providerNote ? "Đã cập nhật" : "Chưa có cập nhật mới")}</small>
+          <span>Ghi chú NCC</span>
+          <small>${escapeHtml(providerNote ? "Đã cập nhật" : "Chưa có ghi chú")}</small>
         </summary>
         <section class="standalone-order-block standalone-order-block-fold">
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Nội dung báo cáo</strong>
-              <span class="standalone-order-chip">${escapeHtml(
-                providerNote ? "Đã cập nhật" : "Chờ cập nhật",
-              )}</span>
+              <strong>Ghi chú</strong>
+              ${providerNote ? `<span class="standalone-order-chip">${escapeHtml("Đã cập nhật")}</span>` : ""}
             </div>
             <p class="standalone-order-note-text">${escapeHtml(
-              providerNote ||
-                "Đơn vị thực hiện chưa gửi báo cáo mới cho đơn hàng này.",
+              providerNote || "Chưa có ghi chú",
             )}</p>
             ${renderAttachmentGallery(
               providerReportImageAttachments,
@@ -932,8 +1003,7 @@ const customerInvoiceDetailModule = (function (window, document) {
               {
                 imageLabelPrefix: "Ảnh báo cáo",
                 videoLabelPrefix: "Video báo cáo",
-                emptyMessage:
-                  "Chưa có ảnh hoặc video báo cáo từ nhà cung cấp.",
+                emptyMessage: "Chưa có ảnh/video.",
               },
             )}
           </article>
@@ -955,7 +1025,6 @@ const customerInvoiceDetailModule = (function (window, document) {
               <p>Thông tin đơn vị hiện đang nhận và xử lý đơn hàng này.</p>
             </div>
           </div>
-          <span class="standalone-order-chip">Nhà cung cấp</span>
         </div>
         <div class="standalone-order-info-list">
           ${renderInfoRow("Đơn vị", invoice.provider_name || "Chưa có đơn vị phụ trách")}
@@ -983,90 +1052,96 @@ const customerInvoiceDetailModule = (function (window, document) {
     )
       ? invoice.customer_feedback_video_attachments
       : [];
+    const hasFeedbackContent =
+      safeRating > 0 ||
+      !!feedback ||
+      feedbackImageAttachments.length > 0 ||
+      feedbackVideoAttachments.length > 0;
 
     return `
       <details class="standalone-order-fold">
         <summary class="standalone-order-fold-summary">
-          <span>Đánh giá và báo cáo của bạn</span>
+          <span>Phản hồi khách hàng</span>
           <small>${escapeHtml(
-            safeRating > 0 ? `${safeRating}/5 sao` : canSubmit ? "Sẵn sàng để đánh giá" : "Chưa mở đánh giá",
+            safeRating > 0 ? `${safeRating}/5 sao` : canSubmit ? "Sẵn sàng" : "Chưa mở",
           )}</small>
         </summary>
         <section class="standalone-order-block standalone-order-block-fold">
-          <div class="standalone-order-side-stack standalone-order-review-layout">
+          <div class="standalone-order-side-stack standalone-order-review-layout standalone-order-review-layout-inline">
             <article class="standalone-order-subcard">
               <div class="standalone-order-subcard-head">
-                <strong>Phản hồi hiện tại</strong>
-                <span class="standalone-order-chip">${escapeHtml(
-                  safeRating > 0 ? `${safeRating}/5 sao` : "Chưa đánh giá",
-                )}</span>
-              </div>
-              <div class="standalone-order-note-panel">
-                <p>${renderRatingStars(safeRating)}</p>
-              </div>
-              <p class="standalone-order-note-text">${escapeHtml(
-                feedback ||
-                  "Bạn có thể để lại đánh giá chất lượng phục vụ hoặc báo cáo thêm vấn đề phát sinh tại đây.",
-              )}</p>
-              ${renderAttachmentGallery(
-                feedbackImageAttachments,
-                feedbackVideoAttachments,
-                {
-                  imageLabelPrefix: "Ảnh phản hồi",
-                  videoLabelPrefix: "Video phản hồi",
-                  emptyMessage:
-                    "Chưa có ảnh hoặc video phản hồi từ khách hàng.",
-                },
-              )}
-            </article>
-            <article class="standalone-order-subcard">
-              <div class="standalone-order-subcard-head">
-                <strong>Cập nhật phản hồi</strong>
-                <span class="standalone-order-chip">${escapeHtml(
-                  canSubmit ? "Khách hàng" : "Chưa mở",
-                )}</span>
+                <strong>${escapeHtml(canSubmit ? "Đánh giá dịch vụ" : "Phản hồi khách hàng")}</strong>
+                ${safeRating > 0 ? renderRatingStars(safeRating) : ""}
               </div>
               ${
                 canSubmit
                   ? `
                     <form class="standalone-order-form" data-customer-feedback-form>
                       <label class="standalone-order-field">
-                        <span>Mức đánh giá</span>
+                        <span>Đánh giá dịch vụ</span>
                         ${renderRatingInput(safeRating)}
                       </label>
                       <label class="standalone-order-field">
-                        <span>Đánh giá hoặc báo cáo thêm</span>
-                        <textarea name="customer_feedback" rows="5" placeholder="Chia sẻ trải nghiệm, góp ý hoặc báo cáo phát sinh của đơn hàng này.">${escapeHtml(feedback)}</textarea>
+                        <span>Nội dung phản hồi</span>
+                        <textarea name="customer_feedback" rows="5" placeholder="Mô tả chất lượng phục vụ hoặc vấn đề phát sinh.">${escapeHtml(feedback)}</textarea>
                       </label>
                       <div class="standalone-order-upload-grid">
-                        <label class="standalone-order-upload-zone standalone-order-upload-zone-image">
-                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
-                          <strong>Gửi ảnh hiện trường</strong>
-                          <span class="standalone-order-upload-copy">Ảnh đánh giá sẽ được lưu riêng trong phần media phản hồi khách hàng.</span>
-                          <input type="file" name="customer_feedback_image" accept="image/*" multiple hidden />
-                          <span class="standalone-order-upload-meta" data-feedback-image-summary>Chưa chọn ảnh đánh giá.</span>
-                        </label>
-                        <label class="standalone-order-upload-zone standalone-order-upload-zone-video">
-                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
-                          <strong>Gửi video hiện trường</strong>
-                          <span class="standalone-order-upload-copy">Video đánh giá sẽ được lưu riêng trong phần media phản hồi khách hàng.</span>
-                          <input type="file" name="customer_feedback_video" accept="video/*" multiple hidden />
-                          <span class="standalone-order-upload-meta" data-feedback-video-summary>Chưa chọn video đánh giá.</span>
-                        </label>
+                        <div class="standalone-order-upload-zone standalone-order-upload-zone-image">
+                          <label class="standalone-order-upload-picker">
+                            <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
+                            <strong>Chụp hoặc gửi ảnh phản hồi</strong>
+                            <input type="file" name="customer_feedback_image" accept="image/*" multiple hidden />
+                            <span class="standalone-order-upload-meta" data-feedback-image-summary>Chưa chọn ảnh</span>
+                          </label>
+                          ${renderEditableAttachmentGallery(
+                            feedbackImageAttachments,
+                            "image",
+                            {
+                              removeName: "remove_feedback_image_indexes[]",
+                              removeButtonLabel: "Xóa ảnh phản hồi",
+                              removedLabel: "Sẽ xóa khi lưu",
+                              hideEmpty: true,
+                              labelPrefix: "Ảnh phản hồi",
+                            },
+                          )}
+                        </div>
+                        <div class="standalone-order-upload-zone standalone-order-upload-zone-video">
+                          <label class="standalone-order-upload-picker">
+                            <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
+                            <strong>Gửi video phản hồi</strong>
+                            <input type="file" name="customer_feedback_video" accept="video/*" multiple hidden />
+                            <span class="standalone-order-upload-meta" data-feedback-video-summary>Chưa chọn video</span>
+                          </label>
+                          ${renderEditableAttachmentGallery(
+                            feedbackVideoAttachments,
+                            "video",
+                            {
+                              removeName: "remove_feedback_video_indexes[]",
+                              removeButtonLabel: "Xóa video phản hồi",
+                              removedLabel: "Sẽ xóa khi lưu",
+                              hideEmpty: true,
+                              labelPrefix: "Video phản hồi",
+                            },
+                          )}
+                        </div>
                       </div>
                       <div class="standalone-order-inline-actions">
-                        <button class="customer-btn customer-btn-primary" type="submit">Lưu đánh giá</button>
+                        <button class="customer-btn customer-btn-primary" type="submit">Lưu phản hồi</button>
                       </div>
                     </form>
                   `
-                  : `
-                    <div class="standalone-order-note-panel">
-                      <p>
-                        Mục này sẽ mở sau khi đơn hàng đã hoàn thành. Trước thời điểm đó,
-                        bạn chỉ theo dõi tiến độ và báo cáo từ đơn vị thực hiện.
-                      </p>
-                    </div>
-                  `
+                  : `<div class="standalone-order-note-panel">
+                      <p>${escapeHtml(feedback || (hasFeedbackContent ? "" : "Chưa đánh giá"))}</p>
+                      ${renderAttachmentGallery(
+                        feedbackImageAttachments,
+                        feedbackVideoAttachments,
+                        {
+                          imageLabelPrefix: "Ảnh phản hồi",
+                          videoLabelPrefix: "Video phản hồi",
+                          emptyMessage: "Chưa có ảnh/video phản hồi.",
+                        },
+                      )}
+                    </div>`
               }
             </article>
           </div>
@@ -1126,6 +1201,13 @@ const customerInvoiceDetailModule = (function (window, document) {
     const progressMeta = getProgressMeta(invoice);
     const timeline = buildTimeline(invoice);
     const statusBadge = renderStatusBadge(invoice);
+    const isCancelled = progressMeta.tone === "cancelled";
+    const isCompleted = progressMeta.tone === "completed";
+    const isTerminal = isCancelled || isCompleted;
+    const cancelledTimeLabel = formatDateTime(
+      invoice?.cancelled_at || invoice?.updated_at || invoice?.created_at || "",
+    );
+    const completedTimeLabel = formatDateTime(invoice?.completed_at || "");
     root.innerHTML = `
       <div class="standalone-order-layout">
         <section class="standalone-order-unified-card">
@@ -1154,7 +1236,7 @@ const customerInvoiceDetailModule = (function (window, document) {
                     <h1>${escapeHtml(invoice.service_label || "Dịch vụ Chuyển Dọn")}</h1>
                     <p class="standalone-order-card-subtitle standalone-order-reference">${escapeHtml(invoice.code || "Chi tiết đơn hàng")}</p>
                   </div>
-                  <div class="standalone-order-hero-summary-grid">
+                  <div class="standalone-order-hero-summary-grid standalone-order-hero-fee-distance-row">
                     ${renderHeroStat(
                       "Tạm tính",
                       formatCurrency(invoice.estimated_amount),
@@ -1165,22 +1247,12 @@ const customerInvoiceDetailModule = (function (window, document) {
                       "Khoảng cách",
                       formatDistance(invoice.distance_km),
                       "Quãng đường dự kiến",
-                    )}
-                    ${renderHeroStat(
-                      "Trạng thái đơn",
-                      statusBadge,
-                      progressMeta.note,
-                      {
-                        className: "standalone-order-hero-stat--status",
-                        valueHtml: true,
-                        noteHtml: false,
-                        valueTag: "div",
-                      },
+                      { className: "standalone-order-hero-stat--distance" },
                     )}
                   </div>
                 </div>
 
-                <div class="standalone-order-hero-frame standalone-order-hero-frame-side">
+                <div class="standalone-order-hero-frame standalone-order-hero-frame-side standalone-order-hero-status-frame">
                   <div class="standalone-order-hero-progress-card">
                     <div class="standalone-order-hero-side-progress">
                       <div class="standalone-order-progress-ring status-${escapeHtml(
@@ -1192,12 +1264,26 @@ const customerInvoiceDetailModule = (function (window, document) {
                         </div>
                       </div>
                       <div class="standalone-order-progress-info">
-                        <span class="standalone-order-progress-label">${escapeHtml(progressMeta.label)}</span>
-                        <p>${escapeHtml(progressMeta.note)}</p>
+                        <p class="standalone-order-progress-label">Trạng thái đơn hàng</p>
+                        <div class="standalone-order-progress-status-row">${statusBadge}</div>
+                        ${
+                          isCancelled
+                            ? `<time>Hủy lúc ${escapeHtml(cancelledTimeLabel)}</time>`
+                            : isCompleted
+                              ? `<time>Hoàn thành lúc ${escapeHtml(completedTimeLabel)}</time>`
+                              : ""
+                        }
+                        ${normalizeText(progressMeta.note) ? `<p>${escapeHtml(progressMeta.note)}</p>` : ""}
                       </div>
                     </div>
                   </div>
-                  <div class="standalone-order-actions-group standalone-order-hero-actions-group">
+                </div>
+              </div>
+
+              <div class="standalone-order-hero-support-grid ${isTerminal ? "standalone-order-hero-support-grid--route-only" : ""}">
+                ${isTerminal ? "" : renderHeroScheduleCard(invoice)}
+                <div class="standalone-order-hero-route-stack">
+                  <div class="standalone-order-actions-group standalone-order-hero-actions-group standalone-order-route-actions-group">
                     ${
                       canCancel
                         ? `<button type="button" class="customer-btn customer-btn-danger" data-invoice-cancel data-order-id="${escapeHtml(
@@ -1210,12 +1296,8 @@ const customerInvoiceDetailModule = (function (window, document) {
                     )}">Về lịch sử đơn</a>
                   </div>
                   ${renderCancelConfirmBlock(invoice)}
+                  ${renderHeroRouteCard(invoice)}
                 </div>
-              </div>
-
-              <div class="standalone-order-hero-support-grid">
-                ${renderHeroScheduleCard(invoice)}
-                ${renderHeroRouteCard(invoice)}
               </div>
             </div>
           </header>
@@ -1235,7 +1317,6 @@ const customerInvoiceDetailModule = (function (window, document) {
                       <strong>Chi tiết đơn</strong>
                       <p>Những thông tin cần kiểm tra nhanh trước khi thực hiện.</p>
                     </div>
-                    <span class="standalone-order-chip">Đơn hàng</span>
                   </div>
                   <div class="standalone-order-info-list">
                     ${renderInfoRow("Khảo sát", getSurveyRequirementLabel(invoice))}
@@ -1248,7 +1329,6 @@ const customerInvoiceDetailModule = (function (window, document) {
                       <strong>Chi tiết tạm tính</strong>
                       <p>Các khoản đang dùng để tính mức giá tham khảo hiện tại.</p>
                     </div>
-                    <span class="standalone-order-chip">Tạm tính</span>
                   </div>
                   <div class="standalone-order-info-list">
                     ${renderPricingRows(invoice)}
@@ -1274,7 +1354,6 @@ const customerInvoiceDetailModule = (function (window, document) {
                         <p>Đầu mối hệ thống sẽ liên hệ khi cần xác nhận thêm.</p>
                       </div>
                     </div>
-                    <span class="standalone-order-chip">Liên hệ</span>
                   </div>
                   <div class="standalone-order-info-list">
                     ${renderInfoRow("Khách hàng", invoice.contact_name || store.getDisplayName(profile))}
@@ -1298,10 +1377,6 @@ const customerInvoiceDetailModule = (function (window, document) {
                           <p>Những ghi chú đã gửi kèm theo đơn hàng.</p>
                         </div>
                       </div>
-                      <span class="standalone-order-chip">Lưu ý</span>
-                    </div>
-                    <div class="standalone-order-note-panel standalone-order-contact-note-panel">
-                      <p>${escapeHtml(invoice.note || invoice.meta || "Chưa có ghi chú bổ sung.")}</p>
                     </div>
                     <div class="standalone-order-side-stack standalone-order-review-layout">
                       <article class="standalone-order-subcard">
@@ -1318,8 +1393,8 @@ const customerInvoiceDetailModule = (function (window, document) {
                           <strong>Hạng mục đã chọn</strong>
                         </div>
                         ${renderChipList(
-                          invoice.service_details,
-                          "Chưa có hạng mục nào được chọn thêm.",
+                          getRenderableServiceDetails(invoice.service_details),
+                          "Không có hạng mục bổ sung ngoài thông tin chính.",
                         )}
                       </article>
                     </div>
@@ -1340,7 +1415,6 @@ const customerInvoiceDetailModule = (function (window, document) {
                       <strong>Tiến độ xử lý</strong>
                       <p>Các mốc chính của đơn hàng từ lúc tạo đến khi hoàn tất.</p>
                     </div>
-                    <span class="standalone-order-chip">Tiến độ</span>
                   </div>
                   ${renderTimeline(timeline)}
                 </article>
@@ -1350,7 +1424,6 @@ const customerInvoiceDetailModule = (function (window, document) {
                       <strong>Ảnh/video khách đính kèm khi đặt đơn</strong>
                       <p>Media được gửi từ form đặt lịch ban đầu của đơn hàng.</p>
                     </div>
-                    <span class="standalone-order-chip">Tệp đính kèm</span>
                   </div>
                   ${renderAttachmentGallery(
                     invoice?.booking_image_attachments,
@@ -1450,6 +1523,14 @@ const customerInvoiceDetailModule = (function (window, document) {
           }
 
           const formData = new FormData(form);
+          const removedImageIndexes = formData
+            .getAll("remove_feedback_image_indexes[]")
+            .map((value) => Number(value))
+            .filter((value) => Number.isInteger(value) && value >= 0);
+          const removedVideoIndexes = formData
+            .getAll("remove_feedback_video_indexes[]")
+            .map((value) => Number(value))
+            .filter((value) => Number.isInteger(value) && value >= 0);
           const imageFiles = collectFiles(
             form.querySelector('input[name="customer_feedback_image"]'),
           );
@@ -1493,12 +1574,20 @@ const customerInvoiceDetailModule = (function (window, document) {
               ].filter(Boolean).join(" ");
             }
           }
-          const mergedImageAttachments = mergeAttachmentValues(
+          const baseImageAttachments = filterAttachmentValuesByIndexes(
             invoice?.customer_feedback_image_attachments,
+            removedImageIndexes,
+          );
+          const baseVideoAttachments = filterAttachmentValuesByIndexes(
+            invoice?.customer_feedback_video_attachments,
+            removedVideoIndexes,
+          );
+          const mergedImageAttachments = mergeAttachmentValues(
+            baseImageAttachments,
             uploadedImageLinks,
           );
           const mergedVideoAttachments = mergeAttachmentValues(
-            invoice?.customer_feedback_video_attachments,
+            baseVideoAttachments,
             uploadedVideoLinks,
           );
           let result = null;
@@ -1534,7 +1623,7 @@ const customerInvoiceDetailModule = (function (window, document) {
             form.querySelector('button[type="submit"]') || null;
           if (submitButton) {
             submitButton.disabled = false;
-            submitButton.textContent = "Lưu đánh giá";
+            submitButton.textContent = "Lưu phản hồi";
           }
         }
       });
@@ -1544,14 +1633,25 @@ const customerInvoiceDetailModule = (function (window, document) {
       bindFileSummary(
         feedbackForm.querySelector('input[name="customer_feedback_image"]'),
         feedbackForm.querySelector("[data-feedback-image-summary]"),
-        "Chưa chọn ảnh đánh giá.",
+        "Chưa chọn ảnh",
       );
       bindFileSummary(
         feedbackForm.querySelector('input[name="customer_feedback_video"]'),
         feedbackForm.querySelector("[data-feedback-video-summary]"),
-        "Chưa chọn video đánh giá.",
+        "Chưa chọn video",
       );
     }
+
+    root.querySelectorAll("[data-remove-media]").forEach((button) => {
+      button.addEventListener("click", function () {
+        const card = button.closest(".standalone-order-media-item-removable");
+        const hiddenInput = card?.querySelector('input[type="hidden"]');
+        if (!card || !hiddenInput) return;
+        const willRemove = !card.classList.contains("is-removed");
+        card.classList.toggle("is-removed", willRemove);
+        hiddenInput.disabled = !willRemove;
+      });
+    });
 
     root.querySelectorAll("[data-rating-input]").forEach((ratingRoot) => {
       const hiddenInput = ratingRoot.querySelector('input[name="customer_rating"]');

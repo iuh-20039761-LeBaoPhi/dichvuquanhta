@@ -573,14 +573,16 @@
       throw new Error("Không tìm thấy helper upload Google Drive.");
     }
 
-    const proxyFile =
-      mediaType === "feedback" ? "upload_feedback_media.php" : "";
-    if (!proxyFile) {
+    const uploadOptions =
+      mediaType === "feedback"
+        ? { proxyFile: "khach-hang/upload.php", uploadKind: "order_media" }
+        : null;
+    if (!uploadOptions) {
       throw new Error("Loại media này chưa được cấu hình thư mục Google Drive.");
     }
 
     return normalizeMediaItems(
-      await core.uploadFilesToDrive(list, { proxyFile }),
+      await core.uploadFilesToDrive(list, uploadOptions),
     );
   }
   const escapeHtml =
@@ -2083,6 +2085,7 @@
         const uploaded = await core.uploadFileToDrive(file, {
           name: file.name,
           proxyFile: uploadOptions.proxyFile || "",
+          uploadKind: uploadOptions.uploadKind || "",
         });
         return normalizeText(uploaded?.fileId || uploaded?.id || "");
       };
@@ -2093,7 +2096,8 @@
       let cccdBackLink = "";
       try {
         avatarLink = await uploadSingleFile("avatar_file", {
-          proxyFile: "upload_avatar.php",
+          proxyFile: "khach-hang/upload.php",
+          uploadKind: "avatar",
         });
         cccdFrontLink = await uploadSingleFile("cccd_front_file");
         cccdBackLink = await uploadSingleFile("cccd_back_file");
