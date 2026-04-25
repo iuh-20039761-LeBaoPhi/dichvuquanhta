@@ -1589,30 +1589,52 @@
 		// Hàm tìm và xác định quyền của người dùng đã sửa lỗi
 function findAuthUser() {
     const { sodienthoai, password } = app.params;
-    // Tìm user khớp SĐT và mật khẩu trong danh sách đã tải
-    const matched = app.$nguoidung.find(r => String(r.sodienthoai || '') === sodienthoai && String(r.matkhau || r.mat_khau || r.password || '') === password);
+    // Tìm TẤT CẢ user khớp SĐT và MK
+    const matchedUsers = app.$nguoidung.filter(r => 
+        String(r.sodienthoai || '') === sodienthoai && 
+        String(r.matkhau || r.mat_khau || r.password || '') === password
+    );
     
-    // Nếu không tìm thấy user hoặc chưa có dữ liệu đơn hàng thì trả về null (không có quyền)
-    if (!matched || !app.$datlich_taixe) return null;
+    if (!matchedUsers.length || !app.$datlich_taixe) return null;
 
     const ord = app.$datlich_taixe;
-    // Kiểm tra xem có phải là nhà cung cấp (tài xế) không? ID '1' là của nhà cung cấp.
-    const isProvider = String(matched.id_dichvu || '').split(',').map(s => s.trim()).includes('1');
-    
-    const sdt_kh = String(ord.sdtkhachhang || ''); // SĐT khách hàng trong đơn
-    const sdt_tx = String(ord.sdt_taixe || '');   // SĐT tài xế được phân công (nếu có)
+    const sdt_kh = String(ord.sdtkhachhang || '');
+    const sdt_tx = String(ord.sdt_taixe || '');
+    const id_tx = parseInt(ord.id_taixe || 0);
 
-    // 1. Nếu SĐT đăng nhập trùng với SĐT khách hàng -> là 'customer'
-    if (sodienthoai === sdt_kh) return { role: 'customer', $user: matched };
+    // Ưu tiên 1: Tìm user có id trùng với id_taixe trong đơn
+    let matched = matchedUsers.find(u => parseInt(u.id || 0) === id_tx);
+    if (matched) return { role: 'driver', $user: matched };
 
-    // 2. Nếu SĐT đăng nhập là tài xế và (trùng với SĐT tài xế trong đơn HOẶC đơn chưa có tài xế nào nhận)
-    //    -> là 'driver'
-    if (isProvider && (sodienthoai === sdt_tx || !sdt_tx)) return { role: 'driver', $user: matched };
-    
-    // Các trường hợp còn lại: không có quyền
+    // Ưu tiên 2: Tìm user có id_dichvu không rỗng (tài xế) và SĐT khớp
+    matched = matchedUsers.find(u => {
+        const idDv = (u.id_dichvu || '').toString().trim();
+        const uPhone = String(u.sodienthoai || '');
+        return idDv !== '' && uPhone === sdt_tx;
+    });
+    if (matched) return { role: 'driver', $user: matched };
+
+    // Ưu tiên 3: Nếu là khách hàng (SĐT khớp SĐT khách trong đơn)
+    if (sodienthoai === sdt_kh) {
+        // Chọn user đầu tiên (ưu tiên user có id_dichvu rỗng - khách hàng)
+        matched = matchedUsers.find(u => {
+            const idDv = (u.id_dichvu || '').toString().trim();
+            return idDv === '';
+        }) || matchedUsers[0];
+        return { role: 'customer', $user: matched };
+    }
+
+    // Ưu tiên 4: Nếu là tài xế (có id_dichvu) và đơn chưa có tài xế
+    if (id_tx === 0) {
+        matched = matchedUsers.find(u => {
+            const idDv = (u.id_dichvu || '').toString().trim();
+            return idDv !== '';
+        });
+        if (matched) return { role: 'driver', $user: matched };
+    }
+
     return null;
 }
-
 		async function applyAutoOrderStatusRules($datlich_taixe) {
 			const status = String($datlich_taixe.trangthai || '').toLowerCase();
 			const hasDriver = toNum($datlich_taixe.id_taixe) > 0;
@@ -1835,55 +1857,43 @@ function findAuthUser() {
 		}
 
 		function renderActionButtons() {
-			const el = id => document.getElementById(id);
-			const $ = app.$datlich_taixe;
-			if (!$) return;
-			const isDriver = app.role === 'driver', isCust = app.role === 'customer';
-			const assigned = toNum($.id_taixe) > 0;
-			const isMe = (isDriver && toNum($.id_taixe) === toNum(app.$user.id))
-				|| (isCust && String($.sdtkhachhang) === String(app.$user.sodienthoai));
-			const status = String($.trangthai || '').toLowerCase();
-			const isCancel = status.includes('hủy') || status.includes('huy'), 
-				isDone = status.includes('hoàn thành') || status.includes('hoan thanh'), 
-				isOver = status.includes('quá hạn') || status.includes('qua han');
-			const startVal = buildPlanDateTime($.ngay_bat_dau_kehoach, $.gio_bat_dau_kehoach);
-			const canClaim = isDriver && !assigned && !isCancel && !isDone && !isOver && (startVal && now() < startVal);
-			const started = !!$.thoigian_batdau_thucte, ended = !!$.thoigian_ketthuc_thucte;
+    const el = id => document.getElementById(id);
+    const $ = app.$datlich_taixe;
+    if (!$) return;
+    
+    const isDriver = app.role === 'driver';
+    const isCust = app.role === 'customer';
+    const assigned = toNum($.id_taixe) > 0;
+    const isMe = (isDriver && toNum($.id_taixe) === toNum(app.$user.id))
+        || (isCust && String($.sdtkhachhang) === String(app.$user.sodienthoai));
+    const status = String($.trangthai || '').toLowerCase();
+    const isCancel = status.includes('hủy') || status.includes('huy');
+    const isDone = status.includes('hoàn thành') || status.includes('hoan thanh');
+    const isOver = status.includes('quá hạn') || status.includes('qua han');
+    const startVal = buildPlanDateTime($.ngay_bat_dau_kehoach, $.gio_bat_dau_kehoach);
+    const started = !!$.thoigian_batdau_thucte;
+    const ended = !!$.thoigian_ketthuc_thucte;
 
-			show(el('btnHdrClaim'), canClaim);
+    // Nút "Nhận việc": hiện khi tài xế đăng nhập, đơn chưa có ai nhận, chưa hủy/hoàn thành/quá hạn
+    const canClaim = isDriver && !assigned && !isCancel && !isDone && !isOver;
+    show(el('btnHdrClaim'), canClaim);
 
-			const canHdrStart = isMe && assigned && !started && !isCancel && !isDone && !isOver;
-			show(el('btnHdrStart'), canHdrStart);
-			const canHdrEnd = isMe && assigned && started && !ended && !isCancel && !isDone && !isOver;
-			show(el('btnHdrEnd'), canHdrEnd);
+    // Nút "Bắt đầu dịch vụ": hiện khi tài xế đã nhận đơn, chưa bắt đầu
+    const canHdrStart = isMe && assigned && !started && !isCancel && !isDone && !isOver;
+    show(el('btnHdrStart'), canHdrStart);
 
-			const todayStr = (() => {
-				const d = now();
-				const p = n => String(n).padStart(2, '0');
-				return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-			})();
-			const startPlanDate = ($.ngay_bat_dau_kehoach || '').slice(0, 10);
-			const endPlanDate = ($.ngay_ket_thuc_kehoach || '').slice(0, 10);
-			const inPlanRange = isMe && assigned && started && !isCancel && !isDone && !isOver
-				&& startPlanDate <= todayStr && todayStr <= endPlanDate;
-			const pastEndDate = endPlanDate && todayStr > endPlanDate;
+    // Nút "Hoàn thành dịch vụ": hiện khi đã bắt đầu, chưa kết thúc
+    const canHdrEnd = isMe && assigned && started && !ended && !isCancel && !isDone && !isOver;
+    show(el('btnHdrEnd'), canHdrEnd);
 
-			if (pastEndDate || !inPlanRange) {
-				show(el('btnStart'), false);
-				show(el('btnEnd'), false);
-			} else {
-				const history = app.$workHistory || [];
-				const hasRecordToday = history.some(r => (r.ngay_lam || '').slice(0, 10) === todayStr);
-				const logToday = history.find(r => (r.ngay_lam || '').slice(0, 10) === todayStr && r.gio_bat_dau_trong_ngay);
-				const todayStarted = !!logToday;
-				const todayEnded = logToday && logToday.gio_ket_thuc_trong_ngay;
-
-				show(el('btnStart'), !hasRecordToday && !isDone);
-				show(el('btnEnd'), todayStarted && !todayEnded && !isDone);
-			}
-
-			show(el('btnCancelService'), isCust && (startVal && now() < startVal.getTime() - 3600000) && !isCancel && !isDone && !started);
-		}
+    // Nút "Hủy dịch vụ": chỉ khách hàng được hủy khi chưa có tài xế nhận
+    const canCancel = isCust && !assigned && (startVal && now() < startVal.getTime() - 3600000) && !isCancel && !isDone && !started;
+    show(el('btnCancelService'), canCancel);
+    
+    // Ẩn các nút Bắt đầu ca / Kết thúc ca (dành cho logic cũ)
+    show(el('btnStart'), false);
+    show(el('btnEnd'), false);
+}
 
 		function renderUI() {
 			const $datlich_taixe = app.$datlich_taixe || {};
@@ -2007,32 +2017,24 @@ function findAuthUser() {
 		}
 
 		async function handleClaim() {
-			const $datlich_taixe = app.$datlich_taixe || {};
-			const statusText = String($datlich_taixe.trangthai || '').toLowerCase();
-			if (statusText.includes('quá hạn') || statusText.includes('qua han')) {
-				throw new Error('Đơn hàng quá hạn, không thể nhận việc');
-			}
+    const $datlich_taixe = app.$datlich_taixe || {};
+    const statusText = String($datlich_taixe.trangthai || '').toLowerCase();
+    if (statusText.includes('quá hạn') || statusText.includes('qua han')) {
+        throw new Error('Đơn hàng quá hạn, không thể nhận việc');
+    }
 
-			const startPlanAt = buildPlanDateTime($datlich_taixe.ngay_bat_dau_kehoach, $datlich_taixe.gio_bat_dau_kehoach);
-			if (startPlanAt && now().getTime() >= startPlanAt.getTime()) {
-				if (toNum($datlich_taixe.id_taixe) <= 0 && !statusText.includes('hủy') && !statusText.includes('hoàn thành')) {
-					await updateById(TABLE_ORDER, $datlich_taixe.id, { trangthai: 'quá hạn' });
-					await reloadOrder();
-				}
-				throw new Error('Đơn hàng quá hạn, không thể nhận việc');
-			}
-
-			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
-				id_taixe: app.$user.id,
-				ngaynhan: nowSql(),
-				ten_taixe: app.$user.hovaten || '',
-				sdt_taixe: app.$user.sodienthoai || '',
-				email_taixe: app.$user.email || '',
-				diachi_taixe: app.$user.diachi || '',
-				avatar_taixe: app.$user.anh_dai_dien || ''
-			});
-			await reloadOrder();
-		}
+    await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+        id_taixe: app.$user.id,
+        ngaynhan: nowSql(),
+        ten_taixe: app.$user.hovaten || '',
+        sdt_taixe: app.$user.sodienthoai || '',
+        email_taixe: app.$user.email || '',
+        diachi_taixe: app.$user.diachi || '',
+        avatar_taixe: app.$user.anh_dai_dien || '',
+        trangthai: 'Đã nhận'
+    });
+    await reloadOrder();
+}
 
 		async function handleCancel() {
 			const $datlich_taixe = app.$datlich_taixe || {};
@@ -2072,23 +2074,23 @@ function findAuthUser() {
 		}
 
 		async function handleHdrStart() {
-			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
-				trangthai: 'đang thực hiện',
-				thoigian_batdau_thucte: nowSql(),
-				thoigian_ketthuc_thucte: ''
-			});
-			await reloadOrder();
-		}
+    await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+        trangthai: 'Đã bắt đầu',
+        thoigian_batdau_thucte: nowSql(),
+        thoigian_ketthuc_thucte: ''
+    });
+    await reloadOrder();
+}
 
 		async function handleHdrEnd() {
-			if (!confirm('Bạn có chắc chắn muốn hoàn thành dịch vụ?')) return;
-			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
-				trangthai: 'hoàn thành',
-				thoigian_ketthuc_thucte: nowSql(),
-				tien_do: 100
-			});
-			await reloadOrder();
-		}
+    if (!confirm('Bạn có chắc chắn muốn hoàn thành dịch vụ?')) return;
+    await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+        trangthai: 'Đã hoàn thành',
+        thoigian_ketthuc_thucte: nowSql(),
+        tien_do: 100
+    });
+    await reloadOrder();
+}
 
 		async function handleStart() {
 			const idDv = app.$datlich_taixe.id;

@@ -50,6 +50,47 @@
             border-radius: 10px;
             padding: 12px;
         }
+        /* Trang chọn vai trò */
+        .role-selection {
+            display: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .role-selection.active {
+            display: block;
+        }
+        .role-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 3px solid #007bff;
+            border-radius: 15px;
+            background: #fff;
+            text-align: left;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .role-btn:hover {
+            background: #e3f2fd;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .role-btn .role-icon {
+            font-size: 2rem;
+            color: #007bff;
+            margin-right: 15px;
+        }
+        .role-btn .role-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #007bff;
+        }
+        .role-btn .role-desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -57,12 +98,13 @@
         <div class="login-card">
             <div class="login-header">
                 <img src="assets/logo_main.png" alt="Logo">
-                <h3>Đăng nhập</h3>
+                <h3 id="loginTitle">Đăng nhập</h3>
                 <p class="mb-0">Dịch Vụ Thuê Tài Xế</p>
             </div>
             <div class="login-body">
                 <div id="errorMsg" class="alert alert-danger d-none"></div>
                 
+                <!-- Form đăng nhập -->
                 <form id="loginForm">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Số điện thoại</label>
@@ -77,6 +119,38 @@
                     </button>
                 </form>
                 
+                <!-- Trang chọn vai trò (ẩn mặc định) -->
+                <div id="roleSelection" class="role-selection">
+                    <h5 class="fw-bold mb-4">Chọn vai trò của bạn</h5>
+                    <p class="text-muted mb-4">Tài khoản của bạn có thể truy cập với nhiều vai trò. Vui lòng chọn vai trò muốn sử dụng.</p>
+                    
+                    <button class="role-btn" onclick="goToRole('customer')">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person role-icon"></i>
+                            <div>
+                                <div class="role-title">Khách hàng</div>
+                                <div class="role-desc">Đặt lịch thuê tài xế, xem đơn hàng của tôi</div>
+                            </div>
+                            <i class="bi bi-chevron-right ms-auto fs-4 text-muted"></i>
+                        </div>
+                    </button>
+                    
+                    <button class="role-btn" onclick="goToRole('driver')">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-car-front role-icon"></i>
+                            <div>
+                                <div class="role-title">Tài xế</div>
+                                <div class="role-desc">Nhận đơn hàng, quản lý công việc</div>
+                            </div>
+                            <i class="bi bi-chevron-right ms-auto fs-4 text-muted"></i>
+                        </div>
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary w-100 mt-3" onclick="goToRole('logout')">
+                        <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                    </button>
+                </div>
+                
                 <div class="text-center mt-4">
                     <p>Chưa có tài khoản? <a href="register.html" class="fw-bold text-primary">Đăng ký ngay</a></p>
                     <a href="index.html" class="text-muted"><i class="bi bi-arrow-left me-1"></i>Quay lại trang chủ</a>
@@ -86,6 +160,23 @@
     </div>
 
     <script>
+        // Lưu thông tin user sau khi đăng nhập
+        let loggedInUser = null;
+        
+        // Hàm chuyển hướng theo vai trò
+        function goToRole(role) {
+            if (role === 'customer') {
+                window.location.href = 'khach_hang/danh-sach-don-hang.php';
+            } else if (role === 'driver') {
+                window.location.href = 'nhan_vien/danh-sach-don-hang.php';
+            } else if (role === 'logout') {
+                // Xóa cookie và reload
+                document.cookie = 'dvqt_u=; path=/; max-age=0';
+                document.cookie = 'dvqt_p=; path=/; max-age=0';
+                location.reload();
+            }
+        }
+        
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -101,56 +192,63 @@
                 return;
             }
             
-          try {
-    const res = await fetch('https://api.dvqt.vn/list/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ table: 'nguoidung' })
-    });
-    
-    const data = await res.json();
-    const users = data.data || data.rows || [];
-    
-    const user = users.find(u => {
-        const userPhone = (u.sodienthoai || u.phone || '').trim();
-        const userPass = (u.matkhau || u.password || '').trim();
-        return userPhone === phone && userPass === password;
-    });
-    
-    if (!user) {
-        errorMsg.textContent = 'Số điện thoại hoặc mật khẩu không đúng';
-        errorMsg.classList.remove('d-none');
-        return;
-    }
-    
-    // Set cookie
-    document.cookie = `dvqt_u=${phone}; path=/; max-age=${30*24*60*60}`;
-    document.cookie = `dvqt_p=${password}; path=/; max-age=${30*24*60*60}`;
-    
-    // Gọi session_user.php để tạo session
-    const sessionRes = await fetch('session_user.php', { credentials: 'include' });
-    const sessionData = await sessionRes.json();
-    
-    if (!sessionData.success) {
-        errorMsg.textContent = sessionData.message || 'Không thể tạo phiên đăng nhập';
-        errorMsg.classList.remove('d-none');
-        return;
-    }
-    
-    // Chuyển hướng
-    const idDichvu = (user.id_dichvu || '').toString();
-    const isDriver = idDichvu.includes('6') || idDichvu.includes('1');
-    
-    if (isDriver) {
-        window.location.href = 'nhan_vien/danh-sach-don-hang.php';
-    } else {
-        window.location.href = 'khach_hang/danh-sach-don-hang.php';
-    }
-} catch (err) {
-    console.error('Lỗi:', err);
-    errorMsg.textContent = 'Lỗi kết nối: ' + err.message;
-    errorMsg.classList.remove('d-none');
-}
+            try {
+                const res = await fetch('https://api.dvqt.vn/list/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ table: 'nguoidung' })
+                });
+                
+                const data = await res.json();
+                const users = data.data || data.rows || [];
+                
+                const user = users.find(u => {
+                    const userPhone = (u.sodienthoai || u.phone || '').trim();
+                    const userPass = (u.matkhau || u.password || '').trim();
+                    return userPhone === phone && userPass === password;
+                });
+                
+                if (!user) {
+                    errorMsg.textContent = 'Số điện thoại hoặc mật khẩu không đúng';
+                    errorMsg.classList.remove('d-none');
+                    return;
+                }
+                
+                // Lưu cookie
+                document.cookie = `dvqt_u=${phone}; path=/; max-age=${30*24*60*60}`;
+                document.cookie = `dvqt_p=${password}; path=/; max-age=${30*24*60*60}`;
+                
+                // Gọi session_user.php để tạo session
+                await fetch('session_user.php', { credentials: 'include' });
+                
+                // Lưu thông tin user
+                loggedInUser = user;
+                
+                // ============================================
+                // KIỂM TRA VAI TRÒ
+                // ============================================
+                const idDichvu = (user.id_dichvu || '').toString().trim();
+                const isDriver = idDichvu !== '';  // Có đăng ký dịch vụ → Tài xế
+                const isCustomer = true;           // Mọi người đều là khách hàng
+                
+                if (isDriver && isCustomer) {
+                    // CÓ CẢ 2 VAI TRÒ → Hiển thị trang chọn vai trò
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('roleSelection').classList.add('active');
+                    document.getElementById('loginTitle').textContent = 'Chọn vai trò';
+                } else if (isDriver) {
+                    // CHỈ LÀ TÀI XẾ
+                    window.location.href = 'nhan_vien/danh-sach-don-hang.php';
+                } else {
+                    // CHỈ LÀ KHÁCH HÀNG
+                    window.location.href = 'khach_hang/danh-sach-don-hang.php';
+                }
+                
+            } catch (err) {
+                console.error('Lỗi:', err);
+                errorMsg.textContent = 'Lỗi kết nối: ' + err.message;
+                errorMsg.classList.remove('d-none');
+            }
         });
     </script>
 </body>

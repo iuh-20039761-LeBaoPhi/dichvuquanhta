@@ -309,11 +309,46 @@ admin_render_layout_start('Quản Lý Đơn Hàng Thuê Tài Xế', 'orders', $a
                                     <td><?= admin_h(trim((string) ($row['ngaydat'] ?? '')) !== '' ? (string) $row['ngaydat'] : (trim((string) ($row['created_date'] ?? '')) !== '' ? (string) $row['created_date'] : (trim((string) ($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string) $row['ngay_bat_dau_kehoach'] : 'N/A'))) ?>
                                     </td>
                                     <td class="text-end">
-                                        <a href="chi-tiet-don-hang.php?id=<?= urlencode((string) ($row['id'] ?? '')) ?>"
-                                            class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-eye me-1"></i>Chi tiết
-                                        </a>
-                                    </td>
+    <div class="dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-gear me-1"></i>Thao tác
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" href="chi-tiet-don-hang.php?id=<?= urlencode((string) ($row['id'] ?? '')) ?>">
+                    <i class="bi bi-eye me-2"></i>Xem chi tiết
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="phan-cong-tai-xe.php?id=<?= urlencode((string) ($row['id'] ?? '')) ?>">
+                    <i class="bi bi-person-check me-2"></i>Phân công tài xế
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item text-warning" href="cap-nhat-trang-thai.php?id=<?= urlencode((string) ($row['id'] ?? '')) ?>&status=Đã nhận">
+                    <i class="bi bi-check-circle me-2"></i>Xác nhận đơn
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-info" href="cap-nhat-trang-thai.php?id=<?= urlencode((string) ($row['id'] ?? '')) ?>&status=Đã bắt đầu">
+                    <i class="bi bi-play-circle me-2"></i>Bắt đầu
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item text-success" href="cap-nhat-trang-thai.php?id=<?= urlencode((string) ($row['id'] ?? '')) ?>&status=Đã hoàn thành">
+                    <i class="bi bi-flag me-2"></i>Hoàn thành
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item text-danger" href="huy-don-hang.php?id=<?= urlencode((string) ($row['id'] ?? '')) ?>" onclick="return confirm('Bạn có chắc muốn hủy đơn này?')">
+                    <i class="bi bi-x-circle me-2"></i>Hủy đơn
+                </a>
+            </li>
+        </ul>
+    </div>
+</td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>

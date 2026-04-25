@@ -4,19 +4,26 @@ declare(strict_types=1);
 require_once __DIR__ . '/admin_api_common.php';
 
 /**
- * Lấy danh sách tài xế
+ * Lấy danh sách tài xế (từ bảng nguoidung, lọc những người có id_dichvu)
  */
 function get_all_taixe(): array
 {
-    $result = admin_api_list_table('taixe');
+    $result = admin_api_list_table('nguoidung'); // ← ĐÃ SỬA
     if ($result['error'] !== '') {
         return ['rows' => [], 'error' => $result['error']];
     }
-    return ['rows' => $result['rows'], 'error' => ''];
+    
+    // Lọc chỉ lấy tài xế (có id_dichvu không rỗng)
+    $allRows = $result['rows'] ?? [];
+    $rows = array_filter($allRows, function($user) {
+        return !empty(trim((string)($user['id_dichvu'] ?? '')));
+    });
+    
+    return ['rows' => array_values($rows), 'error' => ''];
 }
 
 /**
- * Lấy thông tin tài xế theo ID
+ * Lấy thông tin tài xế theo ID (từ bảng nguoidung)
  */
 function get_taixe_by_id(int $id): array
 {
@@ -24,7 +31,7 @@ function get_taixe_by_id(int $id): array
         return ['row' => null, 'error' => 'ID không hợp lệ'];
     }
     
-    $result = admin_api_list_table('taixe');
+    $result = admin_api_list_table('nguoidung'); // ← ĐÃ SỬA
     if ($result['error'] !== '') {
         return ['row' => null, 'error' => $result['error']];
     }
@@ -47,7 +54,7 @@ function duyet_tai_xe(int $id): array
         return ['success' => false, 'message' => 'ID tài xế không hợp lệ'];
     }
     
-    return admin_api_update_table('taixe', $id, [
+    return admin_api_update_table('nguoidung', $id, [ // ← ĐÃ SỬA
         'trangthai' => 'active',
         'ngay_duyet' => date('Y-m-d H:i:s')
     ]);
@@ -62,7 +69,7 @@ function khoa_tai_xe(int $id): array
         return ['success' => false, 'message' => 'ID tài xế không hợp lệ'];
     }
     
-    return admin_api_update_table('taixe', $id, [
+    return admin_api_update_table('nguoidung', $id, [ // ← ĐÃ SỬA
         'trangthai' => 'blocked'
     ]);
 }
@@ -81,13 +88,13 @@ function cap_nhat_trangthai_taixe(int $id, string $status): array
         return ['success' => false, 'message' => 'Trạng thái không hợp lệ'];
     }
     
-    return admin_api_update_table('taixe', $id, [
+    return admin_api_update_table('nguoidung', $id, [ // ← ĐÃ SỬA
         'trangthai' => $status
     ]);
 }
 
 /**
- * Thêm tài xế mới
+ * Thêm tài xế mới (vào bảng nguoidung)
  */
 function them_taixe(array $data): array
 {
@@ -98,7 +105,7 @@ function them_taixe(array $data): array
     $data['trangthai'] = $data['trangthai'] ?? 'pending';
     $data['created_date'] = date('Y-m-d H:i:s');
     
-    return admin_api_insert_table('taixe', $data);
+    return admin_api_insert_table('nguoidung', $data); // ← ĐÃ SỬA
 }
 
 /**
@@ -110,7 +117,7 @@ function sua_taixe(int $id, array $data): array
         return ['success' => false, 'message' => 'ID tài xế không hợp lệ'];
     }
     
-    return admin_api_update_table('taixe', $id, $data);
+    return admin_api_update_table('nguoidung', $id, $data); // ← ĐÃ SỬA
 }
 
 /**
@@ -122,8 +129,9 @@ function xoa_taixe(int $id): array
         return ['success' => false, 'message' => 'ID tài xế không hợp lệ'];
     }
     
-    return admin_api_delete_table('taixe', $id);
+    return admin_api_delete_table('nguoidung', $id); // ← ĐÃ SỬA
 }
+
 /**
  * Lấy danh sách tài xế (alias của get_all_taixe để tương thích)
  */

@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/admin_api_common.php';
-require_once __DIR__ . '/get_donhang.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: quan-ly-don-hang.php');
@@ -14,15 +13,15 @@ $trangthai = trim((string)($_POST['trangthai'] ?? ''));
 $return = trim((string)($_POST['return'] ?? 'quan-ly-don-hang.php'));
 
 if ($donhang_id <= 0 || $trangthai === '') {
-    header('Location: ' . $return . '?ok=0&msg=' . rawurlencode('Thiếu thông tin'));
+    header('Location: ' . $return . '?ok=0&msg=Thiếu thông tin');
     exit;
 }
 
-$result = cap_nhat_trangthai_donhang($donhang_id, $trangthai);
+$result = admin_api_update_table('datlich_taixe', $donhang_id, ['trangthai' => $trangthai]);
 
-$query = $result['success']
-    ? '?ok=1&msg=' . rawurlencode('Cập nhật trạng thái thành công')
-    : '?ok=0&msg=' . rawurlencode($result['message'] ?? 'Cập nhật thất bại');
+$query = ($result['success'] ?? false) 
+    ? '?ok=1&msg=Cập nhật thành công' 
+    : '?ok=0&msg=' . rawurlencode($result['message'] ?? 'Lỗi');
 
 header('Location: ' . $return . $query);
 exit;
