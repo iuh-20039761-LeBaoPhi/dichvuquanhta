@@ -18,6 +18,9 @@ const orderManager = (function () {
             feedback: "",
         },
         orderIdToDelete: null,
+        currentPage: 1,
+        limit: 20,
+        hasMore: true,
     };
 
     function normalizeText(value) {
@@ -125,36 +128,13 @@ const orderManager = (function () {
         return createdMs >= getStartOfTodayMs() && createdMs < getStartOfTomorrowMs();
     }
 
-    async function fetchTodayOrders() {
-        const limit = 100;
-        const maxPages = 10;
-        const todayOrders = [];
-        const startOfTodayMs = getStartOfTodayMs();
-
-        for (let page = 1; page <= maxPages; page += 1) {
-            const batch = await window.adminApi.list(window.adminApi.ORDERS_TABLE, {
-                page,
-                limit,
-                sort: { created_at: "desc", id: "desc" },
-            });
-            if (!batch.length) {
-                break;
-            }
-
-            const todaysBatch = batch.filter(isOrderCreatedToday);
-            todayOrders.push(...todaysBatch);
-
-            const hasOlderOrders = batch.some((row) => {
-                const createdMs = getOrderCreatedMs(row);
-                return createdMs > 0 && createdMs < startOfTodayMs;
-            });
-
-            if (hasOlderOrders || batch.length < limit) {
-                break;
-            }
-        }
-
-        return todayOrders.sort(compareOrdersByCreatedDesc);
+    async function fetchOrdersFromApi(page = 1) {
+        const batch = await window.adminApi.list(window.adminApi.ORDERS_TABLE, {
+            page,
+            limit: state.limit,
+            sort: { created_at: "desc", id: "desc" },
+        });
+        return Array.isArray(batch) ? batch : [];
     }
 
     function toDateInputValue(value) {
@@ -320,6 +300,7 @@ const orderManager = (function () {
     async function fetchOrders() {
         const tbody = document.getElementById("orderListBody");
         renderSkeleton(tbody, 5);
+        setTextContent("cd-admin-orders-summary", `Đang tải trang ${state.currentPage}...`);
 
         try {
             await window.adminApi.ensureNguoidungTable();
@@ -327,7 +308,7 @@ const orderManager = (function () {
 
             const [providers, orders] = await Promise.all([
                 window.adminApi.listProviders(),
-                fetchTodayOrders(),
+                fetchOrdersFromApi(state.currentPage),
             ]);
 
             state.providers = providers
@@ -339,15 +320,37 @@ const orderManager = (function () {
             state.providerMap = new Map(state.providers.map((provider) => [String(provider.id), provider]));
             populateProviderSelects();
 
-            state.allOrders = orders
-                .map(normalizeOrder)
-                .sort(compareOrdersByCreatedDesc);
+            state.allOrders = orders.map(normalizeOrder);
+            state.hasMore = state.allOrders.length === state.limit;
+            
             updateStats();
             applyFilters();
+            updatePaginationUI();
         } catch (error) {
             tbody.innerHTML = `<tr><td colspan="6" class="orders-table-message-row orders-table-message-row-danger">${escapeHtml(error?.message || "Không thể tải dữ liệu đơn hàng.")}</td></tr>`;
             showToast(error?.message || "Không thể tải dữ liệu đơn hàng.", "danger");
         }
+    }
+
+    function updatePaginationUI() {
+        setTextContent("currentPageDisplay", state.currentPage);
+        const btnPrev = document.getElementById("btnPrev");
+        const btnNext = document.getElementById("btnNext");
+        if (btnPrev) btnPrev.disabled = state.currentPage <= 1;
+        if (btnNext) btnNext.disabled = !state.hasMore;
+        
+        const summary = document.querySelector(".cd-admin-orders-summary");
+        if (summary) {
+            summary.textContent = `Trang ${state.currentPage} - Hiển thị tối đa ${state.limit} đơn hàng mới nhất.`;
+        }
+    }
+
+    function changePage(delta) {
+        const next = state.currentPage + delta;
+        if (next < 1) return;
+        if (delta > 0 && !state.hasMore) return;
+        state.currentPage = next;
+        fetchOrders();
     }
 
     function updateStats() {
@@ -787,6 +790,7 @@ const orderManager = (function () {
 
     function handleTabFilter(statusKey) {
         state.filters.status = statusKey;
+        state.currentPage = 1; // Reset về trang 1 khi đổi tab
         document.querySelectorAll(".nav-pills .order-chip--tab").forEach((el) => {
             el.classList.remove("order-chip--tab-active");
         });
@@ -801,7 +805,8 @@ const orderManager = (function () {
         if (activeTab) {
             activeTab.classList.add("order-chip--tab-active");
         }
-        applyFilters();
+        
+        fetchOrders(); // Re-fetch from API for the new tab
     }
 
     function clearFilter(key) {
@@ -881,6 +886,7 @@ const orderManager = (function () {
         handleSearch,
         handleFilterChange,
         handleTabFilter,
+        changePage,
         clearFilter,
         showOrderModal,
         closeModal,

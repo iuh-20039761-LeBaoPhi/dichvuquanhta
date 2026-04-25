@@ -182,6 +182,20 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
             <!-- Mobile Cards -->
             <div id="adminOrderMobileList" class="d-block d-md-none p-3 ghn-admin-orders-mobile"></div>
+            
+            <!-- Pagination -->
+            <div class="ghn-admin-orders-pagination-wrap p-3 border-top d-flex justify-content-center align-items-center gap-2" id="paginationWrap">
+                <button class="btn btn-sm btn-outline-secondary px-3" id="btnPrev" onclick="changePage(-1)" disabled>
+                    <i class="fas fa-chevron-left me-1"></i> Trước
+                </button>
+                <div class="d-flex align-items-center gap-1 mx-2" id="pageNumberWrap">
+                    <span class="small text-muted">Trang</span>
+                    <strong class="small" id="currentPageDisplay">1</strong>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary px-3" id="idNext" onclick="changePage(1)">
+                    Sau <i class="fas fa-chevron-right ms-1"></i>
+                </button>
+            </div>
         </div>
 
     </main>
@@ -194,8 +208,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         'use strict';
         const TABLE = 'giaohangnhanh_dat_lich';
         const DETAIL_URL = '../../chi-tiet-don-hang-giaohang.html?viewer=admin&madonhang=';
-        let allOrders = [];
+        const LIMIT = 20; // Số đơn mỗi trang
+        let allOrders = []; // Đơn hàng của trang hiện tại
         let currentTab = 'all';
+        let currentPage = 1;
+        let hasMore = true;
 
         /* ── Helpers ── */
         function esc(v) {
@@ -234,43 +251,26 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             return createdMs >= startOfToday() && createdMs < startOfTomorrow();
         }
 
-        async function fetchTodayOrders() {
-            const limit = 100;
-            const maxPages = 10;
-            const todayStart = startOfToday();
-            const rows = [];
+        async function fetchOrdersFromApi(page = 1, status = 'all', search = '') {
+            const params = {
+                table: TABLE,
+                page,
+                limit: LIMIT,
+                sort: { created_at: 'desc', id: 'desc' },
+            };
 
-            for (let page = 1; page <= maxPages; page += 1) {
-                let batch = [];
-                if (typeof window.krudList === 'function') {
-                    const res = await window.krudList({
-                        table: TABLE,
-                        page,
-                        limit,
-                        sort: { created_at: 'desc', id: 'desc' },
-                    });
-                    batch = Array.isArray(res) ? res : (res?.data || res?.items || []);
-                } else if (typeof window.crud === 'function') {
-                    batch = await window.crud('list', TABLE, { p: page, limit });
-                } else if (typeof window.krud === 'function') {
-                    batch = await window.krud('list', TABLE, { p: page, limit });
-                }
-
-                if (!Array.isArray(batch) || !batch.length) break;
-
-                rows.push(...batch.filter(isTodayOrder));
-
-                const hasOlderOrders = batch.some(order => {
-                    const createdMs = orderCreatedMs(order);
-                    return createdMs > 0 && createdMs < todayStart;
-                });
-
-                if (hasOlderOrders || batch.length < limit) {
-                    break;
-                }
+            // Nếu krudList hỗ trợ filter trực tiếp, có thể thêm vào đây
+            // Ở phiên bản hiện tại, chúng ta tải và lọc ở client cho search nhưng phân trang ở server
+            
+            let batch = [];
+            if (typeof window.krudList === 'function') {
+                const res = await window.krudList(params);
+                batch = Array.isArray(res) ? res : (res?.data || res?.items || []);
+            } else if (typeof window.crud === 'function') {
+                batch = await window.crud('list', TABLE, { p: page, limit: LIMIT });
             }
 
-            return rows.sort(compareOrdersByCreatedDesc);
+            return Array.isArray(batch) ? batch : [];
         }
 
         /* ── Trạng thái ── */
@@ -298,14 +298,14 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         }
 
         /* ── Counts ── */
-        function updateCounts(list) {
-            document.getElementById('countAll').textContent      = allOrders.length;
-            document.getElementById('countPending').textContent  = allOrders.filter(o => deriveStatus(o) === 'pending').length;
-            document.getElementById('countShipping').textContent = allOrders.filter(o => deriveStatus(o) === 'shipping').length;
-            document.getElementById('countDone').textContent     = allOrders.filter(o => deriveStatus(o) === 'done').length;
-            document.getElementById('countCancel').textContent   = allOrders.filter(o => deriveStatus(o) === 'cancel').length;
+        function updateCounts() {
+            // Lưu ý: Đếm thực tế cần API hỗ trợ count. Tạm thời hiển thị tổng theo trang hoặc số lượng hiện có.
             document.getElementById('orders-summary').textContent =
-                `Hiển thị ${list.length.toLocaleString()} / ${allOrders.length.toLocaleString()} đơn hàng`;
+                `Trang ${currentPage} - Hiển thị tối đa ${LIMIT} đơn hàng mới nhất`;
+            
+            document.getElementById('currentPageDisplay').textContent = currentPage;
+            document.getElementById('btnPrev').disabled = currentPage <= 1;
+            document.getElementById('idNext').disabled = !hasMore;
         }
 
         /* ── Stat Cards ── */
@@ -426,25 +426,37 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         /* ── Switch Tab ── */
         window.switchTab = function (tab) {
             currentTab = tab;
+            currentPage = 1; // Reset về trang 1 khi đổi tab
             const tabMap = { all:'tabAll', pending:'tabPending', shipping:'tabShipping', done:'tabDone', cancel:'tabCancel' };
             document.querySelectorAll('.order-tabs .nav-link').forEach(el => el.classList.remove('active'));
             if (tabMap[tab]) document.getElementById(tabMap[tab])?.classList.add('active');
-            filterOrders();
+            loadAllOrders();
+        };
+
+        window.changePage = function (delta) {
+            const next = currentPage + delta;
+            if (next < 1) return;
+            if (delta > 0 && !hasMore) return;
+            currentPage = next;
+            loadAllOrders();
         };
 
         /* ── Load All (Admin: không lọc role) ── */
         window.loadAllOrders = async function () {
             const tbody = document.getElementById('adminOrderBody');
             const mob   = document.getElementById('adminOrderMobileList');
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5"><div class="spinner-border text-primary spinner-border-sm me-2"></div>Đang tải...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5"><div class="spinner-border text-primary spinner-border-sm me-2"></div>Đang tải trang ${currentPage}...</td></tr>`;
             mob.innerHTML   = '';
             document.getElementById('orders-summary').textContent = 'Đang tải dữ liệu...';
 
             try {
-                const rows = await fetchTodayOrders();
-                allOrders = Array.isArray(rows) ? rows.sort(compareOrdersByCreatedDesc) : [];
+                const rows = await fetchOrdersFromApi(currentPage, currentTab);
+                allOrders = rows;
+                hasMore = allOrders.length === LIMIT;
+                
                 updateStats();
                 filterOrders();
+                updateCounts();
             } catch (err) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Lỗi: ${esc(err.message || 'Không thể tải dữ liệu')}</td></tr>`;
                 document.getElementById('orders-summary').textContent = 'Không tải được dữ liệu.';

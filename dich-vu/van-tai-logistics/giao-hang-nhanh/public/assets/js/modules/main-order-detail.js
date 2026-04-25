@@ -1792,7 +1792,7 @@
           return `
             <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
               <img src="${url}" alt="${name}" />
-              <strong>${name}</strong>
+
               <span>Ảnh đính kèm</span>
             </a>
           `;
@@ -1802,7 +1802,7 @@
           return `
             <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
               <video src="${url}" controls preload="metadata"></video>
-              <strong>${name}</strong>
+
               <span>Video đính kèm</span>
             </a>
           `;
@@ -1813,7 +1813,7 @@
             <div class="standalone-order-item-icon">
               <i class="fa-solid fa-file-lines"></i>
             </div>
-            <strong>${name}</strong>
+
             <span>Tệp đính kèm</span>
           </a>
         `;

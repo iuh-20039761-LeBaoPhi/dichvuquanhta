@@ -204,7 +204,6 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
                                 <a class="detail-media-item" href="${url}" target="_blank" rel="noreferrer">
                                     ${mediaContent}
                                     <div class="detail-media-meta">
-                                        <strong>${name}</strong>
                                         <span>${mediaTypeLabel}</span>
                                     </div>
                                 </a>

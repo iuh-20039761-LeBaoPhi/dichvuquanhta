@@ -172,6 +172,20 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <tbody id="orderListBody"></tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="cd-admin-orders-pagination p-3 border-top d-flex justify-content-center align-items-center gap-2" id="paginationWrap">
+            <button class="btn btn-sm btn-outline-secondary px-3" id="btnPrev" onclick="orderManager.changePage(-1)" disabled>
+                <i class="fas fa-chevron-left me-1"></i> Trước
+            </button>
+            <div class="d-flex align-items-center gap-1 mx-2">
+                <span class="small text-muted">Trang</span>
+                <strong class="small" id="currentPageDisplay">1</strong>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary px-3" id="btnNext" onclick="orderManager.changePage(1)">
+                Sau <i class="fas fa-chevron-right ms-1"></i>
+            </button>
+        </div>
     </div>
 </div>
 

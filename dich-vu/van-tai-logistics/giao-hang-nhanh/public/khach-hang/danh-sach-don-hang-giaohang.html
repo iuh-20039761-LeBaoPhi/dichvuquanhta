@@ -166,6 +166,14 @@
               <p class="text-muted small">Bạn chưa đặt đơn giao hàng nào trên hệ thống.</p>
               <a href="../../dat-lich-giao-hang-nhanh.html" class="btn btn-primary rounded-pill px-4 mt-2 fw-bold shadow-sm">Đặt đơn ngay</a>
             </div>
+
+            <!-- Pagination -->
+            <div class="ghn-orders-pagination mt-3 pb-3 px-3 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3" id="paginationWrap" hidden>
+              <div class="text-muted small" id="paginationSummary"></div>
+              <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0" id="paginationControls"></ul>
+              </nav>
+            </div>
           </div>
         </div>
 
@@ -183,8 +191,10 @@
     (function () {
       'use strict';
       const TABLE = 'giaohangnhanh_dat_lich';
+      const ITEMS_PER_PAGE = 10;
       let allOrders = [];
       let currentTab = 'all';
+      let currentPage = 1;
 
       /* ── Helpers ── */
       function esc(v) {
@@ -239,6 +249,54 @@
         document.getElementById('stat-fail').textContent    = allOrders.filter(o => deriveStatus(o) === 'cancel').length;
       }
 
+      /* ── Pagination ── */
+      function renderPagination(totalItems) {
+        const wrap = document.getElementById('paginationWrap');
+        const summary = document.getElementById('paginationSummary');
+        const controls = document.getElementById('paginationControls');
+
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        if (totalPages <= 1) {
+          wrap.hidden = true;
+          return;
+        }
+
+        wrap.hidden = false;
+        summary.textContent = `Hiển thị ${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, totalItems)} trong tổng số ${totalItems} đơn hàng`;
+
+        let html = '';
+        // Prev
+        html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${currentPage - 1});return false;"><i class="fas fa-chevron-left"></i></a>
+        </li>`;
+
+        // Page numbers (simple)
+        for (let i = 1; i <= totalPages; i++) {
+          if (totalPages > 7) {
+            if (i > 2 && i < totalPages - 1 && Math.abs(i - currentPage) > 1) {
+              if (i === 3 || i === totalPages - 2) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+              continue;
+            }
+          }
+          html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${i});return false;">${i}</a>
+          </li>`;
+        }
+
+        // Next
+        html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${currentPage + 1});return false;"><i class="fas fa-chevron-right"></i></a>
+        </li>`;
+
+        controls.innerHTML = html;
+      }
+
+      window.changePage = function(page) {
+        currentPage = page;
+        filterOrders();
+        document.querySelector('.ghn-orders-main-card')?.scrollIntoView({ behavior: 'smooth' });
+      };
+
       /* ── Render ── */
       function renderTable(list) {
         const tbody = document.getElementById('orderTableBody');
@@ -249,12 +307,16 @@
           tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Không có đơn phù hợp.</td></tr>`;
           mob.innerHTML   = `<div class="text-center text-muted p-4 small">Không có đơn phù hợp.</div>`;
           empty.classList.remove('d-none');
+          document.getElementById('paginationWrap').hidden = true;
           return;
         }
         empty.classList.add('d-none');
 
+        // Paginate list
+        const paginatedList = list.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
         /* Desktop rows */
-        tbody.innerHTML = list.map(o => {
+        tbody.innerHTML = paginatedList.map(o => {
           const st  = deriveStatus(o);
           const code = normalizeText(o.ma_don_hang_noi_bo || o.order_code || o.ma_don_hang || '');
           const disp = code || `#${String(o.id).padStart(7,'0')}`;
@@ -283,7 +345,7 @@
         }).join('');
 
         /* Mobile cards */
-        mob.innerHTML = list.map(o => {
+        mob.innerHTML = paginatedList.map(o => {
           const st   = deriveStatus(o);
           const m    = STATUS_META[st] || STATUS_META.pending;
           const code = normalizeText(o.ma_don_hang_noi_bo || o.order_code || o.ma_don_hang || '');
@@ -309,6 +371,8 @@
             </div>
           </div>`;
         }).join('');
+
+        renderPagination(list.length);
       }
 
       /* ── Filter ── */
@@ -333,6 +397,7 @@
       /* ── Switch Tab ── */
       window.switchTab = function (tab) {
         currentTab = tab;
+        currentPage = 1;
         const tabMap = { all:'tabAll', pending:'tabPending', shipping:'tabShipping', done:'tabDone', cancel:'tabCancel' };
         document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
         if (tabMap[tab]) document.getElementById(tabMap[tab])?.classList.add('active');

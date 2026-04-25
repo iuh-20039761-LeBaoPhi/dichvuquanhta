@@ -170,7 +170,7 @@ const adminOrderMasterModule = (function (window, document) {
     return `<div class="standalone-order-media-grid">${media.map(m => `
       <div class="standalone-order-media-item">
         <div class="standalone-order-item-icon"><i class="fa-solid ${m.icon}"></i></div>
-        <strong>Tệp đính kèm</strong><span>${escapeHtml(m.val)}</span>
+        <strong>Tệp đính kèm</strong>
       </div>
     `).join("")}</div>`;
   }
@@ -181,7 +181,7 @@ const adminOrderMasterModule = (function (window, document) {
     return `<div class="standalone-order-media-grid">${media.map((item) => `
       <div class="standalone-order-media-item">
         <div class="standalone-order-item-icon"><i class="fa-solid ${escapeHtml(item.icon)}"></i></div>
-        <strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.val)}</span>
+        <strong>${escapeHtml(item.label)}</strong>
       </div>
     `).join("")}</div>`;
   }

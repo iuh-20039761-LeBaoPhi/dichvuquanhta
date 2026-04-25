@@ -444,7 +444,7 @@ function hien_thi_tai_len_xac_nhan() {
     card.innerHTML =
       entry.type === "video"
         ? `<video class="review-upload-thumb" controls preload="metadata" src="${objectUrl}"></video>`
-        : `<img class="review-upload-thumb" src="${objectUrl}" alt="${escapeHtml(entry.file.name)}" />`;
+        : `<img class="review-upload-thumb" src="${objectUrl}" alt="Media đính kèm" />`;
     host.appendChild(card);
   });
 }
