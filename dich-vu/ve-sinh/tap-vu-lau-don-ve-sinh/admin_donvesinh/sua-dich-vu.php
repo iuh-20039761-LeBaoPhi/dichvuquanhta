@@ -311,7 +311,6 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
             let pData = { type: type };
             if (type === 'per_m2') {
                 pData.base_price = parseInt(document.getElementById('base_price').value) || 0;
-                pData.min_price = parseInt(document.getElementById('min_price').value) || 0;
                 pData.levels = {
                     "nhẹ": parseFloat(document.getElementById('level_nhẹ').value) || 1,
                     "tiêu chuẩn": parseFloat(document.getElementById('level_tiêu_chuẩn').value) || 1,

@@ -72,7 +72,7 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
 </style>
 
 <div class="pt-page-header">
-    <h2 class="h4 mb-0 fw-bold">Quản lý Phụ Thu Đặc Biệt</h2>
+    <h2 class="h4 mb-0 fw-bold">Quản lý Phụ phí Đặc Biệt</h2>
     <?php if (!$showForm): ?>
         <a href="?them=1" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Thêm phụ thu</a>
     <?php else: ?>
@@ -90,7 +90,7 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
     <div class="card-header bg-white py-2 border-bottom">
         <h6 class="mb-0 fw-bold">
             <i class="bi bi-<?= $editId > 0 ? 'pencil-square text-warning' : 'plus-circle-fill text-success' ?> me-2"></i>
-            <?= $editId > 0 ? 'Chỉnh sửa phụ thu #' . $editId : 'Thêm phụ thu mới' ?>
+            <?= $editId > 0 ? 'Chỉnh sửa Phụ phí #' . $editId : 'Thêm Phụ phí mới' ?>
         </h6>
     </div>
     <div class="card-body p-3">
@@ -117,9 +117,9 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
                     </select>
                 </div>
 
-                <!-- % Phụ thu -->
+                <!-- % Phụ phí -->
                 <div class="col-md-2">
-                    <label class="form-label">Phụ thu (%)</label>
+                    <label class="form-label">Phụ phí (%)</label>
                     <input type="number" class="form-control" name="phu_thu_percent" min="0" step="0.01"
                         value="<?= pt_val($editRow, 'phu_thu_percent', '0') ?>">
                 </div>
@@ -185,7 +185,7 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
 <?php if ($viewId > 0 && !empty($viewRow)): ?>
 <div class="card border-0 shadow-sm pt-view-card mb-4">
     <div class="view-modal-header d-flex justify-content-between align-items-center">
-        <span class="fw-bold fs-6"><i class="bi bi-eye-fill me-2"></i>Chi tiết phụ thu #<?= $viewId ?></span>
+        <span class="fw-bold fs-6"><i class="bi bi-eye-fill me-2"></i>Chi tiết Phụ phí #<?= $viewId ?></span>
         <a href="quan-ly-phu-thu.php" class="btn btn-sm btn-light py-0 px-2">✕ Đóng</a>
     </div>
     <div class="card-body p-3">
@@ -226,7 +226,7 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
             <div class="alert alert-warning m-3"><?= admin_h($error) ?></div>
         <?php elseif (!$rows): ?>
             <div class="text-center py-5 text-secondary">
-                <i class="bi bi-inbox fs-2 d-block mb-2"></i>Chưa có phụ thu nào.
+                <i class="bi bi-inbox fs-2 d-block mb-2"></i>Chưa có Phụ phí nào.
             </div>
         <?php else: ?>
 
@@ -239,7 +239,7 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
                             <th>Tên</th>
                             <th>Loại</th>
                             <th>Ngày/Giờ áp dụng</th>
-                            <th>Phụ thu (%)</th>
+                            <th>Phụ phí (%)</th>
                             <th>Mô tả</th>
                             <th class="text-end">Hành động</th>
                         </tr>
@@ -333,7 +333,7 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
             <i class="bi bi-exclamation-triangle"></i>
         </div>
         <h5 style="margin-bottom:8px; color:#1f2937; font-weight:700;">Xác nhận xóa</h5>
-        <p style="color:#6b7280; margin-bottom:24px; font-size:0.95rem;">Bạn có chắc chắn muốn xóa phụ thu này không? Hành động này không thể hoàn tác.</p>
+        <p style="color:#6b7280; margin-bottom:24px; font-size:0.95rem;">Bạn có chắc chắn muốn xóa Phụ phí này không? Hành động này không thể hoàn tác.</p>
         <div style="display:flex; gap:12px;">
             <button type="button" class="btn btn-light" onclick="closeConfirm()" style="flex:1; border:1px solid #e5e7eb; font-weight:600; padding:10px;">Hủy</button>
             <button type="button" class="btn btn-danger" onclick="doConfirm()" style="flex:1; background:#e11d48; border:none; font-weight:600; padding:10px;">Xác nhận xóa</button>

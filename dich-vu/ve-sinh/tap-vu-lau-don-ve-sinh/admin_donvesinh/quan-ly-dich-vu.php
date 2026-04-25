@@ -19,7 +19,7 @@ $filtered = array_values(array_filter($rows, static function (array $row) use ($
 	$pricing = is_array($row['pricing'] ?? null) ? $row['pricing'] : [];
 	$pricingText = (string) ($pricing['type'] ?? '');
 	if ($pricingText === 'per_m2') {
-		$pricingText .= ' ' . ($pricing['base_price'] ?? '') . ' ' . ($pricing['min_price'] ?? '');
+		$pricingText .= ' ' . ($pricing['base_price'] ?? '');
 	} elseif ($pricingText === 'package') {
 		foreach (($pricing['packages'] ?? []) as $pkg) {
 			$pricingText .= ' ' . ($pkg['name'] ?? '') . ' ' . ($pkg['price'] ?? '');
