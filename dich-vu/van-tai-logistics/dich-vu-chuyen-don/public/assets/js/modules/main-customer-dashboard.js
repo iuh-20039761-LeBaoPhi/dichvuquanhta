@@ -137,7 +137,7 @@ const customerDashboardModule = (function (window, document) {
         <section class="customer-panel customer-panel-overview">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
+              <p class="customer-section-kicker">Tổng quan đặt đơn</p>
               <h2>Tóm tắt nhanh để theo dõi</h2>
               <p class="customer-panel-subtext">${escapeHtml(heroState)}. ${escapeHtml(summaryText)}</p>
             </div>

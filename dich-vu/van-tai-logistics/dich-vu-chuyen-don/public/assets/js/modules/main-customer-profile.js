@@ -173,7 +173,7 @@ const customerProfileModule = (function (window, document) {
                 </label>
               </div>
               <div class="customer-profile-hero-info">
-                <p class="customer-profile-eyebrow">Hồ sơ khách hàng chuyển dọn</p>
+                <p class="customer-profile-eyebrow">Hồ sơ cá nhân</p>
                 <h2>${escapeHtml(displayName)}</h2>
                 <div class="customer-profile-meta-list">
                   <span><i class="fas fa-id-badge"></i> ${escapeHtml(phone || "Tài khoản khách")}</span>

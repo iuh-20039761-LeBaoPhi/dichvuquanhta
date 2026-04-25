@@ -203,9 +203,8 @@ Chưa có:
   - `33` = profile/avatar
 - Ảnh/video của form đặt lịch, đánh giá khách hàng và báo cáo/ghi chú của nhà cung cấp đi qua các file `upload.php` riêng theo khu và dùng `folderKey = 32`
 - Avatar khách hàng và nhà cung cấp đi qua `khach-hang/upload.php` hoặc `nha-cung-cap/upload.php` với `upload_kind = avatar`, dùng `folderKey = 33`
-- `CCCD` trước/sau hiện chưa có tuyến upload riêng để map folder riêng; vẫn đi fallback [public/upload_to_drive.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\upload_to_drive.php)
+- `CCCD` trước/sau đi qua `khach-hang/upload.php` hoặc `nha-cung-cap/upload.php` với `upload_kind = cccd`, dùng `folderKey = 33`
 - Nếu sau này phát sinh luồng upload ảnh dịch vụ riêng cho chuyển dọn thì dùng đúng `folderKey = 12`
-- Không tự ý sửa Apps Script Google Drive / Google Sheet để ép đổi folder cho `CCCD`
 - Dung lượng file upload tối đa được cấu hình từ [admin_profile.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\admin_profile.php)
 - `admin_profile.php` ghi cấu hình qua [admin-chuyendon/api/settings.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\api\settings.php)
 - Frontend/public đọc ngưỡng hiện hành qua [public/upload_settings.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\upload_settings.php)

@@ -927,8 +927,16 @@
     if (!list.length) return [];
 
     const uploads = [];
-    for (const file of list) {
-      uploads.push(await uploadFileToDrive(file, options));
+    for (let index = 0; index < list.length; index += 1) {
+      const file = list[index];
+      const nextOptions = { ...options };
+      if (typeof options.nameBuilder === "function") {
+        const builtName = options.nameBuilder(file, index);
+        if (String(builtName || "").trim()) {
+          nextOptions.name = builtName;
+        }
+      }
+      uploads.push(await uploadFileToDrive(file, nextOptions));
     }
     return uploads;
   }

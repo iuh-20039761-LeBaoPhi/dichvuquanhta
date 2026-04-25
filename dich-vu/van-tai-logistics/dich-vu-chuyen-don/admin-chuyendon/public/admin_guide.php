@@ -551,8 +551,8 @@ require_once __DIR__ . '/../includes/header_admin.php';
                         </tr>
                         <tr>
                             <td>CCCD trước / sau</td>
-                            <td><code>public/upload_to_drive.php</code></td>
-                            <td>Hiện vẫn là fallback, chưa tách route riêng theo folder.</td>
+                            <td><code>khach-hang/upload.php</code> hoặc <code>nha-cung-cap/upload.php</code></td>
+                            <td>Dùng <code>upload_kind = cccd</code>, lưu cùng folder profile/avatar.</td>
                         </tr>
                         <tr>
                             <td>Đọc limit public</td>

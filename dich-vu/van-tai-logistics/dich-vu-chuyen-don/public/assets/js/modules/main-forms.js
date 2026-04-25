@@ -336,6 +336,41 @@ const partialPaths = {
     const warnings = [];
     const imageFiles = getSelectedMediaFiles(scope, "#tep-anh-dat-lich");
     const videoFiles = getSelectedMediaFiles(scope, "#tep-video-dat-lich");
+    const form = scope.querySelector("form[data-loai-bieu-mau='dat-lich']");
+    const formData = form ? new FormData(form) : new FormData();
+    const safeToken = (value, fallback = "unknown") =>
+      String(value == null ? "" : value)
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "") || fallback;
+    const padNumber = (value) => String(value).padStart(2, "0");
+    const timestamp = (() => {
+      const now = new Date();
+      return (
+        now.getFullYear() +
+        padNumber(now.getMonth() + 1) +
+        padNumber(now.getDate()) +
+        "_" +
+        padNumber(now.getHours()) +
+        padNumber(now.getMinutes()) +
+        padNumber(now.getSeconds())
+      );
+    })();
+    const bookingRef = safeToken(
+      `${formData.get("so_dien_thoai") || "guest"}_${
+        formData.get("ngay_thuc_hien") || "nodate"
+      }`,
+      "temp",
+    );
+    const buildBookingFileName = (mediaType) => (file, index) => {
+      const originalName = String(file?.name || "").trim();
+      const extMatch = originalName.match(/(\.[a-z0-9]+)$/i);
+      const extension = extMatch ? extMatch[1].toLowerCase() : "";
+      return `booking_chuyendon_${bookingRef}_${mediaType}_${timestamp}_${String(
+        index + 1,
+      ).padStart(2, "0")}${extension}`;
+    };
 
     if (!imageFiles.length && !videoFiles.length) {
       return {
@@ -363,6 +398,7 @@ const partialPaths = {
         const uploadedImages = await core.uploadFilesToDrive(imageFiles, {
           proxyFile: "upload.php",
           uploadKind: "order_media",
+          nameBuilder: buildBookingFileName("photo"),
         });
         imageLinks.push(
           ...uploadedImages
@@ -380,6 +416,7 @@ const partialPaths = {
         const uploadedVideos = await core.uploadFilesToDrive(videoFiles, {
           proxyFile: "upload.php",
           uploadKind: "order_media",
+          nameBuilder: buildBookingFileName("video"),
         });
         videoLinks.push(
           ...uploadedVideos

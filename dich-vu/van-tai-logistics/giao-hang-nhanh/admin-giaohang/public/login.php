@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../includes/admin_api_common.php';
 
 if (isset($_SESSION['user_id']) && ($_SESSION['role'] ?? '') === 'admin') {
-    header('Location: admin_stats.php');
+    header('Location: index.php');
     exit;
 }
 
@@ -19,7 +19,7 @@ if (is_array($admin)) {
     $_SESSION['fullname'] = (string) ($admin['fullname'] ?? $admin['hovaten'] ?? $admin['ten'] ?? 'Admin');
     $_SESSION['email'] = (string) ($admin['email'] ?? $email);
     $_SESSION['phone'] = (string) ($admin['phone'] ?? $admin['sodienthoai'] ?? '');
-    header('Location: admin_stats.php');
+    header('Location: index.php');
     exit;
 }
 

@@ -481,21 +481,13 @@ const providerOrderDetailModule = (function (window, document) {
     `;
   }
 
-  function renderHeroScheduleCard(order) {
-    return `
-      <article class="standalone-order-hero-support-card standalone-order-hero-support-card-schedule">
-        <div class="standalone-order-hero-support-card-head">
-          <span class="standalone-order-hero-support-icon">
-            <i class="fa-solid fa-calendar-check"></i>
-          </span>
-          <div>
-            <span class="standalone-order-hero-support-label">Thời gian thực hiện</span>
-            <strong>${escapeHtml(order?.schedule_date || order?.schedule_label || "Chưa chốt lịch")}</strong>
-          </div>
-        </div>
-        <p class="standalone-order-hero-support-note">${escapeHtml(order?.schedule_time || "Khung giờ triển khai")}</p>
-      </article>
-    `;
+  function buildScheduleSummary(order) {
+    const dateLabel =
+      formatBookingDateOnly(order?.schedule_date || "") ||
+      normalizeText(order?.schedule_label);
+    const timeLabel = getBookingScheduleTimeLabel(order?.schedule_time || "");
+    if (dateLabel && timeLabel) return `${dateLabel} · ${timeLabel}`;
+    return dateLabel || timeLabel || "Chưa chốt lịch";
   }
 
   function getCustomerOwnershipMeta(row) {
@@ -1137,13 +1129,13 @@ const providerOrderDetailModule = (function (window, document) {
     const milestones = getMilestones(detail);
     const isCancelled = statusKey === "cancelled";
     const isCompleted = statusKey === "completed";
-    const isTerminal = isCancelled || isCompleted;
     const cancelledTimeLabel = formatDateTime(
       milestones.cancelledAt || order.cancelled_at || order.updated_at || "",
     );
     const completedTimeLabel = formatDateTime(
       milestones.completedAt || order.completed_at || "",
     );
+    const scheduleSummary = buildScheduleSummary(order);
     currentDetailSignature = getDetailRenderSignature(detail);
 
     root.innerHTML = `
@@ -1200,6 +1192,7 @@ const providerOrderDetailModule = (function (window, document) {
                       <div class="standalone-order-progress-info">
                         <p class="standalone-order-progress-label">Trạng thái đơn hàng</p>
                         <div class="standalone-order-progress-status-row">${statusBadge}</div>
+                        <time>Thực hiện: ${escapeHtml(scheduleSummary)}</time>
                         ${
                           isCancelled
                             ? `<time>Hủy lúc ${escapeHtml(cancelledTimeLabel)}</time>`
@@ -1214,8 +1207,7 @@ const providerOrderDetailModule = (function (window, document) {
                 </div>
               </div>
 
-              <div class="standalone-order-hero-support-grid ${isTerminal ? "standalone-order-hero-support-grid--route-only" : ""}">
-                ${isTerminal ? "" : renderHeroScheduleCard(order)}
+              <div class="standalone-order-hero-support-grid standalone-order-hero-support-grid--route-only">
                 <div class="standalone-order-hero-route-stack">
                   <div class="standalone-order-actions-group standalone-order-hero-actions-group standalone-order-route-actions-group">
                     ${buildActionButtons(detail)}

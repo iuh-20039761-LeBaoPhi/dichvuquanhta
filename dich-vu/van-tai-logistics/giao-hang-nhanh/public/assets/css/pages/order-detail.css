@@ -769,9 +769,11 @@
 
 .standalone-order-contact-card-title {
   display: flex;
+  flex: 1 1 100%;
   align-items: center;
   gap: 0;
   min-width: 0;
+  width: 100%;
 }
 
 .standalone-order-contact-card-title strong,
@@ -2585,17 +2587,17 @@
 
   .standalone-order-contact-person-card .standalone-order-contact-card-head {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 48px;
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
     gap: 8px;
-    min-height: 94px;
+    min-height: auto;
   }
 
   .standalone-order-contact-person-card .standalone-order-contact-card-title {
     display: grid;
-    grid-template-columns: 24px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
-    gap: 8px;
+    gap: 0;
   }
 
   .standalone-order-contact-person-card .standalone-order-contact-card-icon {

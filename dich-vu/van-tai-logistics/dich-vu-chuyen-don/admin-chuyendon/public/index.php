@@ -1,9 +1,2 @@
 <?php
-require_once __DIR__ . '/../includes/bootstrap.php';
-moving_admin_boot_session();
-
-if (isset($_SESSION['user_id']) && ($_SESSION['role'] ?? '') === 'admin') {
-    moving_admin_redirect('admin_stats.php');
-}
-
-moving_admin_redirect('login.php');
+require __DIR__ . '/admin_stats.php';

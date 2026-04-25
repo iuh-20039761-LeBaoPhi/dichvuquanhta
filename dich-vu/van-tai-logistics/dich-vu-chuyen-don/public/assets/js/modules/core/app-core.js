@@ -532,11 +532,19 @@ async function uploadFilesToDrive(files, options = {}) {
   if (!list.length) return [];
 
   const uploadedItems = [];
-  for (const file of list) {
+  for (let index = 0; index < list.length; index += 1) {
+    const file = list[index];
+    const nextOptions = { ...options };
+    if (typeof options.nameBuilder === "function") {
+      const builtName = options.nameBuilder(file, index);
+      if (String(builtName || "").trim()) {
+        nextOptions.name = builtName;
+      }
+    }
     uploadedItems.push(
       await uploadFileToDrive(file, {
-        ...options,
-        name: file.name,
+        ...nextOptions,
+        name: nextOptions.name || file.name,
       }),
     );
   }

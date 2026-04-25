@@ -405,28 +405,13 @@ const customerInvoiceDetailModule = (function (window, document) {
     });
   }
 
-  function renderHeroScheduleCard(invoice) {
-    return `
-      <article class="standalone-order-hero-support-card standalone-order-hero-support-card-schedule">
-        <div class="standalone-order-hero-support-card-head">
-          <span class="standalone-order-hero-support-icon">
-            <i class="fa-solid fa-calendar-check"></i>
-          </span>
-          <div>
-            <span class="standalone-order-hero-support-label">Thời gian thực hiện</span>
-            <strong>${escapeHtml(
-              formatBookingDateOnly(invoice?.schedule_date) ||
-                invoice?.schedule_label ||
-                "Chờ xác nhận",
-            )}</strong>
-          </div>
-        </div>
-        <p class="standalone-order-hero-support-note">${escapeHtml(
-          getBookingScheduleTimeLabel(invoice?.schedule_time) ||
-            "Khung giờ triển khai",
-        )}</p>
-      </article>
-    `;
+  function buildScheduleSummary(invoice) {
+    const dateLabel =
+      formatBookingDateOnly(invoice?.schedule_date) ||
+      normalizeText(invoice?.schedule_label);
+    const timeLabel = getBookingScheduleTimeLabel(invoice?.schedule_time);
+    if (dateLabel && timeLabel) return `${dateLabel} · ${timeLabel}`;
+    return dateLabel || timeLabel || "Chờ xác nhận";
   }
 
   function renderHeroRouteCard(invoice) {
@@ -1212,11 +1197,11 @@ const customerInvoiceDetailModule = (function (window, document) {
     const statusBadge = renderStatusBadge(invoice);
     const isCancelled = progressMeta.tone === "cancelled";
     const isCompleted = progressMeta.tone === "completed";
-    const isTerminal = isCancelled || isCompleted;
     const cancelledTimeLabel = formatDateTime(
       invoice?.cancelled_at || invoice?.updated_at || invoice?.created_at || "",
     );
     const completedTimeLabel = formatDateTime(invoice?.completed_at || "");
+    const scheduleSummary = buildScheduleSummary(invoice);
     root.innerHTML = `
       <div class="standalone-order-layout">
         <section class="standalone-order-unified-card">
@@ -1275,6 +1260,7 @@ const customerInvoiceDetailModule = (function (window, document) {
                       <div class="standalone-order-progress-info">
                         <p class="standalone-order-progress-label">Trạng thái đơn hàng</p>
                         <div class="standalone-order-progress-status-row">${statusBadge}</div>
+                        <time>Thực hiện: ${escapeHtml(scheduleSummary)}</time>
                         ${
                           isCancelled
                             ? `<time>Hủy lúc ${escapeHtml(cancelledTimeLabel)}</time>`
@@ -1289,8 +1275,7 @@ const customerInvoiceDetailModule = (function (window, document) {
                 </div>
               </div>
 
-              <div class="standalone-order-hero-support-grid ${isTerminal ? "standalone-order-hero-support-grid--route-only" : ""}">
-                ${isTerminal ? "" : renderHeroScheduleCard(invoice)}
+              <div class="standalone-order-hero-support-grid standalone-order-hero-support-grid--route-only">
                 <div class="standalone-order-hero-route-stack">
                   <div class="standalone-order-actions-group standalone-order-hero-actions-group standalone-order-route-actions-group">
                     ${

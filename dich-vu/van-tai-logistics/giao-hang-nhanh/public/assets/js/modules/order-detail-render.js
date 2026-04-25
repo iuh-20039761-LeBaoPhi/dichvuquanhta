@@ -199,23 +199,40 @@
     `;
     }
 
-    function renderHeroScheduleCard(pickupSlotLabel, estimatedDelivery) {
-      return `
-      <article class="standalone-order-hero-support-card standalone-order-hero-support-card-schedule">
-        <div class="standalone-order-hero-support-card-head">
-          <span class="standalone-order-hero-support-icon">
-            <i class="fa-solid fa-calendar-check"></i>
-          </span>
-          <div>
-            <span class="standalone-order-hero-support-label">Khung lấy hàng</span>
-            <strong>${escapeHtml(pickupSlotLabel || "Chờ xác nhận khung giờ")}</strong>
-          </div>
-        </div>
-        <p class="standalone-order-hero-support-note">${escapeHtml(
-          estimatedDelivery || "Thời gian giao sẽ được cập nhật khi có shipper nhận đơn.",
-        )}</p>
-      </article>
-    `;
+    function formatDisplayDate(value) {
+      const raw = normalizeText(value || "");
+      if (!raw) return "";
+      const dateOnlyMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (dateOnlyMatch) {
+        return `${dateOnlyMatch[3]}/${dateOnlyMatch[2]}/${dateOnlyMatch[1]}`;
+      }
+      const date = new Date(raw);
+      if (Number.isNaN(date.getTime())) return raw;
+      return date.toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    }
+
+    function buildPickupScheduleLabel(order, serviceMeta) {
+      const pickupDate = pickFirstText(
+        order?.ngay_lay_hang,
+        order?.pickup_date,
+        serviceMeta?.pickup_date,
+      );
+      const pickupSlotLabel = pickFirstText(
+        order?.pickup_slot_label,
+        order?.ten_khung_gio_lay_hang,
+        order?.khung_gio_lay_hang,
+        order?.pickup_slot,
+        serviceMeta?.pickup_slot_label,
+      );
+      const dateLabel = formatDisplayDate(pickupDate);
+      if (dateLabel && pickupSlotLabel) {
+        return `${dateLabel} · ${pickupSlotLabel}`;
+      }
+      return pickupSlotLabel || dateLabel || "Chờ xác nhận khung giờ";
     }
 
     function renderHeroRouteCard(order) {
@@ -853,30 +870,17 @@
             String(order.status || "").trim().toLowerCase(),
           ),
       );
-      const isTerminal = isCancelled || isCompleted;
+      const pickupScheduleLabel = buildPickupScheduleLabel(order, serviceMeta);
       const cancelledTimeLabel = isCancelled
         ? formatDateTime(
             milestones.cancelledAt || order.cancelled_at || order.updated_at,
           )
         : "";
       const completedTimeLabel = isCompleted
-        ? formatDateTime(milestones.completedAt || order.completed_at || order.updated_at)
+        ? formatDateTime(
+            milestones.completedAt || order.completed_at || order.updated_at,
+          )
         : "";
-      const pickupSlotLabel =
-        pickFirstText(
-          order.pickup_slot_label,
-          order.ten_khung_gio_lay_hang,
-          order.khung_gio_lay_hang,
-          order.pickup_slot,
-          serviceMeta.pickup_slot_label,
-        ) || "--";
-      const estimatedDelivery =
-        pickFirstText(
-          order.estimated_delivery,
-          order.du_kien_giao_hang,
-          order.estimated_eta,
-          serviceMeta.estimated_eta,
-        ) || "--";
       const vehicleLabel =
         pickFirstText(
           order.vehicle_label,
@@ -956,6 +960,7 @@
                       <div class="standalone-order-progress-info">
                         <p class="standalone-order-progress-label">Trạng thái đơn hàng</p>
                         <div class="standalone-order-progress-status-row">${statusBadge}</div>
+                        <time>Lấy hàng: ${escapeHtml(pickupScheduleLabel)}</time>
                         ${
                           cancelledTimeLabel
                             ? `<time>Hủy lúc ${escapeHtml(cancelledTimeLabel)}</time>`
@@ -972,8 +977,7 @@
                 </div>
               </div>
 
-              <div class="standalone-order-hero-support-grid ${isTerminal ? "standalone-order-hero-support-grid--route-only" : ""}">
-                ${isTerminal ? "" : renderHeroScheduleCard(pickupSlotLabel, estimatedDelivery)}
+              <div class="standalone-order-hero-support-grid standalone-order-hero-support-grid--route-only">
                 <div class="standalone-order-hero-route-stack">
                   <div class="standalone-order-actions-group standalone-order-hero-actions-group standalone-order-route-actions-group">
                     ${buildActionButtons(detail, viewer)}

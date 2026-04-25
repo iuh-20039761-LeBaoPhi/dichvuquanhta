@@ -1,6 +1,13 @@
+const SHEET_API_URL =
+  "https://script.google.com/macros/s/AKfycbxLZ5eeWkPh2N1d0CbhOxeaKu1j-M3G-Gvxv3Aa9iVpZnLh4O6FF7WWt7S9sUAIZuLO/exec";
+
 function resolveSheetProxyUrl() {
   const override = toSafeSheetString(window.GIAO_HANG_NHANH_SHEET_API_URL);
   if (override) return override;
+
+  if (toSafeSheetString(SHEET_API_URL)) {
+    return SHEET_API_URL;
+  }
 
   const publicBasePath = window.GiaoHangNhanhCore?.publicBasePath;
   if (toSafeSheetString(publicBasePath)) {

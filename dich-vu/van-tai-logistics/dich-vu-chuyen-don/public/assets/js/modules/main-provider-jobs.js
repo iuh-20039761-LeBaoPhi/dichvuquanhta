@@ -286,8 +286,8 @@ const providerJobsModule = (function (window, document) {
         <section class="customer-panel customer-orders-panel provider-jobs-panel">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Đơn hàng khách hàng đặt cho tôi</p>
-              <h2>Tìm và lọc đơn đã giao cho tôi</h2>
+              <p class="customer-section-kicker">Đơn hàng của khách</p>
+              <h2>Tìm và lọc đơn hàng của khách</h2>
               <p class="customer-panel-subtext">${escapeHtml(
                 String(items.length),
               )} đơn hàng đang thuộc nhà cung cấp hiện tại</p>
@@ -333,7 +333,7 @@ const providerJobsModule = (function (window, document) {
           <div class="customer-panel-head">
             <div>
               <p class="customer-section-kicker">Danh sách</p>
-              <h2>Đơn hàng khách hàng đặt cho tôi</h2>
+              <h2>Đơn hàng của khách</h2>
               <p class="customer-panel-subtext" id="provider-job-result-text">Đang tải dữ liệu đơn hàng...</p>
             </div>
           </div>

@@ -19,7 +19,7 @@ $unreadCount = 0;
             </button>
             <div class="logo">
                 <h1>
-                    <a href="admin_stats.php" class="header-logo-link">
+                    <a href="index.php" class="header-logo-link">
                         Admin <span class="header-accent">Giao Hàng</span> <small class="header-badge">Standalone</small>
                     </a>
                 </h1>
@@ -28,8 +28,8 @@ $unreadCount = 0;
 
         <div class="header-center">
             <ul class="nav-menu" id="nav-menu">
-                <li class="<?php echo $currentPage === 'admin_stats.php' ? 'active' : ''; ?>">
-                    <a href="admin_stats.php">Dashboard</a>
+                <li class="<?php echo in_array($currentPage, ['index.php', 'admin_stats.php'], true) ? 'active' : ''; ?>">
+                    <a href="index.php">Dashboard</a>
                 </li>
                 <li class="has-submenu <?php echo in_array($currentPage, ['orders_manage.php', 'users_manage.php', 'articles_manage.php'], true) ? 'active' : ''; ?>">
                     <a href="#" class="submenu-toggle">Quản lý <span class="arrow">▼</span></a>
@@ -74,7 +74,7 @@ $unreadCount = 0;
             </div>
 
             <div class="header-action-item">
-                <a href="admin_stats.php" class="btn-view-site-pill" title="Tổng quan">
+                <a href="index.php" class="btn-view-site-pill" title="Tổng quan">
                     <i class="fa-solid fa-house"></i>
                 </a>
             </div>

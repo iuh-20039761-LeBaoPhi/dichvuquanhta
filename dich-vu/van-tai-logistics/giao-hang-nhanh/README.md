@@ -166,11 +166,9 @@ Lưu ý upload hồ sơ:
 
 - Upload bám pattern `me-va-be`: dùng tên `upload.php` theo từng khu, không dùng các tên proxy riêng kiểu `upload_avatar.php`, `upload_booking_media.php`, `upload_feedback_media.php`.
 - `public/upload.php` dùng cho ảnh/video từ form đặt lịch, `folderKey = 27`.
-- `public/khach-hang/upload.php` dùng cho khách hàng: `upload_kind = order_media` lưu `folderKey = 27`, `upload_kind = avatar` lưu `folderKey = 33`.
-- `public/nha-cung-cap/upload.php` dùng cho nhà cung cấp/shipper: `upload_kind = order_media` lưu `folderKey = 27`, `upload_kind = avatar` lưu `folderKey = 33`.
-- `CCCD` hiện chưa có proxy upload riêng trong GHN để map `folderKey` theo đúng thư mục dịch vụ.
-- Vì chưa có chỗ/tuyến upload tách riêng cho `CCCD`, không tự ý vá Apps Script Google Drive / Google Sheet chỉ để ép lưu CCCD.
-- Nếu sau này cần bật upload `CCCD`, phải tạo rõ proxy/file đích cho GHN trước rồi mới gắn `folderKey` tương ứng.
+- `public/khach-hang/upload.php` dùng cho khách hàng: `upload_kind = order_media` lưu `folderKey = 27`, `upload_kind = avatar` và `upload_kind = cccd` lưu `folderKey = 33`.
+- `public/nha-cung-cap/upload.php` dùng cho nhà cung cấp/shipper: `upload_kind = order_media` lưu `folderKey = 27`, `upload_kind = avatar` và `upload_kind = cccd` lưu `folderKey = 33`.
+- `CCCD` trước/sau của GHN hiện đi cùng folder profile `33`, không còn fallback qua `public/upload_to_drive.php` trong flow cập nhật hồ sơ khách hàng/shipper.
 
 ### Portal nhà cung cấp / shipper
 

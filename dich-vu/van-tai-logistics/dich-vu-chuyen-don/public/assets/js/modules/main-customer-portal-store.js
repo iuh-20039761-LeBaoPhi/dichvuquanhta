@@ -1934,7 +1934,11 @@ const customerPortalStoreModule = (function (window) {
       try {
         const uploadedFront = await core.uploadFileToDrive(cccdFrontFile, {
           name: cccdFrontFile.name,
-          proxyFile: "public/upload_to_drive.php",
+          proxyFile:
+            getSavedRole() === "nha-cung-cap"
+              ? "nha-cung-cap/upload.php"
+              : "khach-hang/upload.php",
+          uploadKind: "cccd",
         });
         mediaPayload.link_cccd_truoc = normalizeText(
           uploadedFront?.fileId || uploadedFront?.id || "",
@@ -1949,7 +1953,11 @@ const customerPortalStoreModule = (function (window) {
       try {
         const uploadedBack = await core.uploadFileToDrive(cccdBackFile, {
           name: cccdBackFile.name,
-          proxyFile: "public/upload_to_drive.php",
+          proxyFile:
+            getSavedRole() === "nha-cung-cap"
+              ? "nha-cung-cap/upload.php"
+              : "khach-hang/upload.php",
+          uploadKind: "cccd",
         });
         mediaPayload.link_cccd_sau = normalizeText(
           uploadedBack?.fileId || uploadedBack?.id || "",

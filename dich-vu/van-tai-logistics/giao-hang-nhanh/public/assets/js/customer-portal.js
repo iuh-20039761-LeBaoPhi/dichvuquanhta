@@ -2111,8 +2111,14 @@
           proxyFile: "khach-hang/upload.php",
           uploadKind: "avatar",
         });
-        cccdFrontLink = await uploadSingleFile("cccd_front_file");
-        cccdBackLink = await uploadSingleFile("cccd_back_file");
+        cccdFrontLink = await uploadSingleFile("cccd_front_file", {
+          proxyFile: "khach-hang/upload.php",
+          uploadKind: "cccd",
+        });
+        cccdBackLink = await uploadSingleFile("cccd_back_file", {
+          proxyFile: "khach-hang/upload.php",
+          uploadKind: "cccd",
+        });
       } catch (uploadError) {
         console.warn("Cannot upload customer profile media:", uploadError);
         mediaWarning =
@@ -2358,20 +2364,20 @@
     );
     const menuItems = [
       `<li><a href="${routes.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan đặt đơn</a></li>`,
-      `<li><a href="${routes.orders}"><i class="fas fa-box"></i> Đơn hàng tôi đã đặt</a></li>`,
+      `<li><a href="${routes.orders}"><i class="fas fa-box"></i> Đơn hàng của tôi</a></li>`,
     ];
 
     if (!canReceiveOrders) {
       menuItems.push(
-        `<li><a href="${routes.profile}"><i class="fas fa-user"></i> Hồ sơ khách hàng</a></li>`,
+        `<li><a href="${routes.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>`,
       );
     }
 
     if (canReceiveOrders) {
       menuItems.push(
         '<li><a href="../nha-cung-cap/dashboard-giaohang.html"><i class="fas fa-truck-ramp-box"></i> Tổng quan nhận đơn</a></li>',
-        '<li><a href="../nha-cung-cap/don-hang-giaohang.html"><i class="fas fa-clipboard-list"></i> Đơn hàng khách hàng đặt cho tôi</a></li>',
-        '<li><a href="../nha-cung-cap/ho-so-giaohang.html"><i class="fas fa-id-card"></i> Hồ sơ nhà cung cấp</a></li>',
+        '<li><a href="../nha-cung-cap/don-hang-giaohang.html"><i class="fas fa-clipboard-list"></i> Đơn hàng của khách</a></li>',
+        '<li><a href="../nha-cung-cap/ho-so-giaohang.html"><i class="fas fa-id-card"></i> Hồ sơ cá nhân</a></li>',
       );
     }
 
@@ -3017,7 +3023,7 @@
       <section class="customer-panel customer-panel-overview">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
+            <p class="customer-section-kicker">Tổng quan đặt đơn</p>
             <h2>Tóm tắt nhanh đơn hàng tôi đã đặt</h2>
             <p class="customer-panel-subtext">${escapeHtml(heroState)}. ${escapeHtml(summaryText)}</p>
           </div>
@@ -3044,7 +3050,7 @@
       <section class="customer-panel customer-panel-orders customer-panel-orders-main">
           <div class="customer-panel-head customer-panel-head-dashboard">
             <div>
-              <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
+              <p class="customer-section-kicker">Đơn hàng của tôi</p>
               <h2>Đơn gần nhất cần tôi theo dõi</h2>
               <p class="customer-panel-subtext">Giữ lại danh sách ngắn để bạn nhìn ra ngay đơn mới hoặc đơn vừa đổi trạng thái.</p>
             </div>
@@ -3140,8 +3146,8 @@
       <section class="customer-panel customer-orders-panel">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
-            <h2>Tìm và lọc đơn đã đặt</h2>
+            <p class="customer-section-kicker">Đơn hàng của tôi</p>
+            <h2>Tìm và lọc đơn hàng của tôi</h2>
             <p class="customer-panel-subtext">Trang ${formatNumber(currentPage)}/${formatNumber(totalPages)} · ${formatNumber(totalResults)} đơn</p>
           </div>
         </div>

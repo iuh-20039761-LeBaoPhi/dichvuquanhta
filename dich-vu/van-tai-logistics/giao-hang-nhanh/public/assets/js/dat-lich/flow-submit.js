@@ -579,9 +579,42 @@ async function uploadBookingMedia(orderCode) {
     throw new Error("Thiếu helper upload Google Drive cho Giao Hàng Nhanh.");
   }
 
+  const safeToken = (value, fallback = "unknown") =>
+    String(value == null ? "" : value)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "") || fallback;
+  const padNumber = (value) => String(value).padStart(2, "0");
+  const timestamp = (() => {
+    const now = new Date();
+    return (
+      now.getFullYear() +
+      padNumber(now.getMonth() + 1) +
+      padNumber(now.getDate()) +
+      "_" +
+      padNumber(now.getHours()) +
+      padNumber(now.getMinutes()) +
+      padNumber(now.getSeconds())
+    );
+  })();
+  const bookingRef = safeToken(orderCode || "temp");
+
   return uploadFn(files, {
     proxyFile: "upload.php",
     uploadKind: "order_media",
+    nameBuilder(file, index) {
+      const originalName = String(file?.name || "").trim();
+      const extMatch = originalName.match(/(\.[a-z0-9]+)$/i);
+      const extension = extMatch ? extMatch[1].toLowerCase() : "";
+      const mediaType =
+        String(file?.type || "").toLowerCase().indexOf("video/") === 0
+          ? "video"
+          : "photo";
+      return `booking_giaohang_${bookingRef}_${mediaType}_${timestamp}_${String(
+        index + 1,
+      ).padStart(2, "0")}${extension}`;
+    },
   });
 }
 

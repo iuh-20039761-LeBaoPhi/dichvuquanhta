@@ -1490,8 +1490,14 @@
           proxyFile: "nha-cung-cap/upload.php",
           uploadKind: "avatar",
         });
-        cccdFrontLink = await uploadSingleFile("cccd_front_file");
-        cccdBackLink = await uploadSingleFile("cccd_back_file");
+        cccdFrontLink = await uploadSingleFile("cccd_front_file", {
+          proxyFile: "nha-cung-cap/upload.php",
+          uploadKind: "cccd",
+        });
+        cccdBackLink = await uploadSingleFile("cccd_back_file", {
+          proxyFile: "nha-cung-cap/upload.php",
+          uploadKind: "cccd",
+        });
       } catch (uploadError) {
         console.warn("Cannot upload shipper profile media:", uploadError);
         mediaWarning =
@@ -1640,10 +1646,10 @@
     );
     const menuItems = [
       '<li><a href="../khach-hang/dashboard-giaohang.html"><i class="fas fa-chart-line"></i> Tổng quan đặt đơn</a></li>',
-      '<li><a href="../khach-hang/danh-sach-don-hang-giaohang.html"><i class="fas fa-box"></i> Đơn hàng tôi đã đặt</a></li>',
+      '<li><a href="../khach-hang/danh-sach-don-hang-giaohang.html"><i class="fas fa-box"></i> Đơn hàng của tôi</a></li>',
       `<li><a href="${routes.dashboard}"><i class="fas fa-truck-ramp-box"></i> Tổng quan nhận đơn</a></li>`,
-      `<li><a href="${routes.orders}"><i class="fas fa-clipboard-list"></i> Đơn hàng khách hàng đặt cho tôi</a></li>`,
-      `<li><a href="${routes.profile}"><i class="fas fa-id-card"></i> Hồ sơ nhà cung cấp</a></li>`,
+      `<li><a href="${routes.orders}"><i class="fas fa-clipboard-list"></i> Đơn hàng của khách</a></li>`,
+      `<li><a href="${routes.profile}"><i class="fas fa-id-card"></i> Hồ sơ cá nhân</a></li>`,
     ];
 
     if (loginItem) {
@@ -1751,7 +1757,7 @@
       <section class="customer-panel customer-panel-overview">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Đơn hàng khách hàng đặt cho tôi</p>
+            <p class="customer-section-kicker">Tổng quan nhận đơn</p>
             <h2>Tổng quan nhận đơn</h2>
             <p class="customer-panel-subtext">Bạn đang có ${formatNumber(activeOrders)} đơn khách hàng đặt cho tài khoản này cần theo dõi.</p>
           </div>
@@ -1778,7 +1784,7 @@
       <section class="customer-panel customer-panel-orders">
         <div class="customer-panel-head customer-panel-head-dashboard">
           <div>
-            <p class="customer-section-kicker">Đơn khách hàng đặt cho tôi</p>
+            <p class="customer-section-kicker">Đơn hàng của khách</p>
             <h2>Danh sách việc cần theo dõi</h2>
             <p class="customer-panel-subtext">3 đơn gần nhất đang gắn với tài khoản nhà cung cấp này.</p>
           </div>
@@ -1866,8 +1872,8 @@
       <section class="customer-panel customer-orders-panel">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Đơn hàng khách hàng đặt cho tôi</p>
-            <h2>Danh sách đơn nhận</h2>
+            <p class="customer-section-kicker">Đơn hàng của khách</p>
+            <h2>Đơn hàng của khách</h2>
             <p class="customer-panel-subtext">Trang ${formatNumber(currentPage)} / ${formatNumber(totalPages)} · ${formatNumber(totalResults)} đơn phù hợp với bộ lọc hiện tại.</p>
           </div>
         </div>
@@ -2020,7 +2026,7 @@
               </label>
             </div>
             <div class="customer-profile-hero-info">
-              <p class="customer-profile-eyebrow">Hồ sơ nhà cung cấp giao hàng</p>
+              <p class="customer-profile-eyebrow">Hồ sơ cá nhân</p>
               <h2>${escapeHtml(name)}</h2>
               <div class="customer-profile-meta-list">
                 <span><i class="fas fa-id-badge"></i> ${escapeHtml(profile.username || "Shipper")}</span>

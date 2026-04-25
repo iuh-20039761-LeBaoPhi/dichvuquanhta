@@ -240,7 +240,7 @@ const providerDashboardModule = (function (window, document) {
         <section class="customer-panel customer-panel-overview provider-dashboard-overview">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Đơn hàng khách hàng đặt cho tôi</p>
+              <p class="customer-section-kicker">Tổng quan nhận đơn</p>
               <h2>Xin chào, ${escapeHtml(displayName)}</h2>
               <p class="customer-panel-subtext">${escapeHtml(summaryText)}</p>
             </div>

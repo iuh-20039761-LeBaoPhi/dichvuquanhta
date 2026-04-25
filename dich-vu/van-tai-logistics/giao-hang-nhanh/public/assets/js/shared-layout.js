@@ -363,7 +363,7 @@
       {
         href: accountLinks.customer.orders,
         icon: "fas fa-box",
-        label: "Đơn hàng tôi đã đặt",
+        label: "Đơn hàng của tôi",
       },
     ];
 
@@ -371,7 +371,7 @@
       items.push({
         href: accountLinks.customer.profile,
         icon: "fas fa-user",
-        label: "Hồ sơ khách hàng",
+        label: "Hồ sơ cá nhân",
       });
     }
 
@@ -385,12 +385,12 @@
         {
           href: accountLinks.provider.orders,
           icon: "fas fa-clipboard-list",
-          label: "Đơn hàng khách hàng đặt cho tôi",
+          label: "Đơn hàng của khách",
         },
         {
           href: accountLinks.provider.profile,
           icon: "fas fa-id-card",
-          label: "Hồ sơ nhà cung cấp",
+          label: "Hồ sơ cá nhân",
         },
       );
     }

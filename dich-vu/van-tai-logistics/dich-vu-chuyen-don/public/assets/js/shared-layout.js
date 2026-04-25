@@ -458,18 +458,18 @@
             </div>
           </li>
           <li><a href="${links.customer.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan đặt đơn</a></li>
-          <li><a href="${links.customer.orders}"><i class="fas fa-box"></i> Đơn hàng tôi đã đặt</a></li>
+          <li><a href="${links.customer.orders}"><i class="fas fa-box"></i> Đơn hàng của tôi</a></li>
           ${
             links.canReceiveOrders
               ? ""
-              : `<li><a href="${links.customer.profile}"><i class="fas fa-user"></i> Hồ sơ khách hàng</a></li>`
+              : `<li><a href="${links.customer.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>`
           }
           ${
             links.canReceiveOrders
               ? `
                 <li><a href="${links.provider.dashboard}"><i class="fas fa-truck-ramp-box"></i> Tổng quan nhận đơn</a></li>
-                <li><a href="${links.provider.orders}"><i class="fas fa-clipboard-list"></i> Đơn hàng khách hàng đặt cho tôi</a></li>
-                <li><a href="${links.provider.profile}"><i class="fas fa-id-card"></i> Hồ sơ nhà cung cấp</a></li>
+                <li><a href="${links.provider.orders}"><i class="fas fa-clipboard-list"></i> Đơn hàng của khách</a></li>
+                <li><a href="${links.provider.profile}"><i class="fas fa-id-card"></i> Hồ sơ cá nhân</a></li>
               `
               : ""
           }

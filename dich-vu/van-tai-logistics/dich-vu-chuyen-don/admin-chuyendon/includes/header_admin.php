@@ -17,11 +17,11 @@ $currentPage = basename($_SERVER['PHP_SELF'] ?? '');
     <div class="admin-header__inner">
         <div class="admin-brand">
             <span class="admin-brand__eyebrow">GlobalCare</span>
-            <a href="admin_stats.php" class="admin-brand__title">Admin chuyển dọn</a>
+            <a href="index.php" class="admin-brand__title">Admin chuyển dọn</a>
         </div>
 
         <nav class="admin-nav">
-            <a href="admin_stats.php" class="<?php echo $currentPage === 'admin_stats.php' ? 'is-active' : ''; ?>">Dashboard</a>
+            <a href="index.php" class="<?php echo in_array($currentPage, ['index.php', 'admin_stats.php'], true) ? 'is-active' : ''; ?>">Dashboard</a>
             <a href="orders_manage.php" class="<?php echo $currentPage === 'orders_manage.php' ? 'is-active' : ''; ?>">Đơn hàng</a>
             <a href="users_manage.php" class="<?php echo $currentPage === 'users_manage.php' ? 'is-active' : ''; ?>">Nhà cung cấp & người dùng</a>
             <a href="admin_pricing.php" class="<?php echo $currentPage === 'admin_pricing.php' ? 'is-active' : ''; ?>">Bảng giá</a>

@@ -1,3 +1,6 @@
+const SHEET_API_URL =
+  "https://script.google.com/macros/s/AKfycbxLZ5eeWkPh2N1d0CbhOxeaKu1j-M3G-Gvxv3Aa9iVpZnLh4O6FF7WWt7S9sUAIZuLO/exec";
+
 function toSafeSheetString(value) {
   return (value == null ? "" : String(value)).trim();
 }
@@ -5,6 +8,10 @@ function toSafeSheetString(value) {
 function resolveSheetProxyUrl() {
   const override = toSafeSheetString(window.DICH_VU_CHUYEN_DON_SHEET_API_URL);
   if (override) return override;
+
+  if (toSafeSheetString(SHEET_API_URL)) {
+    return SHEET_API_URL;
+  }
 
   const path = String(window.location.pathname || "").replace(/\\/g, "/");
   const marker = "/dich-vu-chuyen-don/";

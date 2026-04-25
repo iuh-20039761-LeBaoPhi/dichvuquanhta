@@ -132,8 +132,8 @@ const customerHistoryModule = (function (window, document) {
         <section class="customer-panel customer-orders-panel">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Đơn hàng tôi đã đặt</p>
-              <h2>Tìm và lọc đơn đã đặt</h2>
+              <p class="customer-section-kicker">Đơn hàng của tôi</p>
+              <h2>Tìm và lọc đơn hàng của tôi</h2>
               <p class="customer-panel-subtext">${escapeHtml(String(items.length))} đơn trong tài khoản hiện tại</p>
             </div>
           </div>
