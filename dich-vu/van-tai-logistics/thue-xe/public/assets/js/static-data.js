@@ -30,14 +30,16 @@ window.STATIC_DATA_PROMISE = (async function() {
         }
 
         // Chuyển đổi tên cột từ database sang tên field giao diện dùng
-        const services = dbServicesRaw.map(s => ({
-            id: s.id,
-            name: s.tendichvu,
-            icon: s.icon || 'circle-check',
-            unit: s.donvi || 'chuyến',
-            price: Number(s.gia),
-            description: s.mota || ''
-        }));
+        const services = dbServicesRaw
+            .filter(s => String(s.hien_thi) !== '0') // Chỉ lấy dịch vụ đang bật hiển thị
+            .map(s => ({
+                id: s.id,
+                name: s.tendichvu,
+                icon: s.icon || 'circle-check',
+                unit: s.donvi || 'chuyến',
+                price: Number(s.gia),
+                description: s.mota || ''
+            }));
 
         console.log(`[Antigravity-Debug] Loaded ${dbCars.length} cars from xethue.`);
         

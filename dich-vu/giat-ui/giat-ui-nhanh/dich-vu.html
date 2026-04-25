@@ -16,7 +16,7 @@
     <link
       rel="shortcut icon"
       type="image/x-icon"
-      href="public/asset/image/thuong-hieu-favicon-giat-ui-nhanh.png"
+      href="public/asset/image/logo-giat-ui-nhanh.png"
     />
     <link rel="stylesheet" href="public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="public/asset/css/styles.css" />
@@ -674,7 +674,7 @@
           grid.innerHTML = services.map((s, i) => `
             <article class="svc-card${i % 2 !== 0 ? " is-reverse" : ""}">
               <div class="svc-media">
-                <img src="public/asset/image/${s.hinhanh}" alt="${s.tendichvu}">
+                <img src="${s.hinhanh && (s.hinhanh.includes('.') || s.hinhanh.includes('/')) ? 'public/asset/image/' + s.hinhanh : 'https://lh3.googleusercontent.com/d/' + s.hinhanh}" alt="${s.tendichvu}">
               </div>
               <div class="svc-body">
                 <h3 class="svc-title">${s.tendichvu}</h3>

@@ -1,0 +1,271 @@
+<script>
+    if (window.location.pathname.endsWith('services.html')) {
+        window.location.href = 'quan-tri.html';
+    }
+</script>
+<!-- Admin Service Management Partial -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; overflow: hidden;">
+    <div class="card-header bg-white py-4 border-0">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h5 class="fw-800 mb-0">Quản lý Dịch vụ đi kèm</h5>
+                <p class="text-muted small mb-0">Cấu hình các dịch vụ phụ trợ như WiFi, ghế trẻ em, bảo hiểm...</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary rounded-pill px-4 fw-600" onclick="openAddServiceModal()">
+                    <i class="fas fa-plus me-2"></i>Thêm dịch vụ mới
+                </button>
+                <button class="btn btn-light rounded-pill px-3 fw-600" onclick="loadAllServices()">
+                    <i class="fas fa-sync-alt me-2"></i>Làm mới
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0" id="adminServiceTable">
+                    <thead class="bg-light text-muted small uppercase">
+                        <tr>
+                            <th class="ps-4">Icon / Dịch vụ</th>
+                            <th>Giá gốc</th>
+                            <th>Đơn vị tính</th>
+                            <th>Trạng thái</th>
+                            <th class="pe-4 text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminServiceBody">
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="spinner-border text-primary"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Mobile List Container -->
+            <div id="adminServiceMobileList" class="mobile-list-container d-lg-none p-3"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm/Sửa Dịch vụ -->
+<div class="modal fade" id="serviceEditModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-light p-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="fw-bold mb-0" id="modalTitle">Thêm dịch vụ mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="serviceForm">
+                    <input type="hidden" id="serviceId">
+                    <div class="mb-3">
+                        <label class="form-label fw-600 small text-muted">Tên dịch vụ</label>
+                        <input type="text" id="sName" class="form-control rounded-3" placeholder="Ví dụ: WiFi di động" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-600 small text-muted">Giá (VNĐ)</label>
+                            <input type="number" id="sPrice" class="form-control rounded-3" placeholder="80000" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-600 small text-muted">Đơn vị</label>
+                            <input type="text" id="sUnit" class="form-control rounded-3" placeholder="ngày / chuyến" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-600 small text-muted">Icon (FontAwesome)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i id="iconPreview" class="fas fa-concierge-bell"></i></span>
+                            <input type="text" id="sIcon" class="form-control rounded-3 border-start-0" placeholder="wifi, baby, shield-alt..." oninput="updateIconPreview(this.value)">
+                        </div>
+                        <small class="text-muted mt-1 d-block">Sử dụng tên lớp của FontAwesome (không bao gồm 'fas fa-')</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-600 small text-muted">Mô tả chi tiết</label>
+                        <textarea id="sDesc" class="form-control rounded-3" rows="3" placeholder="Mô tả công dụng hoặc đặc điểm của dịch vụ..."></textarea>
+                    </div>
+                    <div class="form-check form-switch p-0 d-flex align-items-center gap-2">
+                        <label class="form-check-label fw-600 small text-muted mb-0" for="sHienThi" style="flex: 1">Cho phép hiển thị cho khách hàng</label>
+                        <input class="form-check-input ms-0" type="checkbox" id="sHienThi" checked style="width: 2.5rem; height: 1.25rem; float: none;">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" id="saveServiceBtn" onclick="saveServiceData()">Lưu thông tin</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    const TABLE = 'dichvu_thuexe';
+    let allServices = [];
+
+    window.updateIconPreview = function(val) {
+        document.getElementById('iconPreview').className = 'fas fa-' + (val || 'concierge-bell');
+    };
+
+    window.loadAllServices = async function() {
+        const tbody = document.getElementById('adminServiceBody');
+        const mob = document.getElementById('adminServiceMobileList');
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+        
+        try {
+            const data = await DVQTKrud.listTable(TABLE, { limit: 100 });
+            allServices = data || [];
+
+            if(!allServices.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5">Chưa có dịch vụ nào được cấu hình.</td></tr>';
+                if(mob) mob.innerHTML = '<div class="text-center p-5 text-muted">Trống</div>';
+                return;
+            }
+
+            // Render Table
+            tbody.innerHTML = allServices.map(s => `
+                <tr>
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon-wrap bg-gradient-blue shadow-none" style="width:40px; height:40px; border-radius:10px; font-size:1rem;">
+                                <i class="fas fa-${s.icon || 'concierge-bell'}"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">${s.tendichvu}</div>
+                                <div class="text-muted small">ID: ${s.id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><div class="fw-bold text-primary">${Number(s.gia).toLocaleString()}đ</div></td>
+                    <td><span class="badge bg-light text-dark fw-normal border">${s.donvi}</span></td>
+                    <td>
+                        ${String(s.hien_thi) === '0' 
+                            ? '<span class="badge bg-danger bg-opacity-10 text-danger px-2 rounded-pill"><i class="fas fa-eye-slash me-1"></i>Đang ẩn</span>' 
+                            : '<span class="badge bg-success bg-opacity-10 text-success px-2 rounded-pill"><i class="fas fa-eye me-1"></i>Hiện thị</span>'}
+                    </td>
+                    <td class="pe-4 text-end">
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-light text-primary" onclick="openEditServiceModal(${s.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-light text-danger" onclick="deleteServiceAdmin(${s.id})" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Render Mobile
+            if(mob) {
+                mob.innerHTML = allServices.map(s => `
+                    <div class="mobile-card shadow-sm">
+                        <div class="mobile-card-head">
+                            <div class="stat-icon-wrap bg-gradient-blue shadow-none" style="width:35px; height:35px; border-radius:8px; font-size:0.9rem;">
+                                <i class="fas fa-${s.icon || 'concierge-bell'}"></i>
+                            </div>
+                            <h4 class="mobile-title">${s.tendichvu}</h4>
+                        </div>
+                        <div class="mobile-body">
+                            <div class="mobile-row"><span>Giá thuê</span><strong>${Number(s.gia).toLocaleString()}đ / ${s.donvi}</strong></div>
+                            <div class="mobile-row"><span>Trạng thái</span><strong>${String(s.hien_thi) === '0' ? '<span class="text-danger">Đang ẩn</span>' : '<span class="text-success">Hiển thị</span>'}</strong></div>
+                            <p class="small text-muted mb-0 mt-2">${s.mota || ''}</p>
+                        </div>
+                        <div class="mobile-actions">
+                            <button class="btn btn-sm btn-outline-primary flex-grow-1" onclick="openEditServiceModal(${s.id})"><i class="fas fa-edit me-1"></i>Sửa</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteServiceAdmin(${s.id})"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
+    };
+
+    window.openAddServiceModal = function() {
+        document.getElementById('modalTitle').textContent = 'Thêm dịch vụ mới';
+        document.getElementById('serviceId').value = '';
+        document.getElementById('serviceForm').reset();
+        updateIconPreview('');
+        new bootstrap.Modal(document.getElementById('serviceEditModal')).show();
+    };
+
+    window.openEditServiceModal = function(id) {
+        const s = allServices.find(x => x.id == id);
+        if(!s) return;
+
+        document.getElementById('modalTitle').textContent = 'Chỉnh sửa dịch vụ';
+        document.getElementById('serviceId').value = s.id;
+        document.getElementById('sName').value = s.tendichvu;
+        document.getElementById('sPrice').value = s.gia;
+        document.getElementById('sUnit').value = s.donvi;
+        document.getElementById('sIcon').value = s.icon;
+        document.getElementById('sDesc').value = s.mota;
+        document.getElementById('sHienThi').checked = String(s.hien_thi) !== '0';
+        updateIconPreview(s.icon);
+        new bootstrap.Modal(document.getElementById('serviceEditModal')).show();
+    };
+
+    window.saveServiceData = async function() {
+        const id = document.getElementById('serviceId').value;
+        const data = {
+            tendichvu: document.getElementById('sName').value,
+            gia: document.getElementById('sPrice').value,
+            donvi: document.getElementById('sUnit').value,
+            icon: document.getElementById('sIcon').value || 'concierge-bell',
+            mota: document.getElementById('sDesc').value,
+            hien_thi: document.getElementById('sHienThi').checked ? 1 : 0
+        };
+
+        if(!data.tendichvu || !data.gia || !data.donvi) {
+            Swal.fire('Lỗi', 'Vui lòng điền đầy đủ các thông tin bắt buộc!', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('saveServiceBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang lưu...';
+
+        try {
+            if(id) {
+                await DVQTKrud.updateRow(TABLE, id, data);
+            } else {
+                data.created_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                await DVQTKrud.insertRow(TABLE, data);
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('serviceEditModal')).hide();
+            Swal.fire('Thành công', 'Thông tin dịch vụ đã được lưu lại.', 'success');
+            loadAllServices();
+        } catch (e) {
+            Swal.fire('Lỗi hệ thống', e.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Lưu thông tin';
+        }
+    };
+
+    window.deleteServiceAdmin = async function(id) {
+        const result = await Swal.fire({
+            title: 'Xác nhận xóa?',
+            text: "Dịch vụ sẽ bị loại bỏ khỏi danh sách lựa chọn của khách hàng.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Đồng ý xóa',
+            cancelButtonText: 'Hủy'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await DVQTKrud.deleteRow(TABLE, id);
+                Swal.fire('Đã xóa', 'Dịch vụ đã được loại bỏ.', 'success');
+                loadAllServices();
+            } catch (e) { Swal.fire('Lỗi', e.message, 'error'); }
+        }
+    };
+
+    loadAllServices();
+})();
+</script>

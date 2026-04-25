@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="../public/asset/image/logo-giat-ui-nhanh.png"
+    />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../../../public/asset/js/sweetalert-utils.js"></script>
     <style>
@@ -295,7 +300,7 @@
               (s, i) => `
             <tr>
               <td data-label="STT">${(page - 1) * limit + i + 1}</td>
-              <td data-label="Hình ảnh"><img src="../public/asset/image/${s.hinhanh}" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:1px solid #eee;"></td>
+              <td data-label="Hình ảnh"><img src="${s.hinhanh && (s.hinhanh.includes('.') || s.hinhanh.includes('/')) ? '../public/asset/image/' + s.hinhanh : 'https://lh3.googleusercontent.com/d/' + s.hinhanh}" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:1px solid #eee;"></td>
               <td data-label="Tên dịch vụ"><p class="service-text mb-0">${s.tendichvu}</p></td>
               <td data-label="Giá & Đơn vị">${Number(s.giadichvu).toLocaleString("vi-VN")} đ / ${s.donvi}</td>
               <td class="text-end">
@@ -337,8 +342,9 @@
             form.tendichvu.value = s.tendichvu;
             form.mota.value = s.mota;
             if (s.hinhanh) {
-              document.getElementById("imgPreview").src =
-                `../public/asset/image/${s.hinhanh}`;
+              document.getElementById("imgPreview").src = s.hinhanh.includes(".")
+                ? `../public/asset/image/${s.hinhanh}`
+                : `https://lh3.googleusercontent.com/d/${s.hinhanh}`;
               document.getElementById("imgPreview").classList.remove("d-none");
               document.getElementById("noImg").classList.add("d-none");
             }
@@ -402,13 +408,14 @@
               : "";
 
             if (fd.get("file").name) {
-              const upRes = await fetch("../public/upload-service.php", {
+              fd.append("folderKey", "11");
+              const upRes = await fetch("../../../../public/upload_to_drive.php", {
                 method: "POST",
                 body: fd,
               });
               const upJson = await upRes.json();
               if (!upJson.success) throw new Error(upJson.message);
-              hinhanh = upJson.filename;
+              hinhanh = upJson.fileId;
             } else if (!editingId) throw new Error("Vui lòng chọn ảnh!");
 
             const payload = {

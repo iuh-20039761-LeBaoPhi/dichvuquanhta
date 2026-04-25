@@ -60,7 +60,7 @@
             padding: 2px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             object-fit: contain;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .standalone-title-wrap {
@@ -126,13 +126,14 @@
             color: #475569;
             display: inline-flex;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .header-total-center {
             position: absolute;
             left: 50%;
-            top: 25px; /* Cân bằng với phần đơn hàng ở trên cùng */
+            top: 25px;
+            /* Cân bằng với phần đơn hàng ở trên cùng */
             transform: translateX(-50%);
             text-align: center;
             display: flex;
@@ -141,11 +142,23 @@
             z-index: 10;
         }
 
-        .header-total-label { font-size: 0.7rem; font-weight: 800; opacity: 0.9; letter-spacing: 0.1em; text-transform: uppercase; }
-        .header-total-amount { font-size: 2rem; font-weight: 800; }
+        .header-total-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            opacity: 0.9;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .header-total-amount {
+            font-size: 2rem;
+            font-weight: 800;
+        }
 
         .hero-progress-group {
-            display: flex; align-items: center; gap: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .action-buttons-hero {
@@ -153,6 +166,7 @@
             flex-direction: column;
             gap: 10px;
         }
+
         .btn-white-hero {
             background: #ffffff;
             color: var(--primary-blue);
@@ -165,11 +179,13 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+
         .btn-white-hero:hover {
             transform: scale(1.05);
             background: #f1f5f9;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
         }
+
         .btn-outline-white-hero {
             background: rgba(255, 255, 255, 0.15);
             color: #ffffff;
@@ -182,6 +198,7 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(4px);
         }
+
         .btn-outline-white-hero:hover {
             background: rgba(239, 68, 68, 0.2);
             border-color: #fca5a5;
@@ -189,89 +206,322 @@
         }
 
         .hero-progress-ring {
-            width: 80px; height: 80px; border-radius: 50%;
-            background: conic-gradient(#fff 0%, rgba(255,255,255,0.2) 0%);
-            display: flex; align-items: center; justify-content: center; position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(#fff 0%, rgba(255, 255, 255, 0.2) 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
             border: 4px solid var(--deep-blue);
             flex-shrink: 0;
         }
+
         .hero-progress-ring::before {
-            content: ''; position: absolute; width: 64px; height: 64px; background: var(--deep-blue); border-radius: 50%;
+            content: '';
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            background: var(--deep-blue);
+            border-radius: 50%;
         }
-        .hero-progress-content { position: relative; text-align: center; color: #fff; }
-        .hero-progress-content strong { font-size: 1.2rem; display: block; }
-        .hero-progress-content small { font-size: 0.5rem; text-transform: uppercase; opacity: 0.7; }
+
+        .hero-progress-content {
+            position: relative;
+            text-align: center;
+            color: #fff;
+        }
+
+        .hero-progress-content strong {
+            font-size: 1.2rem;
+            display: block;
+        }
+
+        .hero-progress-content small {
+            font-size: 0.5rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
 
         /* 3. PANELS & GRID */
         .dashboard-grid {
-            display: grid; gap: 5px;
+            display: grid;
+            gap: 5px;
         }
+
         .invoice-panel {
-            background: #fff; border-radius: 24px; padding: 25px; box-shadow: var(--soft-shadow);
+            background: #fff;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: var(--soft-shadow);
         }
+
         .panel-head {
-            margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1.5px solid #f1f5f9;
-            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1.5px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .panel-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; color: var(--slate-800); }
-        
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--slate-800);
+        }
+
         /* 4. IDENTITY CARDS */
         .identity-card {
-            background: #fff; border-radius: 24px; padding: 22px; box-shadow: var(--soft-shadow);
+            background: #fff;
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: var(--soft-shadow);
         }
+
         .avatar-badge {
-            width: 54px; height: 54px; border-radius: 14px;
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
             background: linear-gradient(135deg, var(--deep-blue), var(--primary-blue));
-            color: #fff; display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1.1rem; margin-bottom: 15px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
         }
-        .id-name { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
-        .id-info { font-size: 0.85rem; color: var(--slate-500); display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-        .id-info i { color: var(--primary-blue); width: 16px; text-align: center; }
+
+        .id-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .id-info {
+            font-size: 0.85rem;
+            color: var(--slate-500);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .id-info i {
+            color: var(--primary-blue);
+            width: 16px;
+            text-align: center;
+        }
 
         /* KPI CARDS HERO */
-        .kpi-grid { display: grid; gap: 15px; margin-bottom: 25px; }
-        .kpi-card {
-            background: #fff; border-radius: 20px; padding: 18px; box-shadow: var(--soft-shadow);
-            border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px;
+        .kpi-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
         }
-        .kpi-icon { width: 44px; height: 44px; background: #eff6ff; color: var(--primary-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-        .kpi-data { flex: 1; }
-        .kpi-label { font-size: 0.65rem; font-weight: 800; color: var(--slate-500); text-transform: uppercase; }
-        .kpi-val { font-size: 0.95rem; font-weight: 800; color: var(--slate-800); }
+
+        .kpi-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: var(--soft-shadow);
+            border: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .kpi-icon {
+            width: 44px;
+            height: 44px;
+            background: #eff6ff;
+            color: var(--primary-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .kpi-data {
+            flex: 1;
+        }
+
+        .kpi-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--slate-500);
+            text-transform: uppercase;
+        }
+
+        .kpi-val {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--slate-800);
+        }
 
         /* STATUS & TIMELINE */
-        .status-block { background: #f8fafc; border-radius: 16px; padding: 15px; border: 1px solid #f1f5f9; margin-bottom: 12px; }
-        .timeline-item { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; }
-        .timeline-label { color: var(--slate-500); font-weight: 600; }
-        .timeline-value { font-weight: 800; color: var(--slate-800); }
-
-        /* ACTIONS */
-        .btn-blue { background: #3b82f6; color: #fff; border-radius: 12px; padding: 10px 24px; font-weight: 800; border: none; font-size: 0.85rem; }
-        .btn-cancel { background: #fff; border: 1.5px solid #fecaca; color: #ef4444; border-radius: 12px; padding: 10px 24px; font-weight: 800; font-size: 0.85rem; }
-
-        @media (min-width: 768px) {
-            .dashboard-grid { grid-template-columns: 1fr 1fr; }
-            .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-            .content-left { grid-column: span 2; display: grid; grid-template-columns: 1.5fr 1fr; gap: 5px; }
+        .status-block {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 15px;
+            border: 1px solid #f1f5f9;
+            margin-bottom: 12px;
         }
 
-        .review-media-wrap { position: relative; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
-        .review-media-wrap img { width: 100%; height: 100%; object-fit: cover; }
-        .review-media-remove { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; }
-        .review-video-placeholder { width: 100%; height: 100%; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #3b82f6; }
-        
-        .review-media-thumb { width: 50px; height: 50px; border-radius: 6px; overflow: hidden; display: block; border: 1px solid #eee; }
-        .review-media-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .timeline-label {
+            color: var(--slate-500);
+            font-weight: 600;
+        }
+
+        .timeline-value {
+            font-weight: 800;
+            color: var(--slate-800);
+        }
+
+        /* ACTIONS */
+        .btn-blue {
+            background: #3b82f6;
+            color: #fff;
+            border-radius: 12px;
+            padding: 10px 24px;
+            font-weight: 800;
+            border: none;
+            font-size: 0.85rem;
+        }
+
+        .btn-cancel {
+            background: #fff;
+            border: 1.5px solid #fecaca;
+            color: #ef4444;
+            border-radius: 12px;
+            padding: 10px 24px;
+            font-weight: 800;
+            font-size: 0.85rem;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .content-left {
+                grid-column: span 2;
+                display: grid;
+                grid-template-columns: 1.5fr 1fr;
+                gap: 5px;
+            }
+        }
+
+        .review-media-wrap {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .review-media-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .review-media-remove {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .review-video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+        }
+
+        .review-media-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: block;
+            border: 1px solid #eee;
+        }
+
+        .review-media-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
         @media (max-width: 767px) {
-            .invoice-hero { padding: 20px 15px; }
-            .invoice-hero-top { flex-direction: column; text-align: center; align-items: center; gap: 10px; }
-            .hero-left { order: 1; }
-            .header-total-center { position: static; transform: none; margin: 5px 0; order: 2; }
-            .hero-progress-group { order: 3; flex-direction: column; gap: 10px; }
-            .action-buttons-hero { flex-direction: row; }
-            .hero-kpis-box { grid-template-columns: 1fr !important; margin-top: 15px; padding-top: 15px; }
+            .invoice-hero {
+                padding: 20px 15px;
+            }
+
+            .invoice-hero-top {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .hero-left {
+                order: 1;
+            }
+
+            .header-total-center {
+                position: static;
+                transform: none;
+                margin: 5px 0;
+                order: 2;
+            }
+
+            .hero-progress-group {
+                order: 3;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .action-buttons-hero {
+                flex-direction: row;
+            }
+
+            .hero-kpis-box {
+                grid-template-columns: 1fr !important;
+                margin-top: 15px;
+                padding-top: 15px;
+            }
         }
 
         .hero-kpis-box {
@@ -281,43 +531,84 @@
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px dashed rgba(255, 255, 255, 0.2);
-            align-items: stretch; /* Đảm bảo các hộp cao bằng nhau */
+            align-items: stretch;
+            /* Đảm bảo các hộp cao bằng nhau */
         }
+
         .hero-kpi-item {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
             padding: 15px 12px;
             display: flex;
-            align-items: flex-start; /* Để icon ở trên cùng nếu nội dung dài */
+            align-items: flex-start;
+            /* Để icon ở trên cùng nếu nội dung dài */
             gap: 12px;
-            min-width: 0; /* Quan trọng để grid 1fr hoạt động đúng với nội dung dài */
+            min-width: 0;
+            /* Quan trọng để grid 1fr hoạt động đúng với nội dung dài */
         }
+
         .hero-kpi-data {
             flex: 1;
             min-width: 0;
             overflow: hidden;
         }
+
         .hero-kpi-icon {
             flex-shrink: 0;
-            width: 32px; height: 32px; background: rgba(255, 255, 255, 0.2); 
-            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
         }
-        .hero-kpi-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; opacity: 0.8; margin-bottom: 4px; }
-        .hero-kpi-val { 
-            font-size: 0.8rem; font-weight: 700; 
-            word-wrap: break-word; /* Để địa chỉ dài tự xuống hàng */
+
+        .hero-kpi-label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .hero-kpi-val {
+            font-size: 0.8rem;
+            font-weight: 700;
+            word-wrap: break-word;
+            /* Để địa chỉ dài tự xuống hàng */
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* Giới hạn 2 dòng để đều nhau */
+            -webkit-line-clamp: 2;
+            /* Giới hạn 2 dòng để đều nhau */
             -webkit-box-orient: vertical;
             overflow: hidden;
             line-height: 1.2;
         }
-        
-        .tech-box { background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; }
-        .tech-label { font-size: 0.65rem; font-weight: 800; color: var(--slate-500); text-transform: uppercase; margin-bottom: 2px; }
-        .tech-val { font-size: 0.85rem; font-weight: 700; color: var(--slate-800); }
 
+        .tech-box {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tech-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--slate-500);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .tech-val {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--slate-800);
+        }
     </style>
 </head>
 
@@ -325,22 +616,26 @@
     <header class="standalone-header">
         <div class="standalone-header-inner">
             <a href="../../../index.html" title="Về trang chủ Dịch Vụ Quanh Ta">
-                <img class="standalone-logo" src="../../../public/asset/image/logo-dich-vu-quanh-ta.png" alt="Logo DVQT" />
+                <img class="standalone-logo" src="../../../public/asset/image/logo-dich-vu-quanh-ta.png"
+                    alt="Logo DVQT" />
             </a>
             <div class="standalone-title-wrap">
                 <h1 class="standalone-title">Chi tiết hóa đơn Thuê Xe</h1>
                 <p class="standalone-subtitle">Quản lý và Theo dõi hành trình</p>
             </div>
             <a href="index.html" title="Trang chủ Thuê Xe">
-                <img class="standalone-logo" src="public/assets/images/thue-xe-logo-header-navigation.jpg" alt="Logo Thuê Xe" />
+                <img class="standalone-logo" src="public/assets/images/thue-xe-logo-header-navigation.jpg"
+                    alt="Logo Thuê Xe" />
             </a>
         </div>
     </header>
 
     <main class="standalone-content">
         <div class="mb-3 px-2 d-flex align-items-center gap-3">
-            <button class="btn btn-sm btn-white shadow-sm fw-bold px-3 py-1 text-primary" onclick="OrderDetailComponent.goBackToDashboard()" style="border-radius: 8px; font-size: 0.8rem; border: 1px solid #e2e8f0;">
-                <i class="fas fa-arrow-left me-1"></i>Quay lại
+            <button class="btn btn-sm btn-white shadow-sm fw-bold px-2 py-1 text-primary"
+                onclick="OrderDetailComponent.goBackToDashboard()"
+                style="border-radius: 8px; font-size: 0.9rem; border: 1px solid #e2e8f0;">
+                <i class="fas fa-arrow-left"></i>
             </button>
             <div class="small fw-bold text-muted" id="accessInfo">Quyền: --- | Đang xem đơn #-------</div>
         </div>
@@ -349,9 +644,11 @@
             <div class="invoice-hero-top">
                 <div class="hero-left">
                     <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
-                        <span class="small fw-800 text-uppercase opacity-75" style="letter-spacing: 0.05em;">Đơn hàng</span>
+                        <span class="small fw-800 text-uppercase opacity-75" style="letter-spacing: 0.05em;">Đơn
+                            hàng</span>
                         <h2 class="hero-title mb-0" id="fullOrderId" style="font-size: 1.4rem;">#-------</h2>
-                        <span class="invoice-status-chip" id="orderStatusBadge" style="padding: 4px 12px; font-size: 0.65rem;">...</span>
+                        <span class="invoice-status-chip" id="orderStatusBadge"
+                            style="padding: 4px 12px; font-size: 0.65rem;">...</span>
                     </div>
                 </div>
 
@@ -363,7 +660,8 @@
                 <div class="hero-progress-group">
                     <div id="mainActionArea" class="action-buttons-hero">
                         <button class="btn btn-white-hero shadow-sm" id="btnMainAction" style="display:none;"></button>
-                        <button class="btn btn-outline-white-hero" id="btnCancelOrder" style="display:none;">HỦY ĐƠN</button>
+                        <button class="btn btn-outline-white-hero" id="btnCancelOrder" style="display:none;">HỦY
+                            ĐƠN</button>
                     </div>
                     <div class="hero-progress-ring" id="heroProgressRing">
                         <div class="hero-progress-content">
@@ -409,13 +707,26 @@
                         <h4 class="panel-title">Chi tiết xe & Hợp đồng</h4>
                         <i class="fas fa-info-circle text-primary"></i>
                     </div>
-                    <div class="fw-800 text-primary mb-3 py-2 px-3 bg-light rounded-3" id="carNameFull" style="border-left: 4px solid var(--primary-blue);">---</div>
-                    
+                    <div class="fw-800 text-primary mb-3 py-2 px-3 bg-light rounded-3" id="carNameFull"
+                        style="border-left: 4px solid var(--primary-blue);">---</div>
+
                     <div class="row g-3">
-                        <div class="col-6"><div class="tech-box"><span class="tech-label">Màu sắc</span><span class="tech-val" id="carColor">---</span></div></div>
-                        <div class="col-6"><div class="tech-box"><span class="tech-label">Biển số</span><span class="tech-val" id="carPlate">---</span></div></div>
-                        <div class="col-6"><div class="tech-box"><span class="tech-label">Số khung</span><span class="tech-val" id="carChassis">---</span></div></div>
-                        <div class="col-6"><div class="tech-box"><span class="tech-label">Số máy</span><span class="tech-val" id="carEngine">---</span></div></div>
+                        <div class="col-6">
+                            <div class="tech-box"><span class="tech-label">Màu sắc</span><span class="tech-val"
+                                    id="carColor">---</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="tech-box"><span class="tech-label">Biển số</span><span class="tech-val"
+                                    id="carPlate">---</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="tech-box"><span class="tech-label">Số khung</span><span class="tech-val"
+                                    id="carChassis">---</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="tech-box"><span class="tech-label">Số máy</span><span class="tech-val"
+                                    id="carEngine">---</span></div>
+                        </div>
                     </div>
 
 
@@ -432,12 +743,32 @@
                     <div class="mt-4 pt-3 border-top">
                         <div class="tech-label mb-2">Chi tiết chi phí</div>
                         <div class="row g-3">
-                            <div class="col-6"><div class="tech-box"><span class="tech-label">Giá thuê/ngày</span><span class="tech-val" id="pricePerDay">---</span></div></div>
-                            <div class="col-6"><div class="tech-box"><span class="tech-label">Số ngày thuê</span><span class="tech-val" id="rentalDays">---</span></div></div>
-                            <div class="col-6"><div class="tech-box"><span class="tech-label">Tiền thuê xe</span><span class="tech-val" id="rentalAmount">---</span></div></div>
-                            <div class="col-6"><div class="tech-box"><span class="tech-label">Tiền dịch vụ</span><span class="tech-val" id="addonAmount">---</span></div></div>
-                            <div class="col-12"><div class="tech-box"><span class="tech-label">Dịch vụ đi kèm</span><div class="tech-val" id="addonDetailList">Không có</div></div></div>
-                            <div class="col-12"><div class="tech-box" style="background:#eff6ff;border-color:#bfdbfe;"><span class="tech-label">Tổng tiền</span><span class="tech-val text-primary" id="totalAmountBreakdown">---</span></div></div>
+                            <div class="col-6">
+                                <div class="tech-box"><span class="tech-label">Giá thuê/ngày</span><span
+                                        class="tech-val" id="pricePerDay">---</span></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tech-box"><span class="tech-label">Số ngày thuê</span><span class="tech-val"
+                                        id="rentalDays">---</span></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tech-box"><span class="tech-label">Tiền thuê xe</span><span class="tech-val"
+                                        id="rentalAmount">---</span></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tech-box"><span class="tech-label">Tiền dịch vụ</span><span class="tech-val"
+                                        id="addonAmount">---</span></div>
+                            </div>
+                            <div class="col-12">
+                                <div class="tech-box"><span class="tech-label">Dịch vụ đi kèm</span>
+                                    <div class="tech-val" id="addonDetailList">Không có</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="tech-box" style="background:#eff6ff;border-color:#bfdbfe;"><span
+                                        class="tech-label">Tổng tiền</span><span class="tech-val text-primary"
+                                        id="totalAmountBreakdown">---</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -452,12 +783,16 @@
                         <div class="fw-800 text-primary fs-5" id="statusTextHero">Đang xử lý</div>
                         <div class="text-muted small">Cập nhật lúc: <span id="lastUpdate">Vừa xong</span></div>
                     </div>
-                    
+
                     <div class="timeline-box">
-                        <div class="timeline-item"><span class="timeline-label">Ngày đặt đơn</span><span class="timeline-value" id="orderDate">--/--/----</span></div>
-                        <div class="timeline-item"><span class="timeline-label">Xác nhận nhận đơn</span><span class="timeline-value" id="timeAccepted">N/A</span></div>
-                        <div class="timeline-item"><span class="timeline-label">Bàn giao & Bắt đầu</span><span class="timeline-value" id="timeStarted">N/A</span></div>
-                        <div class="timeline-item"><span class="timeline-label">Kết thúc thuê</span><span class="timeline-value" id="timeFinished">N/A</span></div>
+                        <div class="timeline-item"><span class="timeline-label">Ngày đặt đơn</span><span
+                                class="timeline-value" id="orderDate">--/--/----</span></div>
+                        <div class="timeline-item"><span class="timeline-label">Xác nhận nhận đơn</span><span
+                                class="timeline-value" id="timeAccepted">N/A</span></div>
+                        <div class="timeline-item"><span class="timeline-label">Bàn giao & Bắt đầu</span><span
+                                class="timeline-value" id="timeStarted">N/A</span></div>
+                        <div class="timeline-item"><span class="timeline-label">Kết thúc thuê</span><span
+                                class="timeline-value" id="timeFinished">N/A</span></div>
                     </div>
                 </div>
             </div>
@@ -503,12 +838,14 @@
                 </div>
                 <div class="row g-4">
                     <div class="col-md-6 border-end">
-                        <div class="label text-muted fw-800 small uppercase mb-1">Đánh giá khách hàng <span class="badge bg-secondary ms-2" id="custReviewBadge">CHƯA CÓ</span></div>
+                        <div class="label text-muted fw-800 small uppercase mb-1">Đánh giá khách hàng <span
+                                class="badge bg-secondary ms-2" id="custReviewBadge">CHƯA CÓ</span></div>
                         <div id="custReviewMsg" class="small fw-500">Chưa có đánh giá.</div>
                         <div id="custReviewMedia" class="d-flex flex-wrap gap-2 mt-2"></div>
                     </div>
                     <div class="col-md-6">
-                        <div class="label text-muted fw-800 small uppercase mb-1">Báo cáo nhà xe <span class="badge bg-secondary ms-2" id="nccReviewBadge">CHƯA CÓ</span></div>
+                        <div class="label text-muted fw-800 small uppercase mb-1">Báo cáo nhà xe <span
+                                class="badge bg-secondary ms-2" id="nccReviewBadge">CHƯA CÓ</span></div>
                         <div id="nccReviewMsg" class="small fw-500">Chưa có báo cáo bàn giao.</div>
                         <div id="nccReviewMedia" class="d-flex flex-wrap gap-2 mt-2"></div>
                     </div>
@@ -525,36 +862,46 @@
                     <h5 class="modal-title fw-bold">
                         <i class="fas fa-edit me-2"></i>Viết đánh giá
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <input type="hidden" id="reviewRole">
                     <div class="mb-4">
                         <label class="form-label fw-bold text-dark mb-2">Trải nghiệm của bạn</label>
-                        <textarea class="form-control border-light-subtle bg-light" id="reviewText" rows="4" placeholder="Nhập cảm nhận của bạn về chuyến xe hoặc đối tác..." style="border-radius: 1rem; resize: none;"></textarea>
+                        <textarea class="form-control border-light-subtle bg-light" id="reviewText" rows="4"
+                            placeholder="Nhập cảm nhận của bạn về chuyến xe hoặc đối tác..."
+                            style="border-radius: 1rem; resize: none;"></textarea>
                     </div>
                     <div class="mb-4">
                         <div class="row g-2">
                             <div class="col-6">
-                                <button type="button" class="btn btn-outline-secondary w-100 py-3" onclick="document.getElementById('reviewPhotoInput').click()" style="border-radius:1rem; border-style:dashed;">
+                                <button type="button" class="btn btn-outline-secondary w-100 py-3"
+                                    onclick="document.getElementById('reviewPhotoInput').click()"
+                                    style="border-radius:1rem; border-style:dashed;">
                                     <i class="fas fa-camera d-block mb-1 fs-4"></i>
                                     <span class="small">Thêm ảnh</span>
                                 </button>
-                                <input type="file" id="reviewPhotoInput" accept="image/*" multiple class="d-none" onchange="OrderDetailComponent.handleMediaChange(this, 'reviewPhotoPreview')">
+                                <input type="file" id="reviewPhotoInput" accept="image/*" multiple class="d-none"
+                                    onchange="OrderDetailComponent.handleMediaChange(this, 'reviewPhotoPreview')">
                             </div>
                             <div class="col-6">
-                                <button type="button" class="btn btn-outline-secondary w-100 py-3" onclick="document.getElementById('reviewVideoInput').click()" style="border-radius:1rem; border-style:dashed;">
+                                <button type="button" class="btn btn-outline-secondary w-100 py-3"
+                                    onclick="document.getElementById('reviewVideoInput').click()"
+                                    style="border-radius:1rem; border-style:dashed;">
                                     <i class="fas fa-video d-block mb-1 fs-4"></i>
                                     <span class="small">Thêm video</span>
                                 </button>
-                                <input type="file" id="reviewVideoInput" accept="video/*" multiple class="d-none" onchange="OrderDetailComponent.handleMediaChange(this, 'reviewVideoPreview')">
+                                <input type="file" id="reviewVideoInput" accept="video/*" multiple class="d-none"
+                                    onchange="OrderDetailComponent.handleMediaChange(this, 'reviewVideoPreview')">
                             </div>
                         </div>
                         <div id="reviewPhotoPreview" class="d-flex flex-wrap gap-2 mt-3"></div>
                         <div id="reviewVideoPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
                     </div>
                     <div class="d-grid">
-                        <button type="button" class="btn btn-primary py-3 fw-bold shadow-sm" id="btnSubmitReview" onclick="OrderDetailComponent.submitReview()" style="border-radius: 1rem;">
+                        <button type="button" class="btn btn-primary py-3 fw-bold shadow-sm" id="btnSubmitReview"
+                            onclick="OrderDetailComponent.submitReview()" style="border-radius: 1rem;">
                             Gửi đánh giá <i class="fas fa-paper-plane ms-2"></i>
                         </button>
                     </div>
@@ -571,7 +918,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        const OrderDetailComponent = (function() {
+        const OrderDetailComponent = (function () {
             'use strict';
             const TABLE_ORDERS = 'datlich_thuexe';
             let currentOrder = null;
@@ -653,58 +1000,101 @@
             }
 
             async function run(id, creds = null) {
-                if(!id) return;
+                if (!id) return;
                 try {
                     let session = await DVQTApp.checkSession().catch(() => null);
-                    if(!session || !session.id) {
-                        if(creds && creds.sdt && creds.password) {
+                    if (!session || !session.id) {
+                        if (creds && creds.sdt && creds.password) {
+                            // 1. Check in 'nguoidung' table
                             const allUsers = await DVQTKrud.listTable('nguoidung', { limit: 1000 }).catch(() => []);
                             const found = allUsers.find(u => String(u.sodienthoai) === String(creds.sdt) && String(u.matkhau) === String(creds.password));
-                            if(found) session = found;
+                            if (found) {
+                                session = found;
+                            } else {
+                                // 2. Check in 'admin' table (if sdt is actually an email or matches email field)
+                                const allAdmins = await DVQTKrud.listTable('admin', { limit: 100 }).catch(() => []);
+                                const foundAdmin = allAdmins.find(a => String(a.email) === String(creds.sdt) && String(a.matkhau) === String(creds.password));
+                                if (foundAdmin) {
+                                    session = { ...foundAdmin, role: 'admin', is_global_admin: true };
+                                    // Set cookies for persistence similar to admin login
+                                    document.cookie = `admin_e=${encodeURIComponent(foundAdmin.email)}; path=/; max-age=86400`;
+                                    document.cookie = `admin_p=${encodeURIComponent(foundAdmin.matkhau)}; path=/; max-age=86400`;
+                                }
+                            }
                         }
                     }
+
+                    // --- ADMIN ACCESS CHECK (From admin table/cookies) ---
+                    let isAdminSession = false;
+                    const getCookie = (name) => {
+                        const cookies = document.cookie.split(';');
+                        const cookie = cookies.find(c => c.trim().startsWith(name + '='));
+                        return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+                    };
+                    const adminE = getCookie('admin_e');
+                    const adminP = getCookie('admin_p');
+                    if (adminE && adminP) {
+                        try {
+                            const adminListData = await DVQTKrud.listTable('admin', { limit: 100 });
+                            const validAdmin = adminListData.find(x => x.email === adminE && x.matkhau === adminP);
+                            if (validAdmin) {
+                                isAdminSession = true;
+                                if (!session) session = { ...validAdmin, role: 'admin', is_global_admin: true };
+                            }
+                        } catch (err) { console.warn('Admin check failed:', err); }
+                    }
+                    // ---------------------------------------------------
 
                     const all = await DVQTKrud.listTable(TABLE_ORDERS, { limit: 1000 });
                     currentOrder = all.find(o => String(o.id) === String(id));
-                    if(!currentOrder) { Swal.fire('Không tìm thấy', 'Đơn hàng #'+id+' không tồn tại.', 'error'); return; }
+                    if (!currentOrder) { Swal.fire('Không tìm thấy', 'Đơn hàng #' + id + ' không tồn tại.', 'error'); return; }
 
+                    // --- START ACCESS DETERMINATION ---
                     let hasAccess = false;
-                    if(session && session.id) {
-                        const role = String(session.trangthai || session.role || '').toLowerCase();
+
+                    // 1. Check Global Admin (from cookies/admin table)
+                    if (isAdminSession) {
+                        hasAccess = true;
+                    }
+                    // 2. Check User Session (Customer or Provider)
+                    else if (session && session.id) {
                         const sid = Number(session.id);
                         const kid = Number(currentOrder.id_nguoidung);
+                        const role = String(session.trangthai || session.role || '').toLowerCase();
                         const srvStr = String(session.id_dichvu || '');
                         const isCarProvider = srvStr.split(',').includes('10');
 
-                        if(role === 'admin' || role === 'quantrivien') hasAccess = true;
-                        else if(sid === kid) hasAccess = true;
-                        else if(role === 'provider' || role === 'active' || isCarProvider) {
-                            if(currentOrder.id_xe) {
+                        if (role === 'admin' || role === 'quantrivien') {
+                            hasAccess = true;
+                        } else if (sid === kid) {
+                            hasAccess = true;
+                        } else if (role === 'provider' || role === 'active' || isCarProvider) {
+                            if (currentOrder.id_xe) {
                                 const cars = await DVQTKrud.listTable('xethue', { limit: 1000 }).catch(() => []);
                                 const v = cars.find(c => String(c.id) === String(currentOrder.id_xe));
-                                if(v && Number(v.provider_id) === sid) hasAccess = true;
+                                if (v && Number(v.provider_id) === sid) hasAccess = true;
                             }
-                        }
-
-                        // Load vehicle info for everyone who has access
-                        if(hasAccess && currentOrder.id_xe) {
-                            const cars = await DVQTKrud.listTable('xethue', { limit: 1000 }).catch(() => []);
-                            vehicleInfo = cars.find(c => String(c.id) === String(currentOrder.id_xe));
                         }
                     }
 
-                    if(!hasAccess) {
-                        document.querySelector('main').innerHTML = `<div class="p-5 text-center"><i class="fas fa-lock fa-3x mb-3 text-muted"></i><h4>Từ chối truy cập</h4></div>`;
+                    // Load vehicle info for everyone who has access
+                    if (hasAccess && currentOrder.id_xe) {
+                        const cars = await DVQTKrud.listTable('xethue', { limit: 1000 }).catch(() => []);
+                        vehicleInfo = cars.find(c => String(c.id) === String(currentOrder.id_xe));
+                    }
+
+                    if (!hasAccess) {
+                        document.querySelector('main').innerHTML = `<div class="p-5 text-center"><i class="fas fa-lock fa-3x mb-3 text-muted"></i><h4>Từ chối truy cập</h4><p class="text-muted small">Cần đăng nhập tài khoản sở hữu đơn hàng hoặc Admin hệ thống.</p></div>`;
                         return;
                     }
 
-                    const roleStr = String(session.trangthai || session.role || '').toLowerCase();
-                    const isAdmin = roleStr === 'admin' || roleStr === 'quantrivien';
-                    window._currentSessionRole = isAdmin ? 'admin' : (Number(session.id) === Number(currentOrder.id_nguoidung) ? 'customer' : 'provider');
-                    
+                    const roleStr = session ? String(session.trangthai || session.role || '').toLowerCase() : '';
+                    const isAdmin = isAdminSession || roleStr === 'admin' || roleStr === 'quantrivien';
+                    window._currentSessionRole = isAdmin ? 'admin' : (session && Number(session.id) === Number(currentOrder.id_nguoidung) ? 'customer' : 'provider');
+
                     renderData();
                     renderActions(session);
-                    
+
                     document.getElementById('accessInfo').textContent = `Quyền: ${window._currentSessionRole.toUpperCase()} | Đang xem đơn #${id}`;
 
                 } catch (e) { console.error(e); }
@@ -728,7 +1118,7 @@
                 document.getElementById('fullOrderId').textContent = '#' + pid;
                 document.getElementById('carSummary').textContent = o.ten_xe || (v ? v.tenxe : '---');
                 document.getElementById('carNameFull').textContent = (o.ten_xe || (v ? v.tenxe : '---')) + (v ? ` (${v.bien_so || v.bienso || '---'})` : '');
-                
+
                 if (v) {
                     document.getElementById('carColor').textContent = v.mausac || v.mau_sac || '---';
                     document.getElementById('carPlate').textContent = v.bienso || v.bien_so || '---';
@@ -744,7 +1134,7 @@
                 `;
                 document.getElementById('pickupAddr').textContent = o.diachikhachhang || o.dia_chi || 'Tận nơi';
                 document.getElementById('orderNote').textContent = o.ghi_chu || 'Không có ghi chú.';
-                
+
                 // Hiển thị hình ảnh đính kèm (nếu có)
                 const mediaSection = document.getElementById('orderMediaSection');
                 const mediaContainer = document.getElementById('orderMediaContainer');
@@ -786,16 +1176,16 @@
                     }
                 }
 
-                let pct = 0; let stL = 'MỚI'; let stB = '#3b82f6'; let stH = 'Đang xử lý';
-                if(o.ngayhuy) { pct = 0; stL = 'ĐÃ HỦY'; stB = '#ef4444'; stH = 'Đơn đã hủy'; }
-                else if(o.ngayhoanthanhthucte) { pct = 100; stL = 'XONG'; stB = '#10b981'; stH = 'Đã hoàn thành'; }
-                else if(o.ngaybatdauthucte) { pct = 66; stL = 'ĐANG THUÊ'; stB = '#f59e0b'; stH = 'Đang giao nhận'; }
-                else if(o.ngaynhan) { pct = 33; stL = 'ĐÃ NHẬN'; stB = '#8b5cf6'; stH = 'Đã tiếp nhận'; }
+                let pct = 0; let stL = 'Đang xác nhận'; let stB = '#ffc107'; let stH = 'Đang xác nhận';
+                if (o.ngayhuy) { pct = 0; stL = 'Đã hủy'; stB = '#dc3545'; stH = 'Đã hủy'; }
+                else if (o.ngayhoanthanhthucte) { pct = 100; stL = 'Hoàn thành'; stB = '#198754'; stH = 'Hoàn thành'; }
+                else if (o.ngaybatdauthucte) { pct = 66; stL = 'Đang thực hiện'; stB = '#3b82f6'; stH = 'Đang thực hiện'; }
+                else if (o.ngaynhan) { pct = 33; stL = 'Đã xác nhận'; stB = '#0dcaf0'; stH = 'Đã xác nhận'; }
 
                 document.getElementById('orderStatusBadge').textContent = stL;
                 document.getElementById('orderStatusBadge').style.color = stB;
                 document.getElementById('progressPctText').textContent = pct + '%';
-                
+
                 const angle = (360 * pct) / 100;
                 document.getElementById('heroProgressRing').style.background = `conic-gradient(${stB} ${angle}deg, rgba(255,255,255,0.2) 0deg)`;
 
@@ -812,7 +1202,7 @@
                 document.getElementById('custAddr').textContent = o.diachikhachhang || o.dia_chi || '---';
                 document.getElementById('custAvatar').textContent = (o.tenkhachhang || 'KH').substring(0, 2).toUpperCase();
 
-                if(o.ngaynhan || o.tenncc) {
+                if (o.ngaynhan || o.tenncc) {
                     document.getElementById('nccName').textContent = o.tenncc || 'Đối tác DVQT';
                     document.getElementById('nccPhone').textContent = o.sdtncc || '---';
                     document.getElementById('nccAddr').textContent = o.diachincc || '---';
@@ -823,8 +1213,8 @@
                     const badge = document.getElementById(badgeId);
                     const msg = document.getElementById(msgId);
                     const mediaBox = document.getElementById(mediaId);
-                    if(!raw || (typeof raw === 'string' && !raw.trim())) {
-                        if(o.ngayhoanthanhthucte && window._currentSessionRole === role) {
+                    if (!raw || (typeof raw === 'string' && !raw.trim())) {
+                        if (o.ngayhoanthanhthucte && window._currentSessionRole === role) {
                             msg.innerHTML = `<button class="btn btn-sm btn-outline-primary mt-2" onclick="OrderDetailComponent.openReviewModal('${role}')" style="border-radius:0.5rem;"><i class="fas fa-edit me-1"></i> Viết đánh giá</button>`;
                         }
                         return;
@@ -837,10 +1227,10 @@
                     const colKey = role === 'customer' ? 'kh' : 'ncc';
                     const mediaRaw = o['hinh_anh_danhgia_' + colKey] || o['hinhanh_danhgia_' + colKey] || '';
                     const mediaIds = mediaRaw.split(',').filter(Boolean);
-                    
+
                     console.log(`[Review] Found ${mediaIds.length} images for ${role}`);
-                    
-                    if(mediaBox) {
+
+                    if (mediaBox) {
                         mediaBox.innerHTML = mediaIds.map(id => {
                             const url = DVQTApp.getDriveUrl(id);
                             return `<a href="${url}" target="_blank" class="review-media-thumb">
@@ -870,11 +1260,11 @@
                 Array.from(input.files).forEach(file => {
                     const id = Date.now() + Math.random();
                     _reviewMediaStore.push({ id, file });
-                    
+
                     const wrap = document.createElement('div');
                     wrap.className = 'review-media-wrap';
                     wrap.dataset.id = id;
-                    
+
                     const remove = document.createElement('div');
                     remove.className = 'review-media-remove';
                     remove.innerHTML = '<i class="fas fa-times"></i>';
@@ -883,7 +1273,7 @@
                         wrap.remove();
                     };
 
-                    if(file.type.startsWith('image/')) {
+                    if (file.type.startsWith('image/')) {
                         const img = document.createElement('img');
                         img.src = URL.createObjectURL(file);
                         wrap.appendChild(img);
@@ -904,7 +1294,7 @@
                 const text = document.getElementById('reviewText').value.trim();
                 const btn = document.getElementById('btnSubmitReview');
 
-                if(!text) {
+                if (!text) {
                     Swal.fire('Thiếu thông tin', 'Vui lòng nhập nội dung đánh giá', 'warning');
                     return;
                 }
@@ -914,17 +1304,17 @@
 
                 try {
                     let driveIds = [];
-                    if(_reviewMediaStore.length > 0) {
-                        for(const m of _reviewMediaStore) {
+                    if (_reviewMediaStore.length > 0) {
+                        for (const m of _reviewMediaStore) {
                             try {
                                 const up = await DVQTApp.uploadFile(m.file, { folderKey: 30 });
-                                if(up && up.success) driveIds.push(up.fileId);
-                            } catch(err) { console.error('Upload media review failed:', err); }
+                                if (up && up.success) driveIds.push(up.fileId);
+                            } catch (err) { console.error('Upload media review failed:', err); }
                         }
                     }
 
                     const payload = {};
-                    if(role === 'customer') {
+                    if (role === 'customer') {
                         payload.danhgia_kh = text;
                         payload.hinh_anh_danhgia_kh = driveIds.join(',');
                     } else {
@@ -933,12 +1323,12 @@
                     }
 
                     const res = await DVQTKrud.updateRow(TABLE_ORDERS, currentOrder.id, payload);
-                    if(res) {
+                    if (res) {
                         Swal.fire('Thành công', 'Đánh giá của bạn đã được ghi nhận', 'success').then(() => {
                             location.reload();
                         });
                     }
-                } catch(err) {
+                } catch (err) {
                     console.error('Submit review error:', err);
                     Swal.fire('Lỗi', 'Không thể gửi đánh giá lúc này', 'error');
                 } finally {
@@ -951,27 +1341,27 @@
                 const btn = document.getElementById('btnMainAction');
                 const btnCancel = document.getElementById('btnCancelOrder');
                 const o = currentOrder;
-                
+
                 btn.style.display = 'none';
                 btnCancel.style.display = 'none';
 
-                if(window._currentSessionRole === 'customer') {
-                    if(!o.ngaynhan && !o.ngayhuy) {
+                if (window._currentSessionRole === 'customer') {
+                    if (!o.ngaynhan && !o.ngayhuy) {
                         btnCancel.style.display = 'block';
                         btnCancel.onclick = () => updateStatus(o.id, 'cancel', session);
                     }
                 }
 
-                if(window._currentSessionRole === 'provider') {
-                    if(!o.ngaynhan && !o.ngayhuy) {
+                if (window._currentSessionRole === 'provider') {
+                    if (!o.ngaynhan && !o.ngayhuy) {
                         btn.style.display = 'block'; btn.textContent = 'NHẬN ĐƠN';
                         btn.onclick = () => updateStatus(o.id, 'accept', session);
                         btnCancel.style.display = 'block';
                         btnCancel.onclick = () => updateStatus(o.id, 'cancel', session);
-                    } else if(!o.ngaybatdauthucte && !o.ngayhuy) {
+                    } else if (!o.ngaybatdauthucte && !o.ngayhuy) {
                         btn.style.display = 'block'; btn.textContent = 'GIAO XE';
                         btn.onclick = () => updateStatus(o.id, 'start', session);
-                    } else if(!o.ngayhoanthanhthucte && !o.ngayhuy) {
+                    } else if (!o.ngayhoanthanhthucte && !o.ngayhuy) {
                         btn.style.display = 'block'; btn.textContent = 'LẤY XE & KẾT THÚC';
                         btn.onclick = () => updateStatus(o.id, 'complete', session);
                     }
@@ -981,15 +1371,15 @@
             async function updateStatus(id, action, session) {
                 let field = ''; let msg = '';
                 const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
-                if(action==='accept') { field='ngaynhan'; msg='Nhận đơn thuê xe này?'; }
-                if(action==='start') { field='ngaybatdauthucte'; msg='Bàn giao xe cho khách?'; }
-                if(action==='complete') { field='ngayhoanthanhthucte'; msg='Kết thúc hợp đồng thuê xe?'; }
-                if(action==='cancel') { field='ngayhuy'; msg='Xác nhận hủy đơn?'; }
+                if (action === 'accept') { field = 'ngaynhan'; msg = 'Nhận đơn thuê xe này?'; }
+                if (action === 'start') { field = 'ngaybatdauthucte'; msg = 'Bàn giao xe cho khách?'; }
+                if (action === 'complete') { field = 'ngayhoanthanhthucte'; msg = 'Kết thúc hợp đồng thuê xe?'; }
+                if (action === 'cancel') { field = 'ngayhuy'; msg = 'Xác nhận hủy đơn?'; }
 
                 const r = await Swal.fire({ title: 'Xác nhận', text: msg, showCancelButton: true });
-                if(r.isConfirmed) {
+                if (r.isConfirmed) {
                     const payload = {}; payload[field] = now;
-                    if(action === 'accept' && session) {
+                    if (action === 'accept' && session) {
                         payload.id_ncc = session.id;
                         payload.tenncc = session.hovaten || session.name || '';
                         payload.sdtncc = session.sodienthoai || session.phone || '';
@@ -1012,13 +1402,14 @@
             return { run, openReviewModal, handleMediaChange, submitReview, goBackToDashboard };
         })();
 
-        (function() {
+        (function () {
             const p = new URLSearchParams(window.location.search);
             const id = p.get('id');
             const sdt = p.get('sdt');
             const pwd = p.get('password');
-            if(id) OrderDetailComponent.run(id, { sdt, password: pwd });
+            if (id) OrderDetailComponent.run(id, { sdt, password: pwd });
         })();
     </script>
 </body>
+
 </html>
