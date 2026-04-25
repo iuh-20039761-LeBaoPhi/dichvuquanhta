@@ -10,17 +10,17 @@
    ================================================================ */
 const SERVICE_AESTHETICS = {
     '1':  { icon: 'fas fa-baby',          color: '#ec4899' }, // Chăm sóc mẹ và bé
-    '2':  { icon: 'fas fa-hospital-user', color: '#ef4444' }, // Chăm sóc người bệnh
+    '2':  { icon: 'fas fa-user-nurse',    color: '#ef4444' }, // Chăm sóc người bệnh
     '3':  { icon: 'fas fa-person-cane',   color: '#f97316' }, // Chăm sóc người già
-    '4':  { icon: 'fas fa-leaf',          color: '#22c55e' }, // Chăm sóc vườn nhà
-    '5':  { icon: 'fas fa-broom',         color: '#14b8a6' }, // Dọn vệ sinh
-    '6':  { icon: 'fas fa-car',           color: '#3b82f6' }, // Lái xe hộ
+    '4':  { icon: 'fas fa-seedling',      color: '#22c55e' }, // Chăm sóc vườn nhà
+    '5':  { icon: 'fas fa-broom',         color: '#06b6d4' }, // Dọn vệ sinh
+    '6':  { icon: 'fas fa-id-card',       color: '#3b82f6' }, // Lái xe hộ
     '7':  { icon: 'fas fa-truck-fast',    color: '#6366f1' }, // Giao hàng nhanh
     '8':  { icon: 'fas fa-motorcycle',    color: '#8b5cf6' }, // Sửa xe
-    '9':  { icon: 'fas fa-tools',         color: '#11998e' }, // Thợ nhà
-    '10': { icon: 'fas fa-key',           color: '#0ea5e9' }, // Thuê xe
-    '11': { icon: 'fas fa-tshirt',        color: '#f43f5e' }, // Giặt ủi nhanh
-    '12': { icon: 'fas fa-truck-loading', color: '#1b4332' }, // Chuyển dọn
+    '9':  { icon: 'fas fa-hammer',        color: '#0d9488' }, // Thợ nhà
+    '10': { icon: 'fas fa-car-side',      color: '#0ea5e9' }, // Thuê xe
+    '11': { icon: 'fas fa-shirt',         color: '#f43f5e' }, // Giặt ủi nhanh
+    '12': { icon: 'fas fa-box-open',      color: '#14532d' }, // Chuyển dọn
 };
 const DEFAULT_AESTHETIC = { icon: 'fas fa-box', color: '#6366f1' };
 

@@ -1307,3 +1307,88 @@ header.sticky-top {
         text-align: left;
     }
 }
+
+/* ============================================
+   BOOKING COLLAPSIBLE SECTION
+   ============================================ */
+.bk-tx-collapsible-section {
+    border: 1.5px solid rgba(14, 165, 233, 0.18);
+    border-radius: 14px;
+    background: #fff;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.bk-tx-collapsible-header {
+    padding: 14px 16px;
+    background: rgba(14, 165, 233, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+
+.bk-tx-collapsible-header:hover {
+    background: rgba(14, 165, 233, 0.08);
+}
+
+.bk-tx-collapsible-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--color-primary);
+}
+
+.bk-tx-collapsible-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bk-tx-collapsible-badge {
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    border-radius: 50px;
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 600;
+    display: none;
+}
+
+.bk-tx-collapsible-badge.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.bk-tx-collapsible-section.collapsed .bk-tx-collapsible-badge {
+    display: inline-block;
+}
+
+.bk-tx-collapsible-icon {
+    font-size: 0.8rem;
+    color: #64748b;
+    transition: transform 0.3s ease;
+}
+
+.bk-tx-collapsible-section.collapsed .bk-tx-collapsible-icon {
+    transform: rotate(-180deg);
+}
+
+.bk-tx-collapsible-body {
+    padding: 16px 14px 12px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.bk-tx-collapsible-section.collapsed .bk-tx-collapsible-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+}

@@ -377,18 +377,48 @@
         const form = document.getElementById('bookingFormFull');
         if (!form) return;
 
-        // A. Autofill & State — Tự động điền nếu đã đăng nhập (KHÔNG BẮT BUỘC)
+        // Helper cập nhật badge
+        const txUpdatePersonalInfoBadge = (section) => {
+            if (!section) return;
+            const badge = section.querySelector('.bk-tx-collapsible-badge');
+            if (!badge) return;
+            const name = document.querySelector('[name="customer_name"]')?.value?.trim();
+            const phone = document.querySelector('[name="customer_phone"]')?.value?.trim();
+            if (name && phone) {
+                badge.textContent = (s && s.logged_in) ? 'Đã tự điền' : 'Đã điền';
+                badge.classList.remove('warning');
+            } else {
+                badge.textContent = 'Chưa điền';
+                badge.classList.add('warning');
+            }
+        };
+
+        // A. Autofill & State
         let s = null;
         try {
             s = (window.DVQTApp && window.DVQTApp.checkSession) ? await window.DVQTApp.checkSession() : null;
+            const section = document.getElementById('txSectionPersonalInfo');
             if (s && s.logged_in) {
                 const f = n => form.querySelector(`[name="${n}"]`);
                 if (f('customer_name')) f('customer_name').value = s.hovaten || s.name || '';
                 if (f('customer_phone')) f('customer_phone').value = s.sodienthoai || s.phone || '';
                 if (f('customer_email')) f('customer_email').value = s.email || '';
                 if (f('customer_address')) f('customer_address').value = s.diachi || s.address || '';
+                if (section) section.classList.add('collapsed');
+            } else {
+                if (section) section.classList.remove('collapsed');
             }
+            if (section) txUpdatePersonalInfoBadge(section);
         } catch(_e) { console.warn('Session check skipped:', _e); }
+
+        // Định nghĩa hàm toggle cho modal
+        window.txToggleCollapsible = function(header) {
+            const section = header.closest('.bk-tx-collapsible-section');
+            if (section) {
+                section.classList.toggle('collapsed');
+                if (section.id === 'txSectionPersonalInfo') txUpdatePersonalInfoBadge(section);
+            }
+        };
 
         // B. Render Addon Services
         const STATIC = await STATIC_DATA_PROMISE;

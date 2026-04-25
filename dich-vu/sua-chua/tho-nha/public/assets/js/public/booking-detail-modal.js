@@ -173,11 +173,17 @@ async function _bdLoadModal() {
             const container = document.getElementById('booking-modal-container');
             if (container) container.innerHTML = await res.text();
             else document.body.insertAdjacentHTML('beforeend', await res.text());
+
             const publicBase = _BD_BASE.endsWith('/') ? _BD_BASE + 'public/' : (_BD_BASE ? _BD_BASE + '/public/' : 'public/');
             const modalLogoThoNha = document.getElementById('modalLogoThoNha');
             if (modalLogoThoNha) modalLogoThoNha.src = publicBase + 'assets/images/tho-nha-logo-thuong-hieu-cropped.jpg';
             const modalLogoDVQT = document.getElementById('modalLogoDVQT');
-            if (modalLogoDVQT) modalLogoDVQT.src = publicBase + 'assets/images/logo-dich-vu-quanh-ta.jpg';
+            if (modalLogoDVQT) {
+                // Nếu _BD_BASE trống nghĩa là đang ở thư mục tho-nha, cần nhảy lên 3 cấp để về root
+                const dvqtPath = (_BD_BASE === '' || _BD_BASE === './') ? '../../../public/asset/image/logo-dich-vu-quanh-ta.png' : 'public/asset/image/logo-dich-vu-quanh-ta.png';
+                modalLogoDVQT.src = dvqtPath;
+            }
+
         } catch (err) {
             console.error('[booking-detail] Không thể tải modal đặt lịch:', err);
             return;

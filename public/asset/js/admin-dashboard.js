@@ -187,18 +187,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     // VD: link: '../cham-soc-me-be/pages/admin/index.html'
     // =========================================================================
     const ecoConfig = {
-        '1': { icon: 'fa-baby', color: '#db2777', bg: '#fdf2f8', link: '../dich-vu/cham-soc/me-va-be/admin_mevabe/index.php', desc: 'Quản lý dịch vụ hỗ trợ phụ sản và trẻ sơ sinh' },
-        '2': { icon: 'fa-hospital-user', color: '#0d9488', bg: '#f0fdfa', link: '../dich-vu/cham-soc/nguoi-benh/admin_nguoibenh/index.php', desc: 'Dịch vụ hỗ trợ y tế, chăm sóc tại nhà viện' },
-        '3': { icon: 'fa-wheelchair', color: '#ea580c', bg: '#fff7ed', link: '../dich-vu/cham-soc/nguoi-gia/admin_nguoigia/index.php', desc: 'Cung cấp chuyên viên chăm lo người cao tuổi' },
-        '4': { icon: 'fa-leaf', color: '#65a30d', bg: '#f7fee7', link: '../dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/admin/index.php', desc: 'Cắt cỏ, dọn dẹp và chăm sóc cây cảnh' },
-        '5': { icon: 'fa-broom', color: '#0284c7', bg: '#e0f2fe', link: '../dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/admin_donvesinh/index.php', desc: 'Giúp việc nhà và vệ sinh công nghiệp' },
-        '6': { icon: 'fa-id-card', color: '#4b5563', bg: '#f3f4f6', link: '../dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/admin/index.php', desc: 'Dịch vụ tìm tài xế lái xe an toàn' },
-        '7': { icon: 'fa-motorcycle', color: '#ca8a04', bg: '#fefce8', link: '../dich-vu/van-tai-logistics/giao-hang-nhanh/admin-giaohang/index.php', desc: 'Dịch vụ gọi shipper nhận và chuyển đồ hỏa tốc' },
-        '8': { icon: 'fa-wrench', color: '#dc2626', bg: '#fef2f2', link: '../dich-vu/sua-chua/sua-xe-luu-dong/admin/index.html', desc: 'Cứu hộ, vá săm lốp và sửa xe tận nơi' },
-        '9': { icon: 'fa-tools', color: '#10b981', bg: '#ecfdf5', link: '../dich-vu/sua-chua/tho-nha/admin_thonha/quan-tri.html', desc: 'Dịch vụ gọi thợ sửa chữa, bảo trì tại gia' },
-        '10': { icon: 'fa-car-side', color: '#3b82f6', bg: '#eff6ff', link: '../dich-vu/van-tai-logistics/thue-xe/admin/quan-tri.html', desc: 'Hệ thống cho thuê xe du lịch, tự lái' },
-        '11': { icon: 'fa-tshirt', color: '#4f46e5', bg: '#e0e7ff', link: '../dich-vu/giat-ui/giat-ui-nhanh/admin/index.html', desc: 'Đội ngũ đến nhận giặt sấy đồ cấp tốc tận nhà' },
-        '12': { icon: 'fa-truck-loading', color: '#1b4332', bg: '#f0fdf4', link: '../dich-vu/van-tai-logistics/dich-vu-chuyen-don/admin-chuyendon/index.php', desc: 'Dịch vụ chuyển dọn nhà và văn phòng trọn gói' }
+        '1': { icon: 'fa-baby', color: '#ec4899', link: '../dich-vu/cham-soc/me-va-be/admin_mevabe/index.php', desc: 'Quản lý dịch vụ hỗ trợ phụ sản và trẻ sơ sinh' },
+        '2': { icon: 'fa-user-nurse', color: '#ef4444', link: '../dich-vu/cham-soc/nguoi-benh/admin_nguoibenh/index.php', desc: 'Dịch vụ hỗ trợ y tế, chăm sóc tại nhà viện' },
+        '3': { icon: 'fa-person-cane', color: '#f97316', link: '../dich-vu/cham-soc/nguoi-gia/admin_nguoigia/index.php', desc: 'Cung cấp chuyên viên chăm lo người cao tuổi' },
+        '4': { icon: 'fa-seedling', color: '#22c55e', link: '../dich-vu/san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/admin/index.php', desc: 'Cắt cỏ, dọn dẹp và chăm sóc cây cảnh' },
+        '5': { icon: 'fa-broom', color: '#06b6d4', link: '../dich-vu/ve-sinh/tap-vu-lau-don-ve-sinh/admin_donvesinh/index.php', desc: 'Giúp việc nhà và vệ sinh công nghiệp' },
+        '6': { icon: 'fa-id-card', color: '#3b82f6', link: '../dich-vu/van-tai-logistics/dich-vu-lai-xe-ho/admin/index.php', desc: 'Dịch vụ tìm tài xế lái xe an toàn' },
+        '7': { icon: 'fa-truck-fast', color: '#6366f1', link: '../dich-vu/van-tai-logistics/giao-hang-nhanh/admin-giaohang/index.php', desc: 'Dịch vụ gọi shipper nhận và chuyển đồ hỏa tốc' },
+        '8': { icon: 'fa-motorcycle', color: '#8b5cf6', link: '../dich-vu/sua-chua/sua-xe-luu-dong/admin/index.html', desc: 'Cứu hộ, vá săm lốp và sửa xe tận nơi' },
+        '9': { icon: 'fa-hammer', color: '#0d9488', link: '../dich-vu/sua-chua/tho-nha/admin_thonha/quan-tri.html', desc: 'Dịch vụ gọi thợ sửa chữa, bảo trì tại gia' },
+        '10': { icon: 'fa-car-side', color: '#0ea5e9', link: '../dich-vu/van-tai-logistics/thue-xe/admin/quan-tri.html', desc: 'Hệ thống cho thuê xe du lịch, tự lái' },
+        '11': { icon: 'fa-shirt', color: '#f43f5e', link: '../dich-vu/giat-ui/giat-ui-nhanh/admin/index.html', desc: 'Đội ngũ đến nhận giặt sấy đồ cấp tốc tận nhà' },
+        '12': { icon: 'fa-box-open', color: '#14532d', link: '../dich-vu/van-tai-logistics/dich-vu-chuyen-don/admin-chuyendon/index.php', desc: 'Dịch vụ chuyển dọn nhà và văn phòng trọn gói' }
     };
     const defaultConfig = { icon: 'fa-box', color: '#6366f1', bg: '#e0e7ff', link: '#', desc: 'Phân hệ dịch vụ mở rộng mới' };
 
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const conf = ecoConfig[item.id] || defaultConfig;
                     return `
                         <a href="${conf.link}" class="app-card" ${conf.link === '#' ? 'onclick="alert(\'Chưa có đường link đến trang admin dịch vụ con vào admin-dashboard.js để thêm!\'); return false;"' : ''}>
-                            <div class="app-card-icon" style="background-color: ${conf.bg}; color: ${conf.color};">
+                            <div class="app-card-icon" style="background-color: ${conf.color}; color: #fff;">
                                 <i class="fas ${conf.icon}"></i>
                             </div>
                             <div class="app-card-info">

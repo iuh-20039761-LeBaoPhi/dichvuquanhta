@@ -359,29 +359,40 @@ document.addEventListener('DOMContentLoaded', loadHeader);
             <div id="bookingAuthBanner" class="mb-3"></div>
             <form id="bookingFormFull" class="booking-form">
 
-              <!-- SECTION 1: Thông tin cá nhân -->
-              <div class="bk-tx-section">
-                <div class="bk-tx-section-title"><i class="fas fa-user"></i> Thông tin cá nhân</div>
-                <div class="row g-3">
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Họ và tên *</label>
-                    <input type="text" class="form-control" name="customer_name" required>
+              <!-- SECTION 1: Thông tin cá nhân (Collapsible) -->
+              <div class="bk-tx-collapsible-section bk-tx-section-personal" id="txSectionPersonalInfo">
+                <div class="bk-tx-collapsible-header" onclick="txToggleCollapsible(this)">
+                  <div class="bk-tx-collapsible-title">
+                    <i class="fas fa-user"></i> Thông tin cá nhân
                   </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Số điện thoại *</label>
-                    <input type="tel" class="form-control" name="customer_phone" required
-                           pattern="^0[3-9][0-9]{8}$"
-                           title="Số điện thoại VN hợp lệ gồm 10 chữ số">
-                    <div class="invalid-feedback">Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 03x / 05x / 07x / 08x / 09x</div>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" name="customer_email">
-                    <div class="invalid-feedback">Email không hợp lệ</div>
+                  <div class="bk-tx-collapsible-meta">
+                    <span class="bk-tx-collapsible-badge">Đã tự điền</span>
+                    <i class="fas fa-chevron-down bk-tx-collapsible-icon"></i>
                   </div>
                 </div>
-                <input type="hidden" name="id_number" value="">
+                <div class="bk-tx-collapsible-body">
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">Họ và tên *</label>
+                      <input type="text" class="form-control" name="customer_name" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">Số điện thoại *</label>
+                      <input type="tel" class="form-control" name="customer_phone" required
+                             pattern="^0[3-9][0-9]{8}$"
+                             title="Số điện thoại VN hợp lệ gồm 10 chữ số">
+                      <div class="invalid-feedback">Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 03x / 05x / 07x / 08x / 09x</div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">Email</label>
+                      <input type="email" class="form-control" name="customer_email">
+                      <div class="invalid-feedback">Email không hợp lệ</div>
+                    </div>
+                  </div>
+                  <input type="hidden" name="id_number" value="">
+                </div>
               </div>
+
 
               <!-- SECTION 2: Thời gian thuê xe -->
               <div class="bk-tx-section">
@@ -729,11 +740,24 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                     if (data.address && f('customer_address')) f('customer_address').value = data.address;
                 }
                 banner.innerHTML = `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;"><span style="font-size:0.83rem;color:#1e40af;"><i class="fas fa-user-check me-2"></i>Đã nhận diện: <strong>${data.name || ''}</strong></span><button type="button" onclick="standaloneAutoFillClick()" style="background:linear-gradient(135deg,#3B82F6,#1E40AF);color:white;border:none;padding:5px 14px;border-radius:50px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;"><i class="fas fa-magic me-1"></i>Tự điền lại</button></div>`;
+                
+                // Tự động thu gọn phần thông tin cá nhân khi đã đăng nhập
+                const section = document.getElementById('txSectionPersonalInfo');
+                if (section) section.classList.add('collapsed');
             } else {
                 banner.innerHTML = '';
+                // Mở ra nếu chưa đăng nhập
+                const section = document.getElementById('txSectionPersonalInfo');
+                if (section) section.classList.remove('collapsed');
             }
         } catch (e) {
             console.warn('[Standalone] Autofill error:', e);
+        } finally {
+            // Cập nhật nhãn trạng thái ban đầu
+            const section = document.getElementById('txSectionPersonalInfo');
+            if (section && typeof txUpdatePersonalInfoBadge === 'function') {
+                txUpdatePersonalInfoBadge(section);
+            }
         }
     }
     window.standaloneAutoFillClick = function () {
@@ -1484,6 +1508,42 @@ document.addEventListener('DOMContentLoaded', loadHeader);
             confirmBtn.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
         });
     });
+
+    /**
+     * Cập nhật nhãn trạng thái cho phần thông tin cá nhân (Thuê Xe)
+     */
+    function txUpdatePersonalInfoBadge(section) {
+        if (!section) return;
+        const badge = section.querySelector('.bk-tx-collapsible-badge');
+        if (!badge) return;
+
+        const name = document.querySelector('[name="customer_name"]')?.value?.trim();
+        const phone = document.querySelector('[name="customer_phone"]')?.value?.trim();
+
+        if (name && phone) {
+            if (badge.textContent !== 'Đã tự điền') {
+                badge.textContent = 'Đã điền';
+            }
+            badge.classList.remove('warning');
+        } else {
+            badge.textContent = 'Chưa điền';
+            badge.classList.add('warning');
+        }
+    }
+
+    // ===== Collapsible logic =====
+    window.txToggleCollapsible = function(header) {
+        const section = header.closest('.bk-tx-collapsible-section');
+        if (section) {
+            section.classList.toggle('collapsed');
+            if (section.id === 'txSectionPersonalInfo') {
+                txUpdatePersonalInfoBadge(section);
+            }
+        }
+    };
+    
+    // Xuất ra global cho phần khởi tạo gọi tới
+    window.txUpdatePersonalInfoBadge = txUpdatePersonalInfoBadge;
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

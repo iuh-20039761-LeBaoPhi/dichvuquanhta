@@ -267,7 +267,72 @@ async function _bdPrepareBookingAuthState() {
 
     await _bdRenderAuthBanner();
     await _bdPrefillCustomerProfileToForm();
+    await _bdInitPersonalInfoCollapsible();
 }
+
+/**
+ * Khởi tạo trạng thái thu gọn/mở rộng của phần thông tin cá nhân.
+ * - Nếu đã đăng nhập: Tự động điền + Thu gọn.
+ * - Nếu chưa đăng nhập: Mở rộng để nhập.
+ */
+async function _bdInitPersonalInfoCollapsible() {
+    const section = document.querySelector('.bk-section-personal');
+    if (!section) return;
+
+    try {
+        const session = await DVQTApp.checkSession();
+        if (session && session.logged_in) {
+            // Đã đăng nhập: Thu gọn lại cho gọn
+            section.classList.add('collapsed');
+        } else {
+            // Chưa đăng nhập: Mở ra để người dùng nhập
+            section.classList.remove('collapsed');
+        }
+    } catch (e) {}
+    
+    // Cập nhật nhãn trạng thái ban đầu
+    _bdUpdatePersonalInfoBadge(section);
+}
+
+/**
+ * Cập nhật nhãn trạng thái (badge) cho phần thông tin cá nhân
+ */
+function _bdUpdatePersonalInfoBadge(section) {
+    if (!section) return;
+    const badge = section.querySelector('.bk-collapsible-badge');
+    if (!badge) return;
+
+    const nameInput = document.getElementById('hoten') || document.querySelector('[name="customer_name"]');
+    const phoneInput = document.getElementById('sodienthoai') || document.querySelector('[name="customer_phone"]');
+    const name = nameInput?.value?.trim();
+    const phone = phoneInput?.value?.trim();
+
+    if (name && phone) {
+        // Ưu tiên giữ chữ 'Đã tự điền' nếu là session tự động nạp
+        if (badge.textContent !== 'Đã tự điền') {
+            badge.textContent = 'Đã điền';
+        }
+        badge.classList.remove('warning');
+    } else {
+        badge.textContent = 'Chưa điền';
+        badge.classList.add('warning');
+    }
+}
+
+/**
+ * Toggle đóng/mở khối collapsible
+ */
+function _bdToggleCollapsible(header) {
+    const section = header.closest('.bk-collapsible-section');
+    if (section) {
+        section.classList.toggle('collapsed');
+        if (section.classList.contains('bk-section-personal')) {
+            _bdUpdatePersonalInfoBadge(section);
+        }
+    }
+}
+
+window._bdToggleCollapsible = _bdToggleCollapsible;
 
 async function _bdRequireCustomerLogin(isSilent = false) {
     // Không còn bất kỳ hạn chế nào về vai trò khi đặt lịch.

@@ -2687,3 +2687,104 @@ body {
         font-size: 0.75rem;
     }
 }
+
+/* ============================================
+   BOOKING COLLAPSIBLE SECTION
+   ============================================ */
+.bk-collapsible-section {
+    border: 1px solid rgba(17, 153, 142, 0.12);
+    border-radius: var(--radius-md);
+    background: #fff;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.bk-collapsible-header {
+    padding: 14px 20px;
+    background: rgba(17, 153, 142, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+
+.bk-collapsible-header:hover {
+    background: rgba(17, 153, 142, 0.06);
+}
+
+.bk-collapsible-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bk-collapsible-title i {
+    font-size: 1.1rem;
+}
+
+.bk-collapsible-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bk-collapsible-badge {
+    font-size: 0.72rem;
+    padding: 3px 12px;
+    border-radius: 50px;
+    background: var(--gradient);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(17,153,142,0.2);
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.bk-collapsible-badge.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 2px 8px rgba(245,158,11,0.25);
+}
+
+.bk-collapsible-section.collapsed .bk-collapsible-badge {
+    display: inline-block;
+}
+
+.bk-collapsible-icon {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bk-collapsible-section.collapsed .bk-collapsible-icon {
+    transform: rotate(-180deg);
+}
+
+.bk-collapsible-body {
+    padding: 20px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.bk-collapsible-section.collapsed .bk-collapsible-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

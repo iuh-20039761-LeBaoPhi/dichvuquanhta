@@ -66,11 +66,15 @@
         style.textContent = CSS;
         document.head.appendChild(style);
 
-        var base = window.BD_BASE || '../../';
-        // Đảm bảo publicBase luôn trỏ tới thư mục public/
+
+        var base = window.BD_BASE || './';
+        // Đảm bảo publicBase luôn trỏ tới thư mục public/ của Thợ Nhà
         var publicBase = base.endsWith('/') ? base + 'public/' : (base ? base + '/public/' : 'public/');
-        var logoL = publicBase + 'assets/images/logo-dich-vu-quanh-ta.jpg';
+        
+        // Logo DVQT (Lấy từ root nếu có thể, hoặc dùng bản copy trong dự án)
+        var logoL = (base === './' || base === '') ? '../../../public/asset/image/logo-dich-vu-quanh-ta.png' : publicBase + 'assets/images/logo-dich-vu-quanh-ta.jpg';
         var logoR = publicBase + 'assets/images/tho-nha-logo-thuong-hieu-cropped.jpg';
+
 
         var wrapper = document.createElement('div');
         wrapper.innerHTML = [

@@ -7,8 +7,9 @@
                 <!-- Spacer trái = cân bằng với nút X bên phải -->
                 <div class="bk-header-spacer"></div>
                 <!-- Center: Logo DVQT + Tiêu đề + Logo Thợ Nhà -->
+
                 <div class="bk-header-center">
-                    <img id="modalLogoDVQT" src="public/assets/images/logo-dich-vu-quanh-ta.jpg"
+                    <img id="modalLogoDVQT" src="../../../public/asset/image/logo-dich-vu-quanh-ta.png"
                          alt="Dịch Vụ Quanh Ta" class="bk-header-logo">
                     <h5 class="modal-title fw-bold mb-0">
                         <i class="fas fa-calendar-check me-1" style="color:var(--primary);"></i>
@@ -17,6 +18,7 @@
                     <img id="modalLogoThoNha" src="public/assets/images/tho-nha-logo-thuong-hieu-cropped.jpg"
                          alt="Thợ Nhà" class="bk-header-logo">
                 </div>
+
                 <!-- Phải: nút đóng -->
                 <button type="button" class="btn-close bk-header-close" data-bs-dismiss="modal"></button>
             </div>
@@ -26,20 +28,32 @@
 
                 <form id="bookingForm">
 
-                    <!-- SECTION 1: Thông tin cá nhân -->
-                    <div class="bk-section">
-                        <div class="bk-section-title"><i class="fas fa-user"></i> Thông tin cá nhân</div>
-                        <div class="row g-3">
-                            <div class="col-12 col-sm-6">
-                                <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="hoten" required>
+
+                    <!-- SECTION 1: Thông tin cá nhân (Collapsible) -->
+                    <div class="bk-collapsible-section bk-section-personal" id="sectionPersonalInfo">
+                        <div class="bk-collapsible-header" onclick="_bdToggleCollapsible(this)">
+                            <div class="bk-collapsible-title">
+                                <i class="fas fa-user"></i> Thông tin cá nhân
                             </div>
-                            <div class="col-12 col-sm-6">
-                                <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control" id="sodienthoai" required>
+                            <div class="bk-collapsible-meta">
+                                <span class="bk-collapsible-badge">Đã tự điền</span>
+                                <i class="fas fa-chevron-down bk-collapsible-icon"></i>
+                            </div>
+                        </div>
+                        <div class="bk-collapsible-body">
+                            <div class="row g-3">
+                                <div class="col-12 col-sm-6">
+                                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="hoten" required>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" id="sodienthoai" required>
+                                </div>
                             </div>
                         </div>
                     </div>
+
 
                     <!-- SECTION 2: Dịch vụ -->
                     <div class="bk-section">

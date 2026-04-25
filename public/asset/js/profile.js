@@ -13,17 +13,17 @@
     function getSvcMeta(name) {
         const n = name.toLowerCase();
         if (n.includes('mẹ') || n.includes('bé')) return { icon: 'baby', color: '#ec4899' };
-        if (n.includes('bệnh')) return { icon: 'hospital-user', color: '#ef4444' };
+        if (n.includes('bệnh')) return { icon: 'user-nurse', color: '#ef4444' };
         if (n.includes('già')) return { icon: 'person-cane', color: '#f97316' };
-        if (n.includes('vườn')) return { icon: 'leaf', color: '#22c55e' };
-        if (n.includes('chuyển dọn')) return { icon: 'truck-loading', color: '#1b4332' }; 
-        if (n.includes('vệ sinh') || n.includes('dọn')) return { icon: 'broom', color: '#14b8a6' };
-        if (n.includes('lái xe')) return { icon: 'car', color: '#3b82f6' };
+        if (n.includes('vườn')) return { icon: 'seedling', color: '#22c55e' };
+        if (n.includes('chuyển dọn')) return { icon: 'box-open', color: '#14532d' }; 
+        if (n.includes('vệ sinh') || n.includes('dọn')) return { icon: 'broom', color: '#06b6d4' };
+        if (n.includes('lái xe')) return { icon: 'id-card', color: '#3b82f6' };
         if (n.includes('giao hàng')) return { icon: 'truck-fast', color: '#6366f1' };
         if (n.includes('sửa xe')) return { icon: 'motorcycle', color: '#8b5cf6' };
-        if (n.includes('thợ')) return { icon: 'tools', color: '#11998e' };
-        if (n.includes('thuê xe')) return { icon: 'key', color: '#0ea5e9' };
-        if (n.includes('giặt')) return { icon: 'tshirt', color: '#f43f5e' };
+        if (n.includes('thợ')) return { icon: 'hammer', color: '#0d9488' };
+        if (n.includes('thuê xe')) return { icon: 'car-side', color: '#0ea5e9' };
+        if (n.includes('giặt')) return { icon: 'shirt', color: '#f43f5e' };
         return { icon: 'concierge-bell', color: '#6b7280' };
     }
 
@@ -52,8 +52,8 @@
                 if (n.includes('mẹ') || n.includes('bé')) return 1;
                 if (n.includes('già')) return 2;
                 if (n.includes('bệnh')) return 3;
-                if (n.includes('vệ sinh') || n.includes('dọn')) return 4;
-                if (n.includes('vườn')) return 5;
+                if (n.includes('vườn')) return 4;
+                if (n.includes('vệ sinh') && !n.includes('chuyển')) return 5;
                 if (n.includes('giặt')) return 6;
                 if (n.includes('giao hàng')) return 7;
                 if (n.includes('chuyển dọn')) return 8;
@@ -61,6 +61,7 @@
                 if (n.includes('lái xe')) return 10;
                 if (n.includes('sửa xe')) return 11;
                 if (n.includes('thợ')) return 12;
+                if (n.includes('dọn') && !n.includes('chuyển')) return 5; // Fallback for Ve sinh
                 return 99; // Default for others
             };
 
@@ -298,7 +299,9 @@
             return `
                 <div class="service-item ${isSelected ? 'selected' : ''}" data-id="${svc.id}" onclick="toggleService(this)">
                     <div class="check"><i class="fas fa-check-circle"></i></div>
-                    <div class="icon"><i class="fas fa-${svc.icon}"></i></div>
+                    <div class="icon" style="background-color: ${svc.color};">
+                        <i class="fas fa-${svc.icon}"></i>
+                    </div>
                     <div class="fw-bold">${svc.name}</div>
                     <div class="small text-muted">${isSelected ? 'Đang phục vụ' : 'Chưa nhận'}</div>
                 </div>`;
