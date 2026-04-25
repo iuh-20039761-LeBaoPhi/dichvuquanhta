@@ -1288,6 +1288,23 @@
         function formatMoney(val) {
           return Math.round(val).toLocaleString('vi-VN') + ' đ';
         }
+        // [Thêm mới] Tự động điền thông tin khách hàng từ session nếu đã đăng nhập
+        async function autoFillCustomerInfo() {
+          try {
+            const response = await fetch('session_user.php?action=current', { credentials: 'same-origin' });
+            const data = await response.json();
+            if (data.success && data.user) {
+              const user = data.user;
+              if (user.hovaten) $('#hoten').val(user.hovaten);
+              if (user.sodienthoai) $('#sodienthoai').val(user.sodienthoai);
+              if (user.email) $('#customerEmail').val(user.email);
+              if (user.diachi) $('#diachi').val(user.diachi);
+            }
+          } catch (error) {
+            console.log('Chưa đăng nhập hoặc lỗi session');
+          }
+        }
+        autoFillCustomerInfo();
         // Trên mobile: mở select theo dạng inline (size > 1) để tránh dropdown nổi đè.
         function isSmallMobileViewport() {
           return window.matchMedia('(max-width: 575.98px)').matches;
