@@ -193,6 +193,27 @@
                                                 </div>
                                             </div>
 
+                                            <!-- SECTION 3: Địa chỉ -->
+                                            <div class="bk-section">
+                                                <div class="bk-section-title"><i class="fas fa-map-marker-alt"></i> Địa chỉ</div>
+                                                <label for="diachi" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                                                <textarea class="form-control" id="diachi" rows="2" required></textarea>
+                                                <div class="bk-map-btns mt-2">
+                                                    <button type="button" class="btn-map" id="btnbando" onclick="mapPicker.toggle()">
+                                                        <i class="fas fa-map-marker-alt"></i> Chọn trên bản đồ
+                                                    </button>
+                                                    <button type="button" class="btn-gps" onclick="mapPicker.gps()">
+                                                        <i class="fas fa-location-arrow"></i> Vị trí hiện tại
+                                                    </button>
+                                                </div>
+                                                <div id="mapPickerBox" style="display:none; margin-top:10px;">
+                                                    <div id="mapPickerEl"></div>
+                                                    <p class="text-muted small mt-1 mb-0">
+                                                        <i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền
+                                                    </p>
+                                                </div>
+                                            </div><!-- /bk-section địa chỉ -->
+
 
                                             <!-- SECTION 2: Dịch vụ -->
                                             <div class="bk-section">
@@ -282,27 +303,6 @@
                                                     <textarea class="form-control" id="ghichu" rows="2" placeholder="Mô tả thêm về vấn đề cần sửa chữa..."></textarea>
                                                 </div>
                                             </div><!-- /bk-section dịch vụ -->
-
-                                            <!-- SECTION 3: Địa chỉ -->
-                                            <div class="bk-section">
-                                                <div class="bk-section-title"><i class="fas fa-map-marker-alt"></i> Địa chỉ</div>
-                                                <label for="diachi" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                                                <textarea class="form-control" id="diachi" rows="2" required></textarea>
-                                                <div class="bk-map-btns mt-2">
-                                                    <button type="button" class="btn-map" id="btnbando" onclick="mapPicker.toggle()">
-                                                        <i class="fas fa-map-marker-alt"></i> Chọn trên bản đồ
-                                                    </button>
-                                                    <button type="button" class="btn-gps" onclick="mapPicker.gps()">
-                                                        <i class="fas fa-location-arrow"></i> Vị trí hiện tại
-                                                    </button>
-                                                </div>
-                                                <div id="mapPickerBox" style="display:none; margin-top:10px;">
-                                                    <div id="mapPickerEl"></div>
-                                                    <p class="text-muted small mt-1 mb-0">
-                                                        <i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền
-                                                    </p>
-                                                </div>
-                                            </div><!-- /bk-section địa chỉ -->
 
                                             <!-- SECTION 4: Đính kèm -->
                                             <div class="bk-section">

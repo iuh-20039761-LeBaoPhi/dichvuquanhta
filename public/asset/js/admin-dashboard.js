@@ -409,7 +409,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Tải danh sách dịch vụ để map tên và fill filter
             const services = await DVQTKrud.listTable('dichvucungcap', { limit: 100 });
             servicesMap = {};
-            filterSvc.innerHTML = '<option value="">Tất cả dịch vụ</option><option value="0">Khách hàng (Không DV)</option>';
+            filterSvc.innerHTML = '<option value="">Tất cả dịch vụ</option><option value="0">Không nhận dịch vụ nào</option>';
             services.forEach(s => {
                 servicesMap[s.id] = s.dichvu;
                 const opt = document.createElement('option');
@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         <div class="small text-muted font-monospace">${u.sodienthoai || '---'}</div>
                     </td>
                     <td>
-                        <div class="small fw-600 mb-1">${isNCC ? 'Nhà cung cấp' : 'Khách hàng'}</div>
+                        ${isNCC ? '' : '<div class="small fw-600 mb-1">Không nhận dịch vụ nào</div>'}
                         <div class="d-flex flex-wrap" style="max-width:200px;">${svcNames}</div>
                     </td>
                     <td>
@@ -680,7 +680,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             <div class="col-12">
                                 <label class="small text-muted text-uppercase fw-bold">Dịch vụ cung cấp</label>
                                 <div class="py-1">
-                                    ${svcIds.map(id => `<span class="badge bg-light text-primary border border-primary-subtle me-1">${servicesMap[id] || id}</span>`).join('') || '<span class="text-muted small italic">Tài khoản khách hàng</span>'}
+                                    ${svcIds.map(id => `<span class="badge bg-light text-primary border border-primary-subtle me-1">${servicesMap[id] || id}</span>`).join('') || '<span class="text-muted small italic">Không nhận dịch vụ nào</span>'}
                                 </div>
                             </div>
                         </div>

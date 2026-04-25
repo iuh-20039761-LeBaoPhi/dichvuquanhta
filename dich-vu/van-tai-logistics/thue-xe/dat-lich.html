@@ -393,6 +393,25 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                 </div>
               </div>
 
+              <!-- SECTION 3: Địa chỉ -->
+              <div class="bk-tx-section">
+                <div class="bk-tx-section-title"><i class="fas fa-map-marker-alt"></i> Địa chỉ</div>
+                <label class="form-label">Địa chỉ *</label>
+                <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required></textarea>
+                <div class="mt-2 booking-map-actions">
+                  <button type="button" class="btn-map-picker booking-touch-btn" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
+                    <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                  </button>
+                  <button type="button" class="btn-map-picker btn-map-gps booking-touch-btn" onclick="CarMapPicker.gps('addr')">
+                    <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
+                  </button>
+                </div>
+                <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
+                  <div id="mapElAddr" class="map-el"></div>
+                  <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
+                </div>
+              </div>
+
 
               <!-- SECTION 2: Thời gian thuê xe -->
               <div class="bk-tx-section">
@@ -428,25 +447,6 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                   <div class="d-flex justify-content-between">
                     <span>Tiền thuê xe:</span><strong class="text-primary" id="standaloneTotalPrice">0đ</strong>
                   </div>
-                </div>
-              </div>
-
-              <!-- SECTION 3: Địa chỉ -->
-              <div class="bk-tx-section">
-                <div class="bk-tx-section-title"><i class="fas fa-map-marker-alt"></i> Địa chỉ</div>
-                <label class="form-label">Địa chỉ *</label>
-                <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required></textarea>
-                <div class="mt-2 booking-map-actions">
-                  <button type="button" class="btn-map-picker booking-touch-btn" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
-                    <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
-                  </button>
-                  <button type="button" class="btn-map-picker btn-map-gps booking-touch-btn" onclick="CarMapPicker.gps('addr')">
-                    <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
-                  </button>
-                </div>
-                <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
-                  <div id="mapElAddr" class="map-el"></div>
-                  <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
                 </div>
               </div>
 
