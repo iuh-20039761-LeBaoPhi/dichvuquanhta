@@ -2029,6 +2029,24 @@
       return;
     }
 
+    // Xác định lại vai trò thực tế dựa trên dữ liệu đơn hàng
+    var currentRole = role;
+    if (role !== "admin") {
+      var orderPhone = normalizePhone(order.raw && order.raw.sodienthoai);
+      var userPhone = normalizePhone(
+        currentUser && (currentUser.sodienthoai || currentUser.user_tel),
+      );
+      if (orderPhone && userPhone && orderPhone === userPhone) {
+        currentRole = "customer";
+      } else {
+        var idDichvu = String(currentUser && currentUser.id_dichvu || "").trim();
+        var serviceIds = idDichvu.split(",").map(function (s) {
+          return s.trim();
+        });
+        currentRole = serviceIds.indexOf("8") !== -1 ? "provider" : "customer";
+      }
+    }
+
     // Làm giàu dữ liệu từ DB nếu có thể
     loadRelatedRecords(order.raw || order).then(function (related) {
       var enrichedRaw = mergeOrderWithRelated(order.raw || order, related);
@@ -2067,7 +2085,7 @@
       order.raw = {};
     }
 
-    if (role === "customer" && !(order.customer && order.customer.avatar)) {
+    if (currentRole === "customer" && !(order.customer && order.customer.avatar)) {
       order.customer.avatar = pickFirstValue([
         currentUser && currentUser.avatar,
         currentUser && currentUser.user_avatar,
@@ -2090,7 +2108,7 @@
       );
 
     if (
-      role === "provider" &&
+      currentRole === "provider" &&
       hasProviderIdentityInOrder &&
       !(order.provider && order.provider.avatar)
     ) {
@@ -2480,7 +2498,7 @@
         if (!editor) return;
 
         var info = resolveReview(actor);
-        var canEdit = canSend && role === actor && !hasReviewData(info);
+        var canEdit = canSend && currentRole === actor && !hasReviewData(info);
         editor.classList.toggle("d-none", !canEdit);
         if (!canEdit) return;
 
@@ -2529,7 +2547,7 @@
     }
 
     function submitReview(actor) {
-      if (role !== actor) return;
+      if (currentRole !== actor) return;
       if (statusLower !== "completed") {
         showError("Chỉ gửi đánh giá sau khi hóa đơn đã hoàn thành.");
         return;
@@ -2693,7 +2711,7 @@
               "mb-2 border rounded overflow-hidden shadow-sm bg-light";
             wrapper.innerHTML =
               '<div class="ratio ratio-16x9">' +
-              '<img src="https://lh3.googleusercontent.com/d/' + id + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />' +
+              '<iframe src="https://drive.google.com/file/d/' + id + '/preview" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>' +
               "</div>";
             videoMount.appendChild(wrapper);
           });
@@ -2708,7 +2726,7 @@
       var currentStatus = String(order.status || "").toLowerCase();
       var configs = [];
 
-      if (role === "customer") {
+      if (currentRole === "customer") {
         var canCancel =
           !hasDateValue(order.receivedAt) &&
           currentStatus !== "completed" &&
@@ -2735,8 +2753,15 @@
             },
           });
         }
-      } else if (role === "provider") {
-        if (currentStatus === "pending") {
+      } else if (currentRole === "provider") {
+        var orderPhone = normalizePhone(order.raw && order.raw.sodienthoai);
+        var userPhone = normalizePhone(
+          currentUser && (currentUser.sodienthoai || currentUser.user_tel),
+        );
+        var providerIsCustomer =
+          orderPhone && userPhone && orderPhone === userPhone;
+
+        if (currentStatus === "pending" && !providerIsCustomer) {
           configs.push({
             text: "Nhận đơn",
             loadingText: "Đang xử lý...",
@@ -2852,7 +2877,7 @@
     if (paymentPanel) {
       var isCompleted = statusLower === "completed";
       var isUnpaid = String(order.paymentStatus || "").toLowerCase() !== "paid";
-      var isCustomer = role === "customer";
+      var isCustomer = currentRole === "customer";
       
       paymentPanel.classList.toggle("d-none", !(isCompleted && isUnpaid && isCustomer));
       if (isCompleted && isUnpaid && isCustomer) {

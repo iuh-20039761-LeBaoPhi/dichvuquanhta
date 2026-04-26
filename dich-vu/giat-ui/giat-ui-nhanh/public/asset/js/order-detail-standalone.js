@@ -3,7 +3,6 @@
 
   var ORDER_TABLE = "datlich_giatuinhanh";
   var USER_TABLE = "nguoidung";
-  var REVIEW_UPLOAD_ENDPOINT = "../../../public/upload_to_drive.php";
   var REVIEW_FIELD_MAP = {
     customer: {
       text: ["danhgia_khachhang"],
@@ -1167,6 +1166,10 @@
       );
 
       var phoneMatched = customerPhones.indexOf(loginPhone) !== -1;
+      
+      // Nếu khớp số điện thoại thì cho phép truy cập luôn theo yêu cầu mới
+      if (phoneMatched) return true;
+
       var nameMatched =
         Boolean(orderCustomerName) &&
         Boolean(loginCustomerName) &&
@@ -1726,30 +1729,25 @@
     var list = Array.isArray(files) ? files : [];
     if (!list.length) return [];
 
-    const uploadSingle = async (file) => {
-      const formData = new FormData();
+    var uploadPromises = list.map(async function (file) {
+      var formData = new FormData();
       formData.append("upload", "1");
       formData.append("file", file);
       formData.append("folderKey", "31");
-      formData.append("name", `REVIEW_${Date.now()}_${file.name}`);
+      formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
 
-      const res = await fetch(REVIEW_UPLOAD_ENDPOINT, {
+      var res = await fetch("../../../public/upload_to_drive.php", {
         method: "POST",
         body: formData,
       });
-      const result = await res.json().catch(() => null);
-      if (result && result.fileId) {
-        return result.fileId;
-      }
-      throw new Error(`Upload ${file.name} thất bại.`);
-    };
+      var data = await res.json().catch(function () {
+        return null;
+      });
+      return (data && data.fileId) || null;
+    });
 
-    const results = [];
-    for (const file of list) {
-      const fid = await uploadSingle(file);
-      results.push(fid);
-    }
-    return results;
+    var results = await Promise.all(uploadPromises);
+    return results.filter(Boolean);
   }
 
   /**
@@ -1973,12 +1971,19 @@
       var hasCompletedDate = hasDateValue(order && order.completedAt);
       var isCanceled = hasDateValue(order && order.raw && order.raw.ngayhuy);
 
+      var orderPhone = normalizePhone(
+        (order && order.raw && order.raw.sodienthoai) || "",
+      );
+      var loginPhone = normalizePhone(auth.phone);
+      var providerIsCustomer = orderPhone === loginPhone;
+
       var canReceive =
         !hasAssignedProvider &&
         !hasReceivedDate &&
         !hasStartedDate &&
         !hasCompletedDate &&
-        !isCanceled;
+        !isCanceled &&
+        !providerIsCustomer;
       var canStart =
         hasAssignedProvider &&
         providerOwnsOrder &&
@@ -2209,6 +2214,23 @@
     var related = await loadRelatedRecords(raw);
     var merged = mergeOrderWithRelated(raw, related);
     var mapped = mapOrderView(merged);
+
+    // Xác định lại vai trò dựa trên dữ liệu đơn hàng
+    var orderPhone = normalizePhone(raw.sodienthoai);
+    var loginPhone = normalizePhone(auth.phone);
+
+    if (orderPhone === loginPhone) {
+      auth.role = "customer";
+    } else {
+      var idDichvu = String(auth.user.id_dichvu || "").trim();
+      var serviceIds = idDichvu.split(",").map(function (s) {
+        return s.trim();
+      });
+      auth.role = serviceIds.indexOf("11") !== -1 ? "provider" : "customer";
+    }
+
+    // Cập nhật lại giao diện hiển thị quyền truy cập
+    setIdentityChip(auth);
 
     if (!canAccessOrder(auth, mapped)) {
       showError(
