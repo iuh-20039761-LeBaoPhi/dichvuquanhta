@@ -5,33 +5,125 @@
 </script>
 <!-- Admin Car Management Partial -->
 <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; overflow: hidden;">
-    <div class="card-header bg-white py-4 border-0">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="card-header bg-white py-3 border-0">
+        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-3">
             <div>
-                <h5 class="fw-800 mb-0">Hệ thống Duyệt xe</h5>
-                <p class="text-muted small mb-0">Quản lý danh mục phương tiện toàn diện của hệ thống</p>
+                <h6 class="fw-800 mb-0">Hệ thống duyệt xe</h6>
+                <p class="text-muted small mb-0" style="font-size: 0.75rem;">Quản lý danh mục phương tiện toàn diện</p>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-light rounded-pill px-3 fw-600" onclick="loadAllCars()"><i class="fas fa-sync-alt me-2"></i>Làm mới</button>
+            <div class="d-flex flex-wrap align-items-center gap-2 w-100">
+                <!-- Row 1: Date Filters -->
+                <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+                    <div class="input-group input-group-sm"
+                        style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 140px;">
+                        <span class="input-group-text bg-light border-0 small fw-600 text-muted"
+                            style="font-size: 0.7rem;">Từ</span>
+                        <input type="date" class="form-control bg-light border-0 small" id="carFromDate"
+                            onchange="filterCars()" style="font-size: 0.75rem;">
+                    </div>
+                    <div class="input-group input-group-sm"
+                        style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 140px;">
+                        <span class="input-group-text bg-light border-0 small fw-600 text-muted"
+                            style="font-size: 0.7rem;">Đến</span>
+                        <input type="date" class="form-control bg-light border-0 small" id="carToDate"
+                            onchange="filterCars()" style="font-size: 0.75rem;">
+                    </div>
+                </div>
+                <!-- Row 2: Type & Seats Dropdown -->
+                <div class="dropdown flex-grow-1 flex-md-grow-0">
+                    <button class="btn btn-sm btn-light border-0 fw-600 px-3 d-flex align-items-center w-100"
+                        type="button" id="specFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="border-radius: 8px; height: 38px; background: #f8f9fa;">
+                        <i class="fas fa-sliders-h me-2 text-muted"></i>
+                        <span id="specFilterText">Loại xe / Số chỗ</span>
+                        <i class="fas fa-chevron-down ms-auto ms-md-2 small text-muted"></i>
+                    </button>
+                    <div class="dropdown-menu shadow-lg border-0 p-3 mt-2" aria-labelledby="specFilterDropdown"
+                        style="min-width: 280px; border-radius: 15px;">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted uppercase mb-1"
+                                style="font-size: 0.65rem;">Phân loại xe</label>
+                            <select class="form-select form-select-sm border-0 bg-light fw-600" id="carTypeFilter"
+                                onchange="filterCars()" style="border-radius: 8px; cursor: pointer;">
+                                <option value="">Tất cả loại xe</option>
+                            </select>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label small fw-bold text-muted uppercase mb-1"
+                                style="font-size: 0.65rem;">Số chỗ ngồi</label>
+                            <select class="form-select form-select-sm border-0 bg-light fw-600" id="carSeatsFilter"
+                                onchange="filterCars()" style="border-radius: 8px; cursor: pointer;">
+                                <option value="">Tất cả số chỗ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 2: Search & Refresh -->
+                <div class="d-flex gap-2 flex-grow-1">
+                    <div class="input-group search-box-wrap" style="flex: 1; min-width: 120px;">
+                        <span class="input-group-text bg-light border-0"><i
+                                class="fas fa-search text-muted small"></i></span>
+                        <input type="text" class="form-control bg-light border-0 small"
+                            placeholder="Mã xe / Tên xe / NCC..." id="carSearchInput" onkeyup="filterCars()"
+                            style="font-size: 0.85rem;">
+                    </div>
+                    <button
+                        class="btn btn-primary rounded-circle shadow-sm d-none d-md-flex align-items-center justify-content-center"
+                        onclick="loadAllCars()" style="width: 38px; height: 38px; flex-shrink: 0;"
+                        title="Tải lại dữ liệu">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
             </div>
         </div>
-        
+
         <!-- Tab Navigation - Responsive Layout -->
-        <div class="px-2">
-            <ul class="nav nav-pills nav-fill bg-light p-1 flex-column flex-md-row gap-1" style="border-radius: 12px; font-size: 0.82rem; overflow: hidden;">
+        <div class="status-tabs-wrapper px-2">
+            <!-- Mobile Dropdown -->
+            <div class="d-md-none mb-2">
+                <div class="dropdown w-100">
+                    <button class="btn btn-light w-100 d-flex justify-content-between align-items-center fw-bold"
+                        type="button" id="mobileCarStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="border-radius: 12px; font-size: 0.85rem; padding: 10px 15px; background: #f8f9fa; border: 1px solid #eee;">
+                        <span><i class="fas fa-filter text-muted me-2"></i>Trạng thái: <span id="currentCarStatusText"
+                                class="text-primary">Chờ duyệt</span></span>
+                        <i class="fas fa-chevron-down small text-muted"></i>
+                    </button>
+                    <ul class="dropdown-menu w-100 shadow-sm border-0 mt-1" aria-labelledby="mobileCarStatusDropdown"
+                        style="border-radius: 12px; padding: 8px;">
+                        <li><a class="dropdown-item rounded-3 py-2 active" href="javascript:void(0)" id="tabPendingMob"
+                                onclick="switchCarTab('pending')"><i class="fas fa-clock me-2"></i>Chờ duyệt <span
+                                    class="badge bg-warning text-dark ms-1 float-end" id="countPendingMob">0</span></a>
+                        </li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabApprovedMob"
+                                onclick="switchCarTab('approved')"><i class="fas fa-check-circle me-2"></i>Đã duyệt
+                                <span class="badge bg-success ms-1 float-end" id="countApprovedMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabRejectedMob"
+                                onclick="switchCarTab('rejected')"><i class="fas fa-ban me-2"></i>Bị từ chối <span
+                                    class="badge bg-danger ms-1 float-end" id="countRejectedMob">0</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Desktop Tabs -->
+            <ul class="nav nav-pills nav-fill bg-light p-1 d-none d-md-flex gap-1 w-100"
+                style="border-radius: 12px; font-size: 0.82rem; overflow: hidden;">
                 <li class="nav-item">
                     <a class="nav-link active fw-bold" href="#" id="tabPending" onclick="switchCarTab('pending')">
-                        <i class="fas fa-clock me-2"></i>Chờ duyệt <span class="badge bg-warning ms-1" id="countPending">0</span>
+                        <i class="fas fa-clock me-2"></i>Chờ duyệt <span class="badge bg-warning ms-1"
+                            id="countPending">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link fw-bold" href="#" id="tabApproved" onclick="switchCarTab('approved')">
-                        <i class="fas fa-check-circle me-2"></i>Đã duyệt <span class="badge bg-success ms-1" id="countApproved">0</span>
+                        <i class="fas fa-check-circle me-2"></i>Đã duyệt <span class="badge bg-success ms-1"
+                            id="countApproved">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link fw-bold" href="#" id="tabRejected" onclick="switchCarTab('rejected')">
-                        <i class="fas fa-ban me-2"></i>Bị từ chối <span class="badge bg-danger ms-1" id="countRejected">0</span>
+                        <i class="fas fa-ban me-2"></i>Bị từ chối <span class="badge bg-danger ms-1"
+                            id="countRejected">0</span>
                     </a>
                 </li>
             </ul>
@@ -40,7 +132,7 @@
 
     <div class="card-body p-0">
         <div class="table-container">
-            <div class="table-responsive">
+            <div class="table-responsive d-none d-lg-block">
                 <table class="table align-middle mb-0" id="adminCarTable">
                     <thead class="bg-light text-muted small uppercase">
                         <tr>
@@ -53,7 +145,11 @@
                         </tr>
                     </thead>
                     <tbody id="adminCarBody">
-                        <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="spinner-border text-primary"></div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -68,33 +164,75 @@
 <div class="modal fade" id="viewCarModalAdmin" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header border-0 bg-light p-4"  style="border-radius: 20px 20px 0 0;">
+            <div class="modal-header border-0 bg-light p-4" style="border-radius: 20px 20px 0 0;">
                 <h5 class="fw-bold mb-0" id="vTitle">Thông tin chi tiết xe</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <div class="row g-4">
                     <div class="col-md-5">
-                        <img id="vMainImg" src="" class="img-fluid rounded-4 shadow-sm w-100" style="height:220px; object-fit:cover;">
+                        <img id="vMainImg" src="" class="img-fluid rounded-4 shadow-sm w-100"
+                            style="height:220px; object-fit:cover;">
                         <div class="row g-2 mt-2" id="vGallery"></div>
                     </div>
                     <div class="col-md-7">
                         <div class="table-responsive">
                             <table class="table table-sm table-borderless align-middle mb-0">
                                 <tbody>
-                                    <tr><td class="text-muted py-1" style="width: 130px;">Tên xe:</td><td class="fw-bold py-1" id="vName"></td></tr>
-                                    <tr><td class="text-muted py-1">Hãng & Dòng:</td><td class="py-1"><span id="vBrand"></span> · <span id="vModel"></span></td></tr>
-                                    <tr><td class="text-muted py-1">Năm sản xuất:</td><td id="vYear"></td></tr>
-                                    <tr><td class="text-muted py-1">Biển số:</td><td class="fw-bold text-primary py-1" id="vPlate"></td></tr>
-                                    <tr><td class="text-muted py-1">Loại & Ghế:</td><td><span id="vType"></span> · <span id="vSeats"></span> chỗ</td></tr>
-                                    <tr><td class="text-muted py-1">Hộp số:</td><td id="vTrans"></td></tr>
-                                    <tr><td class="text-muted py-1">Nhiên liệu:</td><td id="vFuel"></td></tr>
-                                    <tr><td class="text-muted py-1">Số ODO:</td><td><span id="vOdo"></span> km</td></tr>
-                                    <tr><td class="text-muted py-1">Màu sắc:</td><td id="vColor"></td></tr>
-                                    <tr><td class="text-muted py-1">Số khung:</td><td class="small fw-bold" id="vFrame"></td></tr>
-                                    <tr><td class="text-muted py-1">Số máy:</td><td class="small fw-bold" id="vEngine"></td></tr>
-                                    <tr><td class="text-muted py-1">Giá thuê:</td><td class="fw-bold text-danger py-1"><span id="vPrice"></span> <small>đ/ngày</small></td></tr>
-                                    <tr><td class="text-muted py-1">Địa chỉ xe:</td><td class="small py-1 text-wrap" id="vAddr"></td></tr>
+                                    <tr>
+                                        <td class="text-muted py-1" style="width: 130px;">Tên xe:</td>
+                                        <td class="fw-bold py-1" id="vName"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Hãng & Dòng:</td>
+                                        <td class="py-1"><span id="vBrand"></span> · <span id="vModel"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Năm sản xuất:</td>
+                                        <td id="vYear"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Biển số:</td>
+                                        <td class="fw-bold text-primary py-1" id="vPlate"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Loại & Ghế:</td>
+                                        <td><span id="vType"></span> · <span id="vSeats"></span> chỗ</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Hộp số:</td>
+                                        <td id="vTrans"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Nhiên liệu:</td>
+                                        <td id="vFuel"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Số ODO:</td>
+                                        <td><span id="vOdo"></span> km</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Màu sắc:</td>
+                                        <td id="vColor"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Số khung:</td>
+                                        <td class="small fw-bold" id="vFrame"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Số máy:</td>
+                                        <td class="small fw-bold" id="vEngine"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Giá thuê:</td>
+                                        <td class="fw-bold text-danger py-1"><span id="vPrice"></span>
+                                            <small>đ/ngày</small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted py-1">Địa chỉ xe:</td>
+                                        <td class="small py-1 text-wrap" id="vAddr"></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -107,8 +245,10 @@
                 <!-- Khối mô tả rộng ở dưới -->
                 <div class="mt-4 p-3 bg-light rounded-3">
                     <h6 class="fw-bold small text-uppercase text-muted mb-2">Mô tả chi tiết:</h6>
-                    <div id="vDesc" class="small text-dark overflow-hidden" style="max-height: 100px; transition: 0.3s;"></div>
-                    <button class="btn btn-link btn-sm p-0 text-primary d-none" id="vDescBtn" onclick="toggleAdminText('vDesc')">Xem thêm</button>
+                    <div id="vDesc" class="small text-dark overflow-hidden"
+                        style="max-height: 100px; transition: 0.3s;"></div>
+                    <button class="btn btn-link btn-sm p-0 text-primary d-none" id="vDescBtn"
+                        onclick="toggleAdminText('vDesc')">Xem thêm</button>
                 </div>
             </div>
             <div class="modal-footer border-0 p-4 pt-0">
@@ -120,229 +260,373 @@
 </div>
 
 <script>
-(function() {
-    'use strict';
-    const TABLE = 'xethue';
-    let allCarsRaw = [];
-    let currentPage = 1;
-    let currentTab = 'pending';
-    const itemsPerPage = 8;
+    (function () {
+        'use strict';
+        const TABLE = 'xethue';
+        const PAGE_SIZE = 10;
+        let allCarsRaw = [];
+        let accountsMap = {}; // Thêm map để lưu tên NCC
+        let currentTab = 'pending';
+        let currentPage = 1;
 
-    window.switchCarTab = function(tab) {
-        currentTab = tab;
-        document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
-        const tabMap = { 'pending': 'tabPending', 'approved': 'tabApproved', 'rejected': 'tabRejected' };
-        if(tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
-        renderAdminPage(1);
-    };
+        window.switchCarTab = function (tab) {
+            currentTab = tab;
+            currentPage = 1; // Reset to page 1
 
-    window.loadAllCars = async function() {
-        const tbody = document.getElementById('adminCarBody');
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
-        
-        try {
-            const cars = await DVQTKrud.listTable(TABLE, { limit: 1000 });
-            allCarsRaw = (cars || []).reverse();
+            // 1. Update Desktop Tabs
+            document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
+            const tabMap = { 'pending': 'tabPending', 'approved': 'tabApproved', 'rejected': 'tabRejected' };
+            if (tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
 
-            // Cập nhật số lượng trên badge
-            document.getElementById('countPending').textContent = allCarsRaw.filter(c => String(c.trangthai || '').toLowerCase() === 'pending').length;
-            document.getElementById('countRejected').textContent = allCarsRaw.filter(c => String(c.trangthai || '').toLowerCase() === 'rejected').length;
-            document.getElementById('countApproved').textContent = allCarsRaw.filter(c => {
-                const s = String(c.trangthai || '').toLowerCase();
-                return s !== 'pending' && s !== 'rejected' && s !== '';
-            }).length;
+            // 2. Update Mobile Dropdown
+            document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
+            if (tabMap[tab]) {
+                const mobEl = document.getElementById(tabMap[tab] + 'Mob');
+                if (mobEl) mobEl.classList.add('active');
+            }
+            const statusTextMap = { 'pending': 'Chờ duyệt', 'approved': 'Đã duyệt', 'rejected': 'Bị từ chối' };
+            const statusTextEl = document.getElementById('currentCarStatusText');
+            if (statusTextEl) statusTextEl.textContent = statusTextMap[tab];
 
-            if(!allCarsRaw.length) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có xe nào.</td></tr>';
-                document.getElementById('adminCarPagination').innerHTML = '';
+            filterCars();
+        };
+
+        window.loadAllCars = async function () {
+            const tbody = document.getElementById('adminCarBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+
+            try {
+                // Tải song song danh sách xe và danh sách tài khoản
+                const [cars, users] = await Promise.all([
+                    DVQTKrud.listTable(TABLE, { limit: 1000 }),
+                    DVQTKrud.listTable('nguoidung', { limit: 5000 })
+                ]);
+
+                // Xây dựng map ID -> Tên
+                accountsMap = {};
+                if (users) {
+                    users.forEach(u => { accountsMap[u.id] = u.hovaten; });
+                }
+
+                allCarsRaw = (cars || []).sort((a, b) => b.id - a.id); // Sắp xếp mới nhất lên đầu
+
+                if (!allCarsRaw.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có xe nào.</td></tr>';
+                    document.getElementById('adminCarPagination').innerHTML = '';
+                    updateTabCounts();
+                    return;
+                }
+
+                populateSpecFilters();
+                filterCars();
+            } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
+        };
+
+        function populateSpecFilters() {
+            const typeEl = document.getElementById('carTypeFilter');
+            const seatsEl = document.getElementById('carSeatsFilter');
+            if (!typeEl || !seatsEl) return;
+
+            const types = [...new Set(allCarsRaw.map(c => c.loaixe).filter(v => !!v))].sort();
+            const seats = [...new Set(allCarsRaw.map(c => c.socho).filter(v => !!v))].sort((a, b) => a - b);
+
+            typeEl.innerHTML = '<option value="">Tất cả loại xe</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
+            seatsEl.innerHTML = '<option value="">Tất cả số chỗ</option>' + seats.map(s => `<option value="${s}">${s} chỗ</option>`).join('');
+        }
+
+        function updateTabCounts(list) {
+            const data = list || allCarsRaw;
+            const counts = {
+                'Pending': data.filter(c => String(c.trangthai || '').toLowerCase() === 'pending').length,
+                'Rejected': data.filter(c => String(c.trangthai || '').toLowerCase() === 'rejected').length,
+                'Approved': data.filter(c => {
+                    const s = String(c.trangthai || '').toLowerCase();
+                    return s !== 'pending' && s !== 'rejected' && s !== '';
+                }).length
+            };
+
+            for (const [key, val] of Object.entries(counts)) {
+                const el = document.getElementById('count' + key);
+                const elMob = document.getElementById('count' + key + 'Mob');
+                if (el) el.textContent = val;
+                if (elMob) elMob.textContent = val;
+            }
+        }
+
+        window.filterCars = function (page) {
+            if (page !== undefined) currentPage = page;
+            else currentPage = 1;
+
+            const q = document.getElementById('carSearchInput').value.toLowerCase().trim();
+            const fromDate = document.getElementById('carFromDate').value;
+            const toDate = document.getElementById('carToDate').value;
+            const typeF = document.getElementById('carTypeFilter').value;
+            const seatsF = document.getElementById('carSeatsFilter').value;
+
+            let filteredByDate = allCarsRaw;
+
+            // 1. Lọc theo ngày (created_date)
+            if (fromDate) {
+                filteredByDate = filteredByDate.filter(c => {
+                    if (!c.created_date) return false;
+                    const d = c.created_date.substring(0, 10);
+                    return d >= fromDate;
+                });
+            }
+            if (toDate) {
+                filteredByDate = filteredByDate.filter(c => {
+                    if (!c.created_date) return false;
+                    const d = c.created_date.substring(0, 10);
+                    return d <= toDate;
+                });
+            }
+
+            let filtered = filteredByDate;
+
+            // 2. Lọc theo Thông số (Loại xe & Số chỗ)
+            if (typeF) {
+                filtered = filtered.filter(c => c.loaixe === typeF);
+            }
+            if (seatsF) {
+                filtered = filtered.filter(c => String(c.socho) === String(seatsF));
+            }
+
+            // 3. Phân loại theo Tab
+            filtered = filtered.filter(c => {
+                const st = String(c.trangthai || '').toLowerCase();
+                if (currentTab === 'pending') return st === 'pending';
+                if (currentTab === 'rejected') return st === 'rejected';
+                return st !== 'pending' && st !== 'rejected';
+            });
+
+            // 4. Tìm kiếm từ khóa (Mã xe, Tên xe, NCC)
+            if (q) {
+                filtered = filtered.filter(c => {
+                    const paddedId = String(c.id).padStart(7, '0');
+                    const fullCode = 'tx' + paddedId;
+                    const nccName = accountsMap[c.provider_id] || c.tenncc || '';
+                    return paddedId.includes(q) ||
+                        fullCode.includes(q) ||
+                        String(c.id).includes(q) ||
+                        (c.tenxe && c.tenxe.toLowerCase().includes(q)) ||
+                        (nccName.toLowerCase().includes(q));
+                });
+            }
+
+            // Pagination Logic
+            const totalCars = filtered.length;
+            const totalPages = Math.ceil(totalCars / PAGE_SIZE);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const paginated = filtered.slice(start, start + PAGE_SIZE);
+
+            renderAdminPage(paginated);
+            renderAdminPagination(totalPages);
+            updateTabCounts(filteredByDate);
+
+            // Update Headers
+            const countEl = document.getElementById('showingCountHeader');
+            const countMobEl = document.getElementById('showingCountMobile');
+            if (countEl) countEl.textContent = totalCars;
+            if (countMobEl) countMobEl.textContent = totalCars;
+        }
+
+        function renderAdminPage(items) {
+            const tbody = document.getElementById('adminCarBody');
+            const mob = document.getElementById('adminCarMobileList');
+
+            if (!items.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Không có xe nào khớp.</td></tr>`;
+                if (mob) mob.innerHTML = '<div class="text-center text-muted p-4">Trống</div>';
                 return;
             }
 
-            renderAdminPage(1);
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
-    };
+            // 1. Render Table
+            tbody.innerHTML = items.map(c => {
+                const st = String(c.trangthai || '').toLowerCase();
+                let badge = '<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill">Chưa xác định</span>';
+                const isApproved = ['available', 'active', 'approved', 'hot_dong', '1', 'rented', 'maintenance', 'hidden'].includes(st);
 
-    function renderAdminPage(page) {
-        currentPage = page;
-        const tbody = document.getElementById('adminCarBody');
-        const mob = document.getElementById('adminCarMobileList');
-        
-        const filtered = allCarsRaw.filter(c => {
-            const st = String(c.trangthai || '').toLowerCase();
-            if(currentTab === 'pending') return st === 'pending';
-            if(currentTab === 'rejected') return st === 'rejected';
-            return st !== 'pending' && st !== 'rejected';
-        });
+                if (st === 'pending') badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
+                else if (isApproved && st !== 'maintenance' && st !== 'hidden' && st !== 'rented') badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Sẵn sàng (Hiện)</span>';
+                else if (st === 'maintenance' || st === 'hidden') badge = '<span class="badge bg-dark text-dark bg-opacity-10 px-2 py-1 rounded-pill">Tạm dừng</span>';
+                else if (st === 'rented') badge = '<span class="badge bg-info text-info bg-opacity-10 px-2 py-1 rounded-pill">Đang thuê</span>';
+                else if (st === 'rejected') badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Bị từ chối</span>';
 
-        if(!filtered.length) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Không có xe nào trong mục này.</td></tr>`;
-            if(mob) mob.innerHTML = '<div class="text-center text-muted p-4">Danh mục trống</div>';
-            document.getElementById('adminCarPagination').innerHTML = '';
-            return;
-        }
+                const approveBtn = !isApproved ?
+                    `<button class="btn btn-sm btn-light text-success" title="Duyệt xe" onclick="approveCarAdmin(${c.id})"><i class="fas fa-check"></i></button>` : '';
+                const rejectBtn = st !== 'rejected' ?
+                    `<button class="btn btn-sm btn-light text-danger" title="Từ chối" onclick="rejectCarAdmin(${c.id})"><i class="fas fa-ban"></i></button>` : '';
 
-        const items = filtered.slice((page-1)*itemsPerPage, page*itemsPerPage);
-
-        // 1. Render Table
-        tbody.innerHTML = items.map(c => {
-            const st = String(c.trangthai || '').toLowerCase();
-            let badge = '<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill">Chưa xác định</span>';
-            const isApproved = ['available', 'active', 'approved', 'hot_dong', '1', 'rented', 'maintenance', 'hidden'].includes(st);
-            
-            if(st === 'pending') badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
-            else if(isApproved && st !== 'maintenance' && st !== 'hidden' && st !== 'rented') badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Sẵn sàng (Hiện)</span>';
-            else if(st === 'maintenance' || st === 'hidden') badge = '<span class="badge bg-dark text-dark bg-opacity-10 px-2 py-1 rounded-pill">Tạm dừng</span>';
-            else if(st === 'rented') badge = '<span class="badge bg-info text-info bg-opacity-10 px-2 py-1 rounded-pill">Đang thuê</span>';
-            else if(st === 'rejected') badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Bị từ chối</span>';
-
-            const approveBtn = !isApproved ? 
-                `<button class="btn btn-sm btn-light text-success" title="Duyệt xe" onclick="approveCarAdmin(${c.id})"><i class="fas fa-check"></i></button>` : '';
-            const rejectBtn = st !== 'rejected' ? 
-                `<button class="btn btn-sm btn-light text-danger" title="Từ chối" onclick="rejectCarAdmin(${c.id})"><i class="fas fa-ban"></i></button>` : '';
-
-            return `<tr>
+                return `<tr>
                 <td class="ps-4">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="bg-light rounded overflow-hidden shadow-sm" style="width:50px; height:50px;">
+                        <div class="bg-light rounded overflow-hidden shadow-sm border" style="width:50px; height:50px;">
                             <img src="${resolveImg(c.anhngoaitruoc)}" onerror="this.src='../public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'" class="w-100 h-100 object-fit-cover">
                         </div>
-                        <div><div class="fw-bold text-dark">${c.tenxe}</div><div class="text-muted small">ID: ${c.id}</div></div>
+                        <div>
+                            <div class="fw-bold text-dark">${c.tenxe}</div>
+                            <div class="text-muted small" style="font-size: 11px;">#${String(c.id).padStart(7, '0')} · NCC: ${accountsMap[c.provider_id] || c.tenncc || 'Chưa rõ'}</div>
+                        </div>
                     </div>
                 </td>
                 <td><div class="small fw-600">${c.loaixe}</div><div class="text-muted small">${c.socho} chỗ</div></td>
-                <td><div class="small fw-bold">${c.bienso}</div></td>
+                <td><div class="small fw-bold">${c.bienso}</div><div class="text-muted small" style="font-size: 10px;">${c.created_date || '---'}</div></td>
                 <td><div class="fw-bold text-primary">${Number(c.giathue).toLocaleString()}đ</div></td>
                 <td>${badge}</td>
                 <td class="pe-4 text-end">
                     <div class="btn-group">${approveBtn}${rejectBtn}
-                        <button class="btn btn-sm btn-light text-primary" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-sm btn-light text-primary rounded-circle ms-1" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye"></i></button>
                     </div>
                 </td>
             </tr>`;
-        }).join('');
+            }).join('');
 
-        // 2. Render Mobile Cards
-        if(mob) {
-            mob.innerHTML = items.map(c => {
-                const st = String(c.trangthai || '').toLowerCase();
-                const isApproved = ['available', 'active', 'approved', 'hot_dong', '1', 'rented', 'maintenance', 'hidden'].includes(st);
-                let statusCls = 'bg-warning';
-                if(isApproved) statusCls = 'bg-success';
-                if(st === 'rejected') statusCls = 'bg-danger';
+            // 2. Render Mobile Cards
+            if (mob) {
+                mob.innerHTML = items.map(c => {
+                    const st = String(c.trangthai || '').toLowerCase();
+                    const isApproved = ['available', 'active', 'approved', 'hot_dong', '1', 'rented', 'maintenance', 'hidden'].includes(st);
+                    let statusCls = 'bg-warning';
+                    if (isApproved) statusCls = 'bg-success';
+                    if (st === 'rejected') statusCls = 'bg-danger';
 
-                return `
-                    <div class="mobile-card shadow-sm">
-                        <div class="mobile-card-head">
-                            <div class="bg-light rounded overflow-hidden" style="width:40px; height:40px;">
+                    return `
+                    <div class="mobile-card shadow-sm border mb-3 p-3 bg-white" style="border-radius: 15px;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-light text-primary border mb-1">#${String(c.id).padStart(7, '0')}</span>
+                                <div class="small text-muted" style="font-size: 0.7rem;"><i class="far fa-calendar-alt me-1"></i>${c.created_date || '---'}</div>
+                            </div>
+                            <span class="badge ${statusCls} bg-opacity-10 text-${statusCls.replace('bg-', '')} px-2 py-1 rounded-pill" style="font-size: 0.7rem;">${st}</span>
+                        </div>
+                        <div class="d-flex gap-3 mb-3">
+                            <div class="bg-light rounded overflow-hidden shadow-sm border" style="width:60px; height:60px; flex-shrink:0;">
                                 <img src="${resolveImg(c.anhngoaitruoc)}" onerror="this.src='../public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'" class="w-100 h-100 object-fit-cover">
                             </div>
-                            <h4 class="mobile-title">${c.tenxe}</h4>
-                            <span class="badge ${statusCls}">${st}</span>
+                            <div class="overflow-hidden">
+                                <h6 class="fw-bold mb-1 text-truncate">${c.tenxe}</h6>
+                                <div class="small text-muted text-truncate"><i class="fas fa-store me-1"></i>${accountsMap[c.provider_id] || c.tenncc || 'Chưa rõ'}</div>
+                            </div>
                         </div>
-                        <div class="mobile-body">
-                            <div class="mobile-row"><span>Biển số</span><strong>${c.bienso}</strong></div>
-                            <div class="mobile-row"><span>Loại xe</span><strong>${c.loaixe} · ${c.socho} chỗ</strong></div>
-                            <div class="mobile-row text-primary"><span>Giá thuê</span><strong>${Number(c.giathue).toLocaleString()}đ/ngày</strong></div>
+                        <div class="mobile-info-grid mb-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div class="small text-muted">Biển số: <strong class="text-dark">${c.bienso}</strong></div>
+                            <div class="small text-muted text-end">Loại: <strong class="text-dark">${c.socho} chỗ</strong></div>
                         </div>
-                        <div class="mobile-actions">
-                            ${!isApproved ? `<button class="btn btn-sm btn-success flex-grow-1 fw-bold" onclick="approveCarAdmin(${c.id})">Duyệt</button>` : ''}
-                            ${st !== 'rejected' ? `<button class="btn btn-sm btn-outline-danger flex-grow-1 fw-bold" onclick="rejectCarAdmin(${c.id})">Từ chối</button>` : ''}
-                            <button class="btn btn-sm btn-light border p-2" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye"></i></button>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div class="text-primary fw-800" style="font-size: 1rem;">${Number(c.giathue).toLocaleString()}đ</div>
+                            <div class="btn-group">
+                                ${!isApproved ? `<button class="btn btn-sm btn-success px-3 rounded-pill fw-600 me-1" onclick="approveCarAdmin(${c.id})">Duyệt</button>` : ''}
+                                <button class="btn btn-sm btn-light rounded-circle border shadow-sm" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye text-primary"></i></button>
+                            </div>
                         </div>
                     </div>
                 `;
-            }).join('');
-        }
-
-        renderAdminPagination(filtered.length);
-    }
-
-    function renderAdminPagination(total) {
-        const container = document.getElementById('adminCarPagination');
-        const pages = Math.ceil(total/itemsPerPage);
-        if(pages<=1) { container.innerHTML=''; return; }
-        
-        let h = `<nav><ul class="pagination pagination-sm justify-content-end mb-0">`;
-        for(let i=1; i<=pages; i++) {
-            h += `<li class="page-item ${i===currentPage?'active':''}"><a class="page-link" href="#" onclick="event.preventDefault(); window.changeAdminCarsPage(${i})">${i}</a></li>`;
-        }
-        container.innerHTML = h + `</ul></nav>`;
-    }
-
-    window.changeAdminCarsPage = (p) => { renderAdminPage(p); };
-
-    window.approveCarAdmin = async (id) => { if(await ThueXeAdmin.updateStatus(TABLE, id, 'available', 'Đã duyệt hiện xe!')) loadAllCars(); };
-    window.rejectCarAdmin = async (id) => { if(await ThueXeAdmin.rejectCar(id)) loadAllCars(); };
-
-    function resolveImg(val) {
-        if (!val) return '../public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg';
-        if (val.startsWith('http')) return val;
-        if (val.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${val}`;
-        return '../public/assets/images/cars/' + val;
-    }
-
-    window.viewCarDetail = function(id) {
-        const car = allCarsRaw.find(c => c.id == id);
-        if(!car) return;
-
-        // Reset collapse
-        const el = document.getElementById('vDesc');
-        if(el){el.style.maxHeight='100px'; el.classList.remove('expanded');}
-
-        document.getElementById('vTitle').textContent = 'Kiểm tra xe: ' + car.tenxe;
-        document.getElementById('vName').textContent = car.tenxe;
-        document.getElementById('vBrand').textContent = car.hangxe || 'N/A';
-        document.getElementById('vModel').textContent = car.dongxe || 'N/A';
-        document.getElementById('vYear').textContent = car.namsanxuat || 'N/A';
-        document.getElementById('vPlate').textContent = car.bienso || 'N/A';
-        document.getElementById('vPrice').textContent = Number(car.giathue || 0).toLocaleString();
-        document.getElementById('vType').textContent = car.loaixe || 'Du lịch';
-        document.getElementById('vSeats').textContent = car.socho || '4';
-        document.getElementById('vTrans').textContent = car.hopso || 'N/A';
-        document.getElementById('vFuel').textContent = car.nhienlieu || 'N/A';
-        document.getElementById('vOdo').textContent = Number(car.odo || 0).toLocaleString();
-        document.getElementById('vColor').textContent = car.mausac || 'N/A';
-        document.getElementById('vFrame').textContent = car.sokhung || 'N/A';
-        document.getElementById('vEngine').textContent = car.somay || 'N/A';
-        document.getElementById('vAddr').textContent = car.diachi_xe || 'N/A';
-        document.getElementById('vMainImg').src = resolveImg(car.anhdaidien || car.anhngoaitruoc);
-
-        const setLongText = (id, txt, btnId) => {
-            const el = document.getElementById(id); const btn = document.getElementById(btnId);
-            el.textContent = txt || 'Không có';
-            if (txt && txt.length > 130) { btn.classList.remove('d-none'); btn.textContent = 'Xem thêm'; } else { btn.classList.add('d-none'); }
-        };
-        setLongText('vDesc', car.mota, 'vDescBtn');
-
-        // Tiện nghi (Amenities)
-        const feats = (car.features || '').split(',').filter(x => x.trim());
-        document.getElementById('vFeatures').innerHTML = feats.map(f => `<span class="badge bg-white text-primary border fw-normal p-1 px-2 mb-1">${f.trim()}</span>`).join('') || '<small class="text-muted">Mặc định</small>';
-
-        // Gallery
-        const galleryFields = ['anhngoaitruoc', 'anhsau', 'anhtrai', 'anhphai', 'anhnoithat'];
-        let gHtml = '';
-        galleryFields.forEach(f => {
-            if(car[f]) {
-                gHtml += `<div class="col-4"><img src="${resolveImg(car[f])}" class="img-fluid rounded border shadow-sm" style="height:45px; width:100%; object-fit:cover; cursor:pointer;" onclick="document.getElementById('vMainImg').src=this.src"></div>`;
+                }).join('');
             }
-        });
-        document.getElementById('vGallery').innerHTML = gHtml;
+        }
 
-        // Hành động nhanh
-        const isApp = ['available', 'active', 'approved'].includes(String(car.trangthai).toLowerCase());
-        document.getElementById('vActions').innerHTML = isApp ? '' : 
-            `<button class="btn btn-success rounded-pill px-4" onclick="approveCarAdmin(${car.id}); bootstrap.Modal.getInstance(document.getElementById('viewCarModalAdmin')).hide();">Phê duyệt ngay</button>`;
+        function renderAdminPagination(totalPages) {
+            const container = document.getElementById('adminCarPagination');
+            if (!container) return;
+            if (totalPages <= 1) { container.innerHTML = ''; return; }
 
-        const modal = new bootstrap.Modal(document.getElementById('viewCarModalAdmin'));
-        modal.show();
-    };
+            let h = `<nav><ul class="pagination pagination-sm justify-content-center mb-0">`;
 
-    window.toggleAdminText = (id) => {
-        const el = document.getElementById(id); const btn = document.getElementById(id + 'Btn');
-        if (el.classList.contains('expanded')) { el.style.maxHeight = '50px'; el.classList.remove('expanded'); btn.textContent = 'Xem thêm'; }
-        else { el.style.maxHeight = '1000px'; el.classList.add('expanded'); btn.textContent = 'Thu gọn'; }
-    };
+            h += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" onclick="filterCars(${currentPage - 1})"><i class="fas fa-chevron-left"></i></a>
+        </li>`;
 
-    loadAllCars();
-})();
+            for (let i = 1; i <= totalPages; i++) {
+                h += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link fw-bold" href="javascript:void(0)" onclick="filterCars(${i})">${i}</a></li>`;
+            }
+
+            h += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" onclick="filterCars(${currentPage + 1})"><i class="fas fa-chevron-right"></i></a>
+        </li>`;
+
+            container.innerHTML = h + `</ul></nav>`;
+        }
+
+        window.approveCarAdmin = async (id) => { if (await ThueXeAdmin.updateStatus(TABLE, id, 'available', 'Đã duyệt hiện xe!')) loadAllCars(); };
+        window.rejectCarAdmin = async (id) => { if (await ThueXeAdmin.rejectCar(id)) loadAllCars(); };
+
+        function resolveImg(val) {
+            if (!val) return '../public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg';
+            if (val.startsWith('http')) return val;
+            if (val.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${val}`;
+            return '../public/assets/images/cars/' + val;
+        }
+
+        window.viewCarDetail = function (id) {
+            const car = allCarsRaw.find(c => c.id == id);
+            if (!car) return;
+
+            // Reset collapse
+            const el = document.getElementById('vDesc');
+            if (el) { el.style.maxHeight = '100px'; el.classList.remove('expanded'); }
+
+            document.getElementById('vTitle').textContent = 'Kiểm tra xe: ' + car.tenxe;
+            document.getElementById('vName').textContent = car.tenxe;
+            document.getElementById('vBrand').textContent = car.hangxe || 'N/A';
+            document.getElementById('vModel').textContent = car.dongxe || 'N/A';
+            document.getElementById('vYear').textContent = car.namsanxuat || 'N/A';
+            document.getElementById('vPlate').textContent = car.bienso || 'N/A';
+            document.getElementById('vPrice').textContent = Number(car.giathue || 0).toLocaleString();
+            document.getElementById('vType').textContent = car.loaixe || 'Du lịch';
+            document.getElementById('vSeats').textContent = car.socho || '4';
+            document.getElementById('vTrans').textContent = car.hopso || 'N/A';
+            document.getElementById('vFuel').textContent = car.nhienlieu || 'N/A';
+            document.getElementById('vOdo').textContent = Number(car.odo || 0).toLocaleString();
+            document.getElementById('vColor').textContent = car.mausac || 'N/A';
+            document.getElementById('vFrame').textContent = car.sokhung || 'N/A';
+            document.getElementById('vEngine').textContent = car.somay || 'N/A';
+            document.getElementById('vAddr').textContent = car.diachi_xe || 'N/A';
+            document.getElementById('vMainImg').src = resolveImg(car.anhdaidien || car.anhngoaitruoc);
+
+            const setLongText = (id, txt, btnId) => {
+                const el = document.getElementById(id); const btn = document.getElementById(btnId);
+                el.textContent = txt || 'Không có';
+                if (txt && txt.length > 130) { btn.classList.remove('d-none'); btn.textContent = 'Xem thêm'; } else { btn.classList.add('d-none'); }
+            };
+            setLongText('vDesc', car.mota, 'vDescBtn');
+
+            // Tiện nghi (Amenities)
+            const feats = (car.features || '').split(',').filter(x => x.trim());
+            document.getElementById('vFeatures').innerHTML = feats.map(f => `<span class="badge bg-white text-primary border fw-normal p-1 px-2 mb-1">${f.trim()}</span>`).join('') || '<small class="text-muted">Mặc định</small>';
+
+            // Gallery
+            const galleryFields = ['anhngoaitruoc', 'anhsau', 'anhtrai', 'anhphai', 'anhnoithat'];
+            let gHtml = '';
+            galleryFields.forEach(f => {
+                if (car[f]) {
+                    gHtml += `<div class="col-4"><img src="${resolveImg(car[f])}" class="img-fluid rounded border shadow-sm" style="height:45px; width:100%; object-fit:cover; cursor:pointer;" onclick="document.getElementById('vMainImg').src=this.src"></div>`;
+                }
+            });
+            document.getElementById('vGallery').innerHTML = gHtml;
+
+            // Hành động nhanh
+            const isApp = ['available', 'active', 'approved'].includes(String(car.trangthai).toLowerCase());
+            document.getElementById('vActions').innerHTML = isApp ? '' :
+                `<button class="btn btn-success rounded-pill px-4" onclick="approveCarAdmin(${car.id}); bootstrap.Modal.getInstance(document.getElementById('viewCarModalAdmin')).hide();">Phê duyệt ngay</button>`;
+
+            const modal = new bootstrap.Modal(document.getElementById('viewCarModalAdmin'));
+            modal.show();
+        };
+
+        window.toggleAdminText = (id) => {
+            const el = document.getElementById(id); const btn = document.getElementById(id + 'Btn');
+            if (el.classList.contains('expanded')) { el.style.maxHeight = '50px'; el.classList.remove('expanded'); btn.textContent = 'Xem thêm'; }
+            else { el.style.maxHeight = '1000px'; el.classList.add('expanded'); btn.textContent = 'Thu gọn'; }
+        };
+
+        // Initialize dates to today
+        const todayStr = new Date().toISOString().split('T')[0];
+        const fromDateEl = document.getElementById('carFromDate');
+        const toDateEl = document.getElementById('carToDate');
+        if (fromDateEl) fromDateEl.value = todayStr;
+        if (toDateEl) toDateEl.value = todayStr;
+
+        loadAllCars();
+    })();
 </script>

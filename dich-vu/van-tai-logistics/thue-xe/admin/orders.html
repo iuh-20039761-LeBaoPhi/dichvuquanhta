@@ -6,47 +6,116 @@
 <!-- Admin Order Management Partial -->
 <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; overflow: hidden;">
     <div class="card-header bg-white py-3 border-0">
-        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-3">
             <div>
                 <h6 class="fw-800 mb-0">Quản lý Đơn hàng</h6>
                 <p class="text-muted small mb-0" style="font-size: 0.75rem;">Theo dõi mọi giao dịch hệ thống</p>
             </div>
-            <div class="d-flex flex-column flex-sm-row gap-2">
-                <div class="input-group search-box-wrap" style="min-width: 240px;">
-                    <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted small"></i></span>
-                    <input type="text" class="form-control bg-light border-0 small" placeholder="Mã đơn / Tên khách..." id="orderSearchInput" onkeyup="filterOrders()" style="font-size: 0.85rem;">
+            <div class="d-flex flex-wrap align-items-center gap-2 w-100">
+                <!-- Row 1: Date Filters -->
+                <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+                    <div class="input-group input-group-sm"
+                        style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 140px;">
+                        <span class="input-group-text bg-light border-0 small fw-600 text-muted"
+                            style="font-size: 0.7rem;">Từ</span>
+                        <input type="date" class="form-control bg-light border-0 small" id="orderFromDate"
+                            onchange="filterOrders()" style="font-size: 0.75rem;">
+                    </div>
+                    <div class="input-group input-group-sm"
+                        style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 140px;">
+                        <span class="input-group-text bg-light border-0 small fw-600 text-muted"
+                            style="font-size: 0.7rem;">Đến</span>
+                        <input type="date" class="form-control bg-light border-0 small" id="orderToDate"
+                            onchange="filterOrders()" style="font-size: 0.75rem;">
+                    </div>
                 </div>
-                <button class="btn btn-primary rounded-pill px-4 fw-600 shadow-sm" onclick="loadAllOrders()" style="white-space: nowrap; font-size: 0.85rem;">
-                    <i class="fas fa-sync-alt me-2"></i>Tải lại
-                </button>
+                <div class="d-flex gap-2 flex-grow-1">
+                    <div class="input-group search-box-wrap" style="flex: 1; min-width: 120px;">
+                        <span class="input-group-text bg-light border-0"><i
+                                class="fas fa-search text-muted small"></i></span>
+                        <input type="text" class="form-control bg-light border-0 small"
+                            placeholder="Mã đơn / Tên khách..." id="orderSearchInput" onkeyup="filterOrders()"
+                            style="font-size: 0.85rem;">
+                    </div>
+                    <button
+                        class="btn btn-primary rounded-circle shadow-sm d-none d-md-flex align-items-center justify-content-center"
+                        onclick="loadAllOrders()" style="width: 38px; height: 38px; flex-shrink: 0;"
+                        title="Tải lại dữ liệu">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Order Status Tabs - Responsive Layout -->
         <div class="status-tabs-wrapper mt-2 px-2">
-            <ul class="nav nav-pills nav-fill bg-light p-1 flex-column flex-md-row gap-1 w-100" style="border-radius: 12px; font-size: 0.82rem; overflow: hidden;">
+            <!-- Mobile Dropdown -->
+            <div class="d-md-none mb-2">
+                <div class="dropdown w-100">
+                    <button class="btn btn-light w-100 d-flex justify-content-between align-items-center fw-bold"
+                        type="button" id="mobileStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="border-radius: 12px; font-size: 0.85rem; padding: 10px 15px; background: #f8f9fa; border: 1px solid #eee;">
+                        <span><i class="fas fa-filter text-muted me-2"></i>Trạng thái: <span id="currentStatusText"
+                                class="text-primary">Tất cả</span></span>
+                        <i class="fas fa-chevron-down small text-muted"></i>
+                    </button>
+                    <ul class="dropdown-menu w-100 shadow-sm border-0 mt-1" aria-labelledby="mobileStatusDropdown"
+                        style="border-radius: 12px; padding: 8px;">
+                        <li><a class="dropdown-item rounded-3 py-2 active" href="javascript:void(0)" id="tabAllMob"
+                                onclick="switchOrderTab('all')">Tất cả <span class="badge bg-secondary ms-1 float-end"
+                                    id="countAllMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabNewMob"
+                                onclick="switchOrderTab('new')">Chưa nhận <span
+                                    class="badge bg-warning text-dark ms-1 float-end" id="countNewMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabDoingMob"
+                                onclick="switchOrderTab('doing')">Đang thuê <span
+                                    class="badge bg-primary ms-1 float-end" id="countDoingMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabDoneMob"
+                                onclick="switchOrderTab('done')">Hoàn thành <span
+                                    class="badge bg-success ms-1 float-end" id="countDoneMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabCancelMob"
+                                onclick="switchOrderTab('cancel')">Đã hủy <span class="badge bg-danger ms-1 float-end"
+                                    id="countCancelMob">0</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Desktop Tabs -->
+            <ul class="nav nav-pills nav-fill bg-light p-1 d-none d-md-flex gap-1 w-100"
+                style="border-radius: 12px; font-size: 0.82rem; overflow: hidden;">
                 <li class="nav-item">
-                    <a class="nav-link active fw-bold" href="#" id="tabAll" onclick="switchOrderTab('all')">Tất cả <span class="badge bg-secondary ms-1" id="countAll">0</span></a>
+                    <a class="nav-link active fw-bold" href="#" id="tabAll" onclick="switchOrderTab('all')">Tất cả <span
+                            class="badge bg-secondary ms-1" id="countAll">0</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-bold" href="#" id="tabNew" onclick="switchOrderTab('new')">Chưa nhận <span class="badge bg-warning text-dark ms-1" id="countNew">0</span></a>
+                    <a class="nav-link fw-bold" href="#" id="tabNew" onclick="switchOrderTab('new')">Chưa nhận <span
+                            class="badge bg-warning text-dark ms-1" id="countNew">0</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-bold" href="#" id="tabDoing" onclick="switchOrderTab('doing')">Đang thuê <span class="badge bg-primary ms-1" id="countDoing">0</span></a>
+                    <a class="nav-link fw-bold" href="#" id="tabDoing" onclick="switchOrderTab('doing')">Đang thuê <span
+                            class="badge bg-primary ms-1" id="countDoing">0</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-bold" href="#" id="tabDone" onclick="switchOrderTab('done')">Hoàn thành <span class="badge bg-success ms-1" id="countDone">0</span></a>
+                    <a class="nav-link fw-bold" href="#" id="tabDone" onclick="switchOrderTab('done')">Hoàn thành <span
+                            class="badge bg-success ms-1" id="countDone">0</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-bold" href="#" id="tabCancel" onclick="switchOrderTab('cancel')">Đã hủy <span class="badge bg-danger ms-1" id="countCancel">0</span></a>
+                    <a class="nav-link fw-bold" href="#" id="tabCancel" onclick="switchOrderTab('cancel')">Đã hủy <span
+                            class="badge bg-danger ms-1" id="countCancel">0</span></a>
                 </li>
             </ul>
         </div>
     </div>
 
     <div class="card-body p-0">
+        <!-- Mobile Quick Summary -->
+        <div class="d-lg-none bg-light px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+            <div class="small text-muted fw-bold uppercase">Tổng cộng (<span id="showingCountMobile">0</span>)</div>
+            <div class="text-primary fw-800" id="totalMoneyMobile">0đ</div>
+        </div>
+
         <div class="table-container">
-            <div class="table-responsive">
+            <div class="table-responsive d-none d-lg-block">
                 <table class="table align-middle mb-0" id="adminOrderTable">
                     <thead class="bg-light text-muted small uppercase">
                         <tr>
@@ -54,81 +123,126 @@
                             <th>KH / Liên hệ</th>
                             <th>Phương tiện / NCC</th>
                             <th>Trạng thái</th>
-                            <th>Tổng phí</th>
+                            <th class="text-end">Tổng tiền</th>
                             <th class="pe-4 text-end">Chi tiết</th>
+                        </tr>
+                        <tr class="bg-white text-dark fw-bold border-bottom"
+                            style="text-transform: none; font-size: 0.9rem;">
+                            <td colspan="4" class="ps-4 py-2 text-end text-muted small uppercase">Tổng cộng (<span
+                                    id="showingCountHeader">0</span>):</td>
+                            <td class="py-2 text-end">
+                                <div class="text-primary fw-bold" id="totalMoneyHeader">0đ</div>
+                            </td>
+                            <td class="pe-4"></td>
                         </tr>
                     </thead>
                     <tbody id="adminOrderBody">
-                        <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="spinner-border text-primary"></div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             <!-- Mobile List Container -->
-            <div id="adminOrderMobileList" class="mobile-list-container d-lg-none p-3"></div>
+            <div id="adminOrderMobileList" class="mobile-list-container d-lg-none p-2"></div>
         </div>
+    </div>
+    <!-- Pagination -->
+    <div class="card-footer bg-white border-0 py-3 border-top">
+        <nav aria-label="Order pagination">
+            <ul class="pagination pagination-sm justify-content-center mb-0" id="adminOrderPagination"></ul>
+        </nav>
     </div>
 </div>
 
 <script>
-(function() {
-    'use strict';
-    const TABLE = 'datlich_thuexe';
-    let allOrders = [];
-    let currentTab = 'all';
+    (function () {
+        'use strict';
+        const TABLE = 'datlich_thuexe';
+        const PAGE_SIZE = 10;
+        let allOrders = [];
+        let currentTab = 'all';
+        let currentPage = 1;
 
-    window.switchOrderTab = function(tab) {
-        currentTab = tab;
-        document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
-        const tabMap = { 'all': 'tabAll', 'new': 'tabNew', 'doing': 'tabDoing', 'done': 'tabDone', 'cancel': 'tabCancel' };
-        if(tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
-        filterOrders();
-    };
+        window.switchOrderTab = function (tab) {
+            currentTab = tab;
+            currentPage = 1; // Reset to page 1
 
-    window.loadAllOrders = async function() {
-        const tbody = document.getElementById('adminOrderBody');
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
-        
-        try {
-            const rows = await DVQTKrud.listTable(TABLE, { limit: 1000 });
-            allOrders = (rows || []).sort((a, b) => b.id - a.id); // Sắp xếp mới nhất lên đầu
-            
-            if(!allOrders.length) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có dữ liệu đơn hàng.</td></tr>';
-                updateTabCounts();
+            // 1. Update Desktop Tabs
+            document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
+            const tabMap = { 'all': 'tabAll', 'new': 'tabNew', 'doing': 'tabDoing', 'done': 'tabDone', 'cancel': 'tabCancel' };
+            if (tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
+
+            // 2. Update Mobile Dropdown
+            document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
+            if (tabMap[tab]) {
+                const mobEl = document.getElementById(tabMap[tab] + 'Mob');
+                if (mobEl) mobEl.classList.add('active');
+            }
+            const statusTextMap = { 'all': 'Tất cả', 'new': 'Chưa nhận', 'doing': 'Đang thuê', 'done': 'Hoàn thành', 'cancel': 'Đã hủy' };
+            const statusTextEl = document.getElementById('currentStatusText');
+            if (statusTextEl) statusTextEl.textContent = statusTextMap[tab];
+
+            filterOrders();
+        };
+
+        window.loadAllOrders = async function () {
+            const tbody = document.getElementById('adminOrderBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+
+            try {
+                const rows = await DVQTKrud.listTable(TABLE, { limit: 1000 });
+                allOrders = (rows || []).sort((a, b) => b.id - a.id); // Sắp xếp mới nhất lên đầu
+
+                if (!allOrders.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có dữ liệu đơn hàng.</td></tr>';
+                    updateTabCounts();
+                    return;
+                }
+
+                filterOrders();
+            } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
+        };
+
+        function updateTabCounts(list) {
+            const data = list || allOrders;
+            const counts = {
+                'All': data.length,
+                'New': data.filter(o => !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte).length,
+                'Doing': data.filter(o => o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy).length,
+                'Done': data.filter(o => !!o.ngayhoanthanhthucte).length,
+                'Cancel': data.filter(o => !!o.ngayhuy).length
+            };
+
+            for (const [key, val] of Object.entries(counts)) {
+                const el = document.getElementById('count' + key);
+                const elMob = document.getElementById('count' + key + 'Mob');
+                if (el) el.textContent = val;
+                if (elMob) elMob.textContent = val;
+            }
+        }
+
+        function renderOrders(orders) {
+            const tbody = document.getElementById('adminOrderBody');
+            const mob = document.getElementById('adminOrderMobileList');
+
+            if (!orders.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có đơn hàng nào trong ngày.</td></tr>';
+                if (mob) mob.innerHTML = '<div class="text-center text-muted p-4">Chưa có đơn hàng nào trong ngày.</div>';
                 return;
             }
 
-            filterOrders();
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
-    };
+            // 1. Table Render
+            tbody.innerHTML = orders.map(o => {
+                let statusBadge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang xác nhận</span>';
+                if (o.ngayhuy) statusBadge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy bỏ</span>';
+                else if (o.ngayhoanthanhthucte) statusBadge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Hoàn thành</span>';
+                else if (o.ngaybatdauthucte) statusBadge = '<span class="badge bg-primary text-primary bg-opacity-10 px-2 py-1 rounded-pill">Đang thuê</span>';
+                else if (o.ngaynhan) statusBadge = '<span class="badge bg-info text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đã nhận đơn</span>';
 
-    function updateTabCounts() {
-        document.getElementById('countAll').textContent = allOrders.length;
-        document.getElementById('countNew').textContent = allOrders.filter(o => !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte).length;
-        document.getElementById('countDoing').textContent = allOrders.filter(o => o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy).length;
-        document.getElementById('countDone').textContent = allOrders.filter(o => !!o.ngayhoanthanhthucte).length;
-        document.getElementById('countCancel').textContent = allOrders.filter(o => !!o.ngayhuy).length;
-    }
-
-    function renderOrders(orders) {
-        const tbody = document.getElementById('adminOrderBody');
-        const mob = document.getElementById('adminOrderMobileList');
-
-        if(!orders.length) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Không có đơn hàng nào khớp.</td></tr>';
-            if(mob) mob.innerHTML = '<div class="text-center text-muted p-4">Trống</div>';
-            return;
-        }
-
-        // 1. Table Render
-        tbody.innerHTML = orders.map(o => {
-            let statusBadge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang xác nhận</span>';
-            if(o.ngayhuy) statusBadge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy bỏ</span>';
-            else if(o.ngayhoanthanhthucte) statusBadge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Hoàn thành</span>';
-            else if(o.ngaybatdauthucte) statusBadge = '<span class="badge bg-primary text-primary bg-opacity-10 px-2 py-1 rounded-pill">Đang thuê</span>';
-            else if(o.ngaynhan) statusBadge = '<span class="badge bg-info text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đã nhận đơn</span>';
-
-            return `<tr>
+                return `<tr>
                 <td class="ps-4">
                     <div class="fw-bold text-dark">#${String(o.id).padStart(7, '0')}</div>
                     <div class="text-muted small" style="font-size:11px;">${o.ngaydat || '---'}</div>
@@ -142,83 +256,178 @@
                     <div class="text-muted small" style="font-size:11px;">NCC: ${o.tenncc || 'Chưa nhận'}</div>
                 </td>
                 <td>${statusBadge}</td>
-                <td><div class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</div></td>
+                <td class="text-end"><div class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</div></td>
                 <td class="pe-4 text-end">
                     <button class="btn btn-sm btn-light text-primary py-1 px-2 rounded-circle" onclick="viewOrderAdmin(${o.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
                 </td>
             </tr>`;
-        }).join('');
+            }).join('');
 
-        // 2. Mobile Render
-        if(mob) {
-            mob.innerHTML = orders.map(o => {
-                let statusTxt = 'Chờ xử lý'; let statusCls = 'bg-warning';
-                if(o.ngayhuy) { statusTxt = 'Đã hủy'; statusCls = 'bg-danger'; }
-                else if(o.ngayhoanthanhthucte) { statusTxt = 'Thành công'; statusCls = 'bg-success'; }
-                else if(o.ngaybatdauthucte) { statusTxt = 'Đang thuê'; statusCls = 'bg-primary'; }
-                
-                return `
-                    <div class="mobile-card shadow-sm">
-                        <div class="mobile-card-head">
-                            <span class="mobile-code text-primary">#${String(o.id).padStart(7, '0')}</span>
-                            <h4 class="mobile-title">${o.ten_xe}</h4>
-                            <span class="badge ${statusCls}">${statusTxt}</span>
+            // 2. Mobile Render
+            if (mob) {
+                mob.innerHTML = orders.map(o => {
+                    let statusTxt = 'Chờ xử lý'; let statusCls = 'bg-warning';
+                    if (o.ngayhuy) { statusTxt = 'Đã hủy'; statusCls = 'bg-danger'; }
+                    else if (o.ngayhoanthanhthucte) { statusTxt = 'Thành công'; statusCls = 'bg-success'; }
+                    else if (o.ngaybatdauthucte) { statusTxt = 'Đang thuê'; statusCls = 'bg-primary'; }
+                    else if (o.ngaynhan) { statusTxt = 'Đã nhận đơn'; statusCls = 'bg-info'; }
+
+                    return `
+                    <div class="mobile-card shadow-sm border mb-3 p-3 bg-white" style="border-radius: 15px;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-light text-primary border mb-1">#${String(o.id).padStart(7, '0')}</span>
+                                <div class="small text-muted" style="font-size: 0.7rem;"><i class="far fa-calendar-alt me-1"></i>${o.ngaydat || '---'}</div>
+                            </div>
+                            <span class="badge ${statusCls} bg-opacity-10 text-${statusCls.replace('bg-', '')} px-2 py-1 rounded-pill" style="font-size: 0.7rem;">${statusTxt}</span>
                         </div>
-                        <div class="mobile-body">
-                            <div class="mobile-row"><span>Khách hàng</span><strong>${o.tenkhachhang || '---'}</strong></div>
-                            <div class="mobile-row"><span>Nhà cung cấp</span><strong>${o.ten_ncc || 'Chưa nhận'}</strong></div>
-                            <div class="mobile-row text-primary"><span>Tổng phí</span><strong>${Number(o.tong_tien).toLocaleString()}đ</strong></div>
+                        <h6 class="fw-bold mb-2 text-truncate" style="font-size: 0.95rem;">${o.ten_xe}</h6>
+                        <div class="mobile-info-grid mb-3" style="display: grid; gap: 4px;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-circle text-muted me-2" style="width: 14px; font-size: 0.8rem;"></i>
+                                <span class="small text-dark fw-600">${o.tenkhachhang || '---'}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-phone-alt text-muted me-2" style="width: 14px; font-size: 0.8rem;"></i>
+                                <span class="small text-muted">${o.sdtkhachhang || '---'}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-store text-muted me-2" style="width: 14px; font-size: 0.8rem;"></i>
+                                <span class="small text-muted text-truncate">NCC: ${o.tenncc || 'Chưa nhận'}</span>
+                            </div>
                         </div>
-                        <div class="mobile-actions">
-                            <button class="btn btn-sm btn-light border w-100 fw-bold" onclick="viewOrderAdmin(${o.id})"><i class="fas fa-eye me-2"></i>Xem chi tiết</button>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <button class="btn btn-sm btn-primary rounded-pill px-3 fw-600" onclick="viewOrderAdmin(${o.id})" style="font-size: 0.75rem;">
+                                Chi tiết <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                            <div class="text-primary fw-800" style="font-size: 1rem;">${Number(o.tong_tien).toLocaleString()}đ</div>
                         </div>
                     </div>
                 `;
-            }).join('');
-        }
-    }
-
-    window.filterOrders = function() {
-        const q = document.getElementById('orderSearchInput').value.toLowerCase().trim();
-        
-        let filtered = allOrders;
-
-        // 1. Phân loại theo Tab
-        if (currentTab !== 'all') {
-            filtered = filtered.filter(o => {
-                if (currentTab === 'new') return !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte;
-                if (currentTab === 'doing') return o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy;
-                if (currentTab === 'done') return !!o.ngayhoanthanhthucte;
-                if (currentTab === 'cancel') return !!o.ngayhuy;
-                return true;
-            });
+                }).join('');
+            }
         }
 
-        // 2. Tìm kiếm từ khóa
-        if (q) {
-            filtered = filtered.filter(o => {
-                const paddedId = String(o.id).padStart(7, '0');
-                const fullCode = 'tx' + paddedId;
-                return paddedId.includes(q) || 
-                       fullCode.includes(q) ||
-                       String(o.id).includes(q) || 
-                       (o.tenkhachhang && o.tenkhachhang.toLowerCase().includes(q)) ||
-                       (o.ten_xe && o.ten_xe.toLowerCase().includes(q));
-            });
+        window.filterOrders = function (page) {
+            if (page !== undefined) currentPage = page;
+            else currentPage = 1;
+
+            const q = document.getElementById('orderSearchInput').value.toLowerCase().trim();
+            const fromDate = document.getElementById('orderFromDate').value;
+            const toDate = document.getElementById('orderToDate').value;
+
+            let filteredByDate = allOrders;
+
+            // 1. Lọc theo ngày
+            if (fromDate) {
+                filteredByDate = filteredByDate.filter(o => {
+                    if (!o.ngaydat) return false;
+                    const d = o.ngaydat.substring(0, 10);
+                    return d >= fromDate;
+                });
+            }
+            if (toDate) {
+                filteredByDate = filteredByDate.filter(o => {
+                    if (!o.ngaydat) return false;
+                    const d = o.ngaydat.substring(0, 10);
+                    return d <= toDate;
+                });
+            }
+
+            let filtered = filteredByDate;
+
+            // 2. Phân loại theo Tab
+            if (currentTab !== 'all') {
+                filtered = filtered.filter(o => {
+                    if (currentTab === 'new') return !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte;
+                    if (currentTab === 'doing') return o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy;
+                    if (currentTab === 'done') return !!o.ngayhoanthanhthucte;
+                    if (currentTab === 'cancel') return !!o.ngayhuy;
+                    return true;
+                });
+            }
+
+            // 3. Tìm kiếm từ khóa
+            if (q) {
+                filtered = filtered.filter(o => {
+                    const paddedId = String(o.id).padStart(7, '0');
+                    const fullCode = 'tx' + paddedId;
+                    return paddedId.includes(q) ||
+                        fullCode.includes(q) ||
+                        String(o.id).includes(q) ||
+                        (o.tenkhachhang && o.tenkhachhang.toLowerCase().includes(q)) ||
+                        (o.ten_xe && o.ten_xe.toLowerCase().includes(q));
+                });
+            }
+
+            // Pagination Logic
+            const totalOrders = filtered.length;
+            const totalPages = Math.ceil(totalOrders / PAGE_SIZE);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const paginatedOrders = filtered.slice(start, start + PAGE_SIZE);
+
+            renderOrders(paginatedOrders);
+            renderPagination(totalPages);
+            updateTabCounts(filteredByDate);
+
+            // Update Totals (based on filtered but NOT paginated list)
+            const totalAmount = filtered.reduce((sum, o) => sum + (Number(o.tong_tien) || 0), 0);
+            const totalStr = totalAmount.toLocaleString() + 'đ';
+
+            const countEl = document.getElementById('showingCountHeader');
+            const moneyEl = document.getElementById('totalMoneyHeader');
+
+            if (countEl) countEl.textContent = totalOrders;
+            if (moneyEl) moneyEl.textContent = totalStr;
+
+            // Mobile Summary
+            const mobCountEl = document.getElementById('showingCountMobile');
+            const mobMoneyEl = document.getElementById('totalMoneyMobile');
+            if (mobCountEl) mobCountEl.textContent = totalOrders;
+            if (mobMoneyEl) mobMoneyEl.textContent = totalStr;
         }
 
-        renderOrders(filtered);
-        updateTabCounts();
-    }
+        function renderPagination(totalPages) {
+            const pagEl = document.getElementById('adminOrderPagination');
+            if (!pagEl) return;
+            if (totalPages <= 1) { pagEl.innerHTML = ''; return; }
 
-    window.viewOrderAdmin = function(id) {
-        window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
-    };
+            let html = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" onclick="filterOrders(${currentPage - 1})"><i class="fas fa-chevron-left"></i></a>
+        </li>`;
 
-    window.cancelOrderAdmin = async function(id) {
-        if(await ThueXeAdmin.cancelOrder(id)) loadAllOrders();
-    }
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
 
-    loadAllOrders();
-})();
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<li class="page-item ${currentPage === i ? 'active' : ''}">
+                <a class="page-link fw-bold" href="javascript:void(0)" onclick="filterOrders(${i})">${i}</a>
+            </li>`;
+            }
+
+            html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" onclick="filterOrders(${currentPage + 1})"><i class="fas fa-chevron-right"></i></a>
+        </li>`;
+
+            pagEl.innerHTML = html;
+        }
+
+        window.viewOrderAdmin = function (id) {
+            window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
+        };
+
+        window.cancelOrderAdmin = async function (id) {
+            if (await ThueXeAdmin.cancelOrder(id)) loadAllOrders();
+        }
+
+        // Initialize dates to today
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById('orderFromDate').value = todayStr;
+        document.getElementById('orderToDate').value = todayStr;
+
+        loadAllOrders();
+    })();
 </script>

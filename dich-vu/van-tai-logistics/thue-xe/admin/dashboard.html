@@ -82,7 +82,10 @@
             document.getElementById('stat-pending').textContent = orders.filter(o => !o.ngaynhan && !o.ngayhuy).length;
             document.getElementById('stat-success').textContent = orders.filter(o => o.ngayhoanthanhthucte).length;
 
-            const recentOrders = orders.reverse().slice(0, 7);
+            const recentOrders = orders
+                .filter(o => o.ngaydat)
+                .sort((a, b) => b.ngaydat.localeCompare(a.ngaydat))
+                .slice(0, 10);
             
             // Render Table
             document.getElementById('recentOrdersBody').innerHTML = recentOrders.map(o => {
