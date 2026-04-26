@@ -30,11 +30,11 @@ function format_invoice_id_display($value): string
 
 $q = trim((string) ($_GET['q'] ?? ''));
 $statusFilter = trim((string) ($_GET['status'] ?? 'all'));
-$serviceFilter = trim((string) ($_GET['service'] ?? 'all'));
-$sortFilter = strtolower(trim((string) ($_GET['sort'] ?? 'newest')));
+$fromDate = trim((string) ($_GET['from_date'] ?? ''));
+$toDate = trim((string) ($_GET['to_date'] ?? ''));
 
-if (!in_array($sortFilter, ['newest', 'oldest', 'status', 'customer'], true)) {
-    $sortFilter = 'newest';
+if ($statusFilter === '') {
+    $statusFilter = 'all';
 }
 
 $serviceMap = [];
@@ -56,29 +56,39 @@ foreach ($rows as $row) {
 $services = array_values($serviceMap);
 sort($services);
 
-$statuses = array_values($statusMap);
-sort($statuses);
+// Dynamic Status Mapping & Counts
+$statusCounts = [];
+$statusCounts['all'] = count($rows);
+foreach ($rows as $row) {
+    $st = trim((string) ($row['trangthai'] ?? ''));
+    if ($st === '' || $st === 'đang chờ') $st = 'chờ duyệt';
+    $statusCounts[$st] = ($statusCounts[$st] ?? 0) + 1;
+}
+$availableStatuses = array_keys($statusCounts);
+sort($availableStatuses);
+$availableStatuses = array_merge(['all'], array_diff($availableStatuses, ['all']));
 
 if ($statusFilter !== 'all' && !isset($statusMap[$statusFilter])) {
     $statusFilter = 'all';
 }
-if ($serviceFilter !== 'all' && !isset($serviceMap[$serviceFilter])) {
-    $serviceFilter = 'all';
-}
 
-$filteredRows = array_values(array_filter($rows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
+$filteredRows = array_values(array_filter($rows, static function (array $item) use ($q, $statusFilter, $fromDate, $toDate): bool {
     $status = trim((string) ($item['trangthai'] ?? ''));
-    if ($status === '') {
+    if ($status === '' || $status === 'đang chờ') {
         $status = 'chờ duyệt';
     }
-    $service = trim((string) ($item['dich_vu'] ?? ''));
 
     if ($statusFilter !== 'all' && $status !== $statusFilter) {
         return false;
     }
 
-    if ($serviceFilter !== 'all' && $service !== $serviceFilter) {
-        return false;
+    if ($fromDate !== '') {
+        $itemDate = date('Y-m-d', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now')));
+        if ($itemDate < $fromDate) return false;
+    }
+    if ($toDate !== '') {
+        $itemDate = date('Y-m-d', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now')));
+        if ($itemDate > $toDate) return false;
     }
 
     if ($q !== '') {
@@ -103,23 +113,8 @@ $filteredRows = array_values(array_filter($rows, static function (array $item) u
     return true;
 }));
 
-if ($sortFilter === 'oldest') {
-    usort($filteredRows, static fn(array $a, array $b): int => ((int) ($a['id'] ?? 0)) <=> ((int) ($b['id'] ?? 0)));
-} elseif ($sortFilter === 'status') {
-    usort($filteredRows, static function (array $a, array $b): int {
-        $left = (string) ($a['trangthai'] ?? '');
-        $right = (string) ($b['trangthai'] ?? '');
-        $statusCompare = strcasecmp($left, $right);
-        if ($statusCompare === 0) {
-            return ((int) ($b['id'] ?? 0)) <=> ((int) ($a['id'] ?? 0));
-        }
-        return $statusCompare;
-    });
-} elseif ($sortFilter === 'customer') {
-    usort($filteredRows, static fn(array $a, array $b): int => strcasecmp((string) ($a['tenkhachhang'] ?? ''), (string) ($b['tenkhachhang'] ?? '')));
-} else {
-    usort($filteredRows, static fn(array $a, array $b): int => ((int) ($b['id'] ?? 0)) <=> ((int) ($a['id'] ?? 0)));
-}
+// Sorting
+usort($filteredRows, static fn(array $a, array $b): int => ((int) ($b['id'] ?? 0)) <=> ((int) ($a['id'] ?? 0)));
 
 [
     'items' => $paginatedRows,
@@ -134,8 +129,8 @@ if ($sortFilter === 'oldest') {
 $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targetPage, [
     'q' => $q,
     'status' => $statusFilter,
-    'service' => $serviceFilter,
-    'sort' => $sortFilter,
+    'from_date' => $fromDate,
+    'to_date' => $toDate,
 ], 'page', 'index.php');
 
 $summaryPending = count(array_filter($rows, static fn(array $i): bool => trim((string) ($i['trangthai'] ?? '')) === '' || trim((string) ($i['trangthai'] ?? '')) === 'chờ duyệt'));
@@ -269,6 +264,233 @@ include 'layout-header.php';
         .row { --bs-gutter-x: 0.25rem; --bs-gutter-y: 0.25rem; }
         .mb-3 { margin-bottom: 0.5rem !important; }
         .g-2, .g-3 { --bs-gutter-x: 0.25rem; --bs-gutter-y: 0.25rem; }
+    }
+
+    /* Filter & Header Styles */
+    .filter-section {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        margin-bottom: 20px;
+    }
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .header-title h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 2px;
+    }
+
+    .header-title p {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 0;
+    }
+
+    .filter-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .date-input-group {
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 4px 12px;
+        gap: 8px;
+    }
+
+    .date-input-group span {
+        font-size: 0.8rem;
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .date-input-group input {
+        border: none;
+        background: transparent;
+        font-size: 0.85rem;
+        color: #1e293b;
+        font-weight: 500;
+        outline: none;
+        width: 110px;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        min-width: 240px;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .search-input-wrapper input {
+        width: 100%;
+        padding: 10px 14px 10px 40px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        color: #1e293b;
+        transition: all 0.2s;
+    }
+
+    .search-input-wrapper input:focus {
+        background: #fff;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+
+    .btn-refresh {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #3b82f6;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        transition: all 0.2s;
+    }
+
+    .btn-refresh:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    /* Tabs Styles */
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .filter-tabs::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+    }
+
+    .tab-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none !important;
+        gap: 8px;
+    }
+
+    .tab-item:hover {
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+
+    .tab-item.active {
+        background: #3b82f6;
+        color: #fff !important;
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+    }
+
+    .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .tab-item.active .tab-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    .badge-chua-nhan { background: #fef3c7; color: #d97706; }
+    .badge-dang-thue { background: #dbeafe; color: #2563eb; }
+    .badge-hoan-thanh { background: #dcfce7; color: #16a34a; }
+    .badge-da-huy { background: #fee2e2; color: #dc2626; }
+
+    .tab-item:not(.active) .tab-badge.badge-all { background: #e2e8f0; color: #475569; }
+
+    .status-mobile-trigger {
+        display: none;
+    }
+
+    @media (max-width: 1024px) {
+        .filter-section { padding: 15px; }
+        .filter-header { flex-direction: column; align-items: stretch; }
+        .filter-controls { flex-direction: column; align-items: stretch; }
+        .date-input-group { width: 100%; justify-content: space-between; }
+        .search-input-wrapper { min-width: 100%; }
+        .btn-refresh { width: 100%; height: 42px; }
+
+        .status-mobile-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 10px;
+        }
+
+        .filter-tabs {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow-x: visible;
+        }
+
+        .filter-tabs.show {
+            display: flex;
+        }
+
+        .tab-item {
+            width: 100%;
+            justify-content: space-between;
+        }
     }
 </style>
 <style>
@@ -428,109 +650,79 @@ include 'layout-header.php';
             <?php if (!$isEmployeeApproved): ?>
                 <div class="alert alert-warning mb-0">Tài khoản của bạn đang chờ duyệt</div>
             <?php else: ?>
-                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
-                    <div>
-                        <h1 class="h4 fw-semibold mb-1">Danh sách đơn hàng</h1>
-                    </div>
-                    <div class="text-secondary small">Tổng hiển thị: <b><?= (int) $totalFiltered ?></b> /
-                        <?= (int) $summaryTotal ?> hoa don
-                    </div>
+                <div class="filter-section">
+                    <form method="get" id="filterForm">
+                        <input type="hidden" name="status" id="statusInput" value="<?= htmlspecialchars($statusFilter, ENT_QUOTES, 'UTF-8') ?>">
+                        
+                        <div class="filter-header">
+                            <div class="header-title">
+                                <h1>Quản lý Đơn hàng</h1>
+                                <p>Theo dõi mọi giao dịch hệ thống</p>
+                            </div>
+                            
+                            <div class="filter-controls">
+                                <div class="date-input-group">
+                                    <span>Từ</span>
+                                    <input type="date" name="from_date" value="<?= htmlspecialchars($fromDate, ENT_QUOTES, 'UTF-8') ?>" onchange="this.form.submit()">
+                                </div>
+                                <div class="date-input-group">
+                                    <span>Đến</span>
+                                    <input type="date" name="to_date" value="<?= htmlspecialchars($toDate, ENT_QUOTES, 'UTF-8') ?>" onchange="this.form.submit()">
+                                </div>
+                                
+                                <div class="search-input-wrapper">
+                                    <i class="bi bi-search"></i>
+                                    <input type="text" name="q" value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>" placeholder="Mã đơn / Tên khách..." onkeypress="if(event.keyCode === 13) { this.form.submit(); return false; }">
+                                </div>
+                                
+                                <button type="button" class="btn-refresh" onclick="window.location.href='index.php'">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <?php
+                        $activeLabel = 'Tất cả';
+                        foreach ($availableStatuses as $st) {
+                            if ($st === $statusFilter) {
+                                $activeLabel = ($st === 'all') ? 'Tất cả' : mb_convert_case($st, MB_CASE_TITLE, "UTF-8");
+                                break;
+                            }
+                        }
+                        ?>
+                        <div class="status-mobile-trigger" onclick="toggleStatusMenu()">
+                            <span>Trạng thái: <b><?= htmlspecialchars($activeLabel, ENT_QUOTES, 'UTF-8') ?></b></span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+
+                        <div class="filter-tabs" id="statusMenu">
+                            <?php foreach ($availableStatuses as $stKey): ?>
+                                <?php
+                                $label = ($stKey === 'all') ? 'Tất cả' : mb_convert_case($stKey, MB_CASE_TITLE, "UTF-8");
+                                $badgeClass = 'badge-all';
+                                if ($stKey === 'chờ duyệt' || $stKey === 'đang chờ') $badgeClass = 'badge-chua-nhan';
+                                elseif (strpos($stKey, 'thực hiện') !== false || strpos($stKey, 'nhận') !== false) $badgeClass = 'badge-dang-thue';
+                                elseif (strpos($stKey, 'hoàn thành') !== false || strpos($stKey, 'xong') !== false) $badgeClass = 'badge-hoan-thanh';
+                                elseif (strpos($stKey, 'hủy') !== false) $badgeClass = 'badge-da-huy';
+                                ?>
+                                <a href="javascript:void(0)" onclick="setStatus('<?= htmlspecialchars($stKey, ENT_QUOTES, 'UTF-8') ?>')" class="tab-item <?= $statusFilter === $stKey ? 'active' : '' ?>">
+                                    <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?> 
+                                    <span class="tab-badge <?= $badgeClass ?>"><?= $statusCounts[$stKey] ?></span>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </form>
                 </div>
 
-                <div class="row g-2 g-lg-3 mb-3">
-                    <div class="col-12 col-md-4">
-                        <div class="stat-card">
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                <div>
-                                    <div class="text-secondary small">Đang chờ nhận</div>
-                                    <div class="stat-value text-warning-emphasis"><?= (int) $summaryPending ?></div>
-                                </div>
-                                <div class="stat-icon bg-warning-subtle text-warning-emphasis"><i
-                                        class="bi bi-hourglass-split"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="stat-card">
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                <div>
-                                    <div class="text-secondary small">Đã nhận việc</div>
-                                    <div class="stat-value text-success-emphasis"><?= (int) $summaryReceived ?></div>
-                                </div>
-                                <div class="stat-icon bg-success-subtle text-success-emphasis"><i
-                                        class="bi bi-check2-circle"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="stat-card">
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                <div>
-                                    <div class="text-secondary small">Tổng công việc</div>
-                                    <div class="stat-value text-primary"><?= (int) $summaryTotal ?></div>
-                                </div>
-                                <div class="stat-icon bg-primary-subtle text-primary-emphasis"><i
-                                        class="bi bi-collection"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <form method="get" class="filter-box mb-3">
-                    <div class="row g-2 align-items-end">
-                        <div class="col-12 col-md-4 col-lg-3">
-                            <label class="form-label small text-secondary mb-1">Tìm kiếm</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" class="form-control" name="q"
-                                    value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>"
-                                    placeholder="ID, khach hang, SDT...">
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-2">
-                            <label class="form-label small text-secondary mb-1">Trạng thái</label>
-                            <select class="form-select" name="status">
-                                <option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>Tất cả</option>
-                                <?php foreach ($statuses as $statusOption): ?>
-                                    <option value="<?= htmlspecialchars($statusOption, ENT_QUOTES, 'UTF-8') ?>"
-                                        <?= $statusFilter === $statusOption ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($statusOption, ENT_QUOTES, 'UTF-8') ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <label class="form-label small text-secondary mb-1">Dịch vụ</label>
-                            <select class="form-select" name="service">
-                                <option value="all">Tất cả</option>
-                                <?php foreach ($services as $serviceOption): ?>
-                                    <option value="<?= htmlspecialchars($serviceOption, ENT_QUOTES, 'UTF-8') ?>"
-                                        <?= $serviceFilter === $serviceOption ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($serviceOption, ENT_QUOTES, 'UTF-8') ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-2">
-                            <label class="form-label small text-secondary mb-1">Sap xep</label>
-                            <select class="form-select" name="sort">
-                                <option value="newest" <?= $sortFilter === 'newest' ? 'selected' : '' ?>>Mới nhất</option>
-                                <option value="oldest" <?= $sortFilter === 'oldest' ? 'selected' : '' ?>>Cũ nhất</option>
-                                <option value="status" <?= $sortFilter === 'status' ? 'selected' : '' ?>>Theo trạng thái
-                                </option>
-                                <option value="customer" <?= $sortFilter === 'customer' ? 'selected' : '' ?>>Theo khách
-                                    hàng</option>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-2 d-flex gap-2">
-                            <button class="btn btn-primary flex-fill" type="submit"><i
-                                    class="bi bi-funnel me-1"></i>Loc</button>
-                            <a class="btn btn-outline-secondary" href="index.php"
-                               onclick="event.preventDefault(); navigateTo('index.php');"><i
-                                    class="bi bi-arrow-counterclockwise"></i></a>
-                        </div>
-                    </div>
-                </form>
+                <script>
+                function setStatus(status) {
+                    document.getElementById('statusInput').value = status;
+                    document.getElementById('filterForm').submit();
+                }
+                function toggleStatusMenu() {
+                    document.getElementById('statusMenu').classList.toggle('show');
+                }
+                </script>
 
                 <div class="table-wrap">
                     <!-- Desktop View: Table -->
