@@ -8,6 +8,73 @@
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
+    <style>
+      .status-filter-container {
+        background: #f8fbfe;
+        border: 1px solid #dce6f2;
+        border-radius: 16px;
+        padding: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        overflow-x: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .status-filter-container::-webkit-scrollbar {
+        display: none;
+      }
+      .status-filter-scroll {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+      }
+      .status-filter-btn {
+        flex: 1;
+        min-width: fit-content;
+        border: none;
+        background: transparent;
+        padding: 10px 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 700;
+        color: #5f7592;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+      .status-filter-btn:hover {
+        background: rgba(23, 57, 86, 0.05);
+        color: #173956;
+      }
+      .status-filter-btn.active {
+        background: #007bff;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+      }
+      .status-filter-btn .status-count {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 20px;
+        min-width: 28px;
+        text-align: center;
+      }
+      .status-filter-btn.active .status-count {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+      }
+      .status-filter-btn:not(.active) .status-count {
+        background: #e9ecef;
+        color: #495057;
+      }
+      .status-filter-btn[data-status="pending"]:not(.active) .status-count { background: #fff3cd; color: #856404; }
+      .status-filter-btn[data-status="accepted"]:not(.active) .status-count { background: #e0f2fe; color: #0369a1; }
+      .status-filter-btn[data-status="processing"]:not(.active) .status-count { background: #cce5ff; color: #004085; }
+      .status-filter-btn[data-status="completed"]:not(.active) .status-count { background: #d4edda; color: #155724; }
+      .status-filter-btn[data-status="canceled"]:not(.active) .status-count { background: #f8d7da; color: #721c24; }
+    </style>
   </head>
   <body data-role="admin" data-page="list">
     <div class="admin-shell">
@@ -60,7 +127,36 @@
             </p>
           </div>
 
-          <div class="row g-3 stats-grid" id="statsGrid"></div>
+          <!-- <div class="row g-3 stats-grid" id="statsGrid"></div> -->
+
+          <div class="status-filter-container mt-4 shadow-sm">
+            <div class="status-filter-scroll" id="statusFilterBar">
+              <button class="status-filter-btn active" data-status="all">
+                <span class="status-label">Tất cả</span>
+                <span class="status-count" id="count-all">0</span>
+              </button>
+              <button class="status-filter-btn" data-status="pending">
+                <span class="status-label">Chờ xác nhận</span>
+                <span class="status-count" id="count-pending">0</span>
+              </button>
+              <button class="status-filter-btn" data-status="accepted">
+                <span class="status-label">Đã xác nhận</span>
+                <span class="status-count" id="count-accepted">0</span>
+              </button>
+              <button class="status-filter-btn" data-status="processing">
+                <span class="status-label">Đang thực hiện</span>
+                <span class="status-count" id="count-processing">0</span>
+              </button>
+              <button class="status-filter-btn" data-status="completed">
+                <span class="status-label">Hoàn thành</span>
+                <span class="status-count" id="count-completed">0</span>
+              </button>
+              <button class="status-filter-btn" data-status="canceled">
+                <span class="status-label">Đã hủy</span>
+                <span class="status-count" id="count-canceled">0</span>
+              </button>
+            </div>
+          </div>
 
           <article class="panel-card mt-3">
             <div class="panel-head">
@@ -87,19 +183,7 @@
                     />
                   </div>
 
-                  <div>
-                    <label class="form-label" for="filterStatus"
-                      >Trạng thái</label
-                    >
-                    <select class="form-select" id="filterStatus" name="status">
-                      <option value="all">Tất cả</option>
-                      <option value="pending">Chờ xử lý</option>
-                      <option value="accepted">Đã nhận đơn</option>
-                      <option value="processing">Đang thực hiện</option>
-                      <option value="completed">Hoàn thành</option>
-                      <option value="canceled">Đã hủy</option>
-                    </select>
-                  </div>
+                  <input type="hidden" id="filterStatus" name="status" value="all" />
 
                   <div>
                     <label class="form-label" for="filterFromDate"
@@ -155,6 +239,13 @@
                     <th>Thao tác</th>
                   </tr>
                 </thead>
+                <tbody id="summaryTableBody">
+                  <tr class="table-light fw-bold">
+                    <td colspan="5" class="text-end">Tổng cộng (<span id="totalOrdersCount">0</span>):</td>
+                    <td id="totalOrdersAmount">0 đ</td>
+                    <td></td>
+                  </tr>
+                </tbody>
                 <tbody id="ordersTableBody"></tbody>
               </table>
             </div>

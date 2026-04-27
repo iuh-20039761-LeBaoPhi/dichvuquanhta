@@ -367,7 +367,7 @@
   function statusMeta(status) {
     var value = String(status || "").toLowerCase();
     if (value === "accepted") {
-      return { label: "Đã nhận đơn", className: "status-accepted" };
+      return { label: "Đã xác nhận", className: "status-accepted" };
     }
     if (value === "processing") {
       return { label: "Đang thực hiện", className: "status-processing" };
@@ -378,7 +378,7 @@
     if (value === "canceled") {
       return { label: "Đã hủy", className: "status-canceled" };
     }
-    return { label: "Chờ xử lý", className: "status-pending" };
+    return { label: "Chờ xác nhận", className: "status-pending" };
   }
 
   /**
@@ -1337,7 +1337,7 @@
     } else if (hasStartedDate) {
       providerStateText = "Đang xử lý";
     } else if (hasReceivedDate && !hasStartedDate) {
-      providerStateText = "Đã nhận đơn";
+      providerStateText = "Đã xác nhận";
     }
 
     setText("heroOrderCode", "#" + formatOrderCode(order.id));
@@ -1772,7 +1772,7 @@
         var hideHint =
           String(orderStatus || "").toLowerCase() === "canceled"
             ? "Đơn đã hủy, không thể thao tác thêm."
-            : "Chỉ có thể hủy đơn khi trạng thái là Chờ xử lý.";
+            : "Chỉ có thể hủy đơn khi trạng thái là Chờ xác nhận.";
 
         return {
           text: "Hủy đơn",

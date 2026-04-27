@@ -78,7 +78,7 @@
   function statusMeta(status) {
     var value = String(status || "").toLowerCase();
     if (value === "accepted") {
-      return { label: "Đã nhận đơn", className: "status-accepted" };
+      return { label: "Đã xác nhận", className: "status-accepted" };
     }
     if (value === "processing") {
       return { label: "Đang thực hiện", className: "status-processing" };
@@ -89,7 +89,7 @@
     if (value === "canceled") {
       return { label: "Đã hủy", className: "status-canceled" };
     }
-    return { label: "Chờ xử lý", className: "status-pending" };
+    return { label: "Chờ xác nhận", className: "status-pending" };
   }
 
   function statusProgress(status) {
@@ -1204,9 +1204,6 @@
   }
 
   function renderStats(orders, role) {
-    var mount = document.getElementById("statsGrid");
-    if (!mount) return;
-
     var counts = {
       total: orders.length,
       pending: 0,
@@ -1225,82 +1222,102 @@
       }
     });
 
-    var cards =
-      role === "provider"
-        ? [
-            {
-              key: "pending",
-              label: "Đơn mới & Chờ nhận",
-              icon: "fas fa-bullhorn",
-            },
-            {
-              key: "accepted",
-              label: "Đã nhận đơn",
-              icon: "fas fa-clipboard-check",
-            },
-            {
-              key: "processing",
-              label: "Đang thực hiện",
-              icon: "fas fa-spinner",
-            },
-            {
-              key: "completed",
-              label: "Đã hoàn thành",
-              icon: "fas fa-cogs",
-            },
-          ]
-        : [
-            { key: "total", label: "Tổng đơn", icon: "fas fa-boxes" },
-            {
-              key: "pending",
-              label: "Chờ xử lý",
-              icon: "fas fa-hourglass-half",
-            },
-            {
-              key: "accepted",
-              label: "Đã nhận đơn",
-              icon: "fas fa-clipboard-check",
-            },
-            {
-              key: "processing",
-              label: "Đang thực hiện",
-              icon: "fas fa-spinner",
-            },
-            {
-              key: "completed",
-              label: "Hoàn thành",
-              icon: "fas fa-check-circle",
-            },
-            {
-              key: "canceled",
-              label: "Đã hủy",
-              icon: "fas fa-times-circle",
-            },
-          ];
+    var mount = document.getElementById("statsGrid");
+    if (mount) {
+      var cards =
+        role === "provider"
+          ? [
+              {
+                key: "pending",
+                label: "Đơn mới & Chờ nhận",
+                icon: "fas fa-bullhorn",
+              },
+              {
+                key: "accepted",
+                label: "Đã xác nhận",
+                icon: "fas fa-clipboard-check",
+              },
+              {
+                key: "processing",
+                label: "Đang thực hiện",
+                icon: "fas fa-spinner",
+              },
+              {
+                key: "completed",
+                label: "Đã hoàn thành",
+                icon: "fas fa-cogs",
+              },
+            ]
+          : [
+              { key: "total", label: "Tổng đơn", icon: "fas fa-boxes" },
+              {
+                key: "pending",
+                label: "Chờ xác nhận",
+                icon: "fas fa-hourglass-half",
+              },
+              {
+                key: "accepted",
+                label: "Đã xác nhận",
+                icon: "fas fa-clipboard-check",
+              },
+              {
+                key: "processing",
+                label: "Đang thực hiện",
+                icon: "fas fa-spinner",
+              },
+              {
+                key: "completed",
+                label: "Hoàn thành",
+                icon: "fas fa-check-circle",
+              },
+              {
+                key: "canceled",
+                label: "Đã hủy",
+                icon: "fas fa-times-circle",
+              },
+            ];
 
-    mount.innerHTML = cards
-      .map(function (card) {
-        return (
-          '<div class="col-12 col-sm-6 col-xl">' +
-          '<article class="metric-card" data-tone="' +
-          card.key +
-          '">' +
-          '<span class="metric-icon"><i class="' +
-          card.icon +
-          '" aria-hidden="true"></i></span>' +
-          '<div class="metric-body">' +
-          '<p class="metric-title">' +
-          card.label +
-          "</p>" +
-          '<p class="metric-value">' +
-          counts[card.key] +
-          "</p>" +
-          "</div>" +
-          "</article>" +
-          "</div>"
-        );
-      })
-      .join("");
+      mount.innerHTML = cards
+        .map(function (card) {
+          return (
+            '<div class="col-12 col-sm-6 col-xl">' +
+            '<article class="metric-card" data-tone="' +
+            card.key +
+            '">' +
+            '<span class="metric-icon"><i class="' +
+            card.icon +
+            '" aria-hidden="true"></i></span>' +
+            '<div class="metric-body">' +
+            '<p class="metric-title">' +
+            card.label +
+            "</p>" +
+            '<p class="metric-value">' +
+            counts[card.key] +
+            "</p>" +
+            "</div>" +
+            "</article>" +
+            "</div>"
+          );
+        })
+        .join("");
+    }
+
+    // Update status filter bar counts if they exist
+    var statusCounts = {
+      all: orders.length,
+      pending: counts.pending,
+      accepted: counts.accepted,
+      processing: counts.processing,
+      completed: counts.completed,
+      canceled: counts.canceled,
+    };
+
+    Object.keys(statusCounts).forEach(function (key) {
+      var countEl = document.getElementById("count-" + key);
+      if (countEl) {
+        countEl.textContent = statusCounts[key];
+      }
+    });
   }
 
   function setActionButtonLoading(
@@ -1423,6 +1440,19 @@
       if (countNode) {
         countNode.textContent = state.filtered.length + " đơn";
       }
+
+      var totalCountEl = document.getElementById("totalOrdersCount");
+      var totalAmountEl = document.getElementById("totalOrdersAmount");
+      
+      if (totalCountEl && totalAmountEl) {
+        var totalAmount = state.filtered.reduce(function (sum, order) {
+          return sum + calculateTotal(order);
+        }, 0);
+        
+        totalCountEl.textContent = state.filtered.length;
+        totalAmountEl.textContent = formatCurrency(totalAmount);
+      }
+
       if (emptyHintNode) {
         emptyHintNode.textContent =
           state.filtered.length > 0
@@ -1700,6 +1730,35 @@
       updateCount();
     }
 
+    function applyStatusFilter(status) {
+      var statusNode = document.getElementById("filterStatus");
+      if (statusNode) {
+        statusNode.value = status;
+      }
+      
+      // Update UI active state
+      var filterBar = document.getElementById("statusFilterBar");
+      if (filterBar) {
+        var buttons = filterBar.querySelectorAll(".status-filter-btn");
+        buttons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.dataset.status === status);
+        });
+      }
+
+      applyFilter();
+    }
+
+    var statusFilterBar = document.getElementById("statusFilterBar");
+    if (statusFilterBar) {
+      statusFilterBar.addEventListener("click", function (e) {
+        var btn = e.target.closest(".status-filter-btn");
+        if (!btn) return;
+        
+        var status = btn.dataset.status;
+        applyStatusFilter(status);
+      });
+    }
+
     function applyAssignedFilter() {
       var codeNode = document.getElementById("providerFilterOrderCode");
       var statusNode = document.getElementById("providerFilterStatus");
@@ -1763,7 +1822,7 @@
     if (resetBtn) {
       resetBtn.addEventListener("click", function () {
         if (form) form.reset();
-        applyFilter();
+        applyStatusFilter("all");
       });
     }
 
