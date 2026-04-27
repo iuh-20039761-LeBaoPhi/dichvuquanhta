@@ -1807,9 +1807,26 @@
       var filterBar = document.getElementById("statusFilterBar");
       if (filterBar) {
         var buttons = filterBar.querySelectorAll(".status-filter-btn");
+        var activeLabel = "Tất cả";
         buttons.forEach(function (btn) {
-          btn.classList.toggle("active", btn.dataset.status === status);
+          var isActive = btn.dataset.status === status;
+          btn.classList.toggle("active", isActive);
+          if (isActive) {
+            activeLabel = btn.querySelector(".status-label").textContent;
+          }
         });
+
+        // Update mobile trigger label
+        var currentLabelNode = document.getElementById("currentStatusLabel");
+        if (currentLabelNode) {
+          currentLabelNode.textContent = activeLabel;
+        }
+
+        // Close dropdown on mobile
+        var container = document.getElementById("statusFilterContainer");
+        if (container) {
+          container.classList.remove("is-open");
+        }
       }
 
       applyFilter();
@@ -1823,6 +1840,16 @@
         
         var status = btn.dataset.status;
         applyStatusFilter(status);
+      });
+    }
+
+    var statusFilterTrigger = document.getElementById("statusFilterTrigger");
+    if (statusFilterTrigger) {
+      statusFilterTrigger.addEventListener("click", function () {
+        var container = document.getElementById("statusFilterContainer");
+        if (container) {
+          container.classList.toggle("is-open");
+        }
       });
     }
 
