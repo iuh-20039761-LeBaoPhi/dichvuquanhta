@@ -270,7 +270,24 @@
       init();
     }
 
-    return { toggle, gps, refresh };
+    function lookup(query) {
+      if (!query || query.length < 5) return;
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
+            init().then(() => {
+              if (!map) return;
+              map.setView([lat, lng], 16);
+              if (marker) map.removeLayer(marker);
+              marker = L.marker([lat, lng]).addTo(map);
+            });
+          }
+        });
+    }
+
+    return { toggle, gps, refresh, lookup };
   })();
 
   function mapPickerInit() {
@@ -308,6 +325,14 @@
       bookingModal.dataset.mapSyncLoaded = "true";
       bookingModal.addEventListener("shown.bs.modal", function () {
         setTimeout(() => mapPicker.refresh(), 80);
+      });
+    }
+
+    const addrInput = document.getElementById("diachi") || document.getElementById("address");
+    if (addrInput && !addrInput.dataset.lookupBound) {
+      addrInput.dataset.lookupBound = "true";
+      addrInput.addEventListener("change", function (e) {
+        if (e.isTrusted) mapPicker.lookup(this.value);
       });
     }
   }
