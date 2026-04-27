@@ -1926,6 +1926,41 @@
         function formatMoney(val) {
           return Math.round(val).toLocaleString('vi-VN') + ' đ';
         }
+        // [Thêm mới] Hàm hỗ trợ tìm kiếm địa chỉ và định vị bản đồ khi tự động điền từ session
+        async function lookupAndFocusAddress(query) {
+          if (!query || query.length < 5) return;
+          try {
+            const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1', {
+              headers: { 'Accept-Language': 'vi' }
+            });
+            const data = await res.json();
+            if (data && data.length > 0) {
+              const lat = Number(data[0].lat);
+              const lng = Number(data[0].lon);
+              CUSTOMER_LOCATION = { lat: lat, lng: lng };
+
+              // Khởi tạo bản đồ nếu cần và tập trung vào vị trí tìm thấy
+              if (typeof ensureMapPickerInit === 'function') ensureMapPickerInit();
+              if (mapPickerMap) {
+                // Mở khung bản đồ nếu đang đóng để người dùng thấy vị trí đã gán
+                if ($('#mapPickerBox').hasClass('d-none')) {
+                  if (typeof toggleMapPicker === 'function') toggleMapPicker();
+                }
+                if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+                mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
+                mapPickerMap.setView([lat, lng], 16);
+                mapPickerMarker.bindPopup('<small>' + (data[0].display_name) + '</small>').openPopup();
+              }
+
+              // Cập nhật lại quãng đường và phí di chuyển
+              if (typeof recalculateDistanceAndPrice === 'function') {
+                recalculateDistanceAndPrice();
+              }
+            }
+          } catch (e) {
+            console.warn('Auto focus address lookup failed:', e);
+          }
+        }
         // [Thêm mới] Tự động điền thông tin khách hàng từ session nếu đã đăng nhập
         async function autoFillCustomerInfo() {
           try {
@@ -1936,7 +1971,11 @@
               if (user.hovaten) $('#customerName').val(user.hovaten);
               if (user.sodienthoai) $('#customerPhone').val(user.sodienthoai);
               if (user.email) $('#customerEmail').val(user.email);
-              if (user.diachi) $('#customerAddress').val(user.diachi);
+              if (user.diachi) {
+                $('#diachi').val(user.diachi);
+                // [Thêm mới] Tự động lookup địa chỉ và focus bản đồ khi gán từ session
+                lookupAndFocusAddress(user.diachi);
+              }
               // Tự động thu gọn nếu đã điền xong thông tin cơ bản và chưa bị thu gọn
               if (user.hovaten && user.sodienthoai) {
                 const box = document.getElementById('customerInfoBox');
