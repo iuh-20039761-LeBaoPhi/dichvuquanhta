@@ -83,12 +83,56 @@
     }
   }
 
+  function setupMobileMenu() {
+    var navMenu = document.getElementById('navMenu');
+    var toggler = document.querySelector('.navbar-toggler');
+    if (!navMenu || !toggler) return;
+
+    // Ngăn chặn sự kiện click lan truyền ra ngoài toggler (fix lỗi iPhone tự đóng menu)
+    toggler.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    // Đóng menu khi click vào các link (trên mobile)
+    var navLinks = navMenu.querySelectorAll('.nav-link:not(.dropdown-toggle)');
+    navLinks.forEach(function (link) {
+      link.addEventListener('click', function () {
+        if (window.getComputedStyle(toggler).display !== 'none') {
+          if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+            var bsCollapse = bootstrap.Collapse.getInstance(navMenu) || new bootstrap.Collapse(navMenu, { toggle: false });
+            bsCollapse.hide();
+          } else {
+            navMenu.classList.remove('show');
+          }
+        }
+      });
+    });
+
+    // Đóng menu khi click ra ngoài vùng menu (Safari/iPhone fix)
+    document.addEventListener('click', function (e) {
+      var isClickInsideMenu = navMenu.contains(e.target);
+      var isClickOnToggler = toggler.contains(e.target);
+
+      if (!isClickInsideMenu && !isClickOnToggler && navMenu.classList.contains('show')) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+          var bsCollapse = bootstrap.Collapse.getInstance(navMenu);
+          if (bsCollapse) bsCollapse.hide();
+          else navMenu.classList.remove('show');
+        } else {
+          navMenu.classList.remove('show');
+        }
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     Promise.all([
       loadPartial('site-header', 'html/shared-header.html'),
       loadPartial('site-footer', 'html/shared-footer.html')
     ]).then(function () {
       applyActiveNav();
+      // Khởi tạo menu mobile sau khi đã load xong header
+      setupMobileMenu();
       document.dispatchEvent(new CustomEvent('siteLayout:ready'));
     });
   });

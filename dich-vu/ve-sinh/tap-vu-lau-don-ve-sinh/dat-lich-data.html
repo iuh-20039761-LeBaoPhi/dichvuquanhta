@@ -785,7 +785,7 @@
                       <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #bcdcff">
                       </div>
                       <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
-                      <div id="distanceInfo" class="form-text mt-1 text-muted">Quãng đường và phí di chuyển sẽ được tính
+                      <div id="distanceInfo" class="form-text mt-1 text-muted d-none">Quãng đường và phí di chuyển sẽ được tính
                         tự động sau khi chọn vị trí.</div>
                     </div>
                   </div>
@@ -904,7 +904,7 @@
                       <span>Phụ thu ngày lễ (+30%)</span>
                       <span id="holidayFee" class="fw-bold">0 đ</span>
                     </div>
-                    <div class="d-flex justify-content-between small mb-1">
+                    <div class="d-none justify-content-between small mb-1" id="travelFeeRow">
                       <span>Phí di chuyển (5.000 đ/km)</span>
                       <span id="travelFee">0 đ</span>
                     </div>
@@ -1368,12 +1368,12 @@
 
           if (!CUSTOMER_LOCATION) {
             DISTANCE_KM = 0;
-            renderDistanceInfo('Quãng đường và phí di chuyển sẽ được tính tự động sau khi chọn vị trí.');
+            // renderDistanceInfo('Quãng đường và phí di chuyển sẽ được tính tự động sau khi chọn vị trí.');
             updateTotalPrice();
             return;
           }
 
-          renderDistanceInfo('Đang tính quãng đường thực tế từ vị trí nhân sự đến địa chỉ của bạn...');
+          // renderDistanceInfo('Đang tính quãng đường thực tế từ vị trí nhân sự đến địa chỉ của bạn...');
 
           try {
             var office = OFFICE_COORDS;
@@ -1394,7 +1394,10 @@
 
             if (requestId !== DISTANCE_REQUEST_ID) return;
 
-            DISTANCE_KM = Number(distanceKm.toFixed(2));
+            // DISTANCE_KM = Number(distanceKm.toFixed(2));
+            DISTANCE_KM = 0; // Luôn để 0 để ẩn tính phí di chuyển
+            
+            /*
             renderDistanceInfo(
               'Quãng đường ước tính: ' +
               DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
@@ -1402,11 +1405,12 @@
               formatMoney(DISTANCE_KM * 5000) +
               '.'
             );
+            */
           } catch (error) {
             if (requestId !== DISTANCE_REQUEST_ID) return;
 
             DISTANCE_KM = 0;
-            renderDistanceInfo('Không thể tính quãng đường tự động lúc này. Tạm tính phí di chuyển = 0 đ.', true);
+            // renderDistanceInfo('Không thể tính quãng đường tự động lúc này. Tạm tính phí di chuyển = 0 đ.', true);
           }
 
           updateTotalPrice();
@@ -1972,7 +1976,7 @@
               if (user.sodienthoai) $('#customerPhone').val(user.sodienthoai);
               if (user.email) $('#customerEmail').val(user.email);
               if (user.diachi) {
-                $('#diachi').val(user.diachi);
+                $('#customerAddress').val(user.diachi);
                 // [Thêm mới] Tự động lookup địa chỉ và focus bản đồ khi gán từ session
                 lookupAndFocusAddress(user.diachi);
               }
