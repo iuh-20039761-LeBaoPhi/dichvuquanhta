@@ -56,6 +56,11 @@
 
       .map-control-buttons { display: flex; gap: 8px; margin-top: 8px; }
 
+      .vehicle-photo-preview-img {
+        width: 120px; height: 90px; object-fit: cover;
+        border-radius: 8px; border: 1px solid #ddd;
+      }
+
       @media (max-width: 991.98px) {
         body { padding-top: 86px; }
         .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
@@ -86,7 +91,8 @@
             <p class="lead">Lái xe an toàn, chuyên nghiệp, đúng giờ</p>
           </div>
 
-          <div id="bookingPageSection" class="mx-auto" style="max-width: 760px">
+          <!-- ============ FORM RỘNG HƠN: 900px ============ -->
+          <div id="bookingPageSection" class="mx-auto" style="max-width: 900px">
             <div class="card border-0 shadow rounded-4">
               <div class="card-body p-4">
                 <form id="bookingForm">
@@ -113,41 +119,46 @@
                   <div class="trip-info-box">
                     <div class="trip-info-title"><i class="fas fa-car me-2"></i>Thông tin chuyến đi</div>
                     
-                    <!-- Điểm đón -->
-                    <div class="location-box" id="pickupBox">
-                      <label class="form-label fw-bold">
-                        <i class="fas fa-circle text-success me-1" style="font-size: 0.7rem;"></i>Điểm đón <span class="text-danger">*</span>
-                      </label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
-                        <input type="text" id="tripPickup" class="form-control" placeholder="Nhập địa chỉ hoặc chọn trên bản đồ" />
+                    <div class="row g-2">
+                      <div class="col-md-6">
+                        <!-- Điểm đón -->
+                        <div class="location-box" id="pickupBox">
+                          <label class="form-label fw-bold">
+                            <i class="fas fa-circle text-success me-1" style="font-size: 0.7rem;"></i>Điểm đón <span class="text-danger">*</span>
+                          </label>
+                          <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
+                            <input type="text" id="tripPickup" class="form-control" placeholder="Nhập địa chỉ hoặc chọn trên bản đồ" />
+                          </div>
+                          <div class="map-control-buttons">
+                            <button type="button" class="btn btn-success btn-sm flex-fill" onclick="getCurrentLocation('pickup')">
+                              <i class="fas fa-location-dot me-1"></i>Lấy vị trí hiện tại
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm flex-fill" onclick="toggleMapPicker('pickup')">
+                              <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <div class="map-control-buttons">
-                        <button type="button" class="btn btn-success btn-sm flex-fill" onclick="getCurrentLocation('pickup')">
-                          <i class="fas fa-location-dot me-1"></i>Lấy vị trí hiện tại
-                        </button>
-                        <button type="button" class="btn btn-warning btn-sm flex-fill" onclick="toggleMapPicker('pickup')">
-                          <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- Điểm đến -->
-                    <div class="location-box" id="destinationBox">
-                      <label class="form-label fw-bold">
-                        <i class="fas fa-flag-checkered text-danger me-1" style="font-size: 0.7rem;"></i>Điểm đến <span class="text-danger">*</span>
-                      </label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-flag-checkered"></i></span>
-                        <input type="text" id="tripDestination" class="form-control" placeholder="Nhập địa chỉ hoặc chọn trên bản đồ" />
-                      </div>
-                      <div class="map-control-buttons">
-                        <button type="button" class="btn btn-success btn-sm flex-fill" onclick="getCurrentLocation('destination')">
-                          <i class="fas fa-location-dot me-1"></i>Lấy vị trí hiện tại
-                        </button>
-                        <button type="button" class="btn btn-warning btn-sm flex-fill" onclick="toggleMapPicker('destination')">
-                          <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
-                        </button>
+                      <div class="col-md-6">
+                        <!-- Điểm đến -->
+                        <div class="location-box" id="destinationBox">
+                          <label class="form-label fw-bold">
+                            <i class="fas fa-flag-checkered text-danger me-1" style="font-size: 0.7rem;"></i>Điểm đến <span class="text-danger">*</span>
+                          </label>
+                          <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-flag-checkered"></i></span>
+                            <input type="text" id="tripDestination" class="form-control" placeholder="Nhập địa chỉ hoặc chọn trên bản đồ" />
+                          </div>
+                          <div class="map-control-buttons">
+                            <button type="button" class="btn btn-success btn-sm flex-fill" onclick="getCurrentLocation('destination')">
+                              <i class="fas fa-location-dot me-1"></i>Lấy vị trí hiện tại
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm flex-fill" onclick="toggleMapPicker('destination')">
+                              <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -192,33 +203,46 @@
                     </div>
                   </div>
 
-                  <!-- Chọn gói dịch vụ -->
+                  <!-- Chọn gói dịch vụ + NGÀY/GIỜ CÙNG DÒNG -->
                   <div class="schedule-box">
                     <div class="mb-2">
                       <label class="form-label fw-bold"><i class="fas fa-box me-1"></i>Chọn gói dịch vụ</label>
                       <div id="servicePackages"></div>
                     </div>
+                    <!-- ======= SỬA #1: NGÀY + GIỜ CÙNG 1 DÒNG ======= -->
                     <div class="row g-2">
                       <div class="col-md-6 mb-2">
-                        <label class="form-label fw-bold">Ngày bắt đầu:</label>
-                        <input type="date" id="startDate" class="form-control" />
+                        <label class="form-label fw-bold">Ngày bắt đầu & Giờ bắt đầu:</label>
+                        <div class="row g-1">
+                          <div class="col-7">
+                            <input type="date" id="startDate" class="form-control" />
+                          </div>
+                          <div class="col-5">
+                            <input type="time" id="startTime" class="form-control" />
+                          </div>
+                        </div>
                       </div>
                       <div class="col-md-6 mb-2">
-                        <label class="form-label fw-bold">Ngày kết thúc:</label>
-                        <input type="date" id="endDate" class="form-control" />
-                      </div>
-                    </div>
-                    <div class="row g-2 mt-1">
-                      <div class="col-md-6">
-                        <label class="form-label fw-bold">Giờ bắt đầu:</label>
-                        <input type="time" id="startTime" class="form-control" />
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label fw-bold">Giờ kết thúc:</label>
-                        <input type="time" id="endTime" class="form-control" />
+                        <label class="form-label fw-bold">Ngày kết thúc & Giờ kết thúc:</label>
+                        <div class="row g-1">
+                          <div class="col-7">
+                            <input type="date" id="endDate" class="form-control" />
+                          </div>
+                          <div class="col-5">
+                            <input type="time" id="endTime" class="form-control" />
+                          </div>
+                        </div>
                         <div class="form-text">Để trống nếu thuê theo ngày trọn gói</div>
                       </div>
                     </div>
+                  </div>
+
+                  <!-- ======= THÊM MỚI: Ảnh/chụp xe ======= -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold"><i class="fas fa-camera me-1"></i>Hình ảnh về xe của bạn (nếu có):</label>
+                    <input type="file" id="vehiclePhotos" class="form-control" accept="image/*,video/*" multiple />
+                    <div class="form-text">Có thể chụp hoặc quay video xe để tài xế nhận diện dễ dàng hơn.</div>
+                    <div id="vehiclePhotoPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
                   </div>
 
                   <!-- Yêu cầu khác -->
@@ -393,7 +417,6 @@
           return { isContact: isNaN(num), value: isNaN(num) ? 0 : num };
         }
 
-        // Hàm lấy tọa độ từ địa chỉ
         async function geocodeAddress(address) {
           try {
             var res = await fetch(
@@ -410,7 +433,6 @@
           }
         }
 
-        // Hàm lấy địa chỉ từ tọa độ
         async function reverseGeocode(lat, lng) {
           try {
             var res = await fetch(
@@ -425,7 +447,6 @@
           }
         }
 
-        // Tính quãng đường OSRM
         async function calculateRouteDistance(from, to) {
           if (!from || !to) return null;
           try {
@@ -451,7 +472,6 @@
           return R * c;
         }
 
-        // Tính và cập nhật quãng đường
         async function calculateAndUpdateRoute() {
           if (!PICKUP_LOCATION) {
             alert('Vui lòng chọn điểm đón trước');
@@ -487,7 +507,6 @@
           }
         }
 
-        // Lấy vị trí hiện tại
         function getCurrentLocation(type) {
           if (!navigator.geolocation) {
             alert('Trình duyệt không hỗ trợ GPS');
@@ -525,7 +544,6 @@
           $('#' + type + 'Box').addClass('active');
         }
 
-        // Bản đồ
         function initMap() {
           if (typeof L === 'undefined') return false;
           var el = document.getElementById('mapPickerEl');
@@ -595,7 +613,6 @@
           $('#mapPickerBox').addClass('d-none');
         }
 
-        // Render dịch vụ
         function renderService(service) {
           CURRENT_SERVICE = service;
           $('#serviceSelector').val(String(service.id));
@@ -752,7 +769,6 @@
           var originalHtml = btn.html();
           btn.html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...').prop('disabled', true);
 
-          // Dùng KRUD Helper để insert vào API dvqt.vn
           DVQTKrud.insertRow('datlich_taixe', {
             tenkhachhang: data.name || '',
             sdtkhachhang: data.phone || '',
@@ -789,7 +805,6 @@
           });
         }
 
-        // Load dịch vụ từ API
         async function loadServicesFromApi() {
           try {
             var rawServices = await DVQTKrud.listTable('dichvu_taixe');
@@ -813,6 +828,33 @@
             alert('Không thể tải dịch vụ từ API. Vui lòng thử lại sau.');
           }
         }
+
+        // ==========================================
+        // ======= THÊM MỚI: PREVIEW ẢNH XE ========
+        // ==========================================
+        document.getElementById('vehiclePhotos').addEventListener('change', function(e) {
+          var preview = document.getElementById('vehiclePhotoPreview');
+          preview.innerHTML = '';
+          var files = Array.from(e.target.files || []);
+          files.forEach(function(file) {
+            var url = URL.createObjectURL(file);
+            var isVideo = file.type.startsWith('video/');
+            if (isVideo) {
+              var vid = document.createElement('video');
+              vid.src = url;
+              vid.controls = true;
+              vid.className = 'vehicle-photo-preview-img';
+              vid.onloadeddata = function() { URL.revokeObjectURL(url); };
+              preview.appendChild(vid);
+            } else {
+              var img = document.createElement('img');
+              img.src = url;
+              img.className = 'vehicle-photo-preview-img';
+              img.onload = function() { URL.revokeObjectURL(url); };
+              preview.appendChild(img);
+            }
+          });
+        });
 
         // ==========================================
         // DOM READY
@@ -844,7 +886,8 @@
             if (!getSelectedPackage().length) { alert('Vui lòng chọn gói dịch vụ'); return; }
             if (!$('#tripPickup').val().trim()) { alert('Vui lòng nhập/chọn điểm đón'); return; }
             if (!$('#tripDestination').val().trim()) { alert('Vui lòng nhập/chọn điểm đến'); return; }
-            if (ACTUAL_DISTANCE_KM === 0) { alert('Vui lòng tính quãng đường trước'); return; }
+            // ======= SỬA #4: NỘI DUNG ALERT =======
+            if (ACTUAL_DISTANCE_KM === 0) { alert('Vui lòng nhập quãng đường'); return; }
             
             PENDING_BOOKING_DATA = collectBookingData();
             renderReviewData(PENDING_BOOKING_DATA);
