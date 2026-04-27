@@ -33,7 +33,7 @@ body {
 
 .sidebar-shell {
   width: 280px;
-  background: linear-gradient(180deg, #06b6d4, #3b82f6, #8b5cf6);
+  background: linear-gradient(to bottom, #2f80ed, #56ccf2);
   color: #c5d6e8;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -126,7 +126,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ffcfb2;
+  color: #e57847;
   text-decoration: none;
   padding: 10px 12px;
   border-radius: 12px;
