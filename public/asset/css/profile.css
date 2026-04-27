@@ -396,11 +396,16 @@ body {
 .avatar-preview {
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+    border-radius: 50% !important;
     border: 4px solid #fff;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     overflow: hidden;
     background: #f1f5f9;
+}
+
+.avatar-preview.cccd-box {
+    min-height: auto;
+    padding: 0;
 }
 
 .avatar-preview img {
@@ -428,11 +433,25 @@ body {
 
 .avatar-edit label:hover { transform: scale(1.1); }
 
-.cccd-upload-group {
+.cccd-upload-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-top: 10px;
+}
+
+.upload-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.upload-note {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    text-transform: uppercase;
 }
 
 .cccd-box {
@@ -440,10 +459,10 @@ body {
     border-radius: 12px;
     padding: 20px;
     text-align: center;
-    cursor: pointer;
+    cursor: default;
     transition: 0.2s;
     background: #fcfcfc;
-    min-height: 160px;
+    min-height: 140px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -452,9 +471,37 @@ body {
     overflow: hidden;
 }
 
+.cccd-box.has-image {
+    cursor: zoom-in;
+    border-style: solid;
+}
+
+.btn-edit-upload {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: 0.2s;
+}
+
+.btn-edit-upload:hover {
+    transform: scale(1.1);
+    background: #2563eb;
+}
+
 .cccd-box:hover {
     border-color: var(--primary);
-    background: var(--primary-soft);
 }
 
 .cccd-box i {
@@ -463,10 +510,10 @@ body {
     margin-bottom: 10px;
 }
 
-.cccd-box span {
+.cccd-box .box-text {
     font-weight: 600;
     color: var(--text-sub);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .cccd-preview, .cccd-preview-container {
@@ -476,11 +523,15 @@ body {
     height: 100%;
     object-fit: cover;
     display: none;
+    border-radius: inherit;
+    z-index: 5;
 }
+
 .cccd-preview-container iframe {
     width: 100%;
     height: 100%;
 }
+
 .cccd-overlay-link {
     position: absolute;
     inset: 0;
@@ -489,7 +540,7 @@ body {
 }
 
 @media (max-width: 576px) {
-    .cccd-upload-group { grid-template-columns: 1fr; }
+    .cccd-upload-grid { grid-template-columns: 1fr; }
 }
 /* Profile Status Controls - Premium Design */
 .profile-status-controls {

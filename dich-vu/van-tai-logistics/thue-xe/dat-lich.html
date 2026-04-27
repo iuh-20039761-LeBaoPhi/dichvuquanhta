@@ -522,7 +522,14 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                         <div class="tx-cf-row" id="tx-cf-id-row"><span class="tx-cf-label">CMND/CCCD</span><span id="tx-cf-id" class="tx-cf-val"></span></div>
                         <div class="tx-cf-row" id="tx-cf-address-row"><span class="tx-cf-label">Địa chỉ</span><span id="tx-cf-address" class="tx-cf-val"></span></div>
                         <div class="tx-cf-row" id="tx-cf-note-row"><span class="tx-cf-label">Ghi chú</span><span id="tx-cf-note" class="tx-cf-val"></span></div>
-                        <div class="tx-cf-row" id="tx-cf-media-row"><span class="tx-cf-label">Đính kèm</span><span id="tx-cf-media" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row" id="tx-cf-media-img-row" style="display:none;">
+                          <span class="tx-cf-label">Hình ảnh đính kèm</span>
+                          <span id="tx-cf-media-images" class="tx-cf-val d-flex flex-wrap gap-1"></span>
+                        </div>
+                        <div class="tx-cf-row" id="tx-cf-media-vid-row" style="display:none;">
+                          <span class="tx-cf-label">Video đính kèm</span>
+                          <span id="tx-cf-media-videos" class="tx-cf-val d-flex flex-wrap gap-1"></span>
+                        </div>
                       </div>
                     </details>
                   </div>
@@ -673,10 +680,14 @@ document.addEventListener('DOMContentLoaded', loadHeader);
             img.src = URL.createObjectURL(file);
             wrap.appendChild(img);
         } else {
-            const icon = document.createElement('div');
-            icon.style.cssText = 'width:100%;height:100%;background:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;';
-            icon.innerHTML = '<i class="fas fa-video" style="color:#3B82F6;font-size:1.4rem;"></i><span style="color:#ccc;font-size:0.6rem;text-align:center;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;">' + file.name + '</span>';
-            wrap.appendChild(icon);
+            const vid = document.createElement('video');
+            vid.src = URL.createObjectURL(file);
+            vid.muted = true;
+            vid.autoplay = true;
+            vid.loop = true;
+            vid.playsInline = true;
+            vid.style.cssText = 'width:100%;height:100%;object-fit:cover;background:#000;';
+            wrap.appendChild(vid);
         }
         wrap.appendChild(removeBtn);
         if (container) container.appendChild(wrap);
@@ -1335,14 +1346,31 @@ document.addEventListener('DOMContentLoaded', loadHeader);
             const noteRow2 = document.getElementById('tx-cf-note-row');
             const rawNote = form.querySelector('[name="notes"]')?.value.trim() || '';
             if (rawNote) { document.getElementById('tx-cf-note').textContent = rawNote; noteRow2.style.display = ''; } else noteRow2.style.display = 'none';
-            const mediaRow = document.getElementById('tx-cf-media-row');
-            if (_standaloneMediaFiles.length) {
-                const imgs2 = _standaloneMediaFiles.filter(m => m.file.type.startsWith('image/')).length;
-                const vids2 = _standaloneMediaFiles.filter(m => m.file.type.startsWith('video/')).length;
-                const parts2 = []; if (imgs2) parts2.push(imgs2 + ' ảnh'); if (vids2) parts2.push(vids2 + ' video');
-                document.getElementById('tx-cf-media').textContent = parts2.join(', ');
-                mediaRow.style.display = '';
-            } else mediaRow.style.display = 'none';
+            const imgRow = document.getElementById('tx-cf-media-img-row');
+            const vidRow = document.getElementById('tx-cf-media-vid-row');
+            const imgBox = document.getElementById('tx-cf-media-images');
+            const vidBox = document.getElementById('tx-cf-media-videos');
+
+            if (_standaloneMediaFiles.length && imgBox && vidBox) {
+                const photos = _standaloneMediaFiles.filter(m => m.file.type.startsWith('image/'));
+                const videos = _standaloneMediaFiles.filter(m => m.file.type.startsWith('video/'));
+
+                if (photos.length) {
+                    imgBox.innerHTML = photos.map(m => `<img src="${URL.createObjectURL(m.file)}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ddd;">`).join('');
+                    imgRow.style.display = '';
+                } else { imgRow.style.display = 'none'; }
+
+                if (videos.length) {
+                    vidBox.innerHTML = videos.map(m => {
+                        const vUrl = URL.createObjectURL(m.file);
+                        return `<video src="${vUrl}" muted autoplay loop playsinline style="width:40px;height:40px;object-fit:cover;border-radius:4px;background:#000;"></video>`;
+                    }).join('');
+                    vidRow.style.display = '';
+                } else { vidRow.style.display = 'none'; }
+            } else {
+                if (imgRow) imgRow.style.display = 'none';
+                if (vidRow) vidRow.style.display = 'none';
+            }
 
             document.getElementById('bookingFormFull').style.display  = 'none';
             document.getElementById('txBookingConfirm').style.display = '';
@@ -1443,7 +1471,11 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                         try {
                             const up = await DVQTApp.uploadFile(m.file, { folderKey: 30 });
                             if (up && up.success && up.fileId) {
-                                driveIds.push(up.fileId);
+                                let finalId = up.fileId;
+                                if (m.file.type.startsWith('video/')) {
+                                    finalId = 'vid_' + finalId;
+                                }
+                                driveIds.push(finalId);
                             }
                         } catch (err) {
                             console.warn('Lỗi upload 1 file media:', err);

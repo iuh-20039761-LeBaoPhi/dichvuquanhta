@@ -108,12 +108,14 @@
                         <form id="formInfo">
                             <!-- Avatar Upload Section -->
                             <div class="avatar-edit">
-                                <input type='file' id="avatarUpload" name="avatar" accept=".png, .jpg, .jpeg"
-                                    style="display:none;" />
-                                <label for="avatarUpload"><i class="fas fa-camera"></i></label>
-                                <div class="avatar-preview" id="avatarPreviewContainer">
+                                <div class="avatar-preview cccd-box" id="avatarPreviewContainer">
                                     <img id="avatarImage" src="asset/image/default-avatar.png" alt="Avatar">
                                 </div>
+                                <button type="button" class="btn-edit-upload" data-input-id="avatarUpload" title="Thay đổi ảnh đại diện" style="bottom: 5px; right: 5px; top: auto;">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                                <input type='file' id="avatarUpload" name="avatar" accept=".png, .jpg, .jpeg"
+                                    style="display:none;" />
                             </div>
 
                             <div class="row g-4">
@@ -195,31 +197,81 @@
                                     <input type="hidden" name="lng_hientai" id="lng_hientai">
                                 </div>
 
-                                <!-- CCCD Upload Section -->
+                                <!-- CCCD & Driver's License Upload Section -->
                                 <div class="col-md-12 mt-4">
-                                    <label class="form-label">Xác minh danh tính (CCCD/CMND)</label>
-                                    <div class="cccd-upload-group">
-                                        <div class="cccd-box" onclick="document.getElementById('cccdTruoc').click()">
-                                            <input type="file" id="cccdTruoc" name="cccd_truoc" accept="image/*"
-                                                style="display:none">
-                                            <div id="previewTruocContainer" class="cccd-preview-container">
-                                                <img id="previewTruoc" class="cccd-preview">
+                                    <label class="form-label">Xác minh danh tính & Giấy phép lái xe</label>
+                                    
+                                    <div class="mb-4">
+                                        <label class="small text-muted mb-1">Số CCCD / CMND</label>
+                                        <input type="text" class="form-control" name="cccd" placeholder="Nhập số căn cước công dân...">
+                                    </div>
+
+                                    <div class="cccd-upload-grid">
+                                        <!-- CCCD TRƯỚC -->
+                                        <div class="upload-item">
+                                            <div class="cccd-box" id="boxCCCDTruoc">
+                                                <button type="button" class="btn-edit-upload" data-input-id="cccdTruoc" title="Thay đổi ảnh">
+                                                    <i class="fas fa-camera"></i>
+                                                </button>
+                                                <input type="file" id="cccdTruoc" name="cccd_truoc" accept="image/*" style="display:none">
+                                                <div id="previewTruocContainer" class="cccd-preview-container">
+                                                    <img id="previewTruoc" class="cccd-preview">
+                                                </div>
+                                                <i class="fas fa-id-card"></i>
+                                                <span class="box-text">Mặt trước CCCD</span>
                                             </div>
-                                            <i class="fas fa-id-card"></i>
-                                            <span>Mặt trước CCCD</span>
+                                            <div class="upload-note">Ảnh mặt trước CCCD</div>
                                         </div>
-                                        <div class="cccd-box" onclick="document.getElementById('cccdSau').click()">
-                                            <input type="file" id="cccdSau" name="cccd_sau" accept="image/*"
-                                                style="display:none">
-                                            <div id="previewSauContainer" class="cccd-preview-container">
-                                                <img id="previewSau" class="cccd-preview">
+
+                                        <!-- CCCD SAU -->
+                                        <div class="upload-item">
+                                            <div class="cccd-box" id="boxCCCDSau">
+                                                <button type="button" class="btn-edit-upload" data-input-id="cccdSau" title="Thay đổi ảnh">
+                                                    <i class="fas fa-camera"></i>
+                                                </button>
+                                                <input type="file" id="cccdSau" name="cccd_sau" accept="image/*" style="display:none">
+                                                <div id="previewSauContainer" class="cccd-preview-container">
+                                                    <img id="previewSau" class="cccd-preview">
+                                                </div>
+                                                <i class="fas fa-id-card"></i>
+                                                <span class="box-text">Mặt sau CCCD</span>
                                             </div>
-                                            <i class="fas fa-id-card"></i>
-                                            <span>Mặt sau CCCD</span>
+                                            <div class="upload-note">Ảnh mặt sau CCCD</div>
+                                        </div>
+
+                                        <!-- GPLX TRƯỚC -->
+                                        <div class="upload-item">
+                                            <div class="cccd-box" id="boxGPLXTruoc">
+                                                <button type="button" class="btn-edit-upload" data-input-id="gplxTruoc" title="Thay đổi ảnh">
+                                                    <i class="fas fa-camera"></i>
+                                                </button>
+                                                <input type="file" id="gplxTruoc" name="gplx_truoc" accept="image/*" style="display:none">
+                                                <div id="previewGPLXTruocContainer" class="cccd-preview-container">
+                                                    <img id="previewGPLXTruoc" class="cccd-preview">
+                                                </div>
+                                                <i class="fas fa-address-card"></i>
+                                                <span class="box-text">Mặt trước GPLX</span>
+                                            </div>
+                                            <div class="upload-note">Ảnh mặt trước GPLX</div>
+                                        </div>
+
+                                        <!-- GPLX SAU -->
+                                        <div class="upload-item">
+                                            <div class="cccd-box" id="boxGPLXSau">
+                                                <button type="button" class="btn-edit-upload" data-input-id="gplxSau" title="Thay đổi ảnh">
+                                                    <i class="fas fa-camera"></i>
+                                                </button>
+                                                <input type="file" id="gplxSau" name="gplx_sau" accept="image/*" style="display:none">
+                                                <div id="previewGPLXSauContainer" class="cccd-preview-container">
+                                                    <img id="previewGPLXSau" class="cccd-preview">
+                                                </div>
+                                                <i class="fas fa-address-card"></i>
+                                                <span class="box-text">Mặt sau GPLX</span>
+                                            </div>
+                                            <div class="upload-note">Ảnh mặt sau GPLX</div>
                                         </div>
                                     </div>
-                                    <p class="small text-muted mt-2"><i class="fas fa-info-circle me-1"></i> Hình ảnh
-                                        phải rõ nét, không bị lóa hoặc mất góc.</p>
+                                    <p class="small text-muted mt-3"><i class="fas fa-info-circle me-1"></i> Hình ảnh phải rõ nét, không bị lóa hoặc mất góc để thuận tiện cho việc xác thực.</p>
                                 </div>
 
                                 <div class="col-12 mt-4">

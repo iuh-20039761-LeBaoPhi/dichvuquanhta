@@ -86,6 +86,8 @@ window.DVQTKrud = (function () {
                 link_avatar: 'text',
                 link_cccd_truoc: 'text',
                 link_cccd_sau: 'text',
+                link_gplx_truoc: 'text',
+                link_gplx_sau: 'text',
                 id_dichvu: 'text',
                 trangthai: 'text',
                 motadichvu: 'text'

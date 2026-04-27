@@ -493,10 +493,14 @@
                 img.src = URL.createObjectURL(file);
                 wrap.appendChild(img);
             } else {
-                const icon = document.createElement('div');
-                icon.style.cssText = 'width:100%;height:100%;background:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;';
-                icon.innerHTML = '<i class="fas fa-video" style="color:#3B82F6;font-size:1.4rem;"></i><span style="color:#ccc;font-size:0.6rem;text-align:center;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;">' + file.name + '</span>';
-                wrap.appendChild(icon);
+                const vid = document.createElement('video');
+                vid.src = URL.createObjectURL(file);
+                vid.muted = true;
+                vid.autoplay = true;
+                vid.loop = true;
+                vid.playsInline = true;
+                vid.style.cssText = 'width:100%;height:100%;object-fit:cover;background:#000;';
+                wrap.appendChild(vid);
             }
             wrap.appendChild(removeBtn);
             if (container) container.appendChild(wrap);
@@ -624,6 +628,33 @@
             const carRow = document.getElementById('tx-cf-car-front-row');
             if(carRow) carRow.style.display = 'flex';
 
+            // Populate Attached Media in Confirmation
+            const imgRow = document.getElementById('tx-cf-media-img-row');
+            const vidRow = document.getElementById('tx-cf-media-vid-row');
+            const imgBox = document.getElementById('tx-cf-media-images');
+            const vidBox = document.getElementById('tx-cf-media-videos');
+
+            if (_modalMediaFiles.length && imgBox && vidBox) {
+                const photos = _modalMediaFiles.filter(m => m.file.type.startsWith('image/'));
+                const videos = _modalMediaFiles.filter(m => m.file.type.startsWith('video/'));
+
+                if (photos.length) {
+                    imgBox.innerHTML = photos.map(m => `<img src="${URL.createObjectURL(m.file)}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ddd;">`).join('');
+                    if (imgRow) imgRow.style.display = 'flex';
+                } else if (imgRow) { imgRow.style.display = 'none'; }
+
+                if (videos.length) {
+                    vidBox.innerHTML = videos.map(m => {
+                        const vUrl = URL.createObjectURL(m.file);
+                        return `<video src="${vUrl}" muted autoplay loop playsinline style="width:40px;height:40px;object-fit:cover;border-radius:4px;background:#000;"></video>`;
+                    }).join('');
+                    if (vidRow) vidRow.style.display = 'flex';
+                } else if (vidRow) { vidRow.style.display = 'none'; }
+            } else {
+                if (imgRow) imgRow.style.display = 'none';
+                if (vidRow) vidRow.style.display = 'none';
+            }
+
             document.getElementById('bookingFormFull').style.display = 'none';
             document.getElementById('txBookingConfirm').style.display = 'block';
             
@@ -691,7 +722,13 @@
                             for (const m of _modalMediaFiles) {
                                 try {
                                     const up = await DVQTApp.uploadFile(m.file, { folderKey: 30 });
-                                    if (up && up.success) driveIds.push(up.fileId);
+                                    if (up && up.success && up.fileId) {
+                                        let finalId = up.fileId;
+                                        if (m.file && m.file.type && m.file.type.startsWith('video/')) {
+                                            finalId = 'vid_' + finalId;
+                                        }
+                                        driveIds.push(finalId);
+                                    }
                                 } catch (err) {
                                     console.warn('Upload failed for 1 file:', err);
                                 }

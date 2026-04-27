@@ -132,6 +132,7 @@
         form.sodienthoai.value = currentUser.sodienthoai || '';
         form.email.value = currentUser.email || '';
         form.diachi.value = currentUser.diachi || '';
+        if (form.cccd) form.cccd.value = currentUser.cccd || '';
         
         // Load Current Address
         if (form.diachihientai) form.diachihientai.value = currentUser.diachihientai || '';
@@ -149,6 +150,8 @@
         const avatarLink = currentUser.link_avatar;
         const cccdTruocLink = currentUser.link_cccd_truoc;
         const cccdSauLink = currentUser.link_cccd_sau;
+        const gplxTruocLink = currentUser.link_gplx_truoc;
+        const gplxSauLink = currentUser.link_gplx_sau;
 
         const renderDriveOrImg = (containerId, imgId, fileId) => {
             const container = document.getElementById(containerId);
@@ -156,36 +159,42 @@
             if (!container || !imgEl) return;
 
             if (fileId && !fileId.startsWith('http')) {
+                const viewUrl = `https://drive.google.com/file/d/${fileId}/view`;
                 // Sử dụng phương pháp iframe preview phóng đại để giấu thanh công cụ
                 container.innerHTML = `
                     <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:inherit;">
                         <iframe src="https://drive.google.com/file/d/${fileId}/preview" 
                                 frameborder="0" scrolling="no"
                                 style="width: 180%; height: 180%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
-                        <a href="https://drive.google.com/file/d/${fileId}/view" target="_blank" class="cccd-overlay-link" style="display:block;"></a>
                     </div>
                 `;
+                container.style.display = 'block';
+                
+                const box = container.closest('.cccd-box') || container.closest('.avatar-preview');
+                if (box) {
+                    box.classList.add('has-image');
+                    box.setAttribute('data-view-url', viewUrl);
+                }
             } else if (fileId && fileId.startsWith('http')) {
                 imgEl.src = fileId;
                 imgEl.style.display = 'block';
                 container.innerHTML = '';
                 container.appendChild(imgEl);
+                container.style.display = 'block';
+                const box = container.closest('.cccd-box') || container.closest('.avatar-preview');
+                if (box) {
+                    box.classList.add('has-image');
+                    // For direct URLs, the URL itself is the view URL
+                    box.setAttribute('data-view-url', fileId);
+                }
             }
         };
 
-        if (avatarLink) {
-             renderDriveOrImg('avatarPreviewContainer', 'avatarImage', avatarLink);
-        }
-        
-        if (cccdTruocLink) {
-            renderDriveOrImg('previewTruocContainer', 'previewTruoc', cccdTruocLink);
-            document.getElementById('previewTruocContainer').style.display = 'block';
-        }
-
-        if (cccdSauLink) {
-            renderDriveOrImg('previewSauContainer', 'previewSau', cccdSauLink);
-            document.getElementById('previewSauContainer').style.display = 'block';
-        }
+        if (avatarLink) renderDriveOrImg('avatarPreviewContainer', 'avatarImage', avatarLink);
+        if (cccdTruocLink) renderDriveOrImg('previewTruocContainer', 'previewTruoc', cccdTruocLink);
+        if (cccdSauLink) renderDriveOrImg('previewSauContainer', 'previewSau', cccdSauLink);
+        if (gplxTruocLink) renderDriveOrImg('previewGPLXTruocContainer', 'previewGPLXTruoc', gplxTruocLink);
+        if (gplxSauLink) renderDriveOrImg('previewGPLXSauContainer', 'previewGPLXSau', gplxSauLink);
 
         // Fill coordinates
         if (currentUser.maplat && currentUser.maplng) {
@@ -363,31 +372,75 @@
         }
     };
 
-    function setupImagePreview(inputId, previewId) {
+    window.handleBoxClick = function(el) {
+        // Ưu tiên xem qua Drive URL được lưu trong data attribute
+        const viewUrl = el.getAttribute('data-view-url');
+        if (viewUrl) {
+            window.open(viewUrl, '_blank');
+            return;
+        }
+
+        const img = el.querySelector('img');
+        if (img && img.src && img.style.display !== 'none' && img.src !== window.location.href) {
+            // Nếu là ảnh vừa chọn (blob) hoặc ảnh trực tiếp
+            window.open(img.src, '_blank');
+        } else {
+            // Nếu chưa có ảnh, tìm nút upload trong box này và click
+            const btn = el.querySelector('.btn-edit-upload');
+            if (btn) btn.click();
+        }
+    };
+
+    function setupImagePreview(inputId, previewId, containerId) {
         const input = document.getElementById(inputId);
-        const preview = document.getElementById(previewId);
-        if (!input || !preview) return;
+        if (!input) return;
 
         input.onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    preview.src = event.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
+                const blobUrl = URL.createObjectURL(file);
+                const container = document.getElementById(containerId);
+                
+                if (container) {
+                    // Xóa content cũ và chèn img mới với style hiển thị cưỡng bách
+                    container.innerHTML = `<img id="${previewId}" src="${blobUrl}" style="display:block !important; width:100%; height:100%; object-fit:cover; border-radius:inherit;">`;
+                    container.style.setProperty('display', 'block', 'important');
+                    
+                    // Thêm class để đổi cursor
+                    const box = container.closest('.cccd-box');
+                    if (box) box.classList.add('has-image');
+                } else {
+                    const preview = document.getElementById(previewId);
+                    if (preview) {
+                        preview.src = blobUrl;
+                        preview.style.setProperty('display', 'block', 'important');
+                    }
+                }
             }
         };
     }
 
     function setupEvents() {
-        // Gắn sự kiện copy (Event Delegation)
+        // Gắn sự kiện cho các box ảnh (Xem chi tiết & Thay đổi)
         document.addEventListener('click', (e) => {
-            const copyBtn = e.target.closest('.btn-copy-coords');
-            if (copyBtn) {
+            const editBtn = e.target.closest('.btn-edit-upload');
+            if (editBtn) {
                 e.preventDefault();
-                handleCopyCoords(copyBtn);
+                e.stopImmediatePropagation();
+                const inputId = editBtn.getAttribute('data-input-id');
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.click();
+                }
+                return;
+            }
+
+            const cccdBox = e.target.closest('.cccd-box');
+            if (cccdBox) {
+                // Chỉ chạy handleBoxClick nếu không phải click vào vùng input file (nếu có lộ ra)
+                if (e.target.tagName !== 'INPUT') {
+                    handleBoxClick(cccdBox);
+                }
             }
         });
 
@@ -492,9 +545,11 @@
         });
 
         // Setup Image Previews
-        setupImagePreview('avatarUpload', 'avatarImage');
-        setupImagePreview('cccdTruoc', 'previewTruoc');
-        setupImagePreview('cccdSau', 'previewSau');
+        setupImagePreview('avatarUpload', 'avatarImage', 'avatarPreviewContainer');
+        setupImagePreview('cccdTruoc', 'previewTruoc', 'previewTruocContainer');
+        setupImagePreview('cccdSau', 'previewSau', 'previewSauContainer');
+        setupImagePreview('gplxTruoc', 'previewGPLXTruoc', 'previewGPLXTruocContainer');
+        setupImagePreview('gplxSau', 'previewGPLXSau', 'previewGPLXSauContainer');
         // Save Personal Info
         document.getElementById('formInfo').onsubmit = async (e) => {
             e.preventDefault();
@@ -506,6 +561,7 @@
                 hovaten: e.target.hovaten.value,
                 email: e.target.email.value,
                 diachi: e.target.diachi.value,
+                cccd: e.target.cccd ? e.target.cccd.value : (currentUser.cccd || ''),
                 maplat: document.getElementById('reg_lat').value || '',
                 maplng: document.getElementById('reg_lng').value || '',
                 diachihientai: e.target.diachihientai ? e.target.diachihientai.value : (currentUser.diachihientai || ''),
@@ -518,10 +574,15 @@
                 const avatarFile = document.getElementById('avatarUpload').files[0];
                 const cccdTruocFile = document.getElementById('cccdTruoc').files[0];
                 const cccdSauFile = document.getElementById('cccdSau').files[0];
+                const gplxTruocFile = document.getElementById('gplxTruoc').files[0];
+                const gplxSauFile = document.getElementById('gplxSau').files[0];
 
-                const uName = payload.hovaten || currentUser.hovaten || 'user';
+                const uName = (payload.hovaten || currentUser.hovaten || 'user').replace(/\s+/g, '-');
                 const uPhone = currentUser.sdt || currentUser.sodienthoai || '';
-                const baseSlug = `${uName}-${uPhone}`;
+                const d = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                const ts = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-${d.getMilliseconds()}`;
+                const baseSlug = `${uName}-${uPhone}-${ts}`;
 
                 if (avatarFile) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải lên ảnh đại diện...';
@@ -539,6 +600,18 @@
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải lên CCCD (mặt sau)...';
                     const up = await app.uploadFile(cccdSauFile, { folderKey: 33, customName: baseSlug + '-cccd-sau' });
                     if (up.success) payload.link_cccd_sau = up.fileId;
+                }
+
+                if (gplxTruocFile) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải lên GPLX (mặt trước)...';
+                    const up = await app.uploadFile(gplxTruocFile, { folderKey: 33, customName: baseSlug + '-gplx-truoc' });
+                    if (up.success) payload.link_gplx_truoc = up.fileId;
+                }
+
+                if (gplxSauFile) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang tải lên GPLX (mặt sau)...';
+                    const up = await app.uploadFile(gplxSauFile, { folderKey: 33, customName: baseSlug + '-gplx-sau' });
+                    if (up.success) payload.link_gplx_sau = up.fileId;
                 }
             } catch (uploadErr) {
                 console.warn('Image upload failed but continuing with info update:', uploadErr);

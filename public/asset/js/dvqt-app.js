@@ -261,14 +261,21 @@
             if (!fileObj) throw new Error('Không có file để tải lên');
 
             const opts = options || {};
-            const timestamp = Math.floor(Date.now() / 1000);
+            const d = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            const ts = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-${d.getMilliseconds()}`;
             
             // Lấy phần mở rộng (đuôi file)
             const ext = fileObj.name.split('.').pop().toLowerCase();
             
-            // Xử lý tên file cuối cùng
-            let baseName = opts.customName || fileObj.name.substring(0, fileObj.name.lastIndexOf('.'));
-            let finalName = DVQTCore.sanitizeName(baseName) + '-' + timestamp + '.' + ext;
+            // Xử lý tên file cuối cùng: Nếu có customName thì dùng luôn, không tự chèn thêm timestamp nữa
+            let finalName = "";
+            if (opts.customName) {
+                finalName = DVQTCore.sanitizeName(opts.customName) + '.' + ext;
+            } else {
+                let baseName = fileObj.name.substring(0, fileObj.name.lastIndexOf('.'));
+                finalName = DVQTCore.sanitizeName(baseName) + '-' + ts + '.' + ext;
+            }
 
             const formData = new FormData();
             formData.append('file', fileObj);

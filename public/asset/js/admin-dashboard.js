@@ -614,6 +614,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const avatarVal = u.avatartenfile || u.link_avatar || u.avatar || '';
         const cccdFrontVal = u.cccdmattruoctenfile || u.link_cccd_truoc || u.anh_cccd_truoc || '';
         const cccdBackVal = u.cccdmatsautenfile || u.link_cccd_sau || u.anh_cccd_sau || '';
+        const gplxVal = u.link_giay_phep_lai_xe || u.giay_phep_lai_xe || '';
 
         const bodyHtml = `
             <div class="account-detail-container">
@@ -685,18 +686,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                             </div>
                         </div>
 
-                        <h6 class="fw-bold text-uppercase border-bottom pb-2 mb-3"><i class="fas fa-id-card me-2"></i>Hình ảnh xác minh (CCCD)</h6>
+                        <h6 class="fw-bold text-uppercase border-bottom pb-2 mb-3"><i class="fas fa-id-card me-2"></i>Hình ảnh xác minh (CCCD & GPLX)</h6>
                         <div class="row g-2">
-                            <div class="col-6">
+                            <div class="col-4">
                                 <p class="small text-muted text-center mb-1">Mặt trước</p>
-                                <div class="cccd-img-box border rounded overflow-hidden bg-light d-flex align-items-center justify-content-center" style="height: 120px;">
+                                <div class="cccd-img-box border rounded overflow-hidden bg-light d-flex align-items-center justify-content-center" style="height: 100px;">
                                     ${renderImage(cccdFrontVal, 'front')}
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <p class="small text-muted text-center mb-1">Mặt sau</p>
-                                <div class="cccd-img-box border rounded overflow-hidden bg-light d-flex align-items-center justify-content-center" style="height: 120px;">
+                                <div class="cccd-img-box border rounded overflow-hidden bg-light d-flex align-items-center justify-content-center" style="height: 100px;">
                                     ${renderImage(cccdBackVal, 'back')}
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <p class="small text-muted text-center mb-1">GPLX</p>
+                                <div class="cccd-img-box border rounded overflow-hidden bg-light d-flex align-items-center justify-content-center" style="height: 100px;">
+                                    ${renderImage(gplxVal, 'gplx')}
                                 </div>
                             </div>
                         </div>

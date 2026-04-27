@@ -494,12 +494,61 @@
                 <p class="text-muted fw-500">Đang khởi tạo hệ thống quản trị...</p>
             </div>
         </div>
+
+        <!-- Order Detail Area (Admin) -->
+        <div class="content-area d-none" id="orderDetailArea" style="padding-top: 0px;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <button class="btn btn-white border shadow-sm d-flex align-items-center justify-content-center rounded-circle" onclick="closeOrderDetail()" style="width: 42px; height: 42px;" title="Quay lại danh sách">
+                    <i class="fas fa-arrow-left text-primary"></i>
+                </button>
+                <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-700">
+                    <i class="fas fa-user-shield me-1"></i> CHI TIẾT ĐƠN HÀNG (ADMIN)
+                </div>
+            </div>
+            <div class="bg-white shadow-sm overflow-hidden border" style="border-radius: 24px; height: calc(100vh - 180px);">
+                <iframe id="orderDetailFrame" src="" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+            </div>
+        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../../../public/asset/js/dvqt-krud.js"></script>
     <script src="../../../../public/asset/js/dvqt-app.js"></script>
     <script src="../public/assets/js/admin/admin-logic.js"></script>
+    <script>
+        // Global Order Detail Viewer for Admin (Thợ Nhà Style)
+        window.openOrderDetailModal = function(id) {
+            const pageContent = document.getElementById('pageContent');
+            const detailArea = document.getElementById('orderDetailArea');
+            const frame = document.getElementById('orderDetailFrame');
+            const pageTitle = document.getElementById('pageTitleDisplay');
+            
+            if(!detailArea || !frame) return window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
+
+            window._oldPageTitle = pageTitle.textContent;
+            pageTitle.textContent = 'Admin - Đơn hàng #' + String(id).padStart(7, '0');
+
+            pageContent.classList.add('d-none');
+            detailArea.classList.remove('d-none');
+            
+            frame.src = 'about:blank';
+            frame.src = '../chi-tiet-thue-xe.html?id=' + id + '&embed=1';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.closeOrderDetail = function() {
+            const pageContent = document.getElementById('pageContent');
+            const detailArea = document.getElementById('orderDetailArea');
+            const pageTitle = document.getElementById('pageTitleDisplay');
+
+            detailArea.classList.add('d-none');
+            pageContent.classList.remove('d-none');
+            if(window._oldPageTitle) pageTitle.textContent = window._oldPageTitle;
+            
+            document.getElementById('orderDetailFrame').src = 'about:blank';
+        };
+    </script>
     <script>
         // --- Admin Shell Logic ---
         (function () {
@@ -540,6 +589,11 @@
 
             function loadPage(pageId) {
                 const contentArea = document.getElementById('pageContent');
+
+                // Tự động đóng chi tiết đơn hàng nếu đang mở (Thợ Nhà Style)
+                if (typeof window.closeOrderDetail === 'function') {
+                    window.closeOrderDetail();
+                }
                 const titleDisplay = document.getElementById('pageTitleDisplay');
 
                 // Update nav

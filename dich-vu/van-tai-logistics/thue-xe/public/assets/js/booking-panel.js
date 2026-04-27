@@ -105,24 +105,6 @@
     /*  API công khai                                                       */
     /* ------------------------------------------------------------------ */
     window.txBpOpen = function () {
-        const session = window._dvqt_session_cache;
-        if (session && session.logged_in) {
-            const serviceIds = String(session.id_dichvu || '0').split(',');
-            if (serviceIds.includes('10')) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Thông báo',
-                        text: 'Tài khoản Nhà cung cấp không thể thực hiện chức năng đặt xe này.',
-                        confirmButtonColor: '#0ea5e9'
-                    });
-                } else {
-                    Utils.showToast('Tài khoản Nhà cung cấp không thể thực hiện chức năng đặt xe này.', 'danger');
-                }
-                return;
-            }
-        }
-
         if (_ready) { _showModal(); }
         else { _pendingShow = true; }
     };

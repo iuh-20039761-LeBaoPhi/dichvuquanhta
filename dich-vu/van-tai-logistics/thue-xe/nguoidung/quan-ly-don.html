@@ -3,50 +3,122 @@
         window.location.href = 'trang-ca-nhan.html';
     }
 </script>
-<!-- 1. ĐƠN HÀNG CẦN XỬ LÝ -->
-<div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; border-left: 4px solid #0d6efd !important;">
-    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold text-primary"><i class="fas fa-bell me-2"></i>Đơn hàng cần xử lý ngay</h6>
-        <span class="badge bg-primary rounded-pill" id="pendingOrderCount">0</span>
-    </div>
-    <div class="card-body p-0">
-        <div id="pendingOrdersTableWrap" class="d-none d-md-block">
-            <div class="text-center py-4 text-muted small">Đang tải dữ liệu...</div>
+<!-- Provider Order Management Partial (Styled like Admin) -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
+    <div class="card-header bg-white py-3 border-0">
+        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-3">
+            <div>
+                <h6 class="fw-800 mb-0">Quản lý Đơn khách đặt</h6>
+                <p class="text-muted small mb-0" style="font-size: 0.75rem;">Theo dõi và xử lý các yêu cầu thuê xe từ khách hàng</p>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2 w-100">
+                <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+                    <div class="input-group input-group-sm" style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 140px;">
+                        <span class="input-group-text bg-light border-0 small fw-600 text-muted" style="font-size: 0.7rem;">Từ</span>
+                        <input type="date" class="form-control bg-light border-0 small" id="orderFromDate" onchange="filterOrders()" style="font-size: 0.75rem;">
+                    </div>
+                    <div class="input-group input-group-sm" style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 140px;">
+                        <span class="input-group-text bg-light border-0 small fw-600 text-muted" style="font-size: 0.7rem;">Đến</span>
+                        <input type="date" class="form-control bg-light border-0 small" id="orderToDate" onchange="filterOrders()" style="font-size: 0.75rem;">
+                    </div>
+                </div>
+                <div class="d-flex gap-2 flex-grow-1">
+                    <div class="input-group search-box-wrap" style="flex: 1; min-width: 120px;">
+                        <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted small"></i></span>
+                        <input type="text" class="form-control bg-light border-0 small" placeholder="Mã đơn / Tên khách..." id="orderSearchInput" onkeyup="filterOrders()" style="font-size: 0.85rem;">
+                    </div>
+                    <button class="btn btn-primary rounded-circle shadow-sm d-none d-md-flex align-items-center justify-content-center" onclick="loadProviderOrders()" style="width: 38px; height: 38px; flex-shrink: 0;" title="Tải lại dữ liệu">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
         </div>
-        <div id="pendingOrdersCardsWrap" class="d-block d-md-none p-2"></div>
-    </div>
-</div>
 
-<!-- 2. TẤT CẢ ĐƠN ĐẶT XE -->
-<div class="card border-0 shadow-sm" style="border-radius: 16px;">
-    <div class="card-header bg-white py-4 border-0 d-flex justify-content-between align-items-center">
-        <div>
-            <h5 class="fw-800 mb-1">Đơn đặt xe của tôi</h5>
-            <p class="text-muted small mb-0">Theo dõi toàn bộ lịch sử thuê xe</p>
+        <!-- Order Status Tabs -->
+        <div class="status-tabs-wrapper mt-2 px-2">
+            <!-- Mobile Dropdown -->
+            <div class="d-md-none mb-2">
+                <div class="dropdown w-100">
+                    <button class="btn btn-light w-100 d-flex justify-content-between align-items-center fw-bold" type="button" id="mobileStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 12px; font-size: 0.85rem; padding: 10px 15px; background: #f8f9fa; border: 1px solid #eee;">
+                        <span><i class="fas fa-filter text-muted me-2"></i>Trạng thái: <span id="currentStatusText" class="text-primary">Tất cả</span></span>
+                        <i class="fas fa-chevron-down small text-muted"></i>
+                    </button>
+                    <ul class="dropdown-menu w-100 shadow-sm border-0 mt-1" aria-labelledby="mobileStatusDropdown" style="border-radius: 12px; padding: 8px;">
+                        <li><a class="dropdown-item rounded-3 py-2 active" href="javascript:void(0)" id="tabAllMob" onclick="switchOrderTab('all')">Tất cả <span class="badge bg-secondary ms-1 float-end" id="countAllMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabNewMob" onclick="switchOrderTab('new')">Đang xác nhận <span class="badge bg-warning text-dark ms-1 float-end" id="countNewMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabAcceptedMob" onclick="switchOrderTab('accepted')">Đã nhận <span class="badge bg-info text-dark ms-1 float-end" id="countAcceptedMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabDoingMob" onclick="switchOrderTab('doing')">Đã bắt đầu <span class="badge bg-primary ms-1 float-end" id="countDoingMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabDoneMob" onclick="switchOrderTab('done')">Đã hoàn thành <span class="badge bg-success ms-1 float-end" id="countDoneMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabCancelMob" onclick="switchOrderTab('cancel')">Đã hủy <span class="badge bg-danger ms-1 float-end" id="countCancelMob">0</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Desktop Tabs -->
+            <ul class="nav nav-pills nav-fill bg-light p-1 d-none d-md-flex w-100" style="border-radius: 12px; font-size: 0.75rem;">
+                <li class="nav-item">
+                    <a class="nav-link active fw-bold" href="#" id="tabAll" onclick="switchOrderTab('all')">Tất cả <span class="badge bg-secondary ms-1" id="countAll">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabNew" onclick="switchOrderTab('new')">Đang xác nhận <span class="badge bg-warning text-dark ms-1" id="countNew">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabAccepted" onclick="switchOrderTab('accepted')">Đã nhận <span class="badge bg-info text-dark ms-1" id="countAccepted">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabDoing" onclick="switchOrderTab('doing')">Đã bắt đầu <span class="badge bg-primary ms-1" id="countDoing">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabDone" onclick="switchOrderTab('done')">Đã hoàn thành <span class="badge bg-success ms-1" id="countDone">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabCancel" onclick="switchOrderTab('cancel')">Đã hủy <span class="badge bg-danger ms-1" id="countCancel">0</span></a>
+                </li>
+            </ul>
         </div>
-        <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="loadProviderOrders()">
-            <i class="fas fa-sync-alt me-1"></i> Làm mới
-        </button>
     </div>
+
     <div class="card-body p-0">
-        <div class="table-responsive d-none d-md-block">
-            <table class="table align-middle mb-0">
-                <thead class="bg-light text-muted small uppercase">
-                    <tr>
-                        <th class="ps-4" style="width: 25%;">Mã đơn / Xe</th>
-                        <th style="width: 15%;">Khách hàng</th>
-                        <th style="width: 25%;">Thời gian thuê</th>
-                        <th style="width: 15%;">Tổng tiền</th>
-                        <th style="width: 10%;">Trạng thái</th>
-                        <th class="pe-4 text-end text-nowrap" style="width: 1%;">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="providerOrderBody">
-                    <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
-                </tbody>
-            </table>
+        <!-- Mobile Quick Summary -->
+        <div class="d-lg-none bg-light px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+            <div class="small text-muted fw-bold uppercase">Tổng cộng (<span id="showingCountMobile">0</span>)</div>
+            <div class="text-primary fw-800" id="totalMoneyMobile">0đ</div>
         </div>
-        <div id="providerOrderCards" class="d-block d-md-none p-2"></div>
+
+        <div class="table-container">
+            <div class="table-responsive d-none d-lg-block">
+                <table class="table align-middle mb-0">
+                    <thead class="bg-light text-muted small uppercase">
+                        <tr>
+                            <th class="ps-4">Mã đơn / Ngày đặt</th>
+                            <th>KH / Liên hệ</th>
+                            <th>Phương tiện</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Tổng tiền</th>
+                            <th class="pe-4 text-end">Hành động</th>
+                        </tr>
+                        <tr class="bg-white text-dark fw-bold border-bottom" style="text-transform: none; font-size: 0.9rem;">
+                            <td colspan="4" class="ps-4 py-2 text-end text-muted small uppercase">Tổng cộng (<span id="showingCountHeader">0</span>):</td>
+                            <td class="py-2 text-end">
+                                <div class="text-primary fw-bold" id="totalMoneyHeader">0đ</div>
+                            </td>
+                            <td class="pe-4"></td>
+                        </tr>
+                    </thead>
+                    <tbody id="providerOrderBody">
+                        <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Mobile List Container -->
+            <div id="providerOrderMobileList" class="mobile-list-container d-lg-none p-2"></div>
+        </div>
+    </div>
+    <!-- Pagination -->
+    <div class="card-footer bg-white border-0 py-3 border-top">
+        <nav aria-label="Order pagination">
+            <ul class="pagination pagination-sm justify-content-center mb-0" id="providerOrderPagination"></ul>
+        </nav>
     </div>
 </div>
 
@@ -55,22 +127,28 @@
         'use strict';
         const TABLE_ORDERS = 'datlich_thuexe';
         const TABLE_CARS = 'xethue';
+        const PAGE_SIZE = 7;
         
-        const calcDays = (sStr, eStr) => {
-            if (!sStr || !eStr) return '?';
-            try {
-                const s = new Date(sStr); const e = new Date(eStr);
-                const diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24));
-                return diff > 0 ? diff : 1;
-            } catch(e) { return '?'; }
-        };
+        let allOrders = [];
+        let currentTab = 'all';
+        let currentPage = 1;
 
-        const getStatusInfo = (o) => {
-            if (o.ngayhuy) return { label: 'Đã hủy', class: 'bg-danger text-danger', code: 'cancelled' };
-            if (o.ngayhoanthanhthucte) return { label: 'Hoàn thành', class: 'bg-success text-success', code: 'completed' };
-            if (o.ngaybatdauthucte) return { label: 'Đang thuê', class: 'bg-primary text-primary', code: 'doing' };
-            if (o.ngaynhan) return { label: 'Đã xác nhận', class: 'bg-info text-info', code: 'accepted' };
-            return { label: 'Chờ duyệt', class: 'bg-warning text-warning', code: 'pending' };
+        window.switchOrderTab = function (tab) {
+            currentTab = tab;
+            currentPage = 1;
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            const tabMap = { 'all': 'tabAll', 'new': 'tabNew', 'accepted': 'tabAccepted', 'doing': 'tabDoing', 'done': 'tabDone', 'cancel': 'tabCancel' };
+            if (tabMap[tab] && document.getElementById(tabMap[tab])) document.getElementById(tabMap[tab]).classList.add('active');
+            
+            document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
+            if (tabMap[tab]) {
+                const mobEl = document.getElementById(tabMap[tab] + 'Mob');
+                if (mobEl) mobEl.classList.add('active');
+            }
+            const statusTextMap = { 'all': 'Tất cả', 'new': 'Đang xác nhận', 'accepted': 'Đã nhận', 'doing': 'Đã bắt đầu', 'done': 'Đã hoàn thành', 'cancel': 'Đã hủy' };
+            if (document.getElementById('currentStatusText')) document.getElementById('currentStatusText').textContent = statusTextMap[tab];
+
+            filterOrders();
         };
 
         window.updateOrderStatus = async function (id, action, carId) {
@@ -88,72 +166,259 @@
                     const session = window._dvqt_session_cache || await DVQTApp.checkSession();
                     if(!session) { Swal.fire('Lỗi', 'Phiên làm việc hết hạn', 'error'); return; }
                     const payload = {}; payload[field] = now;
-                    if (action === 'accept' && session) {
+                    if (action === 'accept') {
                         payload.id_ncc = session.id;
-                        payload.tenncc = session.hovaten || session.ho_ten || session.name || '';
-                        payload.sdtncc = session.sodienthoai || session.dien_thoai || session.phone || '';
-                        payload.diachincc = session.diachi || session.address || '';
-                        payload.emailncc = session.email || '';
+                        payload.tenncc = session.hovaten || session.name || '';
+                        payload.sdtncc = session.sodienthoai || session.phone || '';
+                        payload.diachincc = session.diachi || '';
                     }
                     await DVQTKrud.updateRow(TABLE_ORDERS, id, payload);
                     if (carId && Number(carId) > 0) {
                         if (action === 'accept') await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'rented' });
-                        else if (action === 'complete') await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'available' });
-                        else if (action === 'cancel') await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'available' });
+                        else if (['complete', 'cancel'].includes(action)) await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'available' });
                     }
-                    Swal.fire('Thành công', 'Đã cập nhật trạng thái đơn hàng và xe.', 'success');
+                    Swal.fire('Thành công', 'Đã cập nhật trạng thái.', 'success');
                     loadProviderOrders();
-                } catch (e) { Swal.fire('Lỗi', 'Không thể cập nhật: ' + e.message, 'error'); }
+                } catch (e) { Swal.fire('Lỗi', e.message, 'error'); }
             }
         };
 
         window.loadProviderOrders = async function () {
             const tbody = document.getElementById('providerOrderBody');
-            const historyCards = document.getElementById('providerOrderCards');
-            const pendingTableWrap = document.getElementById('pendingOrdersTableWrap');
-            const pendingCardsWrap = document.getElementById('pendingOrdersCardsWrap');
-            if (!tbody) return;
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+
             try {
                 const session = window._dvqt_session_cache || await DVQTApp.checkSession();
                 const cars = await DVQTKrud.listTable(TABLE_CARS, { limit: 1000 });
                 const myCars = (cars || []).filter(c => Number(c.provider_id) === Number(session.id));
                 const myCarIds = myCars.map(c => Number(c.id));
-                const myCarNames = myCars.map(c => (c.tenxe || '').trim());
-                const allOrders = await DVQTKrud.listTable(TABLE_ORDERS, { limit: 1000 });
-                const myOrders = (allOrders || []).filter(o => {
+                const myCarNames = myCars.map(c => (c.tenxe || '').trim().toLowerCase());
+                
+                const rows = await DVQTKrud.listTable(TABLE_ORDERS, { limit: 1000 });
+                allOrders = (rows || []).filter(o => {
                     const matchId = o.id_xe && myCarIds.includes(Number(o.id_xe));
-                    const matchName = o.ten_xe && myCarNames.includes((o.ten_xe || '').trim());
+                    const matchName = o.ten_xe && myCarNames.includes((o.ten_xe || '').trim().toLowerCase());
                     return matchId || matchName;
-                }).reverse();
+                }).sort((a, b) => b.id - a.id);
 
-                const pendingOrders = myOrders.filter(o => !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte);
-                document.getElementById('pendingOrderCount').textContent = pendingOrders.length;
-
-                if (!pendingOrders.length) {
-                    pendingTableWrap.innerHTML = '<div class="p-4 text-center text-muted small">Không có đơn hàng mới nào đang chờ xử lý.</div>';
-                    pendingCardsWrap.innerHTML = '<div class="p-4 text-center text-muted small">Không có đơn hàng mới.</div>';
-                } else {
-                    pendingTableWrap.innerHTML = `<div class="table-responsive"><table class="table align-middle mb-0"><thead class="bg-light text-muted small uppercase"><tr><th class="ps-4">Mã đơn / Xe</th><th>Khách hàng</th><th>Thời gian</th><th>Tổng tiền</th><th>Trạng thái</th><th class="pe-4 text-end">Hành động</th></tr></thead><tbody>${pendingOrders.map(o => `<tr><td class="ps-4"><div class="fw-bold text-primary">${String(o.id).padStart(7,'0')}</div><div class="small fw-600 text-dark">${o.ten_xe}</div></td><td><div class="fw-bold text-dark small">${o.tenkhachhang||'---'}</div><div class="small text-muted">${o.sdtkhachhang||'---'}</div></td><td><div class="fw-bold text-dark mb-0">${calcDays(o.ngay_nhan_yeu_cau,o.ngay_tra_yeu_cau)} ngày</div><div class="text-muted" style="font-size:11px;">${o.ngay_nhan_yeu_cau}</div></td><td class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</td><td><span class="badge bg-warning text-warning bg-opacity-10 px-3 py-2 rounded-pill">Chờ duyệt</span></td><td class="pe-4 text-end text-nowrap"><button class="btn btn-sm btn-light me-1" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye text-primary"></i></button><button class="btn btn-sm btn-primary px-3 rounded-pill me-1" onclick="updateOrderStatus(${o.id},'accept',${o.id_xe||0})">Nhận</button><button class="btn btn-sm btn-outline-danger px-3 rounded-pill" onclick="updateOrderStatus(${o.id},'cancel',${o.id_xe||0})">Hủy</button></td></tr>`).join('')}</tbody></table></div>`;
-                    pendingCardsWrap.innerHTML = pendingOrders.map(o => `<div class="card mb-3 border-0 shadow-sm" style="border-radius:12px; border-left:4px solid #f59e0b !important;"><div class="card-body p-3"><div class="d-flex justify-content-between mb-2"><div class="fw-bold text-primary small">#${String(o.id).padStart(7,'0')}</div><span class="badge bg-warning text-warning bg-opacity-10 px-2 py-1 rounded-pill" style="font-size:10px;">CHỜ DUYỆT</span></div><h6 class="fw-bold mb-1" style="font-size:14px;">${o.ten_xe}</h6><div class="small mb-2 pt-2 border-top"><div class="d-flex justify-content-between"><span>Khách:</span> <strong class="text-dark">${o.tenkhachhang||'---'}</strong></div><div class="d-flex justify-content-between"><span>Thời gian:</span> <strong>${calcDays(o.ngay_nhan_yeu_cau,o.ngay_tra_yeu_cau)} ngày</strong></div><div class="d-flex justify-content-between text-primary"><span>Giá:</span> <strong>${Number(o.tong_tien||0).toLocaleString()}đ</strong></div></div><div class="d-flex gap-2"><button class="btn btn-sm btn-primary flex-grow-1" onclick="updateOrderStatus(${o.id},'accept',${o.id_xe||0})">Nhận đơn</button><button class="btn btn-sm btn-outline-danger" onclick="updateOrderStatus(${o.id},'cancel',${o.id_xe||0})">Hủy</button><button class="btn btn-sm btn-light" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye text-primary"></i></button></div></div></div>`).join('');
-                }
-
-                const confirmedOrders = myOrders.filter(o => o.ngaynhan || o.ngayhoanthanhthucte || o.ngayhuy);
-                if (!confirmedOrders.length) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted">Chưa có đơn hàng nào đã được xác nhận.</td></tr>';
-                    historyCards.innerHTML = '<div class="p-3 text-center text-muted small">Chưa có đơn xác nhận.</div>';
-                } else {
-                    tbody.innerHTML = confirmedOrders.map(o => { const st = getStatusInfo(o); let act = ''; if(st.code==='accepted') act=`<button class="btn btn-sm btn-success px-3 rounded-pill ms-1" onclick="updateOrderStatus(${o.id},'start',${o.id_xe||0})">Giao xe</button>`; else if(st.code==='doing') act=`<button class="btn btn-sm btn-info text-white px-3 rounded-pill ms-1" onclick="updateOrderStatus(${o.id},'complete',${o.id_xe||0})">Nhận xe trả</button>`; return `<tr><td class="ps-4"><div class="fw-bold text-primary">${String(o.id).padStart(7,'0')}</div><div class="small fw-600 text-dark">${o.ten_xe||'N/A'}</div></td><td><div class="fw-bold text-dark">${o.tenkhachhang||'---'}</div><div class="small text-muted">${o.sdtkhachhang||'---'}</div></td><td><div class="fw-bold text-dark mb-0">${calcDays(o.ngay_nhan_yeu_cau,o.ngay_tra_yeu_cau)} ngày</div><div class="text-muted" style="font-size:11px;">${o.ngay_nhan_yeu_cau}</div></td><td class="fw-bold text-dark">${Number(o.tong_tien).toLocaleString()}đ</td><td><span class="badge ${st.class} bg-opacity-10 px-3 py-2 rounded-pill">${st.label}</span></td><td class="pe-4 text-nowrap text-end"><button class="btn btn-sm btn-light" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye"></i></button>${act}</td></tr>`; }).join('');
-                    historyCards.innerHTML = confirmedOrders.map(o => { const st = getStatusInfo(o); let act = ''; if(st.code==='accepted') act=`<button class="btn btn-sm btn-success flex-grow-1" onclick="updateOrderStatus(${o.id},'start',${o.id_xe||0})">Giao xe</button>`; else if(st.code==='doing') act=`<button class="btn btn-sm btn-info text-white flex-grow-1" onclick="updateOrderStatus(${o.id},'complete',${o.id_xe||0})">Trả xe</button>`; return `<div class="card mb-3 border-0 shadow-sm" style="border-radius:12px;"><div class="card-body p-3"><div class="d-flex justify-content-between mb-2"><div class="fw-bold text-primary small">#${String(o.id).padStart(7,'0')}</div><span class="badge ${st.class} bg-opacity-10 px-2 py-1 rounded-pill" style="font-size:10px;">${st.label}</span></div><h6 class="fw-bold mb-1" style="font-size:14px;">${o.ten_xe||'N/A'}</h6><div class="small mb-2 pt-2 border-top"><div class="d-flex justify-content-between"><span>KH:</span> <strong class="text-dark">${o.tenkhachhang||'---'}</strong></div><div class="d-flex justify-content-between text-primary"><span>Tổng:</span> <strong>${Number(o.tong_tien||0).toLocaleString()}đ</strong></div></div><div class="d-flex gap-2">${act}<button class="btn btn-sm btn-light px-3" onclick="viewOrderDetailP(${o.id})"><i class="fas fa-eye text-primary"></i></button></div></div></div>`; }).join('');
-                }
-            } catch (e) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi tải dữ liệu</td></tr>'; }
+                filterOrders();
+            } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
         };
 
-        window.viewOrderDetailP = function (id) { window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank'); };
+        function updateTabCounts(list) {
+            const data = list || allOrders;
+            const counts = {
+                'All': data.length,
+                'New': data.filter(o => !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte).length,
+                'Accepted': data.filter(o => o.ngaynhan && !o.ngaybatdauthucte && !o.ngayhuy).length,
+                'Doing': data.filter(o => o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy).length,
+                'Done': data.filter(o => !!o.ngayhoanthanhthucte).length,
+                'Cancel': data.filter(o => !!o.ngayhuy).length
+            };
+            for (const [key, val] of Object.entries(counts)) {
+                const el = document.getElementById('count' + key);
+                const elMob = document.getElementById('count' + key + 'Mob');
+                if (el) el.textContent = val;
+                if (elMob) elMob.textContent = val;
+            }
+        }
+
+        function renderOrders(orders) {
+            const tbody = document.getElementById('providerOrderBody');
+            const mob = document.getElementById('providerOrderMobileList');
+
+            if (!orders.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có đơn hàng nào.</td></tr>';
+                if (mob) mob.innerHTML = '<div class="text-center text-muted p-4">Chưa có đơn hàng nào.</div>';
+                return;
+            }
+
+            tbody.innerHTML = orders.map(o => {
+                let statusBadge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang xác nhận</span>';
+                let actions = `<button class="btn btn-sm btn-light text-primary me-1" onclick="viewOrderDetail(${o.id})" title="Xem"><i class="fas fa-eye"></i></button>`;
+                
+                if (o.ngayhuy) statusBadge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy</span>';
+                else if (o.ngayhoanthanhthucte) statusBadge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Đã hoàn thành</span>';
+                else if (o.ngaybatdauthucte) {
+                    statusBadge = '<span class="badge bg-primary text-primary bg-opacity-10 px-2 py-1 rounded-pill">Đã bắt đầu</span>';
+                    actions += `<button class="btn btn-sm btn-info text-white px-2 rounded-pill" onclick="updateOrderStatus(${o.id},'complete',${o.id_xe||0})">Nhận xe</button>`;
+                }
+                else if (o.ngaynhan) {
+                    statusBadge = '<span class="badge bg-info text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đã nhận</span>';
+                    actions += `<button class="btn btn-sm btn-success px-2 rounded-pill" onclick="updateOrderStatus(${o.id},'start',${o.id_xe||0})">Giao xe</button>`;
+                } else {
+                    actions += `<button class="btn btn-sm btn-primary px-2 rounded-pill me-1" onclick="updateOrderStatus(${o.id},'accept',${o.id_xe||0})">Nhận</button>
+                               <button class="btn btn-sm btn-outline-danger px-2 rounded-pill" onclick="updateOrderStatus(${o.id},'cancel',${o.id_xe||0})">Hủy</button>`;
+                }
+
+                return `<tr>
+                    <td class="ps-4">
+                        <div class="fw-bold text-dark">#${String(o.id).padStart(7, '0')}</div>
+                        <div class="text-muted small" style="font-size:11px;">${o.ngaydat || '---'}</div>
+                    </td>
+                    <td>
+                        <div class="fw-600 small text-dark">${o.tenkhachhang || '---'}</div>
+                        <div class="text-muted small">${o.sdtkhachhang || '---'}</div>
+                    </td>
+                    <td>
+                        <div class="small fw-800 text-truncate" style="max-width:180px;">${o.ten_xe}</div>
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td class="text-end"><div class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</div></td>
+                    <td class="pe-4 text-end text-nowrap">${actions}</td>
+                </tr>`;
+            }).join('');
+
+            if (mob) {
+                mob.innerHTML = orders.map(o => {
+                    let statusTxt = 'Đang xác nhận'; let statusCls = 'bg-warning';
+                    let mobActions = `<button class="btn btn-sm btn-light flex-grow-1" onclick="viewOrderDetail(${o.id})"><i class="fas fa-eye text-primary"></i> Chi tiết</button>`;
+                    if (o.ngayhuy) { statusTxt = 'Đã hủy'; statusCls = 'bg-danger'; }
+                    else if (o.ngayhoanthanhthucte) { statusTxt = 'Đã hoàn thành'; statusCls = 'bg-success'; }
+                    else if (o.ngaybatdauthucte) { 
+                        statusTxt = 'Đã bắt đầu'; statusCls = 'bg-primary'; 
+                        mobActions = `<button class="btn btn-sm btn-info text-white flex-grow-1" onclick="updateOrderStatus(${o.id},'complete',${o.id_xe||0})">Nhận xe trả</button>` + mobActions;
+                    }
+                    else if (o.ngaynhan) { 
+                        statusTxt = 'Đã nhận'; statusCls = 'bg-info'; 
+                        mobActions = `<button class="btn btn-sm btn-success flex-grow-1" onclick="updateOrderStatus(${o.id},'start',${o.id_xe||0})">Giao xe</button>` + mobActions;
+                    } else {
+                        mobActions = `<button class="btn btn-sm btn-primary flex-grow-1" onclick="updateOrderStatus(${o.id},'accept',${o.id_xe||0})">Nhận đơn</button>
+                                     <button class="btn btn-sm btn-outline-danger" onclick="updateOrderStatus(${o.id},'cancel',${o.id_xe||0})">Hủy</button>` + mobActions;
+                    }
+
+                    return `
+                    <div class="mobile-card shadow-sm border mb-3 p-3 bg-white" style="border-radius: 15px;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-light text-primary border mb-1">#${String(o.id).padStart(7, '0')}</span>
+                                <div class="small text-muted" style="font-size: 0.7rem;"><i class="far fa-calendar-alt me-1"></i>${o.ngaydat || '---'}</div>
+                            </div>
+                            <span class="badge ${statusCls} bg-opacity-10 text-${statusCls.replace('bg-', '')} px-2 py-1 rounded-pill" style="font-size: 0.7rem;">${statusTxt}</span>
+                        </div>
+                        <h6 class="fw-bold mb-2 text-truncate" style="font-size: 0.95rem;">${o.ten_xe}</h6>
+                        <div class="mobile-info-grid mb-3" style="display: grid; gap: 4px;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-circle text-muted me-2" style="width: 14px; font-size: 0.8rem;"></i>
+                                <span class="small text-dark fw-600">${o.tenkhachhang || '---'}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-phone-alt text-muted me-2" style="width: 14px; font-size: 0.8rem;"></i>
+                                <span class="small text-muted">${o.sdtkhachhang || '---'}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div class="d-flex gap-2 flex-grow-1 me-3">${mobActions}</div>
+                            <div class="text-primary fw-800" style="font-size: 1rem;">${Number(o.tong_tien).toLocaleString()}đ</div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        window.filterOrders = function (page) {
+            if (page !== undefined) currentPage = page;
+            const q = document.getElementById('orderSearchInput').value.toLowerCase().trim();
+            const fromDate = document.getElementById('orderFromDate').value;
+            const toDate = document.getElementById('orderToDate').value;
+
+            let filteredByDate = allOrders;
+            if (fromDate) filteredByDate = filteredByDate.filter(o => o.ngaydat && o.ngaydat.substring(0, 10) >= fromDate);
+            if (toDate) filteredByDate = filteredByDate.filter(o => o.ngaydat && o.ngaydat.substring(0, 10) <= toDate);
+
+            let filtered = filteredByDate;
+            if (currentTab !== 'all') {
+                filtered = filtered.filter(o => {
+                    if (currentTab === 'new') return !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte;
+                    if (currentTab === 'accepted') return o.ngaynhan && !o.ngaybatdauthucte && !o.ngayhuy;
+                    if (currentTab === 'doing') return o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy;
+                    if (currentTab === 'done') return !!o.ngayhoanthanhthucte;
+                    if (currentTab === 'cancel') return !!o.ngayhuy;
+                    return true;
+                });
+            }
+
+            if (q) {
+                filtered = filtered.filter(o => 
+                    String(o.id).includes(q) || 
+                    (o.tenkhachhang && o.tenkhachhang.toLowerCase().includes(q)) ||
+                    (o.ten_xe && o.ten_xe.toLowerCase().includes(q))
+                );
+            }
+
+            const totalOrders = filtered.length;
+            const totalPages = Math.ceil(totalOrders / PAGE_SIZE);
+            const start = (currentPage - 1) * PAGE_SIZE;
+            renderOrders(filtered.slice(start, start + PAGE_SIZE));
+            renderPagination(totalPages);
+            updateTabCounts(filteredByDate);
+
+            const totalAmount = filtered.reduce((sum, o) => sum + (Number(o.tong_tien) || 0), 0);
+            document.getElementById('showingCountHeader').textContent = totalOrders;
+            document.getElementById('totalMoneyHeader').textContent = totalAmount.toLocaleString() + 'đ';
+            if (document.getElementById('showingCountMobile')) document.getElementById('showingCountMobile').textContent = totalOrders;
+            if (document.getElementById('totalMoneyMobile')) document.getElementById('totalMoneyMobile').textContent = totalAmount.toLocaleString() + 'đ';
+        }
+
+        function renderPagination(totalPages) {
+            const pagEl = document.getElementById('providerOrderPagination');
+            if (!pagEl) return;
+            if (totalPages <= 1) { pagEl.innerHTML = ''; return; }
+            let html = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="javascript:void(0)" onclick="filterOrders(${currentPage - 1})"><i class="fas fa-chevron-left"></i></a></li>`;
+            for (let i = 1; i <= totalPages; i++) {
+                if (i <= 5 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<li class="page-item ${currentPage === i ? 'active' : ''}"><a class="page-link fw-bold" href="javascript:void(0)" onclick="filterOrders(${i})">${i}</a></li>`;
+                } else if (i === 6 && totalPages > 10) { html += `<li class="page-item disabled"><span class="page-link">...</span></li>`; }
+            }
+            html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="javascript:void(0)" onclick="filterOrders(${currentPage + 1})"><i class="fas fa-chevron-right"></i></a></li>`;
+            pagEl.innerHTML = html;
+        }
+
+        window.viewOrderDetail = function (id) {
+            if (typeof window.openOrderDetailModal === 'function') {
+                window.openOrderDetailModal(id);
+            } else {
+                window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
+            }
+        };
+
+        // Initialize dates to today
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (document.getElementById('orderFromDate')) document.getElementById('orderFromDate').value = todayStr;
+        if (document.getElementById('orderToDate')) document.getElementById('orderToDate').value = todayStr;
+
         loadProviderOrders();
     })();
 </script>
 
 <style>
+.status-tabs-wrapper .nav-pills {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: 0;
+}
+.status-tabs-wrapper .nav-link {
+    padding: 10px 4px !important;
+    white-space: nowrap;
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    .status-tabs-wrapper .nav-pills {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        flex-wrap: wrap !important;
+    }
+    .status-tabs-wrapper .nav-item {
+        flex: none !important;
+        width: 100% !important;
+        border: 0.5px solid rgba(0,0,0,0.05);
+    }
+    .status-tabs-wrapper .nav-link {
+        border-radius: 0 !important;
+        padding: 12px 2px !important;
+        font-size: 0.7rem;
+    }
+}
 @media (max-width: 768px) {
     .card-header { padding: 12px 16px !important; }
     .card-header h5 { font-size: 1.1rem; }

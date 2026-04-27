@@ -133,7 +133,41 @@
                         </div>
                     </div>
 
-                    <div class="col-12 mt-4"><div class="fw-bold text-muted small border-bottom pb-1 mb-2">4. MÔ TẢ & TIỆN NGHI</div></div>
+                    <div class="col-12 mt-4"><div class="fw-bold text-muted small border-bottom pb-1 mb-2">4. GIẤY TỜ PHÁP LÝ (ĐĂNG KÝ & ĐĂNG KIỂM)</div></div>
+                    <div class="col-12">
+                        <div class="row g-2">
+                            <div class="col-md-3 col-6">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#fffbf0; border: 1px dashed #f59e0b !important;">
+                                    <div id="prev_reg_front" class="mb-1"><i class="fas fa-id-card fa-2x text-warning"></i></div>
+                                    <div class="small fw-bold">Đăng ký xe (Trước)</div>
+                                    <input type="file" id="file_reg_front" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_reg_front')">
+                                </label>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#fffbf0; border: 1px dashed #f59e0b !important;">
+                                    <div id="prev_reg_back" class="mb-1"><i class="fas fa-id-card fa-2x text-warning"></i></div>
+                                    <div class="small fw-bold">Đăng ký xe (Sau)</div>
+                                    <input type="file" id="file_reg_back" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_reg_back')">
+                                </label>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#f0fdf4; border: 1px dashed #10b981 !important;">
+                                    <div id="prev_ins_front" class="mb-1"><i class="fas fa-file-contract fa-2x text-success"></i></div>
+                                    <div class="small fw-bold">Đăng kiểm (Trước)</div>
+                                    <input type="file" id="file_ins_front" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_ins_front')">
+                                </label>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <label class="upload-box d-block text-center border rounded p-2" style="cursor:pointer; background:#f0fdf4; border: 1px dashed #10b981 !important;">
+                                    <div id="prev_ins_back" class="mb-1"><i class="fas fa-file-contract fa-2x text-success"></i></div>
+                                    <div class="small fw-bold">Đăng kiểm (Sau)</div>
+                                    <input type="file" id="file_ins_back" class="d-none" accept="image/*" onchange="previewImg(this, 'prev_ins_back')">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4"><div class="fw-bold text-muted small border-bottom pb-1 mb-2">5. MÔ TẢ & TIỆN NGHI</div></div>
                     <div class="col-md-12">
                         <label class="form-label small fw-600"><i class="fas fa-map-marker-alt text-danger me-1"></i> Địa chỉ xe (Nơi giao nhận xe) <span class="text-danger">*</span></label>
                         <div class="input-group mb-2">
@@ -217,8 +251,14 @@
                         <div class="card border-0 bg-light h-100 overflow-hidden" style="border-radius:15px;">
                             <img id="vCarMainImg" src="" class="img-fluid" style="height:220px; object-fit:cover;">
                             <div class="p-3">
-                                <div class="row g-2" id="vCarGallery">
+                                <div class="row g-2 mb-3" id="vCarGallery">
                                     <!-- Gallery thumbnails -->
+                                </div>
+                                <div class="mt-3 pt-3 border-top">
+                                    <h6 class="fw-bold small text-muted mb-2 text-uppercase" style="font-size:0.65rem;"><i class="fas fa-file-shield me-1"></i>Hồ sơ pháp lý</h6>
+                                    <div class="row g-2" id="vCarLegalDocs">
+                                        <!-- Giấy tờ pháp lý -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -308,9 +348,13 @@
         currentEditId = null;
         document.getElementById('btnSubmitCar').innerHTML = '<i class="fas fa-paper-plane me-2"></i> Gửi duyệt xe ngay';
         document.querySelectorAll('input:not(#btnSubmitCar), textarea').forEach(el => el.value = '');
-        ['front','back','left','right','inner'].forEach(id => {
+        ['front','back','left','right','inner','reg_front','reg_back','ins_front','ins_back'].forEach(id => {
             const el = document.getElementById('prev_'+id);
-            if(el) el.innerHTML = `<i class="fas fa-camera fa-2x text-muted"></i>`;
+            if(el) {
+                if (['reg_front','reg_back'].includes(id)) el.innerHTML = `<i class="fas fa-id-card fa-2x text-warning"></i>`;
+                else if (['ins_front','ins_back'].includes(id)) el.innerHTML = `<i class="fas fa-file-contract fa-2x text-success"></i>`;
+                else el.innerHTML = `<i class="fas fa-camera fa-2x text-muted"></i>`;
+            }
         });
         const vprev = document.getElementById('prev_video');
         if(vprev) vprev.innerHTML = `<i class="fas fa-video fa-2x text-primary"></i>`;
@@ -447,20 +491,67 @@
         ).join('') || '<span class="small text-muted italic">Mặc định</span>';
 
         // Ảnh chính & Gallery
-        document.getElementById('vCarMainImg').src = resolveImg(car.anhdaidien);
-        const galleryFields = ['anhdaidien', 'anhsau', 'anhtrai', 'anhphai', 'anhnoithat'];
+        document.getElementById('vCarMainImg').src = resolveImg(car.anhdaidien || car.anhngoaitruoc);
+        const galleryItems = [
+            { key: 'anhdaidien', label: 'Mặt trước' },
+            { key: 'anhngoaitruoc', label: 'Mặt trước' },
+            { key: 'anhsau', label: 'Mặt sau' },
+            { key: 'anhtrai', label: 'Bên trái' },
+            { key: 'anhphai', label: 'Bên phải' },
+            { key: 'anhnoithat', label: 'Nội thất' }
+        ];
         let galleryHtml = '';
-        galleryFields.forEach(f => {
-            if(car[f]) {
+        const usedKeys = new Set();
+        galleryItems.forEach(item => {
+            const f = item.key;
+            if(car[f] && !usedKeys.has(item.label)) {
                 galleryHtml += `
-                    <div class="col-4">
+                    <div class="col-4 text-center">
                         <img src="${resolveImg(car[f])}" class="img-fluid rounded border shadow-sm" 
                              style="height:45px; width:100%; object-fit:cover; cursor:pointer;"
                              onclick="showFullImg(this.src)">
+                        <div class="text-muted" style="font-size:0.55rem; margin-top:2px; white-space:nowrap;">${item.label}</div>
+                    </div>`;
+                usedKeys.add(item.label);
+            }
+        });
+        
+        // Thêm Video xe vào Gallery nếu có
+        if (car.videourl) {
+            const vUrl = `https://drive.google.com/file/d/${car.videourl}/preview`;
+            galleryHtml += `
+                <div class="col-4 text-center">
+                    <div class="rounded border shadow-sm d-flex align-items-center justify-content-center bg-dark" 
+                         style="height:45px; width:100%; cursor:pointer;"
+                         onclick="window.open('${vUrl}', '_blank')">
+                        <i class="fas fa-play-circle text-white"></i>
+                    </div>
+                    <div class="text-muted" style="font-size:0.55rem; margin-top:2px; white-space:nowrap;">Video xe</div>
+                </div>`;
+        }
+
+        document.getElementById('vCarGallery').innerHTML = galleryHtml;
+
+        // Render Legal Docs
+        const legalFields = [
+            { key: 'dang_ky_truoc', label: 'Đăng ký (Trước)' },
+            { key: 'dang_ky_sau', label: 'Đăng ký (Sau)' },
+            { key: 'dang_kiem_truoc', label: 'Đăng kiểm (Trước)' },
+            { key: 'dang_kiem_sau', label: 'Đăng kiểm (Sau)' }
+        ];
+        let legalHtml = '';
+        legalFields.forEach(f => {
+            if (car[f.key]) {
+                legalHtml += `
+                    <div class="col-3 text-center">
+                        <img src="${resolveImg(car[f.key])}" class="img-fluid rounded border shadow-sm" 
+                             style="height:35px; width:100%; object-fit:cover; cursor:pointer;"
+                             onclick="window.open('${resolveImg(car[f.key])}', '_blank')">
+                        <div class="text-muted" style="font-size:0.5rem; margin-top:2px; line-height:1;">${f.label.split(' ')[0]}<br>${f.label.split(' ')[1] || ''}</div>
                     </div>`;
             }
         });
-        document.getElementById('vCarGallery').innerHTML = galleryHtml;
+        document.getElementById('vCarLegalDocs').innerHTML = legalHtml || '<div class="col-12 small text-muted italic" style="font-size:0.6rem;">Chưa cập nhật.</div>';
 
         const modal = new bootstrap.Modal(document.getElementById('viewCarModal'));
         modal.show();
@@ -523,7 +614,16 @@
         if(car.anhtrai) document.getElementById('prev_left').innerHTML = `<img src="${driveUrl(car.anhtrai)}" class="img-preview">`;
         if(car.anhphai) document.getElementById('prev_right').innerHTML = `<img src="${driveUrl(car.anhphai)}" class="img-preview">`;
         if(car.anhnoithat) document.getElementById('prev_inner').innerHTML = `<img src="${driveUrl(car.anhnoithat)}" class="img-preview">`;
-        if(car.videourl) document.getElementById('prev_video').innerHTML = `<i class="fas fa-video fa-2x text-success"></i>`;
+        if(car.videourl) {
+            const vUrl = driveUrl(car.videourl);
+            document.getElementById('prev_video').innerHTML = `<video src="${vUrl}" muted autoplay loop playsinline class="img-preview" style="background:#000;"></video>`;
+        }
+        
+        if(car.dang_ky_truoc) document.getElementById('prev_reg_front').innerHTML = `<img src="${driveUrl(car.dang_ky_truoc)}" class="img-preview">`;
+        if(car.dang_ky_sau) document.getElementById('prev_reg_back').innerHTML = `<img src="${driveUrl(car.dang_ky_sau)}" class="img-preview">`;
+        if(car.dang_kiem_truoc) document.getElementById('prev_ins_front').innerHTML = `<img src="${driveUrl(car.dang_kiem_truoc)}" class="img-preview">`;
+        if(car.dang_kiem_sau) document.getElementById('prev_ins_back').innerHTML = `<img src="${driveUrl(car.dang_kiem_sau)}" class="img-preview">`;
+
         document.getElementById('btnSubmitCar').innerHTML = '<i class="fas fa-save me-2"></i> Lưu thay đổi';
         document.getElementById('registerForm').scrollIntoView({ behavior: 'smooth' });
     };
@@ -536,7 +636,10 @@
         }
     };
     window.previewVideo = (input, pid) => {
-        if(input.files && input.files[0]) document.getElementById(pid).innerHTML = `<i class="fas fa-video fa-2x text-success"></i>`;
+        if(input.files && input.files[0]) {
+            const vUrl = URL.createObjectURL(input.files[0]);
+            document.getElementById(pid).innerHTML = `<video src="${vUrl}" muted autoplay loop playsinline class="img-preview" style="background:#000;"></video>`;
+        }
     };
 
     document.getElementById('btnSubmitCar').onclick = async function() {
@@ -572,7 +675,10 @@
             let carId = currentEditId;
             if(currentEditId) await DVQTKrud.updateRow(TABLE, currentEditId, data);
             else { const res = await DVQTKrud.insertRow(TABLE, data); carId = res.id || res.data?.id; }
-            const fileMap = { 'file_front':'anhdaidien','file_back':'anhsau','file_left':'anhtrai','file_right':'anhphai','file_inner':'anhnoithat','file_video':'videourl' };
+            const fileMap = { 
+                'file_front':'anhdaidien','file_back':'anhsau','file_left':'anhtrai','file_right':'anhphai','file_inner':'anhnoithat','file_video':'videourl',
+                'file_reg_front':'dang_ky_truoc', 'file_reg_back':'dang_ky_sau', 'file_ins_front':'dang_kiem_truoc', 'file_ins_back':'dang_kiem_sau'
+            };
             const upData = {};
             for(const [inputId, dbField] of Object.entries(fileMap)) {
                 const el = document.getElementById(inputId);

@@ -174,6 +174,12 @@
                         <img id="vMainImg" src="" class="img-fluid rounded-4 shadow-sm w-100"
                             style="height:220px; object-fit:cover;">
                         <div class="row g-2 mt-2" id="vGallery"></div>
+                        <div class="mt-4 pt-3 border-top">
+                            <h6 class="fw-bold small text-muted mb-2 text-uppercase" style="font-size:0.65rem;"><i class="fas fa-file-shield me-1"></i>Hồ sơ pháp lý</h6>
+                            <div class="row g-2" id="vLegalDocs">
+                                <!-- Giấy tờ pháp lý Admin -->
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-7">
                         <div class="table-responsive">
@@ -595,15 +601,66 @@
             const feats = (car.features || '').split(',').filter(x => x.trim());
             document.getElementById('vFeatures').innerHTML = feats.map(f => `<span class="badge bg-white text-primary border fw-normal p-1 px-2 mb-1">${f.trim()}</span>`).join('') || '<small class="text-muted">Mặc định</small>';
 
-            // Gallery
-            const galleryFields = ['anhngoaitruoc', 'anhsau', 'anhtrai', 'anhphai', 'anhnoithat'];
+            // Gallery with Captions
+            const galleryItems = [
+                { key: 'anhdaidien', label: 'Mặt trước' },
+                { key: 'anhngoaitruoc', label: 'Mặt trước' },
+                { key: 'anhsau', label: 'Mặt sau' },
+                { key: 'anhtrai', label: 'Bên trái' },
+                { key: 'anhphai', label: 'Bên phải' },
+                { key: 'anhnoithat', label: 'Nội thất' }
+            ];
             let gHtml = '';
-            galleryFields.forEach(f => {
-                if (car[f]) {
-                    gHtml += `<div class="col-4"><img src="${resolveImg(car[f])}" class="img-fluid rounded border shadow-sm" style="height:45px; width:100%; object-fit:cover; cursor:pointer;" onclick="document.getElementById('vMainImg').src=this.src"></div>`;
+            const usedKeys = new Set();
+            galleryItems.forEach(item => {
+                const f = item.key;
+                if (car[f] && !usedKeys.has(item.label)) {
+                    gHtml += `
+                        <div class="col-4 text-center">
+                            <img src="${resolveImg(car[f])}" class="img-fluid rounded border shadow-sm" 
+                                 style="height:45px; width:100%; object-fit:cover; cursor:pointer;" 
+                                 onclick="document.getElementById('vMainImg').src=this.src">
+                            <div class="text-muted" style="font-size:0.55rem; margin-top:2px; white-space:nowrap;">${item.label}</div>
+                        </div>`;
+                    usedKeys.add(item.label);
                 }
             });
+
+            // Video item
+            if (car.videourl) {
+                const vUrl = `https://drive.google.com/file/d/${car.videourl}/preview`;
+                gHtml += `
+                    <div class="col-4 text-center">
+                        <div class="rounded border shadow-sm d-flex align-items-center justify-content-center bg-dark" 
+                             style="height:45px; width:100%; cursor:pointer;"
+                             onclick="window.open('${vUrl}', '_blank')">
+                            <i class="fas fa-play-circle text-white"></i>
+                        </div>
+                        <div class="text-muted" style="font-size:0.55rem; margin-top:2px; white-space:nowrap;">Video xe</div>
+                    </div>`;
+            }
             document.getElementById('vGallery').innerHTML = gHtml;
+
+            // Render Legal Docs (Admin)
+            const legalFields = [
+                { key: 'dang_ky_truoc', label: 'Đăng ký (Trước)' },
+                { key: 'dang_ky_sau', label: 'Đăng ký (Sau)' },
+                { key: 'dang_kiem_truoc', label: 'Đăng kiểm (Trước)' },
+                { key: 'dang_kiem_sau', label: 'Đăng kiểm (Sau)' }
+            ];
+            let legalHtml = '';
+            legalFields.forEach(f => {
+                if (car[f.key]) {
+                    legalHtml += `
+                        <div class="col-3 text-center">
+                            <img src="${resolveImg(car[f.key])}" class="img-fluid rounded border shadow-sm" 
+                                    style="height:35px; width:100%; object-fit:cover; cursor:pointer;"
+                                    onclick="window.open('${resolveImg(car[f.key])}', '_blank')">
+                            <div class="text-muted" style="font-size:0.5rem; margin-top:2px; line-height:1;">${f.label.split(' ')[0]}<br>${f.label.split(' ')[1] || ''}</div>
+                        </div>`;
+                }
+            });
+            document.getElementById('vLegalDocs').innerHTML = legalHtml || '<div class="col-12 small text-muted italic" style="font-size:0.6rem;">Chưa cập nhật.</div>';
 
             // Hành động nhanh
             const isApp = ['available', 'active', 'approved'].includes(String(car.trangthai).toLowerCase());

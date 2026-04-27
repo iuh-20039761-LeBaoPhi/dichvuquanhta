@@ -4,7 +4,7 @@
     }
 </script>
 <!-- Admin Order Management Partial -->
-<div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; overflow: hidden;">
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
     <div class="card-header bg-white py-3 border-0">
         <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-3">
             <div>
@@ -65,13 +65,16 @@
                                 onclick="switchOrderTab('all')">Tất cả <span class="badge bg-secondary ms-1 float-end"
                                     id="countAllMob">0</span></a></li>
                         <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabNewMob"
-                                onclick="switchOrderTab('new')">Chưa nhận <span
+                                onclick="switchOrderTab('new')">Đang xác nhận <span
                                     class="badge bg-warning text-dark ms-1 float-end" id="countNewMob">0</span></a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabAcceptedMob"
+                                onclick="switchOrderTab('accepted')">Đã nhận <span
+                                    class="badge bg-info text-dark ms-1 float-end" id="countAcceptedMob">0</span></a></li>
                         <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabDoingMob"
-                                onclick="switchOrderTab('doing')">Đang thuê <span
+                                onclick="switchOrderTab('doing')">Đã bắt đầu <span
                                     class="badge bg-primary ms-1 float-end" id="countDoingMob">0</span></a></li>
                         <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabDoneMob"
-                                onclick="switchOrderTab('done')">Hoàn thành <span
+                                onclick="switchOrderTab('done')">Đã hoàn thành <span
                                     class="badge bg-success ms-1 float-end" id="countDoneMob">0</span></a></li>
                         <li><a class="dropdown-item rounded-3 py-2" href="javascript:void(0)" id="tabCancelMob"
                                 onclick="switchOrderTab('cancel')">Đã hủy <span class="badge bg-danger ms-1 float-end"
@@ -81,22 +84,26 @@
             </div>
 
             <!-- Desktop Tabs -->
-            <ul class="nav nav-pills nav-fill bg-light p-1 d-none d-md-flex gap-1 w-100"
-                style="border-radius: 12px; font-size: 0.82rem; overflow: hidden;">
+            <ul class="nav nav-pills nav-fill bg-light p-1 d-none d-md-flex w-100"
+                style="border-radius: 12px; font-size: 0.75rem;">
                 <li class="nav-item">
                     <a class="nav-link active fw-bold" href="#" id="tabAll" onclick="switchOrderTab('all')">Tất cả <span
                             class="badge bg-secondary ms-1" id="countAll">0</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-bold" href="#" id="tabNew" onclick="switchOrderTab('new')">Chưa nhận <span
+                    <a class="nav-link fw-bold" href="#" id="tabNew" onclick="switchOrderTab('new')">Đang xác nhận <span
                             class="badge bg-warning text-dark ms-1" id="countNew">0</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-bold" href="#" id="tabDoing" onclick="switchOrderTab('doing')">Đang thuê <span
+                    <a class="nav-link fw-bold" href="#" id="tabAccepted" onclick="switchOrderTab('accepted')">Đã nhận <span
+                            class="badge bg-info text-dark ms-1" id="countAccepted">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabDoing" onclick="switchOrderTab('doing')">Đã bắt đầu <span
                             class="badge bg-primary ms-1" id="countDoing">0</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-bold" href="#" id="tabDone" onclick="switchOrderTab('done')">Hoàn thành <span
+                    <a class="nav-link fw-bold" href="#" id="tabDone" onclick="switchOrderTab('done')">Đã hoàn thành <span
                             class="badge bg-success ms-1" id="countDone">0</span></a>
                 </li>
                 <li class="nav-item">
@@ -172,7 +179,7 @@
 
             // 1. Update Desktop Tabs
             document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
-            const tabMap = { 'all': 'tabAll', 'new': 'tabNew', 'doing': 'tabDoing', 'done': 'tabDone', 'cancel': 'tabCancel' };
+            const tabMap = { 'all': 'tabAll', 'new': 'tabNew', 'accepted': 'tabAccepted', 'doing': 'tabDoing', 'done': 'tabDone', 'cancel': 'tabCancel' };
             if (tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
 
             // 2. Update Mobile Dropdown
@@ -181,7 +188,7 @@
                 const mobEl = document.getElementById(tabMap[tab] + 'Mob');
                 if (mobEl) mobEl.classList.add('active');
             }
-            const statusTextMap = { 'all': 'Tất cả', 'new': 'Chưa nhận', 'doing': 'Đang thuê', 'done': 'Hoàn thành', 'cancel': 'Đã hủy' };
+            const statusTextMap = { 'all': 'Tất cả', 'new': 'Đang xác nhận', 'accepted': 'Đã nhận', 'doing': 'Đã bắt đầu', 'done': 'Đã hoàn thành', 'cancel': 'Đã hủy' };
             const statusTextEl = document.getElementById('currentStatusText');
             if (statusTextEl) statusTextEl.textContent = statusTextMap[tab];
 
@@ -211,6 +218,7 @@
             const counts = {
                 'All': data.length,
                 'New': data.filter(o => !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte).length,
+                'Accepted': data.filter(o => o.ngaynhan && !o.ngaybatdauthucte && !o.ngayhuy).length,
                 'Doing': data.filter(o => o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy).length,
                 'Done': data.filter(o => !!o.ngayhoanthanhthucte).length,
                 'Cancel': data.filter(o => !!o.ngayhuy).length
@@ -237,10 +245,10 @@
             // 1. Table Render
             tbody.innerHTML = orders.map(o => {
                 let statusBadge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang xác nhận</span>';
-                if (o.ngayhuy) statusBadge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy bỏ</span>';
-                else if (o.ngayhoanthanhthucte) statusBadge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Hoàn thành</span>';
-                else if (o.ngaybatdauthucte) statusBadge = '<span class="badge bg-primary text-primary bg-opacity-10 px-2 py-1 rounded-pill">Đang thuê</span>';
-                else if (o.ngaynhan) statusBadge = '<span class="badge bg-info text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đã nhận đơn</span>';
+                if (o.ngayhuy) statusBadge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy</span>';
+                else if (o.ngayhoanthanhthucte) statusBadge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Đã hoàn thành</span>';
+                else if (o.ngaybatdauthucte) statusBadge = '<span class="badge bg-primary text-primary bg-opacity-10 px-2 py-1 rounded-pill">Đã bắt đầu</span>';
+                else if (o.ngaynhan) statusBadge = '<span class="badge bg-info text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đã nhận</span>';
 
                 return `<tr>
                 <td class="ps-4">
@@ -264,13 +272,13 @@
             }).join('');
 
             // 2. Mobile Render
-            if (mob) {
+                if (mob) {
                 mob.innerHTML = orders.map(o => {
-                    let statusTxt = 'Chờ xử lý'; let statusCls = 'bg-warning';
+                    let statusTxt = 'Đang xác nhận'; let statusCls = 'bg-warning';
                     if (o.ngayhuy) { statusTxt = 'Đã hủy'; statusCls = 'bg-danger'; }
-                    else if (o.ngayhoanthanhthucte) { statusTxt = 'Thành công'; statusCls = 'bg-success'; }
-                    else if (o.ngaybatdauthucte) { statusTxt = 'Đang thuê'; statusCls = 'bg-primary'; }
-                    else if (o.ngaynhan) { statusTxt = 'Đã nhận đơn'; statusCls = 'bg-info'; }
+                    else if (o.ngayhoanthanhthucte) { statusTxt = 'Đã hoàn thành'; statusCls = 'bg-success'; }
+                    else if (o.ngaybatdauthucte) { statusTxt = 'Đã bắt đầu'; statusCls = 'bg-primary'; }
+                    else if (o.ngaynhan) { statusTxt = 'Đã nhận'; statusCls = 'bg-info'; }
 
                     return `
                     <div class="mobile-card shadow-sm border mb-3 p-3 bg-white" style="border-radius: 15px;">
@@ -340,6 +348,7 @@
             if (currentTab !== 'all') {
                 filtered = filtered.filter(o => {
                     if (currentTab === 'new') return !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte;
+                    if (currentTab === 'accepted') return o.ngaynhan && !o.ngaybatdauthucte && !o.ngayhuy;
                     if (currentTab === 'doing') return o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy;
                     if (currentTab === 'done') return !!o.ngayhoanthanhthucte;
                     if (currentTab === 'cancel') return !!o.ngayhuy;
@@ -416,7 +425,11 @@
         }
 
         window.viewOrderAdmin = function (id) {
-            window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
+            if (typeof window.openOrderDetailModal === 'function') {
+                window.openOrderDetailModal(id);
+            } else {
+                window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
+            }
         };
 
         window.cancelOrderAdmin = async function (id) {
@@ -431,3 +444,32 @@
         loadAllOrders();
     })();
 </script>
+
+<style>
+.status-tabs-wrapper .nav-pills {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: 0;
+}
+.status-tabs-wrapper .nav-link {
+    padding: 10px 4px !important;
+    white-space: nowrap;
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    .status-tabs-wrapper .nav-pills {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        flex-wrap: wrap !important;
+    }
+    .status-tabs-wrapper .nav-item {
+        flex: none !important;
+        width: 100% !important;
+        border: 0.5px solid rgba(0,0,0,0.05);
+    }
+    .status-tabs-wrapper .nav-link {
+        border-radius: 0 !important;
+        padding: 12px 2px !important;
+        font-size: 0.7rem;
+    }
+}
+</style>

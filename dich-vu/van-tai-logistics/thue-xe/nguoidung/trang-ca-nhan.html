@@ -343,31 +343,22 @@
         </div>
 
         <div class="nav-group" id="sidebarNav">
-            <!-- Mục chung cho tất cả -->
             <div class="nav-label">Trang cá nhân</div>
+            <!-- Mục chung cho tất cả -->
             <a href="#" class="nav-link active" data-page="lich-su-dat-xe">
                 <i class="fas fa-history"></i><span>Đơn tôi đặt</span>
             </a>
 
             <!-- Mục chỉ dành cho NCC (sẽ ẩn/hiện bằng JS) -->
-            <div id="providerNavSection" style="display:none;">
-                <div class="nav-sep"></div>
-                <div class="nav-label">Quản trị NCC</div>
-                <a href="#" class="nav-link" data-page="tong-quan-ncc">
-                    <i class="fa-solid fa-chart-line"></i><span>Tổng quan</span>
-                </a>
+            <div id="providerNavSection" style="display:none; margin: 0; padding: 0;">
                 <a href="#" class="nav-link" data-page="quan-ly-don">
                     <i class="fa-solid fa-calendar-check"></i><span>Đơn khách đặt</span>
-                    <span class="badge bg-danger ms-auto rounded-pill" id="newOrderCount"
-                        style="display:none; font-size:9px;">0</span>
                 </a>
                 <a href="#" class="nav-link" data-page="quan-ly-xe">
                     <i class="fa-solid fa-car-side"></i><span>Xe cho thuê</span>
                 </a>
             </div>
 
-            <div class="nav-sep"></div>
-            <div class="nav-label">Hệ thống</div>
             <a href="../../../../public/trang-ca-nhan.html" class="nav-link">
                 <i class="fa-solid fa-user-circle"></i><span>Thông tin tài khoản</span>
             </a>
@@ -403,6 +394,21 @@
                 <p class="text-muted fw-500">Đang khởi tạo hệ thống...</p>
             </div>
         </div>
+
+        <!-- Order Detail Area (Thợ Nhà Style) -->
+        <div class="content-area d-none" id="orderDetailArea" style="padding-top: 0px;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <button class="btn btn-white border shadow-sm d-flex align-items-center justify-content-center rounded-circle" onclick="closeOrderDetail()" style="width: 42px; height: 42px;" title="Quay lại danh sách">
+                    <i class="fas fa-arrow-left text-primary"></i>
+                </button>
+                <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-700">
+                    <i class="fas fa-file-invoice me-1"></i> CHI TIẾT ĐƠN HÀNG
+                </div>
+            </div>
+            <div class="bg-white shadow-sm overflow-hidden border" style="border-radius: 24px; height: calc(100vh - 180px);">
+                <iframe id="orderDetailFrame" src="" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+            </div>
+        </div>
     </main>
 
     <!-- Scripts -->
@@ -415,6 +421,41 @@
             document.getElementById('sidebar').classList.toggle('mobile-open');
             document.getElementById('sidebarOverlay').classList.toggle('active');
         }
+
+        window.openOrderDetailModal = function(id) {
+            const pageContent = document.getElementById('pageContent');
+            const detailArea = document.getElementById('orderDetailArea');
+            const frame = document.getElementById('orderDetailFrame');
+            const pageTitle = document.getElementById('pageTitleDisplay');
+            
+            if(!detailArea || !frame) return window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
+
+            // Save old title
+            window._oldPageTitle = pageTitle.textContent;
+            pageTitle.textContent = 'Chi tiết đơn hàng #' + String(id).padStart(7, '0');
+
+            // Hide list, show detail
+            pageContent.classList.add('d-none');
+            detailArea.classList.remove('d-none');
+            
+            // Set source
+            frame.src = 'about:blank';
+            frame.src = '../chi-tiet-thue-xe.html?id=' + id + '&embed=1';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.closeOrderDetail = function() {
+            const pageContent = document.getElementById('pageContent');
+            const detailArea = document.getElementById('orderDetailArea');
+            const pageTitle = document.getElementById('pageTitleDisplay');
+
+            detailArea.classList.add('d-none');
+            pageContent.classList.remove('d-none');
+            if(window._oldPageTitle) pageTitle.textContent = window._oldPageTitle;
+            
+            document.getElementById('orderDetailFrame').src = 'about:blank';
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             ThueXeShell.init(null, 'lich-su-dat-xe');

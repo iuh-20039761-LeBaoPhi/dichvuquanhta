@@ -84,6 +84,11 @@
         if (activeBtn) activeBtn.classList.add('active');
 
         if (contentArea) {
+            // Tự động đóng chi tiết đơn hàng nếu đang mở (Thợ Nhà Style)
+            if (typeof window.closeOrderDetail === 'function') {
+                window.closeOrderDetail();
+            }
+
             contentArea.innerHTML = '<div class="text-center py-5 text-muted"><i class="fas fa-spinner fa-spin fa-2x mb-3"></i><br>Đang tải dữ liệu...</div>';
             
             const url = `${partialDir}${pageId}.html?v=${Date.now()}`;
