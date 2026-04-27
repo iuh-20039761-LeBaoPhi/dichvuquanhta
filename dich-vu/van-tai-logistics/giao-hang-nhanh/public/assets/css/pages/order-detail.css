@@ -8,26 +8,26 @@
   --accent-orange: #ff7a00;
   --accent-orange-soft: #ffd39f;
   --accent-green: #25b58b;
-  
+
   --bg-page: #f5f7fb;
   --bg-card: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.12);
   --bg-metric: rgba(10, 42, 102, 0.2);
-  
+
   --text-main: #0f172a;
   --text-muted: #5f7293;
   --text-white: #ffffff;
-  
+
   --border-light: #dbe3f0;
   --border-card: #d6e3f7;
   --border-dashed: #d7e4f3;
   --border-glass: rgba(255, 255, 255, 0.18);
-  
+
   --radius-xl: 32px;
   --radius-lg: 24px;
   --radius-md: 18px;
   --radius-sm: 12px;
-  
+
   --shadow-sm: 0 10px 30px rgba(15, 23, 42, 0.05);
   --shadow-lg: 0 20px 46px rgba(10, 42, 102, 0.08);
   --shadow-btn: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -53,11 +53,6 @@
 
 .standalone-order-media-item strong {
   display: none;
-}
-
-.standalone-order-review-layout-inline {
-  width: 100%;
-  max-width: 800px;
 }
 
 @media (max-width: 640px) {
@@ -208,7 +203,7 @@
   font-family: "Be Vietnam Pro", sans-serif;
   background:
     radial-gradient(circle at 20% -10%, #e3f0ff 0, transparent 42%),
-    radial-gradient(circle at 95% 120%, #e5fff4 0, transparent 38%), 
+    radial-gradient(circle at 95% 120%, #e5fff4 0, transparent 38%),
     var(--bg-page);
   color: var(--text-main);
 }
@@ -259,7 +254,12 @@
   gap: 16px;
   flex-wrap: wrap;
   padding: 18px 24px;
-  background: linear-gradient(115deg, var(--primary-navy-dark) 0%, var(--primary-navy) 48%, var(--primary-blue) 100%);
+  background: linear-gradient(
+    115deg,
+    var(--primary-navy-dark) 0%,
+    var(--primary-navy) 48%,
+    var(--primary-blue) 100%
+  );
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   color: var(--text-white);
 }
@@ -297,9 +297,22 @@
   gap: 20px;
   padding: 24px;
   background:
-    radial-gradient(circle at top right, rgba(255, 122, 0, 0.15), transparent 28%),
-    radial-gradient(circle at left center, rgba(255, 255, 255, 0.12), transparent 34%),
-    linear-gradient(135deg, #0b3279 0%, var(--primary-navy) 46%, var(--primary-blue) 100%);
+    radial-gradient(
+      circle at top right,
+      rgba(255, 122, 0, 0.15),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at left center,
+      rgba(255, 255, 255, 0.12),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      #0b3279 0%,
+      var(--primary-navy) 46%,
+      var(--primary-blue) 100%
+    );
   color: var(--text-white);
   border-radius: 0;
 }
@@ -318,7 +331,6 @@
   color: #ff7a00;
   margin-right: 4px;
 }
-
 
 .standalone-order-card-title {
   min-width: 0;
@@ -395,7 +407,6 @@
   overflow-wrap: anywhere;
 }
 
-
 .standalone-order-actions-group {
   display: flex;
   gap: 14px;
@@ -414,7 +425,6 @@
   border-color: rgba(255, 255, 255, 0.32);
   background: rgba(255, 255, 255, 0.14);
 }
-
 
 .standalone-order-hero-metrics {
   display: grid;
@@ -473,9 +483,8 @@
   font-size: 11px;
   font-weight: 600;
   color: #fff;
-  opacity: .9;
+  opacity: 0.9;
 }
-
 
 .standalone-order-progress-ring {
   --progress: 0%;
@@ -598,13 +607,6 @@
 
 .standalone-order-grid {
   display: grid;
-}
-
-.standalone-order-block {
-  display: grid;
-  gap: 18px;
-  padding: 28px;
-  border-bottom: 1px solid #edf3fd;
 }
 
 .standalone-order-block:last-child {
@@ -796,8 +798,11 @@
   display: none;
 }
 
-.standalone-order-contact-person-card.is-receiver .standalone-order-contact-card-icon,
-.standalone-order-contact-person-card.is-receiver .standalone-order-contact-card-title strong {
+.standalone-order-contact-person-card.is-receiver
+  .standalone-order-contact-card-icon,
+.standalone-order-contact-person-card.is-receiver
+  .standalone-order-contact-card-title
+  strong {
   color: #ff6b00;
 }
 
@@ -805,7 +810,8 @@
   display: none;
 }
 
-.standalone-order-contact-person-card.is-receiver .standalone-order-contact-call {
+.standalone-order-contact-person-card.is-receiver
+  .standalone-order-contact-call {
   background: #fff1e5;
   color: #ff6b00;
 }
@@ -1081,18 +1087,8 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.standalone-order-review-layout-inline {
-  grid-template-columns: minmax(0, 1fr);
-  width: 100%;
-  max-width: 800px;
-}
-
-.standalone-order-review-layout-inline
-  > .standalone-order-subcard,
-.standalone-order-review-layout-inline
-  > .standalone-order-panel,
-.standalone-order-review-layout-inline
-  > .standalone-order-provider-card {
+.standalone-order-review-layout-inline > .standalone-order-panel,
+.standalone-order-review-layout-inline > .standalone-order-provider-card {
   width: 100%;
 }
 
@@ -1815,7 +1811,11 @@
 .standalone-order-hero-metric-primary {
   border-color: rgba(255, 181, 95, 0.28);
   background:
-    radial-gradient(circle at top left, rgba(255, 181, 95, 0.26), transparent 42%),
+    radial-gradient(
+      circle at top left,
+      rgba(255, 181, 95, 0.26),
+      transparent 42%
+    ),
     linear-gradient(
       135deg,
       rgba(66, 111, 214, 0.88) 0%,
@@ -1825,7 +1825,9 @@
   box-shadow: 0 18px 32px rgba(8, 40, 110, 0.2);
 }
 
-.standalone-order-hero-metric-primary .standalone-order-hero-metric-copy strong {
+.standalone-order-hero-metric-primary
+  .standalone-order-hero-metric-copy
+  strong {
   font-size: clamp(28px, 4vw, 36px);
   line-height: 1.05;
   color: #ffffff;
@@ -1970,8 +1972,11 @@
 }
 
 .standalone-order-block {
+  display: grid;
+  border-bottom: 1px solid #edf3fd;
   gap: 14px;
-  padding: 20px;
+  padding: 24px; /* Tăng padding để cân đối trên PC */
+  width: 100%;
 }
 
 .standalone-order-summary-grid,
@@ -2204,7 +2209,8 @@
 }
 
 .standalone-order-hero-stat--amount {
-  background: linear-gradient(
+  background:
+    linear-gradient(
       135deg,
       rgba(255, 186, 104, 0.1) 0%,
       rgba(255, 122, 0, 0.05) 100%
@@ -2338,7 +2344,8 @@
   align-content: start;
 }
 
-.standalone-order-hero-support-card-schedule .standalone-order-hero-support-note {
+.standalone-order-hero-support-card-schedule
+  .standalone-order-hero-support-note {
   align-self: start;
 }
 
@@ -2625,7 +2632,9 @@
     border-radius: 8px;
   }
 
-  .standalone-order-contact-person-card .standalone-order-contact-card-title strong {
+  .standalone-order-contact-person-card
+    .standalone-order-contact-card-title
+    strong {
     font-size: 13px;
     line-height: 1.25;
   }

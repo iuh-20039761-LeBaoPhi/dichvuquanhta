@@ -362,12 +362,12 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     <span>Dùng đầu ca để xem tổng số đơn mở, đơn quá 120 phút chưa có provider nhận, provider đang chờ duyệt hoặc thiếu hồ sơ, và số contact mới.</span>
                 </article>
                 <article class="guide-card">
-                    <strong>Khi nào mở Đơn hàng</strong>
+                    <strong>Khi nào mở Đơn hàng <span class="guide-status-badge badge-full">Toàn quyền</span></strong>
                     <span>Dùng để gán provider, cập nhật trạng thái, kiểm tra lịch thực hiện, rà ghi chú và media hiện trường, hoặc mở chi tiết một đơn cụ thể.</span>
                 </article>
                 <article class="guide-card">
-                    <strong>Khi nào mở Users</strong>
-                    <span>Dùng để khóa/mở tài khoản, rà provider thiếu avatar hoặc CCCD, và sửa nhanh thông tin liên hệ của khách hàng hoặc nhà cung cấp.</span>
+                    <strong>Khi nào mở Users <span class="guide-status-badge badge-readonly">Chỉ xem</span></strong>
+                    <span>Dùng để rà soát hồ sơ provider (Avatar/CCCD) và kiểm tra thông tin liên hệ. Lưu ý: Chức năng sửa/xóa đã bị khóa để bảo mật dữ liệu dùng chung.</span>
                 </article>
                 <article class="guide-card">
                     <strong>Khi nào mở Bảng giá</strong>
@@ -409,7 +409,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
         </article>
 
         <article class="guide-section" id="don-hang">
-            <h2><i class="fas fa-truck-ramp-box"></i> Đơn hàng và trạng thái</h2>
+            <h2><i class="fas fa-truck-ramp-box"></i> Đơn hàng và trạng thái <span class="guide-status-badge badge-full">Toàn quyền điều phối</span></h2>
             <p>`orders_manage.php` là nơi điều phối đơn hàng. Admin có thể lọc theo trạng thái, loại dịch vụ, nhà cung cấp, khoảng thời gian và từ khóa để tìm đúng yêu cầu cần xử lý.</p>
             <h3>Những điểm cần nhớ</h3>
             <ul>
@@ -452,13 +452,13 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 </table>
             </div>
             <h3>Trang chi tiết đơn</h3>
-            <p>`order_detail.php` dùng để đọc sâu dữ liệu một đơn và xem media hiện trường của provider. Mã đơn hiển thị đã được đồng bộ với notifications và danh sách đơn để tránh mỗi nơi một format.</p>
+            <p>`order_detail.php` dùng để đọc sâu dữ liệu một đơn và xem media hiện trường. Đây là giao diện <strong>Master Standalone</strong> tái tạo lại góc nhìn của Nhà cung cấp giúp Admin hỗ trợ chính xác nhất.</p>
             <div class="guide-note guide-danger">Nếu gặp đơn đã ở `da_xac_nhan` nhưng chưa có `completed_at`, hãy ưu tiên lưu lại đơn một lần từ admin để mốc hoàn tất được bổ sung cho dữ liệu sạch hơn.</div>
         </article>
 
         <article class="guide-section" id="nguoi-dung">
-            <h2><i class="fas fa-users-gear"></i> Nhà cung cấp và người dùng</h2>
-            <p>`users_manage.php` quản lý cả khách hàng lẫn nhà cung cấp. Với chuyển dọn, phần quan trọng nhất là rà hồ sơ provider để đủ điều kiện nhận đơn.</p>
+            <h2><i class="fas fa-users-gear"></i> Nhà cung cấp và người dùng <span class="guide-status-badge badge-readonly">Chế độ rà soát</span></h2>
+            <p>`users_manage.php` hiển thị danh sách khách hàng và nhà cung cấp. Để đảm bảo tính toàn vẹn của dữ liệu người dùng dùng chung hệ sinh thái, Admin Chuyển Dọn hiện tại chỉ có quyền <strong>Rà soát (View Only)</strong>.</p>
             <h3>Logic xác minh đang dùng</h3>
             <ul>
                 <li>Provider được xem là đủ hồ sơ khi có đủ `avatar + CCCD trước + CCCD sau`.</li>
@@ -469,10 +469,9 @@ require_once __DIR__ . '/../includes/header_admin.php';
             <ol>
                 <li>Kiểm tra `trangthai` hiện tại có đang là `pending` hoặc `active`.</li>
                 <li>Mở preview avatar và 2 mặt CCCD ngay trên form.</li>
-                <li>Nếu hồ sơ đủ, chuyển trạng thái vận hành phù hợp và ghi chú nếu cần.</li>
-                <li>Nếu hồ sơ thiếu, giữ lại lý do trong `note_admin` để ca sau tiếp tục xử lý.</li>
+                <li>Nếu hồ sơ thiếu/sai, hãy liên hệ trực tiếp hoặc thông báo qua hệ thống (không sửa trực tiếp trên form).</li>
             </ol>
-            <div class="guide-note">Nếu stats báo còn provider chờ duyệt, nhưng màn users nhìn có vẻ đủ hồ sơ, hãy kiểm tra lại dữ liệu alias/legacy trước. Logic đã được đồng bộ, nhưng record quá cũ vẫn có thể cần admin lưu lại một lần để chuẩn hóa field.</div>
+            <div class="guide-note">Vì module ở chế độ Chỉ xem, mọi yêu cầu thay đổi thông tin tài khoản cần được thực hiện bởi Admin tổng hoặc thông qua các yêu cầu hỗ trợ.</div>
         </article>
 
         <article class="guide-section" id="bang-gia">
