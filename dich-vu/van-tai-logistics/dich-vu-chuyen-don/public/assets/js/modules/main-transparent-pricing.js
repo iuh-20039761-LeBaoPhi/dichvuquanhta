@@ -56,7 +56,8 @@ import core from "./core/app-core.js";
   }
 
   function loadTransparentPricingData() {
-    return fetch(core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json"))
+    const jsonUrl = core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json");
+    return fetch(`${jsonUrl}?v=${new Date().getTime()}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Cannot load pricing reference data: ${response.status}`);
@@ -121,32 +122,41 @@ import core from "./core/app-core.js";
       let details = [];
 
       if (groupId === "cuoc-xe") {
-        const vehicles = core.getPricingVehicleEntries(item);
-        details = vehicles.map(v => `
-          <div class="dong-gia-so-sanh">
-            <span class="ten-phi">${core.escapeHtml(v.ten_hien_thi)}</span>
-            <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleOpening(v))}</strong></span>
-          </div>
-          <div class="dong-gia-so-sanh">
-            <span class="ten-phi">Km 6-15</span>
-            <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleBand(v, 6))}</strong></span>
-          </div>
-          <div class="dong-gia-so-sanh">
-            <span class="ten-phi">Km 16-30</span>
-            <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleBand(v, 16))}</strong></span>
-          </div>
-          <div class="dong-gia-so-sanh">
-            <span class="ten-phi">Km 31+</span>
-            <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleBand(v, 31))}</strong></span>
-          </div>
-        `);
+        const vehicles = core.getPricingVehicleEntries(item)
+          .sort((a, b) => (Number(a.thu_tu) || 0) - (Number(b.thu_tu) || 0));
+        details = vehicles.map(v => {
+          const openingRow = `
+            <div class="dong-gia-so-sanh dong-gia-so-sanh--phan-cach">
+              <span class="ten-phi"><strong>${core.escapeHtml(v.ten_hien_thi)}</strong></span>
+              <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleOpening(v))}</strong></span>
+            </div>
+          `;
+          
+          const bands = Array.isArray(v.bang_gia_km) ? v.bang_gia_km : [];
+          const bandRows = bands.map(band => {
+            let label = `Km ${band.tu_km}`;
+            if (band.den_km) {
+              label += `-${band.den_km}`;
+            } else {
+              label += ` trở lên`;
+            }
+            return `
+              <div class="dong-gia-so-sanh">
+                <span class="ten-phi">${core.escapeHtml(label)}</span>
+                <span class="muc-tien"><strong>${core.escapeHtml(formatCurrency(band.don_gia))}/km</strong></span>
+              </div>
+            `;
+          }).join("");
+
+          return openingRow + bandRows;
+        });
       }
 
       if (groupId === "ho-tro") {
         const checkboxItems = core.getPricingCheckboxItems(item);
-        const supportItems = checkboxItems.filter(
-          (entry) => String(entry?.slug || "").trim() !== "khao_sat_truoc",
-        );
+        const supportItems = checkboxItems
+          .filter((entry) => String(entry?.slug || "").trim() !== "khao_sat_truoc")
+          .sort((a, b) => (Number(a.thu_tu) || 0) - (Number(b.thu_tu) || 0));
         details = supportItems.length
           ? supportItems.map(entry => `
                 <div class="dong-gia-so-sanh">
@@ -157,7 +167,7 @@ import core from "./core/app-core.js";
       }
 
       if (groupId === "thoi-diem") {
-        const multiplierEntries = core.getPricingMultiplierEntries(item);
+        const multiplierEntries = core.getPricingMultiplierEntries(item).sort((a, b) => (Number(a.thu_tu) || 0) - (Number(b.thu_tu) || 0));
         details = multiplierEntries.length
           ? multiplierEntries.map(entry => `
               <div class="dong-gia-so-sanh">
@@ -179,10 +189,13 @@ import core from "./core/app-core.js";
     }).join("");
 
     let commonNote = "";
-    if (groupId === "cuoc-xe") commonNote = "Bảng xe công khai đang hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh ở các dải km 6-15, 16-30 và từ km 31 trở đi để bạn đối chiếu nhanh theo từng loại xe.";
+    if (groupId === "cuoc-xe") {
+      const firstVehicle = core.getPricingVehicleEntries(data[0])[0];
+      const openingKm = firstVehicle?.pham_vi_mo_cua_km || 5;
+      commonNote = `Bảng xe công khai đang hiển thị theo giá mở cửa ${openingKm}km đầu và đơn giá phát sinh ở các dải km cụ thể để bạn đối chiếu nhanh theo từng loại xe.`;
+    }
     if (groupId === "ho-tro") commonNote = "Khảo sát trước vẫn được giữ như một hạng mục riêng theo bảng giá. Các hạng mục hỗ trợ còn lại chỉ dùng để điều phối đội triển khai và tài xế biết việc cần làm thêm.";
     if (groupId === "thoi-diem") commonNote = "Hệ số và phụ phí thời điểm sẽ được linh động cộng dồn một lần vào tổng hóa đơn cuối cùng.";
-
     return `
       <style>
         .luoi-so-sanh-gia { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1rem; }
@@ -192,7 +205,12 @@ import core from "./core/app-core.js";
         
         .dong-gia-so-sanh { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px dashed #e2e8f0; }
         .dong-gia-so-sanh:last-child { border-bottom: none; }
+        
+        .dong-gia-so-sanh--phan-cach { border-top: 2px solid #cbd5e1; margin-top: 0.5rem; padding-top: 1.25rem; }
+        .the-so-sanh-gia__noi-dung > .dong-gia-so-sanh--phan-cach:first-child { border-top: none; margin-top: 0; padding-top: 0.75rem; }
+
         .ten-phi { color: #475569; padding-right: 1rem; }
+        .ten-phi strong { color: #0f172a; font-weight: 700; font-size: 1rem; }
         .muc-tien { white-space: nowrap; color: #0f172a; text-align: right; }
         .mo-ta-phu { color: #94a3b8; font-style: italic; width: 100%; text-align: center; }
 

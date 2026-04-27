@@ -26,14 +26,30 @@ $currentPage = basename($_SERVER['PHP_SELF'] ?? '');
         </div>
 
         <nav class="admin-nav">
-            <a href="index.php" class="<?php echo in_array($currentPage, ['index.php', 'admin_stats.php'], true) ? 'is-active' : ''; ?>">Dashboard</a>
-            <a href="orders_manage.php" class="<?php echo $currentPage === 'orders_manage.php' ? 'is-active' : ''; ?>">Đơn hàng</a>
-            <a href="users_manage.php" class="<?php echo $currentPage === 'users_manage.php' ? 'is-active' : ''; ?>">Nhà cung cấp & người dùng</a>
-            <a href="admin_pricing.php" class="<?php echo $currentPage === 'admin_pricing.php' ? 'is-active' : ''; ?>">Bảng giá</a>
-            <a href="contact_manage.php" class="<?php echo $currentPage === 'contact_manage.php' ? 'is-active' : ''; ?>">Liên hệ</a>
-            <a href="articles_manage.php" class="<?php echo $currentPage === 'articles_manage.php' ? 'is-active' : ''; ?>">Cẩm nang</a>
-            <a href="admin_guide.php" class="<?php echo $currentPage === 'admin_guide.php' ? 'is-active' : ''; ?>">Hướng dẫn</a>
-            <a href="admin_profile.php" class="<?php echo $currentPage === 'admin_profile.php' ? 'is-active' : ''; ?>">Cấu hình</a>
+            <a href="index.php" class="<?php echo in_array($currentPage, ['index.php', 'admin_stats.php'], true) ? 'is-active' : ''; ?>">
+                <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="orders_manage.php" class="<?php echo $currentPage === 'orders_manage.php' ? 'is-active' : ''; ?>">
+                <i class="fas fa-shopping-cart"></i> <span>Đơn hàng</span>
+            </a>
+            <a href="users_manage.php" class="<?php echo $currentPage === 'users_manage.php' ? 'is-active' : ''; ?>">
+                <i class="fas fa-users-gear"></i> <span>Thành viên</span>
+            </a>
+            <a href="admin_pricing.php" class="<?php echo $currentPage === 'admin_pricing.php' ? 'is-active' : ''; ?>">
+                <i class="fas fa-tags"></i> <span>Bảng giá</span>
+            </a>
+            <a href="contact_manage.php" class="<?php echo $currentPage === 'contact_manage.php' ? 'is-active' : ''; ?>">
+                <i class="fas fa-envelope-open-text"></i> <span>Liên hệ</span>
+            </a>
+            <a href="articles_manage.php" class="<?php echo $currentPage === 'articles_manage.php' ? 'is-active' : ''; ?>">
+                <i class="fas fa-book"></i> <span>Cẩm nang</span>
+            </a>
+            <a href="admin_guide.php" class="<?php echo $currentPage === 'admin_guide.php' ? 'is-active' : ''; ?>">
+                <i class="fas fa-circle-info"></i> <span>Hướng dẫn</span>
+            </a>
+            <a href="admin_profile.php" class="<?php echo $currentPage === 'admin_profile.php' ? 'is-active' : ''; ?>">
+                <i class="fas fa-sliders"></i> <span>Cấu hình</span>
+            </a>
         </nav>
 
         <div class="admin-header__actions">

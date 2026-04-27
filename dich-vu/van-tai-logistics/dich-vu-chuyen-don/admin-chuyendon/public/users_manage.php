@@ -201,6 +201,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
     }
 
     @media (max-width: 768px) {
+
         .user-summary-grid,
         .profile-preview-grid {
             grid-template-columns: 1fr;
@@ -211,15 +212,13 @@ require_once __DIR__ . '/../includes/header_admin.php';
 <section class="hero-card">
     <div>
         <h1>Nhà cung cấp & người dùng</h1>
-        <p>Quản lý toàn bộ khách hàng, nhà cung cấp chuyển dọn và thông tin xác minh hồ sơ ngay trên bảng `nguoidung` dùng chung với portal.</p>
+        <p>Quản lý toàn bộ khách hàng, nhà cung cấp chuyển dọn và thông tin xác minh hồ sơ ngay trên bảng `nguoidung`
+            dùng chung với portal.</p>
     </div>
     <div class="hero-actions" style="display:flex; gap:12px; flex-wrap:wrap;">
         <a href="notifications.php" class="btn btn-outline">
             <i class="fas fa-bell"></i>Thông báo
         </a>
-        <button class="btn btn-primary" type="button" onclick="userManager.showUserModal()">
-            <i class="fas fa-user-plus"></i>Thêm tài khoản
-        </button>
     </div>
 </section>
 
@@ -262,7 +261,9 @@ require_once __DIR__ . '/../includes/header_admin.php';
             <label class="label">Tìm kiếm</label>
             <div style="position: relative;">
                 <i class="fas fa-search"></i>
-                <input type="text" class="input" id="userSearchInput" placeholder="Tên, SĐT, email, công ty, phương tiện..." oninput="userManager.handleSearch(this.value)">
+                <input type="text" class="input" id="userSearchInput"
+                    placeholder="Tên, SĐT, email, công ty, phương tiện..."
+                    oninput="userManager.handleSearch(this.value)">
             </div>
         </div>
 
@@ -327,7 +328,8 @@ require_once __DIR__ . '/../includes/header_admin.php';
     <div class="modal modal-user-wide">
         <div class="modal-header">
             <h3 id="modalTitle">Tài khoản người dùng</h3>
-            <button class="btn-delete-small" type="button" onclick="userManager.closeModal()"><i class="fas fa-times"></i></button>
+            <button class="btn-delete-small" type="button" onclick="userManager.closeModal()"><i
+                    class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
             <form id="userForm" onsubmit="userManager.handleSubmit(event)">
@@ -387,7 +389,8 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     </div>
                     <div class="field span-full">
                         <label class="label">Ghi chú nội bộ admin</label>
-                        <textarea id="note_admin" class="textarea" rows="3" placeholder="Tình trạng hợp đồng, khu vực phụ trách, lưu ý hồ sơ..."></textarea>
+                        <textarea id="note_admin" class="textarea" rows="3"
+                            placeholder="Tình trạng hợp đồng, khu vực phụ trách, lưu ý hồ sơ..."></textarea>
                     </div>
                     <div class="field">
                         <label class="label">Link avatar</label>
@@ -423,46 +426,15 @@ require_once __DIR__ . '/../includes/header_admin.php';
             </form>
         </div>
         <div class="modal-footer">
-            <div class="status-pills" id="quickStatusActions">
-                <button type="button" class="btn btn-outline" onclick="userManager.applyQuickStatus('pending')">
-                    <i class="fas fa-user-clock"></i>Chờ duyệt
-                </button>
-                <button type="button" class="btn btn-outline" onclick="userManager.applyQuickStatus('0')">
-                    <i class="fas fa-circle-check"></i>Duyệt hoạt động
-                </button>
-                <button type="button" class="btn btn-outline" onclick="userManager.applyQuickStatus('1')">
-                    <i class="fas fa-lock"></i>Khóa tài khoản
-                </button>
-            </div>
             <div style="display:flex; gap:12px;">
                 <button type="button" class="btn btn-outline" onclick="userManager.closeModal()">Đóng</button>
-                <button type="submit" class="btn btn-primary" id="btnSave" form="userForm">
-                    <i class="fas fa-floppy-disk"></i>Lưu tài khoản
-                </button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal-overlay" id="confirmDeleteUserModal" style="z-index:1100;">
-    <div class="modal" style="max-width: 420px;">
-        <div class="modal-header">
-            <h3>Xóa tài khoản?</h3>
-            <button class="btn-delete-small" type="button" onclick="userManager.closeDeleteModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <p style="margin:0; color:var(--slate-light); line-height:1.7;">Chỉ xóa cứng khi đây là tài khoản test hoặc dữ liệu nhập lỗi. Với provider thật, ưu tiên khóa tài khoản để giữ lịch sử điều phối.</p>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-outline" onclick="userManager.closeDeleteModal()">Hủy</button>
-            <button type="button" class="btn btn-primary" id="confirmDeleteUserBtn" style="background:var(--danger); box-shadow:none;">
-                <i class="fas fa-trash-alt"></i>Xóa vĩnh viễn
-            </button>
-        </div>
-    </div>
-</div>
-
-<div class="toast-container" id="toastContainer" style="position: fixed; top: 100px; right: 24px; display: grid; gap: 12px; z-index: 1300;"></div>
+<div class="toast-container" id="toastContainer"
+    style="position: fixed; top: 100px; right: 24px; display: grid; gap: 12px; z-index: 1300;"></div>
 
 <script src="assets/js/admin-api.js"></script>
 <script src="assets/js/users-manage.js"></script>

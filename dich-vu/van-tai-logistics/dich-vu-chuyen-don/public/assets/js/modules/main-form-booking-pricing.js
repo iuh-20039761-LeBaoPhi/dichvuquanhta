@@ -273,45 +273,40 @@ let bookingFormLogicPromise = null;
     if (!vehicleEntry) {
       notes.push("Chọn loại xe để hệ thống tính cước theo số km di chuyển.");
     } else if (hasDistance) {
-      const ratePerKm = Number(vehicleEntry.gia_moi_km || 0);
-      const longDistanceRate = Number(vehicleEntry.gia_moi_km_duong_dai || 0);
-      const minimumFee = Number(vehicleEntry.phi_toi_thieu || 0);
-      const longDistanceThreshold = Number(
-        vehicleEntry.nguong_km_giam_gia || 20,
-      );
-      const longDistanceDiscountRate = Number(
-        vehicleEntry.ty_le_giam_gia_duong_dai || 0,
-      );
+      const openingFare = Number(vehicleEntry.gia_mo_cua || 0);
+      const openingKm = Number(vehicleEntry.pham_vi_mo_cua_km || 5);
+      const bands = Array.isArray(vehicleEntry.bang_gia_km)
+        ? vehicleEntry.bang_gia_km
+        : [];
       const billedDistanceKm = Math.max(0, distanceKm);
-      const isLongDistance =
-        billedDistanceKm > longDistanceThreshold &&
-        longDistanceRate > 0 &&
-        longDistanceRate < ratePerKm;
-      const appliedRate = isLongDistance ? longDistanceRate : ratePerKm;
-      const transportBeforeMinimum = Math.round(
-        billedDistanceKm * appliedRate,
-      );
-      distanceDistanceOnlyTotal = transportBeforeMinimum;
+
+      let transportTotal = openingFare;
+      let breakdownDetail = `${openingKm}km đầu (mở cửa)`;
+
+      if (billedDistanceKm > openingKm) {
+        const extraDistance = billedDistanceKm - openingKm;
+        const applicableBand = bands.find((band) => {
+          const tu = Number(band.tu_km || 0);
+          const den = band.den_km === null ? Infinity : Number(band.den_km);
+          return (
+            billedDistanceKm >= tu &&
+            (billedDistanceKm <= den || den === Infinity)
+          );
+        });
+
+        const rate = applicableBand ? Number(applicableBand.don_gia || 0) : 0;
+        const extraCharge = Math.round(extraDistance * rate);
+        transportTotal += extraCharge;
+
+        breakdownDetail = `${openingKm}km đầu (${core.formatCurrencyVnd(openingFare)}) + ${extraDistance.toFixed(1)}km tiếp theo x ${core.formatCurrencyVnd(rate)}/km`;
+      }
+
+      distanceDistanceOnlyTotal = transportTotal;
       addChargeLine({
         label: "Cước xe theo quãng đường",
-        detail: `${billedDistanceKm.toFixed(billedDistanceKm >= 10 ? 0 : 1)} km x ${core.formatCurrencyVnd(appliedRate)}${
-          isLongDistance
-            ? ` (đã giảm ${Math.round(longDistanceDiscountRate * 100)}% khi vượt ${longDistanceThreshold}km)`
-            : ""
-        }`,
-        amount: transportBeforeMinimum,
+        detail: breakdownDetail,
+        amount: transportTotal,
       });
-      if (minimumFee > transportBeforeMinimum) {
-        addChargeLine({
-          label: "Bù phí tối thiểu",
-          detail: `Áp dụng mức tối thiểu của ${vehicleEntry.ten_hien_thi || "loại xe đã chọn"}: ${core.formatCurrencyVnd(minimumFee)}`,
-          amount: minimumFee - transportBeforeMinimum,
-        });
-      } else if (isLongDistance) {
-        notes.push(
-          `Quãng đường vượt ${longDistanceThreshold}km nên cước xe đã tự giảm ${Math.round(longDistanceDiscountRate * 100)}% theo đơn giá đường dài.`,
-        );
-      }
     } else {
       notes.push(
         "Chưa ghim đủ hai điểm trên bản đồ nên hệ thống chưa tính được cước xe theo km.",

@@ -367,7 +367,7 @@
   function statusMeta(status) {
     var value = String(status || "").toLowerCase();
     if (value === "accepted") {
-      return { label: "Đã nhận đơn", className: "status-accepted" };
+      return { label: "Đã xác nhận", className: "status-accepted" };
     }
     if (value === "processing") {
       return { label: "Đang thực hiện", className: "status-processing" };
@@ -378,7 +378,7 @@
     if (value === "canceled") {
       return { label: "Đã hủy", className: "status-canceled" };
     }
-    return { label: "Chờ xử lý", className: "status-pending" };
+    return { label: "Chờ xác nhận", className: "status-pending" };
   }
 
   /**
@@ -966,6 +966,10 @@
       );
 
       var phoneMatched = customerPhones.indexOf(loginPhone) !== -1;
+      
+      // Nếu khớp số điện thoại thì cho phép truy cập luôn theo yêu cầu mới
+      if (phoneMatched) return true;
+
       var nameMatched =
         Boolean(orderCustomerName) &&
         Boolean(loginCustomerName) &&
@@ -1333,7 +1337,7 @@
     } else if (hasStartedDate) {
       providerStateText = "Đang xử lý";
     } else if (hasReceivedDate && !hasStartedDate) {
-      providerStateText = "Đã nhận đơn";
+      providerStateText = "Đã xác nhận";
     }
 
     setText("heroOrderCode", "#" + formatOrderCode(order.id));
@@ -1529,7 +1533,7 @@
           wrapper.className = "mb-2 border rounded overflow-hidden shadow-sm bg-light";
           wrapper.innerHTML =
             '<div class="ratio ratio-16x9">' +
-            '<img src="https://lh3.googleusercontent.com/d/' + id + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />' +
+            '<iframe src="https://drive.google.com/file/d/' + id + '/preview" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>' +
             "</div>";
           videoMount.appendChild(wrapper);
         });
@@ -1768,7 +1772,7 @@
         var hideHint =
           String(orderStatus || "").toLowerCase() === "canceled"
             ? "Đơn đã hủy, không thể thao tác thêm."
-            : "Chỉ có thể hủy đơn khi trạng thái là Chờ xử lý.";
+            : "Chỉ có thể hủy đơn khi trạng thái là Chờ xác nhận.";
 
         return {
           text: "Hủy đơn",
@@ -1843,12 +1847,19 @@
         order && order.raw && order.raw.ngayhuy,
       );
 
+      var orderPhone = normalizePhone(
+        (order && order.raw && order.raw.sodienthoai) || "",
+      );
+      var loginPhone = normalizePhone(auth.phone);
+      var providerIsCustomer = orderPhone === loginPhone;
+
       var canReceive =
         !hasAssignedProvider &&
         !hasReceivedDate &&
         !hasStartedDate &&
         !hasCompletedDate &&
-        !isCanceled;
+        !isCanceled &&
+        !providerIsCustomer;
       var canStart =
         hasAssignedProvider &&
         providerOwnsOrder &&
@@ -2139,6 +2150,23 @@
     var related = await loadRelatedRecords(raw);
     var merged = mergeOrderWithRelated(raw, related);
     var mapped = mapOrderView(merged);
+
+    // Xác định lại vai trò dựa trên dữ liệu đơn hàng
+    var orderPhone = normalizePhone(raw.sodienthoai);
+    var loginPhone = normalizePhone(auth.phone);
+
+    if (orderPhone === loginPhone) {
+      auth.role = "customer";
+    } else {
+      var idDichvu = String(auth.user.id_dichvu || "").trim();
+      var serviceIds = idDichvu.split(",").map(function (s) {
+        return s.trim();
+      });
+      auth.role = serviceIds.indexOf("8") !== -1 ? "provider" : "customer";
+    }
+
+    // Cập nhật lại giao diện hiển thị quyền truy cập
+    setIdentityChip(auth);
 
     if (!canAccessOrder(auth, mapped)) {
       showPageError(

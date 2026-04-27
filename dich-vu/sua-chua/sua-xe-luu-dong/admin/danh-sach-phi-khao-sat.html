@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sửa Xe Lưu Động - Admin - Quản lý phí khảo sát</title>
+    <title>Sửa Xe Lưu Động - Admin - Quản lý phí kiểm tra</title>
     <link rel="shortcut icon" type="image/x-icon" href="../public/asset/image/logo-sua-xe-luu-dong.png" />
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
@@ -60,7 +60,7 @@
             >
               <i class="fas fa-bars"></i>
             </button>
-            <h2>Quản lý phí khảo sát</h2>
+            <h2>Quản lý phí kiểm tra</h2>
           </div>
           <div class="topbar-actions">
             <div class="admin-chip">
@@ -78,10 +78,10 @@
                   <li class="breadcrumb-item">
                     <a href="index.html">Trang quản trị</a>
                   </li>
-                  <li class="breadcrumb-item active">Phí khảo sát</li>
+                  <li class="breadcrumb-item active">Phí kiểm tra</li>
                 </ol>
               </nav>
-              <h1 class="page-title">Quản lý phí khảo sát</h1>
+              <h1 class="page-title">Quản lý phí kiểm tra</h1>
             </div>
             <button class="btn btn-primary shadow-sm px-3" onclick="openFeeModal()">
               <i class="fas fa-plus me-1"></i> Thêm cấu hình
@@ -102,7 +102,7 @@
                   <tr>
                     <th>STT</th>
                     <th>Loại xe</th>
-                    <th>Phí khảo sát (VNĐ)</th>
+                    <th>Phí kiểm tra (VNĐ)</th>
                     <th class="text-end">Thao tác</th>
                   </tr>
                 </thead>
@@ -148,7 +148,7 @@
               />
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold">Phí khảo sát (VNĐ)</label>
+              <label class="form-label small fw-bold">Phí kiểm tra (VNĐ)</label>
               <input
                 type="number"
                 name="phikhaosat"
@@ -213,7 +213,7 @@
             <tr>
               <td data-label="STT">${(page - 1) * limit + i + 1}</td>
               <td data-label="Loại xe"><strong>${s.loaixe}</strong></td>
-              <td data-label="Phí khảo sát">${Number(s.phikhaosat).toLocaleString("vi-VN")} đ</td>
+              <td data-label="Phí kiểm tra">${Number(s.phikhaosat).toLocaleString("vi-VN")} đ</td>
               <td class="text-end">
                 <button class="btn btn-sm btn-outline-primary me-1" onclick="openFeeModal(${s.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteFee(${s.id})"><i class="fas fa-trash"></i></button>
@@ -225,7 +225,7 @@
         } catch (err) {
           tbody.innerHTML =
             '<tr><td colspan="4" class="text-center py-4 text-danger">Lỗi tải dữ liệu. Bảng "loaixe" có thể chưa tồn tại.</td></tr>';
-          showError("Không thể tải danh sách phí khảo sát.");
+          showError("Không thể tải danh sách phí kiểm tra.");
         }
       }
 

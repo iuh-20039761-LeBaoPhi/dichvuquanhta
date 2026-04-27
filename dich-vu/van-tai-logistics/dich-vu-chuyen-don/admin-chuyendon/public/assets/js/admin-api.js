@@ -287,15 +287,13 @@
     function sanitizeMovingPricingVehicleRow(row = {}) {
         return {
             id_dich_vu: normalizeText(row?.id_dich_vu),
-            slug_xe: normalizeText(row?.slug_xe),
+            slug_xe: normalizeText(row?.slug_xe || row?.thu_tu),
             ten_xe: normalizeText(row?.ten_xe),
+            thu_tu: Number(row?.thu_tu || 0),
             gia_mo_cua: Number(row?.gia_mo_cua || 0),
             don_gia_km_6_15: Number(row?.don_gia_km_6_15 || 0),
             don_gia_km_16_30: Number(row?.don_gia_km_16_30 || 0),
             don_gia_km_31_tro_len: Number(row?.don_gia_km_31_tro_len || 0),
-            gia_moi_km_form: Number(row?.gia_moi_km_form || 0),
-            gia_moi_km_duong_dai_form: Number(row?.gia_moi_km_duong_dai_form || 0),
-            phi_toi_thieu_form: Number(row?.phi_toi_thieu_form || 0),
         };
     }
 
@@ -303,8 +301,9 @@
         return {
             id_dich_vu: normalizeText(row?.id_dich_vu),
             nhom: normalizeText(row?.nhom),
-            slug_muc: normalizeText(row?.slug_muc),
+            slug_muc: normalizeText(row?.slug_muc || row?.thu_tu),
             ten_muc: normalizeText(row?.ten_muc),
+            thu_tu: Number(row?.thu_tu || 0),
             don_gia: Number(row?.don_gia || 0),
         };
     }
@@ -398,8 +397,8 @@
             return invokeKrudSafe(
                 "delete",
                 tableName,
-                { id },
-                undefined,
+                {},
+                id,
                 `Khong the xoa du lieu bang ${tableName}.`
             );
         },
@@ -501,9 +500,7 @@
                 { name: "don_gia_km_6_15", type: "number" },
                 { name: "don_gia_km_16_30", type: "number" },
                 { name: "don_gia_km_31_tro_len", type: "number" },
-                { name: "gia_moi_km_form", type: "number" },
-                { name: "gia_moi_km_duong_dai_form", type: "number" },
-                { name: "phi_toi_thieu_form", type: "number" },
+                { name: "thu_tu", type: "number" },
             ], undefined, "Khong the khoi tao bang bang_gia_chuyen_don_xe.");
 
             return invokeKrudSafe("ensure", "bang_gia_chuyen_don_muc", [
@@ -512,6 +509,7 @@
                 { name: "slug_muc", type: "text" },
                 { name: "ten_muc", type: "text" },
                 { name: "don_gia", type: "number" },
+                { name: "thu_tu", type: "number" },
             ], undefined, "Khong the khoi tao bang bang_gia_chuyen_don_muc.");
         },
 

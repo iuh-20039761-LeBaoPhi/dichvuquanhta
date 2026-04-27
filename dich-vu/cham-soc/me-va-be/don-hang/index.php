@@ -30,55 +30,30 @@ function format_invoice_id_display($value): string
 
 $q = trim((string) ($_GET['q'] ?? ''));
 $statusFilter = trim((string) ($_GET['status'] ?? 'all'));
-$serviceFilter = trim((string) ($_GET['service'] ?? 'all'));
-$sortFilter = strtolower(trim((string) ($_GET['sort'] ?? 'newest')));
+$fromDate = trim((string) ($_GET['from_date'] ?? ''));
+$toDate = trim((string) ($_GET['to_date'] ?? ''));
 
-if (!in_array($sortFilter, ['newest', 'oldest', 'status', 'customer'], true)) {
-    $sortFilter = 'newest';
-}
-
-$serviceMap = [];
-$statusMap = [];
-
-foreach ($rows as $row) {
-    $service = trim((string) ($row['dich_vu'] ?? ''));
-    if ($service !== '') {
-        $serviceMap[$service] = $service;
-    }
-
-    $status = trim((string) ($row['trangthai'] ?? ''));
-    if ($status === '') {
-        $status = 'chờ duyệt';
-    }
-    $statusMap[$status] = $status;
-}
-
-$services = array_values($serviceMap);
-sort($services);
-
-$statuses = array_values($statusMap);
-sort($statuses);
-
-if ($statusFilter !== 'all' && !isset($statusMap[$statusFilter])) {
+if ($statusFilter === '') {
     $statusFilter = 'all';
 }
-if ($serviceFilter !== 'all' && !isset($serviceMap[$serviceFilter])) {
-    $serviceFilter = 'all';
-}
 
-$filteredRows = array_values(array_filter($rows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
+$filteredRows = array_values(array_filter($rows, static function (array $item) use ($q, $statusFilter, $fromDate, $toDate): bool {
     $status = trim((string) ($item['trangthai'] ?? ''));
-    if ($status === '') {
+    if ($status === '' || $status === 'đang chờ') {
         $status = 'chờ duyệt';
     }
-    $service = trim((string) ($item['dich_vu'] ?? ''));
 
     if ($statusFilter !== 'all' && $status !== $statusFilter) {
         return false;
     }
 
-    if ($serviceFilter !== 'all' && $service !== $serviceFilter) {
-        return false;
+    if ($fromDate !== '') {
+        $itemDate = date('Y-m-d', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now')));
+        if ($itemDate < $fromDate) return false;
+    }
+    if ($toDate !== '') {
+        $itemDate = date('Y-m-d', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now')));
+        if ($itemDate > $toDate) return false;
     }
 
     if ($q !== '') {
@@ -88,7 +63,6 @@ $filteredRows = array_values(array_filter($rows, static function (array $item) u
             (string) ($item['dich_vu'] ?? ''),
             (string) ($item['goi_dich_vu'] ?? ''),
             (string) ($item['sdtkhachhang'] ?? ''),
-            (string) ($item['ngay_bat_dau_kehoach'] ?? ''),
         ]);
 
         if (function_exists('mb_stripos')) {
@@ -103,23 +77,8 @@ $filteredRows = array_values(array_filter($rows, static function (array $item) u
     return true;
 }));
 
-if ($sortFilter === 'oldest') {
-    usort($filteredRows, static fn(array $a, array $b): int => ((int) ($a['id'] ?? 0)) <=> ((int) ($b['id'] ?? 0)));
-} elseif ($sortFilter === 'status') {
-    usort($filteredRows, static function (array $a, array $b): int {
-        $left = (string) ($a['trangthai'] ?? '');
-        $right = (string) ($b['trangthai'] ?? '');
-        $statusCompare = strcasecmp($left, $right);
-        if ($statusCompare === 0) {
-            return ((int) ($b['id'] ?? 0)) <=> ((int) ($a['id'] ?? 0));
-        }
-        return $statusCompare;
-    });
-} elseif ($sortFilter === 'customer') {
-    usort($filteredRows, static fn(array $a, array $b): int => strcasecmp((string) ($a['tenkhachhang'] ?? ''), (string) ($b['tenkhachhang'] ?? '')));
-} else {
-    usort($filteredRows, static fn(array $a, array $b): int => ((int) ($b['id'] ?? 0)) <=> ((int) ($a['id'] ?? 0)));
-}
+// Sorting
+usort($filteredRows, static fn(array $a, array $b): int => ((int) ($b['id'] ?? 0)) <=> ((int) ($a['id'] ?? 0)));
 
 [
     'items' => $paginatedRows,
@@ -129,18 +88,27 @@ if ($sortFilter === 'oldest') {
     'totalPages' => $totalPages,
     'from' => $from,
     'to' => $to,
-] = pagination_array($filteredRows, pagination_get_page($_GET, 'page', 1), 5);
+] = pagination_array($filteredRows, pagination_get_page($_GET, 'page', 1), 10);
 
 $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targetPage, [
     'q' => $q,
     'status' => $statusFilter,
-    'service' => $serviceFilter,
-    'sort' => $sortFilter,
+    'from_date' => $fromDate,
+    'to_date' => $toDate,
 ], 'page', 'index.php');
 
-$summaryPending = count(array_filter($rows, static fn(array $i): bool => trim((string) ($i['trangthai'] ?? '')) === '' || trim((string) ($i['trangthai'] ?? '')) === 'chờ duyệt'));
-$summaryReceived = count(array_filter($rows, static fn(array $i): bool => trim((string) ($i['trangthai'] ?? '')) === 'hoàn thành' || trim((string) ($i['trangthai'] ?? '')) === 'đã nhận' || trim((string) ($i['trangthai'] ?? '')) === 'đang thực hiện'));
-$summaryTotal = count($rows);
+// Dynamic Status Mapping & Counts
+$statusCounts = [];
+$statusCounts['all'] = count($rows);
+foreach ($rows as $row) {
+    $st = trim((string) ($row['trangthai'] ?? ''));
+    if ($st === '' || $st === 'đang chờ') $st = 'chờ duyệt';
+    $statusCounts[$st] = ($statusCounts[$st] ?? 0) + 1;
+}
+$availableStatuses = array_keys($statusCounts);
+sort($availableStatuses);
+// Keep 'all' as first
+$availableStatuses = array_merge(['all'], array_diff($availableStatuses, ['all']));
 ?>
 <?php
 $pageTitle = "Danh sách đơn hàng";
@@ -148,127 +116,231 @@ include 'layout-header.php';
 ?>
 <style>
     /* Giữ nguyên style gốc của trang */
-    .page-wrap {
-        max-width: 1380px;
-        margin: 0 auto;
-        padding: 14px;
-    }
-
-    .panel-soft {
-        border: 0;
-        border-radius: 16px;
-        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-    }
-
-    .stat-card {
-        border-radius: 14px;
-        border: 1px solid #edf2f7;
-        background: #ffffff;
-        padding: 14px;
-        height: 100%;
-    }
-
-    .stat-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-    }
-
-    .stat-value {
-        font-size: 1.4rem;
-        font-weight: 700;
-        line-height: 1;
-        margin-top: 4px;
-    }
-
-    .filter-box {
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        background: #f8fafc;
-        padding: 12px;
-    }
-
-    .table-wrap {
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        overflow: hidden;
+    /* Filter & Header Styles */
+    .filter-section {
         background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        margin-bottom: 20px;
     }
 
-    .jobs-table {
-        --bs-table-bg: transparent;
-        --bs-table-hover-bg: #f8fbff;
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .header-title h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 2px;
+    }
+
+    .header-title p {
+        font-size: 0.85rem;
+        color: #64748b;
         margin-bottom: 0;
-        min-width: 980px;
-        vertical-align: middle;
     }
 
-    .jobs-table thead th {
-        background: #f1f5f9;
-        color: #334155;
-        white-space: nowrap;
-        font-weight: 700;
-        padding: 12px 14px;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .jobs-table tbody td {
-        padding: 12px 14px;
-        border-color: #edf2f7;
-    }
-
-    .id-badge {
-        min-width: 48px;
-        text-align: center;
-        font-weight: 700;
-        border-radius: 999px;
-    }
-
-    .action-group {
-        display: inline-flex;
-        gap: 6px;
+    .filter-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         flex-wrap: wrap;
     }
 
-    .btn-action {
-        min-width: 102px;
-        height: 36px;
+    .date-input-group {
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 4px 12px;
+        gap: 8px;
+    }
+
+    .date-input-group span {
+        font-size: 0.8rem;
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .date-input-group input {
+        border: none;
+        background: transparent;
+        font-size: 0.85rem;
+        color: #1e293b;
+        font-weight: 500;
+        outline: none;
+        width: 110px;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        min-width: 240px;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .search-input-wrapper input {
+        width: 100%;
+        padding: 10px 14px 10px 40px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        color: #1e293b;
+        transition: all 0.2s;
+    }
+
+    .search-input-wrapper input:focus {
+        background: #fff;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+
+    .btn-refresh {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #3b82f6;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        transition: all 0.2s;
+    }
+
+    .btn-refresh:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    /* Tabs Styles */
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .filter-tabs::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+    }
+
+    .tab-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none !important;
+        gap: 8px;
+    }
+
+    .tab-item:hover {
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+
+    .tab-item.active {
+        background: #3b82f6;
+        color: #fff !important;
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+    }
+
+    .tab-badge {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.86rem;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
     }
 
-    .empty-row {
-        text-align: center;
-        color: #64748b;
-        font-weight: 500;
+    .tab-item.active .tab-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
     }
 
-    .summary-note {
-        color: #64748b;
-        font-size: 0.92rem;
+    .badge-chua-nhan { background: #fef3c7; color: #d97706; }
+    .badge-dang-thue { background: #dbeafe; color: #2563eb; }
+    .badge-hoan-thanh { background: #dcfce7; color: #16a34a; }
+    .badge-da-huy { background: #fee2e2; color: #dc2626; }
+
+    .tab-item:not(.active) .tab-badge.badge-all { background: #e2e8f0; color: #475569; }
+
+    .status-mobile-trigger {
+        display: none;
     }
 
-    @media (max-width: 991.98px) {
-        .table-wrap { border: none !important; box-shadow: none !important; background: transparent !important; }
-        .page-wrap { padding: 3px; }
-        .panel-soft { margin: 1px; border-radius: 12px; }
-        .card-body { padding: 8px 1px !important; }
-        .stat-card { padding: 8px 6px; }
-        .stat-value { font-size: 1.2rem; }
-        .filter-box { padding: 8px 4px; }
-        .jobs-table thead th, .jobs-table tbody td { padding: 8px 6px; font-size: 0.85rem; }
-        .row { --bs-gutter-x: 0.25rem; --bs-gutter-y: 0.25rem; }
-        .mb-3 { margin-bottom: 0.5rem !important; }
-        .g-2, .g-3 { --bs-gutter-x: 0.25rem; --bs-gutter-y: 0.25rem; }
+    @media (max-width: 1024px) {
+        .filter-section { padding: 15px; }
+        .filter-header { flex-direction: column; align-items: stretch; }
+        .filter-controls { flex-direction: column; align-items: stretch; }
+        .date-input-group { width: 100%; justify-content: space-between; }
+        .search-input-wrapper { min-width: 100%; }
+        .btn-refresh { width: 100%; height: 42px; }
+
+        .status-mobile-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 10px;
+        }
+
+        .filter-tabs {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow-x: visible;
+        }
+
+        .filter-tabs.show {
+            display: flex;
+        }
+
+        .tab-item {
+            width: 100%;
+            justify-content: space-between;
+        }
     }
 </style>
 <style>
@@ -418,241 +490,219 @@ include 'layout-header.php';
 
 <div class="page-wrap">
     <?php if ($flashMsg !== ''): ?>
-        <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2" role="alert">
-            <?= htmlspecialchars($flashMsg, ENT_QUOTES, 'UTF-8') ?>
-        </div>
+            <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2" role="alert">
+                <?= htmlspecialchars($flashMsg, ENT_QUOTES, 'UTF-8') ?>
+            </div>
     <?php endif; ?>
 
     <section class="card panel-soft mb-3" >
         <div class="card-body p-3 p-lg-4">
             <?php if (!$isEmployeeApproved): ?>
-                <div class="alert alert-warning mb-0">Tài khoản của bạn đang chờ duyệt</div>
+                    <div class="alert alert-warning mb-0">Tài khoản của bạn đang chờ duyệt</div>
             <?php else: ?>
-                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
-                    <div>
-                        <h1 class="h4 fw-bold mb-1">Danh sách đơn hàng</h1>
-                    </div>
-                    <div class="text-secondary small">Tổng hiển thị: <b><?= (int) $totalFiltered ?></b> /
-                        <?= (int) $summaryTotal ?> hoa don
-                    </div>
-                </div>
+                    <div class="filter-section">
+                        <form method="get" id="filterForm">
+                            <input type="hidden" name="status" id="statusInput" value="<?= htmlspecialchars($statusFilter, ENT_QUOTES, 'UTF-8') ?>">
+                            
+                            <div class="filter-header">
+                                <div class="header-title">
+                                    <h1>Quản lý Đơn hàng</h1>
+                                    <p>Theo dõi mọi giao dịch hệ thống</p>
+                                </div>
+                                
+                                <div class="filter-controls">
+                                    <div class="date-input-group">
+                                        <span>Từ</span>
+                                        <input type="date" name="from_date" value="<?= htmlspecialchars($fromDate, ENT_QUOTES, 'UTF-8') ?>" onchange="this.form.submit()">
+                                    </div>
+                                    <div class="date-input-group">
+                                        <span>Đến</span>
+                                        <input type="date" name="to_date" value="<?= htmlspecialchars($toDate, ENT_QUOTES, 'UTF-8') ?>" onchange="this.form.submit()">
+                                    </div>
+                                    
+                                    <div class="search-input-wrapper">
+                                        <i class="bi bi-search"></i>
+                                        <input type="text" name="q" value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>" placeholder="Mã đơn / Tên khách..." onkeypress="if(event.keyCode === 13) { this.form.submit(); return false; }">
+                                    </div>
+                                    
+                                    <button type="button" class="btn-refresh" onclick="window.location.href='index.php'">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <?php
+                            $activeLabel = 'Tất cả';
+                            foreach ($availableStatuses as $st) {
+                                if ($st === $statusFilter) {
+                                    $activeLabel = ($st === 'all') ? 'Tất cả' : mb_convert_case($st, MB_CASE_TITLE, "UTF-8");
+                                    break;
+                                }
+                            }
+                            ?>
+                            <div class="status-mobile-trigger" onclick="toggleStatusMenu()">
+                                <span>Trạng thái: <b><?= htmlspecialchars($activeLabel, ENT_QUOTES, 'UTF-8') ?></b></span>
+                                <i class="bi bi-chevron-down"></i>
+                            </div>
 
-                <div class="row g-2 g-lg-3 mb-3">
-                    <div class="col-12 col-md-4">
-                        <div class="stat-card">
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                <div>
-                                    <div class="text-secondary small">Đang chờ nhận</div>
-                                    <div class="stat-value text-warning-emphasis"><?= (int) $summaryPending ?></div>
-                                </div>
-                                <div class="stat-icon bg-warning-subtle text-warning-emphasis"><i
-                                        class="bi bi-hourglass-split"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="stat-card">
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                <div>
-                                    <div class="text-secondary small">Đã nhận việc</div>
-                                    <div class="stat-value text-success-emphasis"><?= (int) $summaryReceived ?></div>
-                                </div>
-                                <div class="stat-icon bg-success-subtle text-success-emphasis"><i
-                                        class="bi bi-check2-circle"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="stat-card">
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                <div>
-                                    <div class="text-secondary small">Tổng công việc</div>
-                                    <div class="stat-value text-primary"><?= (int) $summaryTotal ?></div>
-                                </div>
-                                <div class="stat-icon bg-primary-subtle text-primary-emphasis"><i
-                                        class="bi bi-collection"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <form method="get" class="filter-box mb-3">
-                    <div class="row g-2 align-items-end">
-                        <div class="col-12 col-md-4 col-lg-3">
-                            <label class="form-label small text-secondary mb-1">Tìm kiếm</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" class="form-control" name="q"
-                                    value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>"
-                                    placeholder="ID, khach hang, SDT...">
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-2">
-                            <label class="form-label small text-secondary mb-1">Trạng thái</label>
-                            <select class="form-select" name="status">
-                                <option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>Tất cả</option>
-                                <?php foreach ($statuses as $statusOption): ?>
-                                    <option value="<?= htmlspecialchars($statusOption, ENT_QUOTES, 'UTF-8') ?>"
-                                        <?= $statusFilter === $statusOption ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($statusOption, ENT_QUOTES, 'UTF-8') ?>
-                                    </option>
+                            <div class="filter-tabs" id="statusMenu">
+                                <?php foreach ($availableStatuses as $stKey): ?>
+                                    <?php
+                                    $label = ($stKey === 'all') ? 'Tất cả' : mb_convert_case($stKey, MB_CASE_TITLE, "UTF-8");
+                                    $badgeClass = 'badge-all';
+                                    if ($stKey === 'chờ duyệt' || $stKey === 'đang chờ') $badgeClass = 'badge-chua-nhan';
+                                    elseif (strpos($stKey, 'thực hiện') !== false || strpos($stKey, 'nhận') !== false) $badgeClass = 'badge-dang-thue';
+                                    elseif (strpos($stKey, 'hoàn thành') !== false || strpos($stKey, 'xong') !== false) $badgeClass = 'badge-hoan-thanh';
+                                    elseif (strpos($stKey, 'hủy') !== false) $badgeClass = 'badge-da-huy';
+                                    ?>
+                                    <a href="javascript:void(0)" onclick="setStatus('<?= htmlspecialchars($stKey, ENT_QUOTES, 'UTF-8') ?>')" class="tab-item <?= $statusFilter === $stKey ? 'active' : '' ?>">
+                                        <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?> 
+                                        <span class="tab-badge <?= $badgeClass ?>"><?= $statusCounts[$stKey] ?></span>
+                                    </a>
                                 <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <label class="form-label small text-secondary mb-1">Dịch vụ</label>
-                            <select class="form-select" name="service">
-                                <option value="all">Tất cả</option>
-                                <?php foreach ($services as $serviceOption): ?>
-                                    <option value="<?= htmlspecialchars($serviceOption, ENT_QUOTES, 'UTF-8') ?>"
-                                        <?= $serviceFilter === $serviceOption ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($serviceOption, ENT_QUOTES, 'UTF-8') ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-2">
-                            <label class="form-label small text-secondary mb-1">Sap xep</label>
-                            <select class="form-select" name="sort">
-                                <option value="newest" <?= $sortFilter === 'newest' ? 'selected' : '' ?>>Mới nhất</option>
-                                <option value="oldest" <?= $sortFilter === 'oldest' ? 'selected' : '' ?>>Cũ nhất</option>
-                                <option value="status" <?= $sortFilter === 'status' ? 'selected' : '' ?>>Theo trạng thái
-                                </option>
-                                <option value="customer" <?= $sortFilter === 'customer' ? 'selected' : '' ?>>Theo khách
-                                    hàng</option>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-2 d-flex gap-2">
-                            <button class="btn btn-primary flex-fill" type="submit"><i
-                                    class="bi bi-funnel me-1"></i>Loc</button>
-                            <a class="btn btn-outline-secondary" href="index.php"
-                               onclick="event.preventDefault(); navigateTo('index.php');"><i
-                                    class="bi bi-arrow-counterclockwise"></i></a>
-                        </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
 
-                <div class="table-wrap">
-                    <!-- Desktop View: Table -->
-                    <div class="table-responsive d-none d-md-block">
-                        <table class="table jobs-table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Khách hàng</th>
-                                    <th>Dịch vụ</th>
-                                    <th>Tổng tiền</th>
-                                    <th>Ngay bắt đàu</th>
-                                    <th>Trạng thái</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if ($loadError !== ''): ?>
+                    <script>
+                    function setStatus(status) {
+                        document.getElementById('statusInput').value = status;
+                        document.getElementById('filterForm').submit();
+                    }
+                    function toggleStatusMenu() {
+                        document.getElementById('statusMenu').classList.toggle('show');
+                    }
+                    </script>
+
+                    <div class="table-wrap">
+                        <!-- Desktop View: Table -->
+                        <div class="table-responsive d-none d-md-block">
+                            <table class="table jobs-table align-middle">
+                                <thead>
                                     <tr>
-                                        <td colspan="7" class="empty-row py-4">Loi tai du lieu:
-                                            <?= htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8') ?>
-                                        </td>
+                                        <th>ID</th>
+                                        <th>Khách hàng</th>
+                                        <th>Dịch vụ</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Ngay bắt đàu</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
                                     </tr>
-                                <?php elseif (!$paginatedRows): ?>
-                                    <tr>
-                                        <td colspan="7" class="empty-row py-4">Khong co hoa don phu hop bo loc.</td>
-                                    </tr>
-                                <?php else: ?>
+                                </thead>
+                                <tbody>
+                                    <?php if ($loadError !== ''): ?>
+                                            <tr>
+                                                <td colspan="7" class="empty-row py-4">Loi tai du lieu:
+                                                    <?= htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8') ?>
+                                                </td>
+                                            </tr>
+                                    <?php elseif (!$paginatedRows): ?>
+                                            <tr>
+                                                <td colspan="7" class="empty-row py-4">Khong co hoa don phu hop bo loc.</td>
+                                            </tr>
+                                    <?php else: ?>
+                                            <?php foreach ($paginatedRows as $item): ?>
+                                                    <?php
+                                                    $itemId = (int) ($item['id'] ?? 0);
+                                                    $displayItemId = format_invoice_id_display($item['id'] ?? '');
+                                                    $statusValue = trim((string) ($item['trangthai'] ?? ''));
+                                                    if ($statusValue === '') {
+                                                        $statusValue = 'chờ duyệt';
+                                                    }
+                                                    $badgeClass = 'text-bg-secondary';
+                                                    if ($statusValue === 'chờ duyệt') {
+                                                        $badgeClass = 'text-bg-warning';
+                                                    } elseif ($statusValue === 'đã duyệt') {
+                                                        $badgeClass = 'text-bg-info';
+                                                    } elseif ($statusValue === 'đã nhận') {
+                                                        $badgeClass = 'text-bg-success';
+                                                    }
+                                                    ?>
+                                                    <tr>
+                                                        <td><span class="badge text-bg-light border id-badge"><?= htmlspecialchars($displayItemId, ENT_QUOTES, 'UTF-8') ?></span></td>
+                                                        <td>
+                                                            <div class="fw-semibold"><?= htmlspecialchars((string) ($item['tenkhachhang'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></div>
+                                                            <?php if (trim((string) ($item['sdtkhachhang'] ?? '')) !== ''): ?>
+                                                                    <div class="small text-secondary"><?= htmlspecialchars((string) ($item['sdtkhachhang'] ?? ''), ENT_QUOTES, 'UTF-8') ?></div>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td><?= htmlspecialchars((string) ($item['dich_vu'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></td>
+                                                        <td><?= number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND' ?></td>
+                                                        <td><?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?></td>
+                                                        <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
+                                                        <td>
+                                                            <div class="action-group">
+                                                                <a href="chi-tiet-hoa-don-mevabe.php"
+                                                                    onclick="sessionStorage.setItem('last_view_mahd', <?= htmlspecialchars(json_encode((string) $itemId)) ?>); sessionStorage.setItem('last_view_sodienthoai', <?= htmlspecialchars(json_encode((string) ($_SESSION['user']['sodienthoai'] ?? ''))) ?>); sessionStorage.setItem('last_view_password', <?= htmlspecialchars(json_encode((string) ($_SESSION['user']['matkhau'] ?? ''))) ?>); if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }"
+                                                                    class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                            <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mobile View: Cards -->
+                        <div class="d-md-none">
+                            <?php if ($loadError !== ''): ?>
+                                    <div class="empty-row py-4"><?= htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8') ?></div>
+                            <?php elseif (!$paginatedRows): ?>
+                                    <div class="empty-row py-4">Khong co hoa don.</div>
+                            <?php else: ?>
                                     <?php foreach ($paginatedRows as $item): ?>
-                                        <?php
-                                        $itemId = (int) ($item['id'] ?? 0);
-                                        $displayItemId = format_invoice_id_display($item['id'] ?? '');
-                                        $statusValue = trim((string) ($item['trangthai'] ?? ''));
-                                        if ($statusValue === '') { $statusValue = 'chờ duyệt'; }
-                                        $badgeClass = 'text-bg-secondary';
-                                        if ($statusValue === 'chờ duyệt') { $badgeClass = 'text-bg-warning'; }
-                                        elseif ($statusValue === 'đã duyệt') { $badgeClass = 'text-bg-info'; }
-                                        elseif ($statusValue === 'đã nhận') { $badgeClass = 'text-bg-success'; }
-                                        ?>
-                                        <tr>
-                                            <td><span class="badge text-bg-light border id-badge"><?= htmlspecialchars($displayItemId, ENT_QUOTES, 'UTF-8') ?></span></td>
-                                            <td>
-                                                <div class="fw-semibold"><?= htmlspecialchars((string) ($item['tenkhachhang'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></div>
-                                                <?php if (trim((string) ($item['sdtkhachhang'] ?? '')) !== ''): ?>
-                                                    <div class="small text-secondary"><?= htmlspecialchars((string) ($item['sdtkhachhang'] ?? ''), ENT_QUOTES, 'UTF-8') ?></div>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><?= htmlspecialchars((string) ($item['dich_vu'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></td>
-                                            <td><?= number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND' ?></td>
-                                            <td><?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?></td>
-                                            <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
-                                            <td>
-                                                <div class="action-group">
-                                                    <a href="chi-tiet-hoa-don-mevabe.php"
-                                                        onclick="sessionStorage.setItem('last_view_mahd', <?= htmlspecialchars(json_encode((string)$itemId)) ?>); sessionStorage.setItem('last_view_sodienthoai', <?= htmlspecialchars(json_encode((string)($_SESSION['user']['sodienthoai'] ?? ''))) ?>); sessionStorage.setItem('last_view_password', <?= htmlspecialchars(json_encode((string)($_SESSION['user']['matkhau'] ?? ''))) ?>); if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }"
-                                                        class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
+                                            <?php
+                                            $itemId = (int) ($item['id'] ?? 0);
+                                            $displayItemId = '#' . format_invoice_id_display($item['id'] ?? '');
+                                            $statusValue = trim((string) ($item['trangthai'] ?? ''));
+                                            if ($statusValue === '') {
+                                                $statusValue = 'đang chờ';
+                                            }
+                                            $price = number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND';
+                                            ?>
+                                            <a href="chi-tiet-hoa-don-mevabe.php" class="invoice-card"
+                                                onclick="sessionStorage.setItem('last_view_mahd', <?= htmlspecialchars(json_encode((string) $itemId)) ?>); sessionStorage.setItem('last_view_sodienthoai', <?= htmlspecialchars(json_encode((string) ($_SESSION['user']['sodienthoai'] ?? ''))) ?>); sessionStorage.setItem('last_view_password', <?= htmlspecialchars(json_encode((string) ($_SESSION['user']['matkhau'] ?? ''))) ?>); if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="inv-id"><?= htmlspecialchars($displayItemId, ENT_QUOTES, 'UTF-8') ?></div>
+                                                    <div class="inv-date"><?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?></div>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                                    <div class="inv-name"><?= htmlspecialchars((string) ($item['tenkhachhang'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></div>
+                                                    <span class="inv-status"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span>
+                                                </div>
+                                                <div class="inv-service"><?= htmlspecialchars((string) ($item['dich_vu'] ?? 'Dịch vụ'), ENT_QUOTES, 'UTF-8') ?></div>
+                                                <div class="inv-price"><?= $price ?></div>
+                                            </a>
                                     <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <?php if ($loadError === '' && $totalFiltered > 0): ?>
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-3">
+                                <?php if ($totalPages > 1): ?>
+                                        <nav aria-label="Phan trang hoa don nhan vien" class="w-100">
+                                            <ul class="pagination pagination-sm mb-0 justify-content-center">
+                                                <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                                                    <a class="page-link" href="<?= htmlspecialchars($buildPageUrl(max(1, $page - 1)), ENT_QUOTES, 'UTF-8') ?>"
+                                                       onclick="event.preventDefault(); navigateTo(this.getAttribute('href'));">Truoc</a>
+                                                </li>
+                                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                                        <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+                                                            <a class="page-link" href="<?= htmlspecialchars($buildPageUrl($i), ENT_QUOTES, 'UTF-8') ?>"
+                                                               onclick="event.preventDefault(); navigateTo(this.getAttribute('href'));"><?= $i ?></a>
+                                                        </li>
+                                                <?php endfor; ?>
+                                                <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+                                                    <a class="page-link" href="<?= htmlspecialchars($buildPageUrl(min($totalPages, $page + 1)), ENT_QUOTES, 'UTF-8') ?>"
+                                                       onclick="event.preventDefault(); navigateTo(this.getAttribute('href'));">Sau</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
                                 <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Mobile View: Cards -->
-                    <div class="d-md-none">
-                        <?php if ($loadError !== ''): ?>
-                            <div class="empty-row py-4"><?= htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8') ?></div>
-                        <?php elseif (!$paginatedRows): ?>
-                            <div class="empty-row py-4">Khong co hoa don.</div>
-                        <?php else: ?>
-                            <?php foreach ($paginatedRows as $item): ?>
-                                <?php
-                                $itemId = (int) ($item['id'] ?? 0);
-                                $displayItemId = '#' . format_invoice_id_display($item['id'] ?? '');
-                                $statusValue = trim((string) ($item['trangthai'] ?? ''));
-                                if ($statusValue === '') { $statusValue = 'đang chờ'; }
-                                $price = number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND';
-                                ?>
-                                <a href="chi-tiet-hoa-don-mevabe.php" class="invoice-card"
-                                    onclick="sessionStorage.setItem('last_view_mahd', <?= htmlspecialchars(json_encode((string)$itemId)) ?>); sessionStorage.setItem('last_view_sodienthoai', <?= htmlspecialchars(json_encode((string)($_SESSION['user']['sodienthoai'] ?? ''))) ?>); sessionStorage.setItem('last_view_password', <?= htmlspecialchars(json_encode((string)($_SESSION['user']['matkhau'] ?? ''))) ?>); if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="inv-id"><?= htmlspecialchars($displayItemId, ENT_QUOTES, 'UTF-8') ?></div>
-                                        <div class="inv-date"><?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?></div>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <div class="inv-name"><?= htmlspecialchars((string) ($item['tenkhachhang'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></div>
-                                        <span class="inv-status"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span>
-                                    </div>
-                                    <div class="inv-service"><?= htmlspecialchars((string) ($item['dich_vu'] ?? 'Dịch vụ'), ENT_QUOTES, 'UTF-8') ?></div>
-                                    <div class="inv-price"><?= $price ?></div>
-                                </a>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <?php if ($loadError === '' && $totalFiltered > 0): ?>
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-3">
-                        <?php if ($totalPages > 1): ?>
-                            <nav aria-label="Phan trang hoa don nhan vien" class="w-100">
-                                <ul class="pagination pagination-sm mb-0 justify-content-center">
-                                    <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
-                                        <a class="page-link" href="<?= htmlspecialchars($buildPageUrl(max(1, $page - 1)), ENT_QUOTES, 'UTF-8') ?>"
-                                           onclick="event.preventDefault(); navigateTo(this.getAttribute('href'));">Truoc</a>
-                                    </li>
-                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                        <li class="page-item <?= $i === $page ? 'active' : '' ?>">
-                                            <a class="page-link" href="<?= htmlspecialchars($buildPageUrl($i), ENT_QUOTES, 'UTF-8') ?>"
-                                               onclick="event.preventDefault(); navigateTo(this.getAttribute('href'));"><?= $i ?></a>
-                                        </li>
-                                    <?php endfor; ?>
-                                    <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
-                                        <a class="page-link" href="<?= htmlspecialchars($buildPageUrl(min($totalPages, $page + 1)), ENT_QUOTES, 'UTF-8') ?>"
-                                           onclick="event.preventDefault(); navigateTo(this.getAttribute('href'));">Sau</a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
+                            </div>
+                    <?php endif; ?>
             <?php endif; ?>
         </div>
     </section>

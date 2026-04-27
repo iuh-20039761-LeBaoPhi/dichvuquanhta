@@ -327,21 +327,16 @@
 
         <div class="the-thoi-gian-dat-lich">
           <label for="khung-gio-dat-lich" class="nhan-truong"
-            >Khung giờ *</label
+            >Giờ thực hiện *</label
           >
-          <select
+          <input
             id="khung-gio-dat-lich"
-            class="truong-nhap truong-chon"
+            class="truong-nhap"
+            type="time"
+            step="1"
             name="khung_gio_thuc_hien"
             required
-          >
-            <option value="">Chọn khung giờ</option>
-            <option value="sang">Sáng 08:00 - 11:30</option>
-            <option value="chieu">Chiều 13:30 - 17:00</option>
-            <option value="toi">Tối 17:00 - 21:00</option>
-            <option value="dem">Ca đêm 21:00 - 06:00</option>
-            <option value="linh_dong">Linh động</option>
-          </select>
+          />
         </div>
       </div>
 

@@ -102,6 +102,8 @@ function getBookingServiceLabel(value) {
 function getBookingScheduleTimeLabel(value) {
   const rawValue = normalizeText(value);
   if (!rawValue) return "";
+  const timeMatch = rawValue.match(/^(\d{2}):(\d{2})(:\d{2})?$/);
+  if (timeMatch) return `${timeMatch[1]}:${timeMatch[2]}`;
   return SCHEDULE_TIME_LABEL_MAP[toLookupKey(rawValue)] || rawValue;
 }
 

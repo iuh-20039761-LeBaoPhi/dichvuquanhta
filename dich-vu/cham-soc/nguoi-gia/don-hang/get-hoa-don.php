@@ -15,7 +15,7 @@ function get_filtered_invoices() {
     $userPhone = preg_replace('/\D/', '', $user['sodienthoai'] ?? '');
 
     $url = 'https://api.dvqt.vn/list/';
-    $payload = json_encode(['table' => 'datlich_nguoigia'], JSON_UNESCAPED_UNICODE);
+    $payload = json_encode(['table' => 'datlich_nguoigia', 'limit' => 10000], JSON_UNESCAPED_UNICODE);
     
     $opts = [
         'http' => [

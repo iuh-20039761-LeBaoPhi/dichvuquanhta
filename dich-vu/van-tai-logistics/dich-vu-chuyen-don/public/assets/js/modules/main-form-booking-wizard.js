@@ -73,14 +73,25 @@ const BOOKING_SLOT_STARTS = {
   }
 
   function getSlotStartDate(slotValue, baseDate) {
-    const config = BOOKING_SLOT_STARTS[String(slotValue || "").trim()];
-    if (!config || !(baseDate instanceof Date) || Number.isNaN(baseDate.getTime())) {
+    const rawVal = String(slotValue || "").trim();
+    if (!rawVal || !(baseDate instanceof Date) || Number.isNaN(baseDate.getTime())) {
       return null;
     }
 
     const slotDate = new Date(baseDate);
-    slotDate.setHours(config.hour, config.minute, 0, 0);
-    return slotDate;
+    const config = BOOKING_SLOT_STARTS[rawVal];
+    if (config) {
+      slotDate.setHours(config.hour, config.minute, 0, 0);
+      return slotDate;
+    }
+
+    const timeMatch = rawVal.match(/^(\d{2}):(\d{2})/);
+    if (timeMatch) {
+      slotDate.setHours(parseInt(timeMatch[1], 10), parseInt(timeMatch[2], 10), 0, 0);
+      return slotDate;
+    }
+
+    return null;
   }
 
   function getWeekdayLabel(date) {
@@ -295,10 +306,12 @@ const BOOKING_SLOT_STARTS = {
           isSameCalendarDate(selectedDate, new Date()) &&
           slotStartDate.getTime() <= Date.now()
         ) {
-          const slotConfig = BOOKING_SLOT_STARTS[String(timeField?.value || "").trim()];
+          const rawVal = String(timeField?.value || "").trim();
+          const slotConfig = BOOKING_SLOT_STARTS[rawVal];
+          const label = slotConfig?.label ? `Khung giờ ${slotConfig.label}` : `Thời gian ${rawVal}`;
           markError(
             timeField,
-            `Khung giờ ${slotConfig?.label || "đã chọn"} đã bắt đầu hoặc đã qua. Vui lòng chọn ca khác.`,
+            `${label} đã bắt đầu hoặc đã qua. Vui lòng chọn giờ khác.`,
           );
         }
 

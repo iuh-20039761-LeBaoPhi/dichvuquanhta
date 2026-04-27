@@ -33,11 +33,7 @@ body {
 
 .sidebar-shell {
   width: 280px;
-  background: linear-gradient(
-    180deg,
-    var(--admin-dark) 0%,
-    var(--admin-dark-2) 100%
-  );
+  background: linear-gradient(to bottom, #2f80ed, #56ccf2);
   color: #c5d6e8;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -130,7 +126,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ffcfb2;
+  color: #e57847;
   text-decoration: none;
   padding: 10px 12px;
   border-radius: 12px;
@@ -222,6 +218,112 @@ body {
   font-weight: 600;
   color: #24374f;
 }
+
+/* Status Filter Bar */
+.status-filter-container {
+  background: #ffffff;
+  border: 1px solid #dce6f2;
+  border-radius: 16px;
+  padding: 8px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.status-filter-mobile-trigger {
+  width: 100%;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #1f2f46;
+  text-align: left;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.status-filter-mobile-trigger i.fas.fa-filter {
+  color: #5f7592;
+}
+
+.status-filter-mobile-trigger strong {
+  color: #007bff;
+  margin-left: 4px;
+}
+
+.trigger-arrow {
+  color: #5f7592;
+  transition: transform 0.3s ease;
+}
+
+.status-filter-scroll {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.status-filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.status-filter-btn {
+  flex: 1;
+  min-width: fit-content;
+  border: none;
+  background: transparent;
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #5f7592;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.status-filter-btn:hover {
+  background: rgba(23, 57, 86, 0.05);
+  color: #173956;
+}
+
+.status-filter-btn.active {
+  background: #007bff;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.status-filter-btn .status-count {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 20px;
+  min-width: 28px;
+  text-align: center;
+}
+
+.status-filter-btn.active .status-count {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.status-filter-btn:not(.active) .status-count {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.status-filter-btn[data-status="pending"]:not(.active) .status-count { background: #fff3cd; color: #856404; }
+.status-filter-btn[data-status="accepted"]:not(.active) .status-count { background: #e0f2fe; color: #0369a1; }
+.status-filter-btn[data-status="processing"]:not(.active) .status-count { background: #cce5ff; color: #004085; }
+.status-filter-btn[data-status="completed"]:not(.active) .status-count { background: #d4edda; color: #155724; }
+.status-filter-btn[data-status="canceled"]:not(.active) .status-count { background: #f8d7da; color: #721c24; }
+
+
+
 
 .metric-card {
   border: 1px solid var(--admin-border);
@@ -522,45 +624,71 @@ body {
   margin-bottom: 0;
 }
 
-@media (min-width: 992px) {
-  .admin-shell {
-    display: flex;
+/* ==========================================
+   REPOSNSIVE chuẩn của USER
+   ========================================== */
+
+/* Mobile: width < 740px */
+@media only screen and (max-width: 739px) {
+  .status-filter-container {
+    padding: 0;
+    overflow: visible;
+  }
+  
+  .status-filter-container.is-open .status-filter-mobile-trigger {
+    border-radius: 16px 16px 0 0;
   }
 
-  .sidebar-shell {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: flex;
+  .status-filter-container.is-open .trigger-arrow {
+    transform: rotate(180deg);
+  }
+
+  .status-filter-scroll {
+    display: none;
     flex-direction: column;
+    padding: 8px;
+    gap: 4px;
+    background: #ffffff;
+    border-top: 1px solid #f0f3f7;
+    border-radius: 0 0 16px 16px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
   }
 
-  .topbar {
-    padding: 0 22px;
+  .status-filter-container.is-open .status-filter-scroll {
+    display: flex;
   }
-}
 
-@media (max-width: 991.98px) {
+  .status-filter-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+  }
+
+  .status-filter-btn .status-count {
+    margin-left: auto;
+    padding: 2px 8px;
+    min-width: 28px;
+    font-size: 0.75rem;
+  }
+
   .sidebar-shell {
     width: min(86vw, 320px);
   }
 
-  .topbar-left h2 {
-    font-size: 1.25rem;
-  }
-
-  .admin-email {
-    max-width: 140px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
-@media (max-width: 575.98px) {
   .topbar {
     height: 64px;
     padding: 0 10px;
+  }
+
+  .topbar-left h2 {
+    font-size: 1.25rem;
   }
 
   .admin-chip {
@@ -596,5 +724,94 @@ body {
   .admin-summary-note .admin-info-item {
     grid-template-columns: 1fr;
     row-gap: 2px;
+  }
+}
+
+/* Tablet: width >= 740px and width < 1024px */
+@media only screen and (min-width: 740px) and (max-width: 1023px) {
+  .status-filter-container {
+    padding: 0;
+    overflow: visible;
+  }
+  
+  .status-filter-container.is-open .status-filter-mobile-trigger {
+    border-radius: 16px 16px 0 0;
+  }
+
+  .status-filter-container.is-open .trigger-arrow {
+    transform: rotate(180deg);
+  }
+
+  .status-filter-scroll {
+    display: none;
+    flex-direction: column;
+    padding: 8px;
+    gap: 4px;
+    background: #ffffff;
+    border-top: 1px solid #f0f3f7;
+    border-radius: 0 0 16px 16px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .status-filter-container.is-open .status-filter-scroll {
+    display: flex;
+  }
+
+  .status-filter-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+  }
+
+  .status-filter-btn .status-count {
+    margin-left: auto;
+    padding: 2px 8px;
+    min-width: 28px;
+    font-size: 0.75rem;
+  }
+
+  .sidebar-shell {
+    width: min(86vw, 320px);
+  }
+
+  .topbar-left h2 {
+    font-size: 1.25rem;
+  }
+
+  .admin-email {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* PC: width >= 1024px */
+@media only screen and (min-width: 1024px) {
+  .status-filter-mobile-trigger {
+    display: none;
+  }
+
+  .admin-shell {
+    display: flex;
+  }
+
+  .sidebar-shell {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    padding: 0 22px;
   }
 }

@@ -1858,11 +1858,11 @@ include 'layout-header.php';
 
 			
 			// Cần có đơn hàng để xác định role
-			if (!app.$datlich_mevabe) return null;
+			if (!app.$datlich_nguoibenh) return null;
 
 			const sdt = sodienthoai.trim();
-			const customerPhone = String(app.$datlich_mevabe.sdtkhachhang || '').trim();
-			const sdtncc = String(app.$datlich_mevabe.sdtncc || '').trim();
+			const customerPhone = String(app.$datlich_nguoibenh.sdtkhachhang || '').trim();
+			const sdtncc = String(app.$datlich_nguoibenh.sdtncc || '').trim();
 
 			// Ưu tiên 1: Nếu SĐT đăng nhập trùng với SĐT khách hàng trong đơn → khách hàng
 			if (sdt === customerPhone) {

@@ -15,13 +15,6 @@
     return window.SharedOrderUtils || {};
   };
   var shared = getShared();
-  var REVIEW_UPLOAD_ENDPOINT = (function () {
-    var path = window.location.pathname;
-    // Nếu đang ở trong thư mục con (như nguoidung/), lùi thêm cấp để tới root GlobalCare
-    if (path.indexOf("/nguoidung/") !== -1) return "../../../../public/upload_to_drive.php";
-    // Nếu đang ở root của dự án (như chi-tiet-don-hang.html)
-    return "../../../public/upload_to_drive.php";
-  })();
   var REVIEW_FIELD_MAP = {
     customer: {
       text: ["danhgia_khachhang"],
@@ -85,7 +78,7 @@
   function statusMeta(status) {
     var value = String(status || "").toLowerCase();
     if (value === "accepted") {
-      return { label: "Đã nhận đơn", className: "status-accepted" };
+      return { label: "Đã xác nhận", className: "status-accepted" };
     }
     if (value === "processing") {
       return { label: "Đang thực hiện", className: "status-processing" };
@@ -96,7 +89,7 @@
     if (value === "canceled") {
       return { label: "Đã hủy", className: "status-canceled" };
     }
-    return { label: "Chờ xử lý", className: "status-pending" };
+    return { label: "Chờ xác nhận", className: "status-pending" };
   }
 
   function statusProgress(status) {
@@ -1211,9 +1204,6 @@
   }
 
   function renderStats(orders, role) {
-    var mount = document.getElementById("statsGrid");
-    if (!mount) return;
-
     var counts = {
       total: orders.length,
       pending: 0,
@@ -1232,82 +1222,102 @@
       }
     });
 
-    var cards =
-      role === "provider"
-        ? [
-            {
-              key: "pending",
-              label: "Đơn mới & Chờ nhận",
-              icon: "fas fa-bullhorn",
-            },
-            {
-              key: "accepted",
-              label: "Đã nhận đơn",
-              icon: "fas fa-clipboard-check",
-            },
-            {
-              key: "processing",
-              label: "Đang thực hiện",
-              icon: "fas fa-spinner",
-            },
-            {
-              key: "completed",
-              label: "Đã hoàn thành",
-              icon: "fas fa-cogs",
-            },
-          ]
-        : [
-            { key: "total", label: "Tổng đơn", icon: "fas fa-boxes" },
-            {
-              key: "pending",
-              label: "Chờ xử lý",
-              icon: "fas fa-hourglass-half",
-            },
-            {
-              key: "accepted",
-              label: "Đã nhận đơn",
-              icon: "fas fa-clipboard-check",
-            },
-            {
-              key: "processing",
-              label: "Đang thực hiện",
-              icon: "fas fa-spinner",
-            },
-            {
-              key: "completed",
-              label: "Hoàn thành",
-              icon: "fas fa-check-circle",
-            },
-            {
-              key: "canceled",
-              label: "Đã hủy",
-              icon: "fas fa-times-circle",
-            },
-          ];
+    var mount = document.getElementById("statsGrid");
+    if (mount) {
+      var cards =
+        role === "provider"
+          ? [
+              {
+                key: "pending",
+                label: "Đơn mới & Chờ nhận",
+                icon: "fas fa-bullhorn",
+              },
+              {
+                key: "accepted",
+                label: "Đã xác nhận",
+                icon: "fas fa-clipboard-check",
+              },
+              {
+                key: "processing",
+                label: "Đang thực hiện",
+                icon: "fas fa-spinner",
+              },
+              {
+                key: "completed",
+                label: "Đã hoàn thành",
+                icon: "fas fa-cogs",
+              },
+            ]
+          : [
+              { key: "total", label: "Tổng đơn", icon: "fas fa-boxes" },
+              {
+                key: "pending",
+                label: "Chờ xác nhận",
+                icon: "fas fa-hourglass-half",
+              },
+              {
+                key: "accepted",
+                label: "Đã xác nhận",
+                icon: "fas fa-clipboard-check",
+              },
+              {
+                key: "processing",
+                label: "Đang thực hiện",
+                icon: "fas fa-spinner",
+              },
+              {
+                key: "completed",
+                label: "Hoàn thành",
+                icon: "fas fa-check-circle",
+              },
+              {
+                key: "canceled",
+                label: "Đã hủy",
+                icon: "fas fa-times-circle",
+              },
+            ];
 
-    mount.innerHTML = cards
-      .map(function (card) {
-        return (
-          '<div class="col-12 col-sm-6 col-xl">' +
-          '<article class="metric-card" data-tone="' +
-          card.key +
-          '">' +
-          '<span class="metric-icon"><i class="' +
-          card.icon +
-          '" aria-hidden="true"></i></span>' +
-          '<div class="metric-body">' +
-          '<p class="metric-title">' +
-          card.label +
-          "</p>" +
-          '<p class="metric-value">' +
-          counts[card.key] +
-          "</p>" +
-          "</div>" +
-          "</article>" +
-          "</div>"
-        );
-      })
-      .join("");
+      mount.innerHTML = cards
+        .map(function (card) {
+          return (
+            '<div class="col-12 col-sm-6 col-xl">' +
+            '<article class="metric-card" data-tone="' +
+            card.key +
+            '">' +
+            '<span class="metric-icon"><i class="' +
+            card.icon +
+            '" aria-hidden="true"></i></span>' +
+            '<div class="metric-body">' +
+            '<p class="metric-title">' +
+            card.label +
+            "</p>" +
+            '<p class="metric-value">' +
+            counts[card.key] +
+            "</p>" +
+            "</div>" +
+            "</article>" +
+            "</div>"
+          );
+        })
+        .join("");
+    }
+
+    // Update status filter bar counts if they exist
+    var statusCounts = {
+      all: orders.length,
+      pending: counts.pending,
+      accepted: counts.accepted,
+      processing: counts.processing,
+      completed: counts.completed,
+      canceled: counts.canceled,
+    };
+
+    Object.keys(statusCounts).forEach(function (key) {
+      var countEl = document.getElementById("count-" + key);
+      if (countEl) {
+        countEl.textContent = statusCounts[key];
+      }
+    });
   }
 
   function setActionButtonLoading(
@@ -1430,6 +1440,19 @@
       if (countNode) {
         countNode.textContent = state.filtered.length + " đơn";
       }
+
+      var totalCountEl = document.getElementById("totalOrdersCount");
+      var totalAmountEl = document.getElementById("totalOrdersAmount");
+      
+      if (totalCountEl && totalAmountEl) {
+        var totalAmount = state.filtered.reduce(function (sum, order) {
+          return sum + calculateTotal(order);
+        }, 0);
+        
+        totalCountEl.textContent = state.filtered.length;
+        totalAmountEl.textContent = formatCurrency(totalAmount);
+      }
+
       if (emptyHintNode) {
         emptyHintNode.textContent =
           state.filtered.length > 0
@@ -1707,6 +1730,62 @@
       updateCount();
     }
 
+    function applyStatusFilter(status) {
+      var statusNode = document.getElementById("filterStatus");
+      if (statusNode) {
+        statusNode.value = status;
+      }
+      
+      // Update UI active state
+      var filterBar = document.getElementById("statusFilterBar");
+      if (filterBar) {
+        var buttons = filterBar.querySelectorAll(".status-filter-btn");
+        var activeLabel = "Tất cả";
+        buttons.forEach(function (btn) {
+          var isActive = btn.dataset.status === status;
+          btn.classList.toggle("active", isActive);
+          if (isActive) {
+            activeLabel = btn.querySelector(".status-label").textContent;
+          }
+        });
+
+        // Update mobile trigger label
+        var currentLabelNode = document.getElementById("currentStatusLabel");
+        if (currentLabelNode) {
+          currentLabelNode.textContent = activeLabel;
+        }
+
+        // Close dropdown on mobile
+        var container = document.getElementById("statusFilterContainer");
+        if (container) {
+          container.classList.remove("is-open");
+        }
+      }
+
+      applyFilter();
+    }
+
+    var statusFilterBar = document.getElementById("statusFilterBar");
+    if (statusFilterBar) {
+      statusFilterBar.addEventListener("click", function (e) {
+        var btn = e.target.closest(".status-filter-btn");
+        if (!btn) return;
+        
+        var status = btn.dataset.status;
+        applyStatusFilter(status);
+      });
+    }
+
+    var statusFilterTrigger = document.getElementById("statusFilterTrigger");
+    if (statusFilterTrigger) {
+      statusFilterTrigger.addEventListener("click", function () {
+        var container = document.getElementById("statusFilterContainer");
+        if (container) {
+          container.classList.toggle("is-open");
+        }
+      });
+    }
+
     function applyAssignedFilter() {
       var codeNode = document.getElementById("providerFilterOrderCode");
       var statusNode = document.getElementById("providerFilterStatus");
@@ -1770,7 +1849,7 @@
     if (resetBtn) {
       resetBtn.addEventListener("click", function () {
         if (form) form.reset();
-        applyFilter();
+        applyStatusFilter("all");
       });
     }
 
@@ -2040,6 +2119,24 @@
       return;
     }
 
+    // Xác định lại vai trò thực tế dựa trên dữ liệu đơn hàng
+    var currentRole = role;
+    if (role !== "admin") {
+      var orderPhone = normalizePhone(order.raw && order.raw.sodienthoai);
+      var userPhone = normalizePhone(
+        currentUser && (currentUser.sodienthoai || currentUser.user_tel),
+      );
+      if (orderPhone && userPhone && orderPhone === userPhone) {
+        currentRole = "customer";
+      } else {
+        var idDichvu = String(currentUser && currentUser.id_dichvu || "").trim();
+        var serviceIds = idDichvu.split(",").map(function (s) {
+          return s.trim();
+        });
+        currentRole = serviceIds.indexOf("11") !== -1 ? "provider" : "customer";
+      }
+    }
+
     // Làm giàu dữ liệu từ DB nếu có thể
     loadRelatedRecords(order.raw || order).then(function (related) {
       var enrichedRaw = mergeOrderWithRelated(order.raw || order, related);
@@ -2078,7 +2175,7 @@
       order.raw = {};
     }
 
-    if (role === "customer" && !(order.customer && order.customer.avatar)) {
+    if (currentRole === "customer" && !(order.customer && order.customer.avatar)) {
       order.customer.avatar = pickFirstValue([
         currentUser && currentUser.avatar,
         currentUser && currentUser.user_avatar,
@@ -2101,7 +2198,7 @@
       );
 
     if (
-      role === "provider" &&
+      currentRole === "provider" &&
       hasProviderIdentityInOrder &&
       !(order.provider && order.provider.avatar)
     ) {
@@ -2259,7 +2356,7 @@
       var currentStatus = String(order.status || "").toLowerCase();
       var config = null;
 
-      if (role === "customer") {
+      if (currentRole === "customer") {
         var canCancel =
           !hasDateValue(order.receivedAt) &&
           currentStatus !== "completed" &&
@@ -2297,8 +2394,15 @@
             },
           };
         }
-      } else if (role === "provider") {
-        if (currentStatus === "pending") {
+      } else if (currentRole === "provider") {
+        var orderPhone = normalizePhone(order.raw && order.raw.sodienthoai);
+        var userPhone = normalizePhone(
+          currentUser && (currentUser.sodienthoai || currentUser.user_tel),
+        );
+        var providerIsCustomer =
+          orderPhone && userPhone && orderPhone === userPhone;
+
+        if (currentStatus === "pending" && !providerIsCustomer) {
           config = {
             text: "Nhận đơn",
             loadingText: "Đang xử lý...",
@@ -2677,7 +2781,7 @@
         if (!editor) return;
 
         var info = resolveReview(actor);
-        var canEdit = canSend && role === actor && !hasReviewData(info);
+        var canEdit = canSend && currentRole === actor && !hasReviewData(info);
         editor.classList.toggle("d-none", !canEdit);
         if (!canEdit) return;
 
@@ -2697,38 +2801,36 @@
       var list = Array.isArray(files) ? files : [];
       if (!list.length) return Promise.resolve([]);
 
-      const uploadSingle = function(file) {
-        const formData = new FormData();
+      var uploadPromises = list.map(function (file) {
+        var formData = new FormData();
         formData.append("upload", "1");
         formData.append("file", file);
         formData.append("folderKey", "31");
         formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
 
-        return fetch(REVIEW_UPLOAD_ENDPOINT, {
+        return fetch("../../../public/upload_to_drive.php", {
           method: "POST",
-          body: formData
+          body: formData,
         })
-        .then(function(res) { return res.json(); })
-        .then(function(result) {
-          if (result && result.fileId) return result.fileId;
-          throw new Error("Upload " + file.name + " thất bại.");
-        });
-      };
-
-      let chain = Promise.resolve([]);
-      list.forEach(function(file) {
-        chain = chain.then(function(acc) {
-          return uploadSingle(file).then(function(fid) {
-            acc.push(fid);
-            return acc;
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            return (data && data.fileId) || null;
+          })
+          .catch(function (err) {
+            console.error("Upload review file error:", err);
+            return null;
           });
-        });
       });
-      return chain;
+
+      return Promise.all(uploadPromises).then(function (fileIds) {
+        return fileIds.filter(Boolean);
+      });
     }
 
     function submitReview(actor) {
-      if (role !== actor) return;
+      if (currentRole !== actor) return;
       if (statusLower !== "completed") {
         showError("Chỉ gửi đánh giá sau khi hóa đơn đã hoàn thành.");
         return;

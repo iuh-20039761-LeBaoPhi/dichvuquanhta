@@ -1,10 +1,10 @@
 // Tách riêng bản đồ đặt lịch và dự báo thời tiết để main-forms gọn hơn.
 const bookingWeatherCache = new Map();
 const BOOKING_DEFAULT_SLOT_STARTS = [
-  { value: "sang", hour: 8, minute: 0 },
-  { value: "chieu", hour: 13, minute: 30 },
-  { value: "toi", hour: 17, minute: 0 },
-  { value: "dem", hour: 21, minute: 0 },
+  { value: "08:00", hour: 8, minute: 0 },
+  { value: "13:30", hour: 13, minute: 30 },
+  { value: "17:00", hour: 17, minute: 0 },
+  { value: "21:00", hour: 21, minute: 0 },
 ];
 
   function formatLatLng(lat, lng) {
@@ -208,7 +208,7 @@ const BOOKING_DEFAULT_SLOT_STARTS = [
       fallbackDate.setHours(0, 0, 0, 0);
       return {
         date: formatDateInputValue(fallbackDate),
-        slot: "sang",
+        slot: "08:00",
       };
     }
 

@@ -163,7 +163,7 @@ function xac_thuc_buoc_3() {
   if (!parsedPickupSlot) {
     hien_thi_loi(
       3,
-      "Khung giờ lấy hàng không hợp lệ. Vui lòng nhập theo dạng HH:mm - HH:mm.",
+      "Khung giờ lấy hàng không hợp lệ. Vui lòng chọn giờ hợp lệ.",
     );
     return false;
   }
@@ -194,7 +194,7 @@ function xac_thuc_buoc_3() {
     if (!pickupRange) {
       hien_thi_loi(
         3,
-        "Khung giờ lấy hàng không hợp lệ. Vui lòng nhập theo dạng HH:mm - HH:mm.",
+        "Khung giờ lấy hàng không hợp lệ. Vui lòng chọn giờ hợp lệ.",
       );
       return false;
     }

@@ -36,22 +36,22 @@ $data = get_hoadon_data();
 $rows = is_array($data['rows'] ?? null) ? $data['rows'] : [];
 $error = (string) ($data['error'] ?? '');
 
-$statusMap = [];
+// Status Mapping & Counts
+$statusCounts = [];
+$statusCounts['all'] = count($rows);
 foreach ($rows as $row) {
-	if (!is_array($row)) {
-		continue;
+	$st = trim((string) ($row['trangthai'] ?? ''));
+	if ($st === '') {
+		$st = 'Chờ xác nhận';
 	}
-
-	$statusText = trim((string) ($row['trangthai'] ?? ''));
-	if ($statusText === '') {
-		$statusText = 'Chờ xác nhận';
-	}
-	$statusMap[$statusText] = $statusText;
+	$statusCounts[$st] = ($statusCounts[$st] ?? 0) + 1;
 }
-$statusOptions = array_values($statusMap);
-sort($statusOptions);
+$availableStatuses = array_keys($statusCounts);
+sort($availableStatuses);
+// Keep 'all' as first
+$availableStatuses = array_merge(['all'], array_diff($availableStatuses, ['all']));
 
-if ($statusFilter !== 'all' && !isset($statusMap[$statusFilter])) {
+if ($statusFilter !== 'all' && !isset($statusCounts[$statusFilter])) {
 	$statusFilter = 'all';
 }
 
@@ -132,6 +132,233 @@ admin_render_layout_start('Quản Lý Đơn Hàng', 'orders', $admin);
 ?>
 
 <style>
+	/* Filter & Header Styles */
+	.filter-section {
+		background: #fff;
+		border-radius: 16px;
+		padding: 20px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+		margin-bottom: 20px;
+	}
+
+	.filter-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		flex-wrap: wrap;
+		gap: 15px;
+		margin-bottom: 20px;
+	}
+
+	.header-title h1 {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: #1e293b;
+		margin-bottom: 2px;
+	}
+
+	.header-title p {
+		font-size: 0.85rem;
+		color: #64748b;
+		margin-bottom: 0;
+	}
+
+	.filter-controls {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
+	}
+
+	.date-input-group {
+		display: flex;
+		align-items: center;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 10px;
+		padding: 4px 12px;
+		gap: 8px;
+	}
+
+	.date-input-group span {
+		font-size: 0.8rem;
+		color: #64748b;
+		white-space: nowrap;
+	}
+
+	.date-input-group input {
+		border: none;
+		background: transparent;
+		font-size: 0.85rem;
+		color: #1e293b;
+		font-weight: 500;
+		outline: none;
+		width: 110px;
+	}
+
+	.search-input-wrapper {
+		position: relative;
+		min-width: 240px;
+	}
+
+	.search-input-wrapper i {
+		position: absolute;
+		left: 14px;
+		top: 50%;
+		transform: translateY(-50%);
+		color: #94a3b8;
+	}
+
+	.search-input-wrapper input {
+		width: 100%;
+		padding: 10px 14px 10px 40px;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		font-size: 0.9rem;
+		color: #1e293b;
+		transition: all 0.2s;
+	}
+
+	.search-input-wrapper input:focus {
+		background: #fff;
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+		outline: none;
+	}
+
+	.btn-refresh {
+		width: 42px;
+		height: 42px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #3b82f6;
+		color: #fff;
+		border: none;
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+		transition: all 0.2s;
+	}
+
+	.btn-refresh:hover {
+		background: #2563eb;
+		transform: translateY(-1px);
+	}
+
+	/* Tabs Styles */
+	.filter-tabs {
+		display: flex;
+		gap: 10px;
+		overflow-x: auto;
+		padding-bottom: 5px;
+		scrollbar-width: none; /* Firefox */
+	}
+
+	.filter-tabs::-webkit-scrollbar {
+		display: none; /* Chrome, Safari */
+	}
+
+	.tab-item {
+		display: flex;
+		align-items: center;
+		padding: 10px 20px;
+		background: transparent;
+		border: 1px solid transparent;
+		border-radius: 12px;
+		color: #64748b;
+		font-weight: 600;
+		font-size: 0.9rem;
+		white-space: nowrap;
+		cursor: pointer;
+		transition: all 0.2s;
+		text-decoration: none !important;
+		gap: 8px;
+	}
+
+	.tab-item:hover {
+		background: #f1f5f9;
+		color: #1e293b;
+	}
+
+	.tab-item.active {
+		background: #3b82f6;
+		color: #fff !important;
+		box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+	}
+
+	.tab-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 22px;
+		height: 22px;
+		padding: 0 6px;
+		border-radius: 6px;
+		font-size: 0.75rem;
+		font-weight: 700;
+	}
+
+	.tab-item.active .tab-badge {
+		background: rgba(255, 255, 255, 0.2);
+		color: #fff;
+	}
+
+	.badge-chua-nhan { background: #fef3c7; color: #d97706; }
+	.badge-dang-thue { background: #dbeafe; color: #2563eb; }
+	.badge-hoan-thanh { background: #dcfce7; color: #16a34a; }
+	.badge-da-huy { background: #fee2e2; color: #dc2626; }
+
+	.tab-item:not(.active) .tab-badge.badge-all { background: #e2e8f0; color: #475569; }
+
+	.status-mobile-trigger {
+		display: none;
+	}
+
+	@media (max-width: 1024px) {
+		.filter-section { padding: 15px; }
+		.filter-header { flex-direction: column; align-items: stretch; }
+		.filter-controls { flex-direction: column; align-items: stretch; }
+		.date-input-group { width: 100%; justify-content: space-between; }
+		.search-input-wrapper { min-width: 100%; }
+		.btn-refresh { width: 100%; height: 42px; }
+
+		.status-mobile-trigger {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 16px;
+			background: #f8fafc;
+			border: 1px solid #e2e8f0;
+			border-radius: 12px;
+			cursor: pointer;
+			font-weight: 600;
+			color: #1e293b;
+			margin-top: 10px;
+		}
+
+		.filter-tabs {
+			display: none;
+			flex-direction: column;
+			gap: 8px;
+			margin-top: 10px;
+			padding: 10px;
+			background: #fff;
+			border: 1px solid #e2e8f0;
+			border-radius: 12px;
+			overflow-x: visible;
+		}
+
+		.filter-tabs.show {
+			display: flex;
+		}
+
+		.tab-item {
+			width: 100%;
+			justify-content: space-between;
+		}
+	}
+
 	.order-list-mobile {
 		display: none;
 	}
@@ -214,42 +441,80 @@ admin_render_layout_start('Quản Lý Đơn Hàng', 'orders', $admin);
 	}
 </style>
 
-<div class="card border-0 shadow-sm mb-3">
-	<div class="card-body">
-		<form method="get" class="row g-2 align-items-end">
-			<div class="col-12 col-md-4 col-lg-3">
-				<label class="form-label mb-1">Tìm kiếm</label>
-				<input type="text" class="form-control" name="q" value="<?= admin_h($q) ?>"
-					placeholder="Mã đơn, tên KH, SĐT...">
+<div class="filter-section">
+	<form method="get" id="filterForm">
+		<input type="hidden" name="status" id="statusInput" value="<?= admin_h($statusFilter) ?>">
+		
+		<div class="filter-header">
+			<div class="header-title">
+				<h1>Quản lý Đơn hàng</h1>
+				<p>Theo dõi mọi giao dịch hệ thống (Tổng: <b><?= (int) $totalFiltered ?></b> đơn)</p>
 			</div>
-			<div class="col-6 col-md-3 col-lg-2">
-				<label class="form-label mb-1">Trạng thái</label>
-				<select class="form-select" name="status">
-					<option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>Tất cả</option>
-					<?php foreach ($statusOptions as $statusOption): ?>
-						<option value="<?= admin_h($statusOption) ?>" <?= $statusFilter === $statusOption ? 'selected' : '' ?>>
-							<?= admin_h($statusOption) ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
+			
+			<div class="filter-controls">
+				<div class="date-input-group">
+					<span>Từ</span>
+					<input type="date" name="date_from" value="<?= admin_h($dateFrom) ?>" onchange="this.form.submit()">
+				</div>
+				<div class="date-input-group">
+					<span>Đến</span>
+					<input type="date" name="date_to" value="<?= admin_h($dateTo) ?>" onchange="this.form.submit()">
+				</div>
+				
+				<div class="search-input-wrapper">
+					<i class="bi bi-search"></i>
+					<input type="text" name="q" value="<?= admin_h($q) ?>" placeholder="Mã đơn / Tên khách..." onkeypress="if(event.keyCode === 13) { this.form.submit(); return false; }">
+				</div>
+				
+				<button type="button" class="btn-refresh" onclick="window.location.href='index.php'">
+					<i class="bi bi-arrow-clockwise"></i>
+				</button>
 			</div>
-			<div class="col-6 col-md-2 col-lg-2">
-				<label class="form-label mb-1">Từ ngày</label>
-				<input type="date" class="form-control" name="date_from" value="<?= admin_h($dateFrom) ?>">
-			</div>
-			<div class="col-6 col-md-2 col-lg-2">
-				<label class="form-label mb-1">Đến ngày</label>
-				<input type="date" class="form-control" name="date_to" value="<?= admin_h($dateTo) ?>">
-			</div>
-			<div class="col-6 col-md-1 col-lg-1 d-grid">
-				<button class="btn btn-success" type="submit"><i class="bi bi-funnel me-1"></i>Lọc</button>
-			</div>
-			<div class="col-12 col-lg-2 text-lg-end text-secondary small">
-				Tổng: <strong><?= (int) $totalFiltered ?></strong> đơn hàng
-			</div>
-		</form>
-	</div>
+		</div>
+		
+		<?php
+		$activeLabel = 'Tất cả';
+		foreach ($availableStatuses as $st) {
+			if ($st === $statusFilter) {
+				$activeLabel = ($st === 'all') ? 'Tất cả' : $st;
+				break;
+			}
+		}
+		?>
+		<div class="status-mobile-trigger" onclick="toggleStatusMenu()">
+			<span>Trạng thái: <b><?= admin_h($activeLabel) ?></b></span>
+			<i class="bi bi-chevron-down"></i>
+		</div>
+
+		<div class="filter-tabs" id="statusMenu">
+			<?php foreach ($availableStatuses as $stKey): ?>
+				<?php
+				$label = ($stKey === 'all') ? 'Tất cả' : $stKey;
+				$badgeClass = 'badge-all';
+				$stLower = function_exists('mb_strtolower') ? mb_strtolower($stKey, 'UTF-8') : strtolower($stKey);
+				if (strpos($stLower, 'chờ') !== false || strpos($stLower, 'xác nhận') !== false) $badgeClass = 'badge-chua-nhan';
+				elseif (strpos($stLower, 'thực hiện') !== false || strpos($stLower, 'nhận') !== false) $badgeClass = 'badge-dang-thue';
+				elseif (strpos($stLower, 'hoàn thành') !== false || strpos($stLower, 'xong') !== false) $badgeClass = 'badge-hoan-thanh';
+				elseif (strpos($stLower, 'hủy') !== false) $badgeClass = 'badge-da-huy';
+				?>
+				<a href="javascript:void(0)" onclick="setStatus('<?= admin_h($stKey) ?>')" class="tab-item <?= $statusFilter === $stKey ? 'active' : '' ?>">
+					<?= admin_h($label) ?> 
+					<span class="tab-badge <?= $badgeClass ?>"><?= $statusCounts[$stKey] ?></span>
+				</a>
+			<?php endforeach; ?>
+		</div>
+	</form>
 </div>
+
+<script>
+function setStatus(status) {
+	document.getElementById('statusInput').value = status;
+	document.getElementById('filterForm').submit();
+}
+function toggleStatusMenu() {
+	document.getElementById('statusMenu').classList.toggle('show');
+}
+</script>
 
 <div class="card border-0 shadow-sm">
 	<div class="card-body">

@@ -1,1011 +1,986 @@
 [
-  {
-    "id": "chuyen_nha",
-    "ten_dich_vu": "Chuyển Nhà Trọn Gói",
-    "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-nha",
-    "thong_tin_minh_bach": {
-      "mo_ta_ngan": "Căn hộ, nhà phố, phòng trọ hoặc chung cư cần chuyển đồ sinh hoạt và nội thất gia đình.",
-      "nen_khao_sat_khi": "Có nhiều tầng, hẻm nhỏ, đồ dễ vỡ, đồ giá trị cao hoặc cần tháo lắp kỹ thuật.",
-      "co_the_dat_lich_luon_khi": "Bạn đã rõ loại xe cần dùng, địa chỉ hai đầu, số tầng và không có hạng mục đặc biệt ngoài gói cơ bản."
-    },
-    "bang_gia": {
-      "loai_xe": [
-        {
-          "slug": "xe_may_cho_hang",
-          "ten": "Xe máy chở hàng",
-          "gia_mo_cua": 90000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 8000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 7000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 6000
-            }
-          ],
-          "gia_moi_km": 8000,
-          "gia_moi_km_duong_dai": 7000,
-          "phi_toi_thieu": 90000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
+    {
+        "id": "chuyen_nha",
+        "ten_dich_vu": "Chuyển Nhà Trọn Gói",
+        "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-nha",
+        "thong_tin_minh_bach": {
+            "mo_ta_ngan": "Căn hộ, nhà phố, phòng trọ hoặc chung cư cần chuyển đồ sinh hoạt và nội thất gia đình.",
+            "nen_khao_sat_khi": "Có nhiều tầng, hẻm nhỏ, đồ dễ vỡ, đồ giá trị cao hoặc cần tháo lắp kỹ thuật.",
+            "co_the_dat_lich_luon_khi": "Bạn đã rõ loại xe cần dùng, địa chỉ hai đầu, số tầng và không có hạng mục đặc biệt ngoài gói cơ bản."
         },
-        {
-          "slug": "ba_gac_may",
-          "ten": "Ba gác máy",
-          "gia_mo_cua": 220000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 15000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 13000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 11000
+        "bang_gia": {
+            "loai_xe": [
+                {
+                    "slug": "xe_may_cho_hang",
+                    "ten": "Xe máy chở hàng",
+                    "gia_mo_cua": 90000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 8000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 7000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 6000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "ba_gac_may",
+                    "ten": "Ba gác máy",
+                    "gia_mo_cua": 220000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 15000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 13000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 11000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_van_500kg",
+                    "ten": "Xe tải 500kg",
+                    "gia_mo_cua": 320000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 18000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 16000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 14000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_750kg",
+                    "ten": "Xe tải 750kg",
+                    "gia_mo_cua": 380000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 20000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 18000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 16000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_1_tan",
+                    "ten": "Xe tải 1 tấn",
+                    "gia_mo_cua": 450000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 22000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 20000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 18000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_1_5_tan",
+                    "ten": "Xe tải 1.5 tấn",
+                    "gia_mo_cua": 550000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 25000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 22000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 20000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_2_5_tan",
+                    "ten": "Xe tải 2 tấn",
+                    "gia_mo_cua": 680000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 28000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 25000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 22000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_3_5_tan",
+                    "ten": "Xe tải 3.5 tấn",
+                    "gia_mo_cua": 950000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 35000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 30000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 28000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                }
+            ],
+            "phu_phi": {
+                "checkbox": [
+                    {
+                        "slug": "khao_sat_truoc",
+                        "ten": "Khảo sát trước khi triển khai",
+                        "don_gia": 150000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "khao_sat_truoc"
+                    },
+                    {
+                        "slug": "dong_goi_do_dac",
+                        "ten": "Đóng gói đồ đạc",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "dong_goi_do_dac"
+                    },
+                    {
+                        "slug": "thao_lap",
+                        "ten": "Tháo lắp",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "thao_lap"
+                    },
+                    {
+                        "slug": "de_vo",
+                        "ten": "Đồ dễ vỡ",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "de_vo"
+                    },
+                    {
+                        "slug": "cong_kenh",
+                        "ten": "Đồ cồng kềnh",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "cong_kenh"
+                    },
+                    {
+                        "slug": "gia_tri_cao",
+                        "ten": "Đồ giá trị cao",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "gia_tri_cao"
+                    }
+                ],
+                "khung_gio": [
+                    {
+                        "slug": "buoi_toi",
+                        "ten": "Buổi tối",
+                        "don_gia": 80000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "buoi_toi"
+                    },
+                    {
+                        "slug": "ban_dem",
+                        "ten": "Ca đêm",
+                        "don_gia": 150000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "ban_dem"
+                    }
+                ],
+                "thoi_tiet": [
+                    {
+                        "slug": "troi_mua",
+                        "ten": "Trời mưa",
+                        "don_gia": 30000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "troi_mua"
+                    }
+                ]
             }
-          ],
-          "gia_moi_km": 15000,
-          "gia_moi_km_duong_dai": 13000,
-          "phi_toi_thieu": 220000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
         },
-        {
-          "slug": "xe_van_500kg",
-          "ten": "Xe tải 500kg",
-          "gia_mo_cua": 320000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
+        "hang_muc_bao_gia": [
             {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 18000
+                "slug": "cuoc_xe",
+                "ten": "Cước xe theo km",
+                "khoang_gia": "Mở cửa 90.000 – 950.000",
+                "ghi_chu": "Bảng xe công khai hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh cho từng dải km tiếp theo, dùng để tham khảo nhanh trước khi lên phương án chi tiết.",
+                "hinh_anh": "assets/images/chuyendon-nha-o.png",
+                "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
             },
             {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 16000
+                "slug": "khao_sat_truoc",
+                "ten": "Khảo sát trước khi triển khai",
+                "khoang_gia": "150.000",
+                "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
+                "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
+                "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
             },
             {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 14000
+                "slug": "dong_goi_do_dac",
+                "ten": "Đóng gói đồ đạc",
+                "hinh_anh": "assets/images/chuyendon-van-chuyen-an-toan.png",
+                "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
+            },
+            {
+                "slug": "thao_lap",
+                "ten": "Tháo lắp",
+                "hinh_anh": "assets/images/feature-relocation-staff.png",
+                "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
+            },
+            {
+                "slug": "de_vo",
+                "ten": "Đồ dễ vỡ",
+                "hinh_anh": "assets/images/chuyendon-thiet-bi-gia-dinh.png",
+                "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            },
+            {
+                "slug": "cong_kenh",
+                "ten": "Đồ cồng kềnh",
+                "hinh_anh": "assets/images/feature-relocation-staff.png",
+                "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
+            },
+            {
+                "slug": "gia_tri_cao",
+                "ten": "Đồ giá trị cao",
+                "hinh_anh": "assets/images/chuyendon-thiet-bi-gia-dinh.png",
+                "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            },
+            {
+                "slug": "sap_xep_tai_nha_moi",
+                "ten": "Sắp xếp tại nhà mới",
+                "khoang_gia": "Hỗ trợ miễn phí",
+                "ghi_chu": "Hạng mục hỗ trợ miễn phí sau khi hoàn tất vận chuyển, giúp sắp xếp đồ đạc vào vị trí mong muốn.",
+                "hinh_anh": "assets/images/chuyendon-tron-goi.png",
+                "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
             }
-          ],
-          "gia_moi_km": 13000,
-          "gia_moi_km_duong_dai": 11700,
-          "phi_toi_thieu": 120000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_750kg",
-          "ten": "Xe tải 750kg",
-          "gia_mo_cua": 380000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 20000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 18000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 16000
-            }
-          ],
-          "gia_moi_km": 20000,
-          "gia_moi_km_duong_dai": 18000,
-          "phi_toi_thieu": 380000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_1_tan",
-          "ten": "Xe tải 1 tấn",
-          "gia_mo_cua": 450000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 22000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 20000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 18000
-            }
-          ],
-          "gia_moi_km": 22000,
-          "gia_moi_km_duong_dai": 20000,
-          "phi_toi_thieu": 450000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_1_5_tan",
-          "ten": "Xe tải 1.5 tấn",
-          "gia_mo_cua": 550000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 25000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 22000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 20000
-            }
-          ],
-          "gia_moi_km": 18000,
-          "gia_moi_km_duong_dai": 16200,
-          "phi_toi_thieu": 180000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_2_5_tan",
-          "ten": "Xe tải 2 tấn",
-          "gia_mo_cua": 680000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 28000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 25000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 22000
-            }
-          ],
-          "gia_moi_km": 25000,
-          "gia_moi_km_duong_dai": 22500,
-          "phi_toi_thieu": 320000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_3_5_tan",
-          "ten": "Xe tải 3.5 tấn",
-          "gia_mo_cua": 950000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 35000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 30000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 28000
-            }
-          ],
-          "gia_moi_km": 35000,
-          "gia_moi_km_duong_dai": 30000,
-          "phi_toi_thieu": 950000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        }
-      ],
-      "phu_phi": {
-        "checkbox": [
-          {
-            "slug": "khao_sat_truoc",
-            "ten": "Khảo sát trước khi triển khai",
-            "don_gia": 150000,
-            "nguon_hien_thi_slug": "khao_sat_truoc"
-          },
-          {
-            "slug": "dong_goi_do_dac",
-            "ten": "Đóng gói đồ đạc",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "dong_goi_do_dac"
-          },
-          {
-            "slug": "thao_lap",
-            "ten": "Tháo lắp",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "thao_lap"
-          },
-          {
-            "slug": "de_vo",
-            "ten": "Đồ dễ vỡ",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "de_vo"
-          },
-          {
-            "slug": "cong_kenh",
-            "ten": "Đồ cồng kềnh",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "cong_kenh"
-          },
-          {
-            "slug": "gia_tri_cao",
-            "ten": "Đồ giá trị cao",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "gia_tri_cao"
-          }
-        ],
-        "khung_gio": [
-          {
-            "slug": "buoi_toi",
-            "ten": "Buổi tối",
-            "don_gia": 80000
-          },
-          {
-            "slug": "ban_dem",
-            "ten": "Ca đêm",
-            "don_gia": 150000
-          }
-        ],
-        "thoi_tiet": [
-          {
-            "slug": "troi_mua",
-            "ten": "Trời mưa",
-            "don_gia": 30000
-          }
         ]
-      }
     },
-    "hang_muc_bao_gia": [
-      {
-        "slug": "cuoc_xe",
-        "ten": "Cước xe theo km",
-        "khoang_gia": "Mở cửa 90.000 – 950.000",
-        "ghi_chu": "Bảng xe công khai hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh cho từng dải km tiếp theo, dùng để tham khảo nhanh trước khi lên phương án chi tiết.",
-        "hinh_anh": "assets/images/chuyendon-nha-o.png",
-        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
-      },
-      {
-        "slug": "khao_sat_truoc",
-        "ten": "Khảo sát trước khi triển khai",
-        "khoang_gia": "150.000",
-        "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
-        "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
-        "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
-      },
-      {
-        "slug": "dong_goi_do_dac",
-        "ten": "Đóng gói đồ đạc",
-        "hinh_anh": "assets/images/chuyendon-van-chuyen-an-toan.png",
-        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
-      },
-      {
-        "slug": "thao_lap",
-        "ten": "Tháo lắp",
-        "hinh_anh": "assets/images/feature-relocation-staff.png",
-        "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
-      },
-      {
-        "slug": "de_vo",
-        "ten": "Đồ dễ vỡ",
-        "hinh_anh": "assets/images/chuyendon-thiet-bi-gia-dinh.png",
-        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-      },
-      {
-        "slug": "cong_kenh",
-        "ten": "Đồ cồng kềnh",
-        "hinh_anh": "assets/images/feature-relocation-staff.png",
-        "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
-      },
-      {
-        "slug": "gia_tri_cao",
-        "ten": "Đồ giá trị cao",
-        "hinh_anh": "assets/images/chuyendon-thiet-bi-gia-dinh.png",
-        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-      },
-      {
-        "slug": "sap_xep_tai_nha_moi",
-        "ten": "Sắp xếp tại nhà mới",
-        "khoang_gia": "Hỗ trợ miễn phí",
-        "ghi_chu": "Hạng mục hỗ trợ miễn phí sau khi hoàn tất vận chuyển, giúp sắp xếp đồ đạc vào vị trí mong muốn.",
-        "hinh_anh": "assets/images/chuyendon-tron-goi.png",
-        "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
-      }
-    ]
-  },
-  {
-    "id": "chuyen_van_phong",
-    "ten_dich_vu": "Chuyển Văn Phòng Công Ty",
-    "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-van-phong",
-    "thong_tin_minh_bach": {
-      "mo_ta_ngan": "Văn phòng công ty cần di dời hồ sơ, bàn ghế, máy tính, server và thiết bị vận hành.",
-      "nen_khao_sat_khi": "Có server, tài liệu bảo mật, tòa nhà giới hạn giờ ra vào hoặc cần làm ngoài giờ.",
-      "co_the_dat_lich_luon_khi": "Bạn đã rõ sơ đồ di dời, số lượng bàn ghế thiết bị, điều kiện tòa nhà và không có hạng mục kỹ thuật đặc biệt."
-    },
-    "bang_gia": {
-      "loai_xe": [
-        {
-          "slug": "xe_van_500kg",
-          "ten": "Xe tải 500kg",
-          "gia_mo_cua": 320000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 18000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 16000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 14000
-            }
-          ],
-          "gia_moi_km": 13000,
-          "gia_moi_km_duong_dai": 11700,
-          "phi_toi_thieu": 120000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
+    {
+        "id": "chuyen_van_phong",
+        "ten_dich_vu": "Chuyển Văn Phòng Công Ty",
+        "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-van-phong",
+        "thong_tin_minh_bach": {
+            "mo_ta_ngan": "Văn phòng công ty cần di dời hồ sơ, bàn ghế, máy tính, server và thiết bị vận hành.",
+            "nen_khao_sat_khi": "Có server, tài liệu bảo mật, tòa nhà giới hạn giờ ra vào hoặc cần làm ngoài giờ.",
+            "co_the_dat_lich_luon_khi": "Bạn đã rõ sơ đồ di dời, số lượng bàn ghế thiết bị, điều kiện tòa nhà và không có hạng mục kỹ thuật đặc biệt."
         },
-        {
-          "slug": "xe_tai_750kg",
-          "ten": "Xe tải 750kg",
-          "gia_mo_cua": 380000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 20000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 18000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 16000
+        "bang_gia": {
+            "loai_xe": [
+                {
+                    "slug": "xe_van_500kg",
+                    "ten": "Xe tải 500kg",
+                    "gia_mo_cua": 320000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 18000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 16000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 14000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_750kg",
+                    "ten": "Xe tải 750kg",
+                    "gia_mo_cua": 380000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 20000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 18000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 16000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_1_tan",
+                    "ten": "Xe tải 1 tấn",
+                    "gia_mo_cua": 450000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 22000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 20000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 18000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_1_5_tan",
+                    "ten": "Xe tải 1.5 tấn",
+                    "gia_mo_cua": 550000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 25000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 22000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 20000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_2_5_tan",
+                    "ten": "Xe tải 2 tấn",
+                    "gia_mo_cua": 680000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 28000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 25000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 22000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_3_5_tan",
+                    "ten": "Xe tải 3.5 tấn",
+                    "gia_mo_cua": 950000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 35000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 30000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 28000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_5_tan",
+                    "ten": "Xe tải 5 tấn",
+                    "gia_mo_cua": 1250000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 42000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 38000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 35000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                }
+            ],
+            "phu_phi": {
+                "checkbox": [
+                    {
+                        "slug": "khao_sat_truoc",
+                        "ten": "Khảo sát trước khi triển khai",
+                        "don_gia": 150000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "khao_sat_truoc"
+                    },
+                    {
+                        "slug": "dong_goi_ho_so",
+                        "ten": "Đóng gói hồ sơ",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "dong_goi_ho_so_tai_lieu"
+                    },
+                    {
+                        "slug": "bao_ve_thiet_bi_it",
+                        "ten": "Bảo vệ thiết bị IT",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "bao_ve_thiet_bi_it"
+                    },
+                    {
+                        "slug": "thao_lap",
+                        "ten": "Tháo lắp",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "thao_lap_noi_that_van_phong"
+                    },
+                    {
+                        "slug": "thiet_bi_nang",
+                        "ten": "Thiết bị nặng",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "van_chuyen_thiet_bi_nang"
+                    }
+                ],
+                "khung_gio": [
+                    {
+                        "slug": "buoi_toi",
+                        "ten": "Buổi tối",
+                        "don_gia": 120000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "buoi_toi"
+                    },
+                    {
+                        "slug": "ban_dem",
+                        "ten": "Ca đêm",
+                        "don_gia": 220000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "ban_dem"
+                    },
+                    {
+                        "slug": "cuoi_tuan",
+                        "ten": "Cuối tuần",
+                        "don_gia": 100000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "cuoi_tuan"
+                    }
+                ],
+                "thoi_tiet": [
+                    {
+                        "slug": "troi_mua",
+                        "ten": "Trời mưa",
+                        "don_gia": 70000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "troi_mua"
+                    }
+                ]
             }
-          ],
-          "gia_moi_km": 20000,
-          "gia_moi_km_duong_dai": 18000,
-          "phi_toi_thieu": 380000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
         },
-        {
-          "slug": "xe_tai_1_tan",
-          "ten": "Xe tải 1 tấn",
-          "gia_mo_cua": 450000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
+        "hang_muc_bao_gia": [
             {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 22000
+                "slug": "cuoc_xe",
+                "ten": "Cước xe theo km",
+                "khoang_gia": "Mở cửa 320.000 – 1.250.000",
+                "ghi_chu": "Bảng xe công khai hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh cho từng dải km tiếp theo, dùng để tham khảo nhanh trước khi lên phương án chi tiết.",
+                "hinh_anh": "assets/images/chuyendon-van-phong.png",
+                "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
             },
             {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 20000
+                "slug": "khao_sat_truoc",
+                "ten": "Khảo sát trước khi triển khai",
+                "khoang_gia": "150.000",
+                "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
+                "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
+                "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
             },
             {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 18000
+                "slug": "bao_ve_thiet_bi_it",
+                "ten": "Bảo vệ thiết bị IT",
+                "hinh_anh": "assets/images/boc-lot-it.png",
+                "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
+            },
+            {
+                "slug": "lap_dat_tai_van_phong_moi",
+                "ten": "Lắp đặt tại văn phòng mới",
+                "khoang_gia": "Hỗ trợ miễn phí",
+                "ghi_chu": "Hạng mục hỗ trợ miễn phí để bố trí lại bàn ghế và thiết bị cơ bản sau khi di dời.",
+                "hinh_anh": "assets/images/lap-dat-van-phong-moi.png",
+                "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
             }
-          ],
-          "gia_moi_km": 22000,
-          "gia_moi_km_duong_dai": 20000,
-          "phi_toi_thieu": 450000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_1_5_tan",
-          "ten": "Xe tải 1.5 tấn",
-          "gia_mo_cua": 550000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 25000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 22000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 20000
-            }
-          ],
-          "gia_moi_km": 17000,
-          "gia_moi_km_duong_dai": 15300,
-          "phi_toi_thieu": 180000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_2_5_tan",
-          "ten": "Xe tải 2 tấn",
-          "gia_mo_cua": 680000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 28000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 25000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 22000
-            }
-          ],
-          "gia_moi_km": 24000,
-          "gia_moi_km_duong_dai": 21600,
-          "phi_toi_thieu": 300000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_3_5_tan",
-          "ten": "Xe tải 3.5 tấn",
-          "gia_mo_cua": 950000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 35000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 30000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 28000
-            }
-          ],
-          "gia_moi_km": 35000,
-          "gia_moi_km_duong_dai": 30000,
-          "phi_toi_thieu": 950000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_5_tan",
-          "ten": "Xe tải 5 tấn",
-          "gia_mo_cua": 1250000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 42000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 38000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 35000
-            }
-          ],
-          "gia_moi_km": 42000,
-          "gia_moi_km_duong_dai": 38000,
-          "phi_toi_thieu": 1250000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        }
-      ],
-      "phu_phi": {
-        "checkbox": [
-          {
-            "slug": "khao_sat_truoc",
-            "ten": "Khảo sát trước khi triển khai",
-            "don_gia": 150000,
-            "nguon_hien_thi_slug": "khao_sat_truoc"
-          },
-          {
-            "slug": "dong_goi_ho_so",
-            "ten": "Đóng gói hồ sơ",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "dong_goi_ho_so_tai_lieu"
-          },
-          {
-            "slug": "bao_ve_thiet_bi_it",
-            "ten": "Bảo vệ thiết bị IT",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "bao_ve_thiet_bi_it"
-          },
-          {
-            "slug": "thao_lap",
-            "ten": "Tháo lắp",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "thao_lap_noi_that_van_phong"
-          },
-          {
-            "slug": "thiet_bi_nang",
-            "ten": "Thiết bị nặng",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "van_chuyen_thiet_bi_nang"
-          }
-        ],
-        "khung_gio": [
-          {
-            "slug": "buoi_toi",
-            "ten": "Buổi tối",
-            "don_gia": 120000
-          },
-          {
-            "slug": "ban_dem",
-            "ten": "Ca đêm",
-            "don_gia": 220000
-          },
-          {
-            "slug": "cuoi_tuan",
-            "ten": "Cuối tuần",
-            "don_gia": 100000,
-            "ghi_chu": "Áp dụng phụ phí cố định cho ca thực hiện vào cuối tuần."
-          }
-        ],
-        "thoi_tiet": [
-          {
-            "slug": "troi_mua",
-            "ten": "Trời mưa",
-            "don_gia": 70000
-          }
         ]
-      }
     },
-    "hang_muc_bao_gia": [
-      {
-        "slug": "cuoc_xe",
-        "ten": "Cước xe theo km",
-        "khoang_gia": "Mở cửa 320.000 – 1.250.000",
-        "ghi_chu": "Bảng xe công khai hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh cho từng dải km tiếp theo, dùng để tham khảo nhanh trước khi lên phương án chi tiết.",
-        "hinh_anh": "assets/images/chuyendon-van-phong.png",
-        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
-      },
-      {
-        "slug": "khao_sat_truoc",
-        "ten": "Khảo sát trước khi triển khai",
-        "khoang_gia": "150.000",
-        "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
-        "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
-        "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
-      },
-      {
-        "slug": "dong_goi_ho_so_tai_lieu",
-        "ten": "Đóng gói hồ sơ, tài liệu",
-        "hinh_anh": "assets/images/dong-goi-tai-lieu.png",
-        "icon_svg": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
-      },
-      {
-        "slug": "bao_ve_thiet_bi_it",
-        "ten": "Bảo vệ thiết bị IT",
-        "hinh_anh": "assets/images/boc-lot-it.png",
-        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
-      },
-      {
-        "slug": "thao_lap_noi_that_van_phong",
-        "ten": "Tháo lắp nội thất văn phòng",
-        "hinh_anh": "assets/images/thao-lap-van-phong.png",
-        "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
-      },
-      {
-        "slug": "van_chuyen_thiet_bi_nang",
-        "ten": "Vận chuyển thiết bị nặng",
-        "hinh_anh": "assets/images/van-chuyen-thiet-bi-nang.png",
-        "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8zm0 0h6m-6 0H6"
-      },
-      {
-        "slug": "lap_dat_tai_van_phong_moi",
-        "ten": "Lắp đặt tại văn phòng mới",
-        "khoang_gia": "Hỗ trợ miễn phí",
-        "ghi_chu": "Hạng mục hỗ trợ miễn phí để bố trí lại bàn ghế và thiết bị cơ bản sau khi di dời.",
-        "hinh_anh": "assets/images/lap-dat-van-phong-moi.png",
-        "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
-      }
-    ]
-  },
-  {
-    "id": "chuyen_kho_bai",
-    "ten_dich_vu": "Chuyển Kho Bãi",
-    "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-kho-bai",
-    "thong_tin_minh_bach": {
-      "mo_ta_ngan": "Kho hàng, nhà xưởng hoặc mô hình logistics cần xe tải, xe nâng, xe cẩu và kiểm kê chặt chẽ.",
-      "nen_khao_sat_khi": "Có máy móc lớn, nhiều pallet, đường cấm tải hoặc cần xe nâng, xe cẩu tại hiện trường.",
-      "co_the_dat_lich_luon_khi": "Bạn đã rõ khối lượng hàng, số pallet, phương tiện nâng hạ cần dùng và điều kiện xe vào ra kho bãi."
-    },
-    "bang_gia": {
-      "loai_xe": [
-        {
-          "slug": "xe_tai_1_5_tan",
-          "ten": "Xe tải 1.5 tấn",
-          "gia_mo_cua": 550000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 25000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 22000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 20000
-            }
-          ],
-          "gia_moi_km": 18000,
-          "gia_moi_km_duong_dai": 16200,
-          "phi_toi_thieu": 180000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
+    {
+        "id": "chuyen_kho_bai",
+        "ten_dich_vu": "Chuyển Kho Bãi",
+        "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-kho-bai",
+        "thong_tin_minh_bach": {
+            "mo_ta_ngan": "Kho hàng, nhà xưởng hoặc mô hình logistics cần xe tải, xe nâng, xe cẩu và kiểm kê chặt chẽ.",
+            "nen_khao_sat_khi": "Có máy móc lớn, nhiều pallet, đường cấm tải hoặc cần xe nâng, xe cẩu tại hiện trường.",
+            "co_the_dat_lich_luon_khi": "Bạn đã rõ khối lượng hàng, số pallet, phương tiện nâng hạ cần dùng và điều kiện xe vào ra kho bãi."
         },
-        {
-          "slug": "xe_tai_2_5_tan",
-          "ten": "Xe tải 2 tấn",
-          "gia_mo_cua": 680000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 28000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 25000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 22000
+        "bang_gia": {
+            "loai_xe": [
+                {
+                    "slug": "xe_tai_1_5_tan",
+                    "ten": "Xe tải 1.5 tấn",
+                    "gia_mo_cua": 550000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 25000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 22000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 20000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_2_5_tan",
+                    "ten": "Xe tải 2 tấn",
+                    "gia_mo_cua": 680000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 28000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 25000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 22000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_3_5_tan",
+                    "ten": "Xe tải 3.5 tấn",
+                    "gia_mo_cua": 950000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 35000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 30000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 28000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_5_tan",
+                    "ten": "Xe tải 5 tấn",
+                    "gia_mo_cua": 1250000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 42000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 38000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 35000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_7_5_tan",
+                    "ten": "Xe tải 8 tấn",
+                    "gia_mo_cua": 1800000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 55000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 48000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 42000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "xe_tai_15_tan",
+                    "ten": "Xe tải 15 tấn",
+                    "gia_mo_cua": 2800000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 70000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 60000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 55000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                },
+                {
+                    "slug": "dau_keo_container",
+                    "ten": "Đầu kéo container",
+                    "gia_mo_cua": 4500000,
+                    "pham_vi_mo_cua_km": 5,
+                    "bang_gia_km": [
+                        {
+                            "tu_km": 6,
+                            "den_km": 15,
+                            "don_gia": 95000
+                        },
+                        {
+                            "tu_km": 16,
+                            "den_km": 30,
+                            "don_gia": 85000
+                        },
+                        {
+                            "tu_km": 31,
+                            "den_km": null,
+                            "don_gia": 75000
+                        }
+                    ],
+                    "thu_tu": 0,
+                    "nguong_km_giam_gia": 20,
+                    "ty_le_giam_gia_duong_dai": 0.1
+                }
+            ],
+            "phu_phi": {
+                "checkbox": [
+                    {
+                        "slug": "khao_sat_truoc",
+                        "ten": "Khảo sát trước khi triển khai",
+                        "don_gia": 150000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "khao_sat_truoc"
+                    },
+                    {
+                        "slug": "pallet",
+                        "ten": "Pallet",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "pallet"
+                    },
+                    {
+                        "slug": "xe_nang_cau",
+                        "ten": "Xe nâng/cẩu",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "xe_nang_cau"
+                    },
+                    {
+                        "slug": "gia_co",
+                        "ten": "Gia cố",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "gia_co"
+                    },
+                    {
+                        "slug": "de_vo",
+                        "ten": "Đồ dễ vỡ",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "de_vo"
+                    },
+                    {
+                        "slug": "cong_kenh",
+                        "ten": "Đồ cồng kềnh",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "cong_kenh"
+                    },
+                    {
+                        "slug": "gia_tri_cao",
+                        "ten": "Đồ giá trị cao",
+                        "don_gia": 0,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "gia_tri_cao"
+                    }
+                ],
+                "khung_gio": [
+                    {
+                        "slug": "buoi_toi",
+                        "ten": "Buổi tối",
+                        "don_gia": 250000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "buoi_toi"
+                    },
+                    {
+                        "slug": "ban_dem",
+                        "ten": "Ca đêm",
+                        "don_gia": 400000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "ban_dem"
+                    }
+                ],
+                "thoi_tiet": [
+                    {
+                        "slug": "troi_mua",
+                        "ten": "Trời mưa",
+                        "don_gia": 150000,
+                        "thu_tu": 0,
+                        "nguon_hien_thi_slug": "troi_mua"
+                    }
+                ]
             }
-          ],
-          "gia_moi_km": 25000,
-          "gia_moi_km_duong_dai": 22500,
-          "phi_toi_thieu": 320000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
         },
-        {
-          "slug": "xe_tai_3_5_tan",
-          "ten": "Xe tải 3.5 tấn",
-          "gia_mo_cua": 950000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
+        "hang_muc_bao_gia": [
             {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 35000
+                "slug": "cuoc_xe",
+                "ten": "Cước xe theo km",
+                "khoang_gia": "Mở cửa 550.000 – 4.500.000",
+                "ghi_chu": "Bảng xe công khai hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh cho từng dải km tiếp theo, dùng để tham khảo nhanh trước khi lên phương án chi tiết.",
+                "hinh_anh": "assets/images/chuyendon-kho-bai.png",
+                "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
             },
             {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 30000
+                "slug": "khao_sat_truoc",
+                "ten": "Khảo sát trước khi triển khai",
+                "khoang_gia": "150.000",
+                "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
+                "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
+                "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
             },
             {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 28000
+                "slug": "pallet",
+                "ten": "Pallet",
+                "hinh_anh": "assets/images/feature-pallet.png",
+                "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m0-10L4 7m8 4v10"
+            },
+            {
+                "slug": "xe_nang_cau",
+                "ten": "Xe nâng/cẩu",
+                "hinh_anh": "assets/images/chuyendon-kho-bai.png",
+                "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8z"
+            },
+            {
+                "slug": "gia_co",
+                "ten": "Gia cố",
+                "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
+                "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
+            },
+            {
+                "slug": "de_vo",
+                "ten": "Đồ dễ vỡ",
+                "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
+                "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
+            },
+            {
+                "slug": "cong_kenh",
+                "ten": "Đồ cồng kềnh",
+                "hinh_anh": "assets/images/chuyendon-kho-bai.png",
+                "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8z"
+            },
+            {
+                "slug": "gia_tri_cao",
+                "ten": "Đồ giá trị cao",
+                "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
+                "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
+            },
+            {
+                "slug": "kiem_ke_ban_giao",
+                "ten": "Kiểm kê & Bàn giao",
+                "khoang_gia": "Miễn phí",
+                "ghi_chu": "Hạng mục hỗ trợ miễn phí để đối soát số lượng hàng hóa và thiết bị trước, trong và sau khi bàn giao.",
+                "hinh_anh": "assets/images/kiem-ke-va-ban-giao.png",
+                "icon_svg": "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2"
             }
-          ],
-          "gia_moi_km": 35000,
-          "gia_moi_km_duong_dai": 30000,
-          "phi_toi_thieu": 950000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_5_tan",
-          "ten": "Xe tải 5 tấn",
-          "gia_mo_cua": 1250000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 42000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 38000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 35000
-            }
-          ],
-          "gia_moi_km": 42000,
-          "gia_moi_km_duong_dai": 38000,
-          "phi_toi_thieu": 1250000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_7_5_tan",
-          "ten": "Xe tải 8 tấn",
-          "gia_mo_cua": 1800000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 55000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 48000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 42000
-            }
-          ],
-          "gia_moi_km": 32000,
-          "gia_moi_km_duong_dai": 28800,
-          "phi_toi_thieu": 450000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "xe_tai_15_tan",
-          "ten": "Xe tải 15 tấn",
-          "gia_mo_cua": 2800000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 70000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 60000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 55000
-            }
-          ],
-          "gia_moi_km": 70000,
-          "gia_moi_km_duong_dai": 60000,
-          "phi_toi_thieu": 2800000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        },
-        {
-          "slug": "dau_keo_container",
-          "ten": "Đầu kéo container",
-          "gia_mo_cua": 4500000,
-          "pham_vi_mo_cua_km": 5,
-          "bang_gia_km": [
-            {
-              "tu_km": 6,
-              "den_km": 15,
-              "don_gia": 95000
-            },
-            {
-              "tu_km": 16,
-              "den_km": 30,
-              "don_gia": 85000
-            },
-            {
-              "tu_km": 31,
-              "den_km": null,
-              "don_gia": 75000
-            }
-          ],
-          "gia_moi_km": 95000,
-          "gia_moi_km_duong_dai": 85000,
-          "phi_toi_thieu": 4500000,
-          "nguong_km_giam_gia": 20,
-          "ty_le_giam_gia_duong_dai": 0.1
-        }
-      ],
-      "phu_phi": {
-        "checkbox": [
-          {
-            "slug": "khao_sat_truoc",
-            "ten": "Khảo sát trước khi triển khai",
-            "don_gia": 150000,
-            "nguon_hien_thi_slug": "khao_sat_truoc"
-          },
-          {
-            "slug": "pallet",
-            "ten": "Pallet",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "pallet"
-          },
-          {
-            "slug": "xe_nang_cau",
-            "ten": "Xe nâng/cẩu",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "xe_nang_cau"
-          },
-          {
-            "slug": "gia_co",
-            "ten": "Gia cố",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "gia_co"
-          },
-          {
-            "slug": "de_vo",
-            "ten": "Đồ dễ vỡ",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "de_vo"
-          },
-          {
-            "slug": "cong_kenh",
-            "ten": "Đồ cồng kềnh",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "cong_kenh"
-          },
-          {
-            "slug": "gia_tri_cao",
-            "ten": "Đồ giá trị cao",
-            "don_gia": 0,
-            "nguon_hien_thi_slug": "gia_tri_cao"
-          }
-        ],
-        "khung_gio": [
-          {
-            "slug": "buoi_toi",
-            "ten": "Buổi tối",
-            "don_gia": 250000
-          },
-          {
-            "slug": "ban_dem",
-            "ten": "Ca đêm",
-            "don_gia": 400000
-          }
-        ],
-        "thoi_tiet": [
-          {
-            "slug": "troi_mua",
-            "ten": "Trời mưa",
-            "don_gia": 150000
-          }
         ]
-      }
-    },
-    "hang_muc_bao_gia": [
-      {
-        "slug": "cuoc_xe",
-        "ten": "Cước xe theo km",
-        "khoang_gia": "Mở cửa 550.000 – 4.500.000",
-        "ghi_chu": "Bảng xe công khai hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh cho từng dải km tiếp theo, dùng để tham khảo nhanh trước khi lên phương án chi tiết.",
-        "hinh_anh": "assets/images/chuyendon-kho-bai.png",
-        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
-      },
-      {
-        "slug": "khao_sat_truoc",
-        "ten": "Khảo sát trước khi triển khai",
-        "khoang_gia": "150.000",
-        "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
-        "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
-        "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
-      },
-      {
-        "slug": "pallet",
-        "ten": "Pallet",
-        "hinh_anh": "assets/images/feature-pallet.png",
-        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m0-10L4 7m8 4v10"
-      },
-      {
-        "slug": "xe_nang_cau",
-        "ten": "Xe nâng/cẩu",
-        "hinh_anh": "assets/images/chuyendon-kho-bai.png",
-        "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8z"
-      },
-      {
-        "slug": "gia_co",
-        "ten": "Gia cố",
-        "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
-        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
-      },
-      {
-        "slug": "de_vo",
-        "ten": "Đồ dễ vỡ",
-        "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
-        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
-      },
-      {
-        "slug": "cong_kenh",
-        "ten": "Đồ cồng kềnh",
-        "hinh_anh": "assets/images/chuyendon-kho-bai.png",
-        "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8z"
-      },
-      {
-        "slug": "gia_tri_cao",
-        "ten": "Đồ giá trị cao",
-        "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
-        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
-      },
-      {
-        "slug": "kiem_ke_ban_giao",
-        "ten": "Kiểm kê & Bàn giao",
-        "khoang_gia": "Miễn phí",
-        "ghi_chu": "Hạng mục hỗ trợ miễn phí để đối soát số lượng hàng hóa và thiết bị trước, trong và sau khi bàn giao.",
-        "hinh_anh": "assets/images/kiem-ke-va-ban-giao.png",
-        "icon_svg": "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2"
-      }
-    ]
-  }
+    }
 ]

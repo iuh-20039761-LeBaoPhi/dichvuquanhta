@@ -123,6 +123,13 @@ function moving_pricing_service_group_vehicle_rows_ordered(array $rows): array
         $grouped[$serviceId][] = $row;
     }
 
+    foreach ($grouped as &$serviceRows) {
+        usort($serviceRows, static function (array $a, array $b): int {
+            return ((int) ($a['thu_tu'] ?? 0)) <=> ((int) ($b['thu_tu'] ?? 0));
+        });
+    }
+    unset($serviceRows);
+
     return $grouped;
 }
 
@@ -181,6 +188,15 @@ function moving_pricing_service_group_item_rows_ordered(array $rows): array
         $grouped[$serviceId][$groupKey][] = $row;
     }
 
+    foreach ($grouped as &$serviceGroups) {
+        foreach ($serviceGroups as &$items) {
+            usort($items, static function (array $a, array $b): int {
+                return ((int) ($a['thu_tu'] ?? 0)) <=> ((int) ($b['thu_tu'] ?? 0));
+            });
+        }
+    }
+    unset($serviceGroups, $items);
+
     return $grouped;
 }
 
@@ -195,22 +211,20 @@ function moving_pricing_service_build_vehicle_entry(array $currentVehicle, array
             [
                 'tu_km' => 6,
                 'den_km' => 15,
-                'don_gia' => moving_pricing_service_number($row['don_gia_km_6_15'] ?? 0),
+                'don_gia' => moving_pricing_service_number($row['don_gia_km_6_15'] ?: ($currentVehicle['bang_gia_km'][0]['don_gia'] ?? 0)),
             ],
             [
                 'tu_km' => 16,
                 'den_km' => 30,
-                'don_gia' => moving_pricing_service_number($row['don_gia_km_16_30'] ?? 0),
+                'don_gia' => moving_pricing_service_number($row['don_gia_km_16_30'] ?: ($currentVehicle['bang_gia_km'][1]['don_gia'] ?? 0)),
             ],
             [
                 'tu_km' => 31,
                 'den_km' => null,
-                'don_gia' => moving_pricing_service_number($row['don_gia_km_31_tro_len'] ?? 0),
+                'don_gia' => moving_pricing_service_number($row['don_gia_km_31_tro_len'] ?: ($currentVehicle['bang_gia_km'][2]['don_gia'] ?? 0)),
             ],
         ],
-        'gia_moi_km' => moving_pricing_service_number($row['gia_moi_km_form'] ?? ($currentVehicle['gia_moi_km'] ?? 0)),
-        'gia_moi_km_duong_dai' => moving_pricing_service_number($row['gia_moi_km_duong_dai_form'] ?? ($currentVehicle['gia_moi_km_duong_dai'] ?? 0)),
-        'phi_toi_thieu' => moving_pricing_service_number($row['phi_toi_thieu_form'] ?? ($currentVehicle['phi_toi_thieu'] ?? 0)),
+        'thu_tu' => moving_pricing_service_number($row['thu_tu'] ?? ($currentVehicle['thu_tu'] ?? 0)),
         'nguong_km_giam_gia' => 20,
         'ty_le_giam_gia_duong_dai' => 0.1,
     ];
@@ -230,6 +244,7 @@ function moving_pricing_service_build_item_entry(array $currentItem, array $row,
         'slug' => $slug,
         'ten' => moving_pricing_service_item_label($groupKey, $slug, $fallbackLabel),
         'don_gia' => $amount,
+        'thu_tu' => moving_pricing_service_number($row['thu_tu'] ?? ($currentItem['thu_tu'] ?? 0)),
     ];
 
     $displaySlug = moving_pricing_service_text(
@@ -358,15 +373,7 @@ function moving_pricing_service_build_json_from_rows(
             } else {
                 foreach ($service['bang_gia']['loai_xe'] as &$vehicle) {
                     $slug = trim((string) ($vehicle['slug'] ?? ''));
-                    if ($slug === '') {
-                        continue;
-                    }
-
-                    $row = $vehicleMap[$serviceId][$slug] ?? null;
-                    if (!is_array($row)) {
-                        continue;
-                    }
-
+                    $row = $vehicleMap[$serviceId][$slug] ?? [];
                     $vehicle = moving_pricing_service_build_vehicle_entry($vehicle, $row);
                 }
                 unset($vehicle);
@@ -398,15 +405,7 @@ function moving_pricing_service_build_json_from_rows(
             } else {
                 foreach ($service['bang_gia']['phu_phi'][$groupKey] as &$item) {
                     $slug = trim((string) ($item['slug'] ?? ''));
-                    if ($slug === '') {
-                        continue;
-                    }
-
-                    $row = $itemMap[$serviceId][$groupKey][$slug] ?? null;
-                    if (!is_array($row)) {
-                        continue;
-                    }
-
+                    $row = $itemMap[$serviceId][$groupKey][$slug] ?? [];
                     $item = moving_pricing_service_build_item_entry($item, $row, $groupKey);
                 }
                 unset($item);

@@ -1243,6 +1243,23 @@ function initPickupSlotInputMask(input) {
 
 function parsePickupSlotInput(value) {
   const normalized = normalizePickupSlotText(value);
+  
+  const singleMatch = normalized.match(/^(\d{2}):(\d{2})(:\d{2})?$/);
+  if (singleMatch) {
+    const start = `${singleMatch[1]}:${singleMatch[2]}`;
+    const startMins = parseInt(singleMatch[1], 10) * 60 + parseInt(singleMatch[2], 10);
+    const endMins = startMins + 60;
+    const endHour = String(Math.floor(endMins / 60) % 24).padStart(2, '0');
+    const endMinute = String(endMins % 60).padStart(2, '0');
+    const end = `${endHour}:${endMinute}`;
+    return {
+      key: `${start} - ${end}`,
+      label: normalized,
+      start,
+      end,
+    };
+  }
+
   const match = normalized.match(
     /^([01][0-9]|2[0-3]):([0-5][0-9])\s*-\s*([01][0-9]|2[0-3]):([0-5][0-9])$/,
   );
@@ -1259,12 +1276,17 @@ function parsePickupSlotInput(value) {
 
 function getDefaultPickupSlot(date = getCurrentDateTime()) {
   const startAt = new Date(date);
+  startAt.setMinutes(startAt.getMinutes() + 90);
   const endAt = new Date(startAt.getTime() + 60 * 60 * 1000);
   const start = formatTimeValue(startAt);
   const end = formatTimeValue(endAt);
+
+  const startSec = String(startAt.getSeconds()).padStart(2, '0');
+  const timeValue = `${start}:${startSec}`;
+
   return {
-    key: `${start} - ${end}`,
-    label: `${start} - ${end}`,
+    key: timeValue,
+    label: timeValue,
     start,
     end,
   };
@@ -1376,9 +1398,7 @@ function syncScheduleModeUI() {
 function initPickupSlotOptions() {
   const input = document.getElementById("khung_gio_lay_hang");
   if (!input) return;
-  initPickupSlotInputMask(input);
   if (input.value.trim()) {
-    applyPickupSlotInputMask(input);
     return;
   }
   input.value = getDefaultPickupSlot(getCurrentDateTime()).label;

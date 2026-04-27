@@ -769,7 +769,7 @@
                     <label class="form-label">Địa chỉ của bạn <span class="text-danger">*</span></label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
-                      <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi'" readonly
+                      <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi' hoặc nhập thủ công"
                         class="form-control" />
                     </div>
                     <div class="d-flex gap-2 mt-2">
@@ -785,7 +785,7 @@
                       <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #bcdcff">
                       </div>
                       <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
-                      <div id="distanceInfo" class="form-text mt-1 text-muted">Quãng đường và phí di chuyển sẽ được tính
+                      <div id="distanceInfo" class="form-text mt-1 text-muted d-none">Quãng đường và phí di chuyển sẽ được tính
                         tự động sau khi chọn vị trí.</div>
                     </div>
                   </div>
@@ -904,7 +904,7 @@
                       <span>Phụ thu ngày lễ (+30%)</span>
                       <span id="holidayFee" class="fw-bold">0 đ</span>
                     </div>
-                    <div class="d-flex justify-content-between small mb-1">
+                    <div class="d-none justify-content-between small mb-1" id="travelFeeRow">
                       <span>Phí di chuyển (5.000 đ/km)</span>
                       <span id="travelFee">0 đ</span>
                     </div>
@@ -931,20 +931,18 @@
                   <div class="d-flex gap-2">
                     <button type="button" id="capturePhotoBtn" class="btn flex-fill fw-bold rounded-pill"
                       style="background:linear-gradient(135deg,#e3f2fd,#d6ecff);color:#1565c0;border:1px solid #bbdefb"
-                      onclick="document.getElementById('quickPhotoInput').click()">
-                      <i class="fas fa-camera me-1"></i>Chụp ảnh
+                      onclick="handleMediaClick('photo')">
+                      <i class="fas fa-camera me-1"></i>Chụp/Tải ảnh
                     </button>
                     <button type="button" id="recordVideoBtn" class="btn flex-fill fw-bold rounded-pill"
                       style="background:linear-gradient(135deg,#e3f2fd,#d6ecff);color:#1565c0;border:1px solid #bbdefb"
-                      onclick="document.getElementById('quickVideoInput').click()">
-                      <i class="fas fa-video me-1"></i>Quay hình
+                      onclick="handleMediaClick('video')">
+                      <i class="fas fa-video me-1"></i>Quay/Tải video
                     </button>
                   </div>
 
-                  <input type="file" id="quickPhotoInput" accept="image/*" capture="environment" class="d-none"
-                    multiple />
-                  <input type="file" id="quickVideoInput" accept="video/*" capture="environment" class="d-none"
-                    multiple />
+                  <input type="file" id="quickPhotoInput" accept="image/*" class="d-none" multiple />
+                  <input type="file" id="quickVideoInput" accept="video/*" class="d-none" multiple />
 
                   <div id="attachmentPreviewArea" class="attachment-preview-box mt-2">
                     <div class="attachment-preview-split">
@@ -1261,6 +1259,44 @@
         );
       }
 
+      // [Thêm mới] Tự động tìm tọa độ khi người dùng gõ địa chỉ thủ công
+      var lookupAddressTimeout = null;
+      $(document).on('input', '#customerAddress', function () {
+        var query = $(this).val().trim();
+        if (query.length < 5) return;
+
+        clearTimeout(lookupAddressTimeout);
+        lookupAddressTimeout = setTimeout(async function () {
+          try {
+            var res = await fetch(
+              'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1',
+              { headers: { 'Accept-Language': 'vi' } }
+            );
+            var data = await res.json();
+            if (data && data.length > 0) {
+              var lat = Number(data[0].lat);
+              var lng = Number(data[0].lon);
+
+              // Cập nhật vị trí nhưng KHÔNG được gán ngược lại ô input (tránh làm gián đoạn việc gõ)
+              CUSTOMER_LOCATION = { lat: lat, lng: lng };
+
+              if (mapPickerMap) {
+                if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+                mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
+                mapPickerMap.setView([lat, lng], 16);
+                mapPickerMarker.bindPopup('<small>' + (data[0].display_name) + '</small>');
+              }
+
+              if (typeof window.recalculateDistanceAndPrice === 'function') {
+                window.recalculateDistanceAndPrice();
+              }
+            }
+          } catch (e) {
+            console.warn('Address lookup error:', e);
+          }
+        }, 1000); // Đợi 1 giây sau khi ngừng gõ để tránh gọi API quá nhiều
+      });
+
       $(document).ready(async function () {
         var SERVICES = [];
         var CURRENT_SERVICE = null;
@@ -1332,12 +1368,12 @@
 
           if (!CUSTOMER_LOCATION) {
             DISTANCE_KM = 0;
-            renderDistanceInfo('Quãng đường và phí di chuyển sẽ được tính tự động sau khi chọn vị trí.');
+            // renderDistanceInfo('Quãng đường và phí di chuyển sẽ được tính tự động sau khi chọn vị trí.');
             updateTotalPrice();
             return;
           }
 
-          renderDistanceInfo('Đang tính quãng đường thực tế từ vị trí nhân sự đến địa chỉ của bạn...');
+          // renderDistanceInfo('Đang tính quãng đường thực tế từ vị trí nhân sự đến địa chỉ của bạn...');
 
           try {
             var office = OFFICE_COORDS;
@@ -1358,7 +1394,10 @@
 
             if (requestId !== DISTANCE_REQUEST_ID) return;
 
-            DISTANCE_KM = Number(distanceKm.toFixed(2));
+            // DISTANCE_KM = Number(distanceKm.toFixed(2));
+            DISTANCE_KM = 0; // Luôn để 0 để ẩn tính phí di chuyển
+            
+            /*
             renderDistanceInfo(
               'Quãng đường ước tính: ' +
               DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
@@ -1366,11 +1405,12 @@
               formatMoney(DISTANCE_KM * 5000) +
               '.'
             );
+            */
           } catch (error) {
             if (requestId !== DISTANCE_REQUEST_ID) return;
 
             DISTANCE_KM = 0;
-            renderDistanceInfo('Không thể tính quãng đường tự động lúc này. Tạm tính phí di chuyển = 0 đ.', true);
+            // renderDistanceInfo('Không thể tính quãng đường tự động lúc này. Tạm tính phí di chuyển = 0 đ.', true);
           }
 
           updateTotalPrice();
@@ -1890,6 +1930,41 @@
         function formatMoney(val) {
           return Math.round(val).toLocaleString('vi-VN') + ' đ';
         }
+        // [Thêm mới] Hàm hỗ trợ tìm kiếm địa chỉ và định vị bản đồ khi tự động điền từ session
+        async function lookupAndFocusAddress(query) {
+          if (!query || query.length < 5) return;
+          try {
+            const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1', {
+              headers: { 'Accept-Language': 'vi' }
+            });
+            const data = await res.json();
+            if (data && data.length > 0) {
+              const lat = Number(data[0].lat);
+              const lng = Number(data[0].lon);
+              CUSTOMER_LOCATION = { lat: lat, lng: lng };
+
+              // Khởi tạo bản đồ nếu cần và tập trung vào vị trí tìm thấy
+              if (typeof ensureMapPickerInit === 'function') ensureMapPickerInit();
+              if (mapPickerMap) {
+                // Mở khung bản đồ nếu đang đóng để người dùng thấy vị trí đã gán
+                if ($('#mapPickerBox').hasClass('d-none')) {
+                  if (typeof toggleMapPicker === 'function') toggleMapPicker();
+                }
+                if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+                mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
+                mapPickerMap.setView([lat, lng], 16);
+                mapPickerMarker.bindPopup('<small>' + (data[0].display_name) + '</small>').openPopup();
+              }
+
+              // Cập nhật lại quãng đường và phí di chuyển
+              if (typeof recalculateDistanceAndPrice === 'function') {
+                recalculateDistanceAndPrice();
+              }
+            }
+          } catch (e) {
+            console.warn('Auto focus address lookup failed:', e);
+          }
+        }
         // [Thêm mới] Tự động điền thông tin khách hàng từ session nếu đã đăng nhập
         async function autoFillCustomerInfo() {
           try {
@@ -1897,10 +1972,14 @@
             const data = await response.json();
             if (data.success && data.user) {
               const user = data.user;
-            if (user.hovaten) $('#customerName').val(user.hovaten);
-            if (user.sodienthoai) $('#customerPhone').val(user.sodienthoai);
-            if (user.email) $('#customerEmail').val(user.email);
-            if (user.diachi) $('#customerAddress').val(user.diachi);
+              if (user.hovaten) $('#customerName').val(user.hovaten);
+              if (user.sodienthoai) $('#customerPhone').val(user.sodienthoai);
+              if (user.email) $('#customerEmail').val(user.email);
+              if (user.diachi) {
+                $('#customerAddress').val(user.diachi);
+                // [Thêm mới] Tự động lookup địa chỉ và focus bản đồ khi gán từ session
+                lookupAndFocusAddress(user.diachi);
+              }
               // Tự động thu gọn nếu đã điền xong thông tin cơ bản và chưa bị thu gọn
               if (user.hovaten && user.sodienthoai) {
                 const box = document.getElementById('customerInfoBox');
@@ -2453,42 +2532,8 @@
           backBtn.prop('disabled', true);
 
           try {
-            var anhId = window._uploadedPhotoIds ? window._uploadedPhotoIds.join(',') : '';
-            var videoId = window._uploadedVideoIds ? window._uploadedVideoIds.join(',') : '';
-
-            try {
-              if (window._pendingPhotoFiles && window._pendingPhotoFiles.length) {
-                saveBtn.html('Đang upload ảnh...');
-                var photoIds = await uploadFilesToDrive(window._pendingPhotoFiles);
-                if (photoIds.length) anhId = (anhId ? anhId + ',' : '') + photoIds.join(',');
-                window._uploadedPhotoIds = (window._uploadedPhotoIds || []).concat(photoIds);
-                window._pendingPhotoFiles = [];
-              }
-              if (window._pendingVideoFiles && window._pendingVideoFiles.length) {
-                saveBtn.html('Đang upload video...');
-                var videoIds = await uploadFilesToDrive(window._pendingVideoFiles);
-                if (videoIds.length) videoId = (videoId ? videoId + ',' : '') + videoIds.join(',');
-                window._uploadedVideoIds = (window._uploadedVideoIds || []).concat(videoIds);
-                window._pendingVideoFiles = [];
-              }
-            } catch (uploadErr) {
-              console.warn('Lỗi upload file nhưng vẫn tiếp tục lưu DB:', uploadErr);
-            }
-
-            data.anh_id = anhId;
-            data.video_id = videoId;
-            saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...');
-
-            var sheetErrorMessage = '';
-
-            try {
-              var sheetResult = await saveBookingToGoogleSheet(data);
-              sheetErrorMessage = getSheetErrorMessage(sheetResult);
-            } catch (sheetErr) {
-              sheetErrorMessage = (sheetErr && sheetErr.message) || 'Không thể kết nối Google Sheet.';
-              console.warn('Lỗi lưu Google Sheet, tiếp tục lưu cơ sở dữ liệu:', sheetErr);
-            }
-
+            // 1. Lưu DATABASE trước để lấy Mã Đơn Hàng (orderId)
+            saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Khởi tạo đơn hàng...');
             var dbResult = null;
             try {
               dbResult = await saveBookingToDatabase(data);
@@ -2500,6 +2545,59 @@
 
             if (!isKrudSuccess(dbResult)) {
               throw new Error((dbResult && dbResult.message) || 'Lưu dữ liệu đặt lịch thất bại.');
+            }
+
+            var orderId = dbResult.id || (dbResult.data && dbResult.data.id) || dbResult.last_id || 0;
+            if (!orderId || orderId === 0) {
+              console.error('Lỗi: Không lấy được ID đơn hàng từ phản hồi:', dbResult);
+              throw new Error('Lỗi hệ thống: Không thể khởi tạo mã đơn hàng. Vui lòng liên hệ quản trị viên.');
+            }
+            var serviceName = data.service || 'DichVu';
+
+            // 2. Upload Ảnh/Video với tên file theo cấu trúc yêu cầu
+            var anhId = window._uploadedPhotoIds ? window._uploadedPhotoIds.join(',') : '';
+            var videoId = window._uploadedVideoIds ? window._uploadedVideoIds.join(',') : '';
+
+            try {
+              if (window._pendingPhotoFiles && window._pendingPhotoFiles.length) {
+                saveBtn.html('Đang upload ảnh...');
+                var photoIds = await uploadFilesToDrive(window._pendingPhotoFiles, orderId, serviceName);
+                if (photoIds.length) anhId = (anhId ? anhId + ',' : '') + photoIds.join(',');
+                window._uploadedPhotoIds = (window._uploadedPhotoIds || []).concat(photoIds);
+                window._pendingPhotoFiles = [];
+              }
+              if (window._pendingVideoFiles && window._pendingVideoFiles.length) {
+                saveBtn.html('Đang upload video...');
+                var videoIds = await uploadFilesToDrive(window._pendingVideoFiles, orderId, serviceName);
+                if (videoIds.length) videoId = (videoId ? videoId + ',' : '') + videoIds.join(',');
+                window._uploadedVideoIds = (window._uploadedVideoIds || []).concat(videoIds);
+                window._pendingVideoFiles = [];
+              }
+            } catch (uploadErr) {
+              console.warn('Lỗi upload file nhưng vẫn tiếp tục:', uploadErr);
+            }
+
+            data.anh_id = anhId;
+            data.video_id = videoId;
+
+            // 3. Cập nhật lại file IDs vào DB nếu có upload mới
+            if (anhId || videoId) {
+              try {
+                await krud('update', 'datlich_donvesinh', { anh_id: anhId, video_id: videoId }, orderId);
+              } catch (updateErr) {
+                console.warn('Lỗi cập nhật IDs vào DB:', updateErr);
+              }
+            }
+
+            // 4. Lưu Google Sheet
+            saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang đồng bộ Sheet...');
+            var sheetErrorMessage = '';
+            try {
+              var sheetResult = await saveBookingToGoogleSheet(data);
+              sheetErrorMessage = getSheetErrorMessage(sheetResult);
+            } catch (sheetErr) {
+              sheetErrorMessage = (sheetErr && sheetErr.message) || 'Không thể kết nối Google Sheet.';
+              console.warn('Lỗi lưu Google Sheet:', sheetErr);
             }
 
             PENDING_BOOKING_DATA = null;
@@ -2759,25 +2857,34 @@
           updateTotalPrice();
         });
 
-        $('#capturePhotoBtn').on('click', function () {
-          $('#quickPhotoInput').trigger('click');
-        });
+        // [LOẠI BỎ] Xóa các handler onclick cũ đã được thay bằng handleMediaClick trực tiếp trong HTML
 
-        $('#recordVideoBtn').on('click', function () {
-          $('#quickVideoInput').trigger('click');
-        });
 
         window._pendingPhotoFiles = [];
         window._pendingVideoFiles = [];
         window._uploadedPhotoIds = [];
         window._uploadedVideoIds = [];
 
-        async function uploadFilesToDrive(files) {
+        async function uploadFilesToDrive(files, orderId, serviceName) {
           var ids = [];
+          var timeStr = Date.now();
+          var orderIdPadded = String(orderId || '0').padStart(7, '0');
+          // Chuyển tên dịch vụ về dạng không dấu và bỏ ký tự đặc biệt để làm tên file an toàn
+          var cleanServiceName = (serviceName || 'DichVu')
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[./\s]/g, '_').replace(/_+/g, '_');
+
           for (var i = 0; i < files.length; i++) {
+            var originalName = files[i].name;
+            var extension = originalName.split('.').pop();
+            var fileNameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
+
+            // Cấu trúc: madonhang_tendichvu_thoigiaupload_tenhinh.ext
+            var newName = orderIdPadded + '_' + cleanServiceName + '_' + timeStr + '_' + fileNameWithoutExt + '.' + extension;
+
             var fd = new FormData();
             fd.append('file', files[i]);
-            fd.append('name', 'booking_' + Date.now() + '_' + files[i].name);
+            fd.append('name', newName);
             try {
               var res = await fetch('upload.php', { method: 'POST', body: fd });
               var data = await res.json();
@@ -2788,33 +2895,192 @@
           return ids;
         }
 
-        $('#quickPhotoInput').on('change', async function () {
+        $('#quickPhotoInput').on('change', function () {
           var files = Array.from(this.files);
           if (!files.length) return;
           appendQuickFiles(files, 'image');
           this.value = '';
 
           files.forEach(function (f) { window._pendingPhotoFiles.push(f); });
-          $('#uploadStatusMsg').text('Đang upload ' + files.length + ' ảnh lên Drive...');
-          var ids = await uploadFilesToDrive(files);
-          window._uploadedPhotoIds = window._uploadedPhotoIds.concat(ids);
-          window._pendingPhotoFiles = [];
-          $('#uploadStatusMsg').text(ids.length ? '✅ Upload ' + ids.length + ' ảnh thành công.' : '⚠️ Upload ảnh thất bại, sẽ thử lại khi xác nhận.');
+          $('#uploadStatusMsg').text('Đã thêm ' + files.length + ' ảnh (sẽ upload khi xác nhận).');
         });
 
-        $('#quickVideoInput').on('change', async function () {
+        $('#quickVideoInput').on('change', function () {
           var files = Array.from(this.files);
           if (!files.length) return;
           appendQuickFiles(files, 'video');
           this.value = '';
 
           files.forEach(function (f) { window._pendingVideoFiles.push(f); });
-          $('#uploadStatusMsg').text('Đang upload ' + files.length + ' video lên Drive...');
-          var ids = await uploadFilesToDrive(files);
-          window._uploadedVideoIds = window._uploadedVideoIds.concat(ids);
-          window._pendingVideoFiles = [];
-          $('#uploadStatusMsg').text(ids.length ? '✅ Upload ' + ids.length + ' video thành công.' : '⚠️ Upload video thất bại, sẽ thử lại khi xác nhận.');
+          $('#uploadStatusMsg').text('Đã thêm ' + files.length + ' video (sẽ upload khi xác nhận).');
         });
+
+        // ==========================================
+        // [THÊM MỚI] XỬ LÝ MEDIA (CHỤP/TẢI) THÔNG MINH
+        // ==========================================
+
+        window.handleMediaClick = function (type) {
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+          if (isMobile) {
+            document.getElementById(type === 'photo' ? 'quickPhotoInput' : 'quickVideoInput').click();
+          } else {
+            showMediaChoiceModal(type);
+          }
+        };
+
+        function showMediaChoiceModal(type) {
+          const modalId = 'mediaChoiceModal';
+          let modalEl = document.getElementById(modalId);
+          if (!modalEl) {
+            const html = `
+            <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow rounded-4">
+                  <div class="modal-header border-0 pb-0">
+                    <h6 class="modal-title fw-bold" style="color:#007bff">Chọn phương thức</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body d-grid gap-2 p-4">
+                    <button id="choiceCameraBtn" class="btn btn-outline-primary rounded-pill fw-bold">
+                      <i class="fas fa-camera me-2"></i>Dùng Máy Ảnh
+                    </button>
+                    <button id="choiceFileBtn" class="btn btn-outline-secondary rounded-pill fw-bold">
+                      <i class="fas fa-folder-open me-2"></i>Chọn Từ Tệp
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
+            modalEl = document.getElementById(modalId);
+          }
+
+          const modal = new bootstrap.Modal(modalEl);
+          document.getElementById('choiceFileBtn').onclick = () => {
+            modal.hide();
+            document.getElementById(type === 'photo' ? 'quickPhotoInput' : 'quickVideoInput').click();
+          };
+          document.getElementById('choiceCameraBtn').onclick = () => {
+            modal.hide();
+            openCameraModal(type);
+          };
+          modal.show();
+        }
+
+        let cameraStream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
+        function openCameraModal(type) {
+          const modalId = 'cameraCaptureModal';
+          let modalEl = document.getElementById(modalId);
+          if (!modalEl) {
+            const html = `
+            <div class="modal fade" id="${modalId}" tabindex="-1" data-bs-backdrop="static">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+                  <div class="modal-header bg-dark text-white border-0">
+                    <h6 class="modal-title"><i class="fas fa-camera me-2"></i>Máy ảnh trực tiếp</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body p-0 bg-black position-relative" style="min-height: 300px;">
+                    <video id="cameraVideo" autoplay playsinline style="width:100%; display:block;"></video>
+                    <canvas id="cameraCanvas" style="display:none;"></canvas>
+                    <div id="recordingIndicator" class="position-absolute top-0 start-0 m-3 d-none">
+                      <span class="badge rounded-pill bg-danger"><i class="fas fa-circle me-1"></i>REC</span>
+                    </div>
+                  </div>
+                  <div class="modal-footer justify-content-center border-0 bg-dark p-3">
+                    <button id="takeSnapshotBtn" class="btn btn-light rounded-pill px-4 fw-bold">
+                      <i class="fas fa-camera me-2"></i>Chụp ảnh
+                    </button>
+                    <button id="startRecordBtn" class="btn btn-outline-danger rounded-pill px-4 fw-bold">
+                      <i class="fas fa-video me-2"></i>Bắt đầu quay
+                    </button>
+                    <button id="stopRecordBtn" class="btn btn-danger rounded-pill px-4 fw-bold d-none">
+                      <i class="fas fa-stop me-2"></i>Dừng quay
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
+            modalEl = document.getElementById(modalId);
+            modalEl.addEventListener('hidden.bs.modal', stopCamera);
+          }
+
+          const modal = new bootstrap.Modal(modalEl);
+          const video = document.getElementById('cameraVideo');
+          const takeBtn = document.getElementById('takeSnapshotBtn');
+          const startBtn = document.getElementById('startRecordBtn');
+          const stopBtn = document.getElementById('stopRecordBtn');
+          const indicator = document.getElementById('recordingIndicator');
+
+          takeBtn.classList.toggle('d-none', type !== 'photo');
+          startBtn.classList.toggle('d-none', type !== 'video');
+          stopBtn.classList.add('d-none');
+          indicator.classList.add('d-none');
+
+          navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' },
+            audio: type === 'video'
+          })
+            .then(stream => {
+              cameraStream = stream;
+              video.srcObject = stream;
+              modal.show();
+            })
+            .catch(err => {
+              console.error("Camera error:", err);
+              alert("Không thể truy cập máy ảnh. Vui lòng kiểm tra quyền truy cập.");
+            });
+
+          takeBtn.onclick = () => {
+            const canvas = document.getElementById('cameraCanvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.toBlob(blob => {
+              const file = new File([blob], `capture_${Date.now()}.jpg`, { type: 'image/jpeg' });
+              appendQuickFiles([file], 'image');
+              window._pendingPhotoFiles.push(file);
+              $('#uploadStatusMsg').text('Đã chụp 1 ảnh (sẽ upload khi xác nhận).');
+              modal.hide();
+            }, 'image/jpeg', 0.9);
+          };
+
+          startBtn.onclick = () => {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(cameraStream);
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+              const blob = new Blob(recordedChunks, { type: 'video/webm' });
+              const file = new File([blob], `record_${Date.now()}.webm`, { type: 'video/webm' });
+              appendQuickFiles([file], 'video');
+              window._pendingVideoFiles.push(file);
+              $('#uploadStatusMsg').text('Đã quay 1 video (sẽ upload khi xác nhận).');
+            };
+            mediaRecorder.start();
+            startBtn.classList.add('d-none');
+            stopBtn.classList.remove('d-none');
+            indicator.classList.remove('d-none');
+          };
+
+          stopBtn.onclick = () => {
+            mediaRecorder.stop();
+            modal.hide();
+          };
+        }
+
+        function stopCamera() {
+          if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+          }
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+          }
+        }
 
         $('#btnResetBooking').on('click', function () {
           $('#bookingForm')[0].reset();

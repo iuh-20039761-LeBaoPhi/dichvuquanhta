@@ -133,13 +133,13 @@ body {
 }
 
 .admin-header__inner {
-    width: min(1400px, calc(100% - 40px));
+    width: min(1400px, calc(100% - 32px));
     margin: 0 auto;
-    height: 80px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 16px;
 }
 
 .admin-brand {
@@ -169,22 +169,42 @@ body {
     display: flex;
     flex: 1 1 auto;
     justify-content: center;
-    gap: 8px;
+    gap: 2px;
     min-width: 0;
+    padding: 4px;
+    border-radius: 14px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide scrollbar for clean look */
+    -ms-overflow-style: none;
 }
+.admin-nav::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+
 .admin-nav a {
-    color: rgba(255, 255, 255, 0.7);
-    padding: 10px 18px;
-    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    padding: 8px 12px;
+    border-radius: 10px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 12.5px;
     text-decoration: none;
     white-space: nowrap;
     transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
 }
-.admin-nav a:hover, .admin-nav a.is-active {
+.admin-nav a i {
+    font-size: 14px;
+    opacity: 0.7;
+}
+.admin-nav a:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.07);
+}
+.admin-nav a.is-active {
+    color: #fff;
+    background: var(--primary);
+    box-shadow: 0 4px 12px rgba(194, 122, 77, 0.4);
 }
 
 .admin-header__actions {
@@ -264,6 +284,7 @@ body {
     letter-spacing: -0.04em;
     background: linear-gradient(135deg, var(--slate), var(--primary));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -538,17 +559,22 @@ tr:hover td { background: var(--primary-soft); }
 }
 
 /* Responsive Grid to Cards */
+@media (max-width: 1250px) {
+    .admin-nav a span { display: none; }
+    .admin-nav a { padding: 10px; }
+    .admin-nav a i { font-size: 18px; margin: 0; }
+}
+
 @media (max-width: 980px) {
     .admin-header__inner {
         height: auto;
-        min-height: 80px;
+        min-height: 70px;
         flex-wrap: wrap;
-        padding: 14px 0;
+        padding: 12px 0;
+        gap: 12px;
     }
 
-    .admin-brand {
-        flex: 1 1 auto;
-    }
+    .admin-brand { flex: 1; }
 
     .admin-nav {
         order: 3;
@@ -556,13 +582,19 @@ tr:hover td { background: var(--primary-soft); }
         flex: 1 0 100%;
         justify-content: flex-start;
         overflow-x: auto;
-        padding-bottom: 2px;
-        scrollbar-width: thin;
+        padding: 4px 0;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        scrollbar-width: none;
     }
+    .admin-nav::-webkit-scrollbar { display: none; }
 
     .admin-nav a {
-        padding: 9px 14px;
+        padding: 8px 14px;
+        font-size: 13px;
     }
+    .admin-nav a span { display: inline; }
 
     .section-header {
         flex-direction: column;
@@ -992,56 +1024,67 @@ tr:hover .vehicle-icon-circle {
 /* Service Tabs Navigation */
 .pricing-tabs-nav {
     display: flex;
-    gap: 8px;
-    margin-bottom: 24px;
-    padding: 8px;
-    background: var(--glass);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
+    gap: 12px;
+    margin-bottom: 32px;
+    padding: 12px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 24px;
     box-shadow: var(--shadow-premium);
 }
 
 .pricing-tab-btn {
     flex: 1;
-    padding: 12px 20px;
-    border: none;
-    background: transparent;
+    padding: 16px 24px;
+    border: 1px solid transparent;
+    background: var(--slate-soft);
     color: var(--slate-light);
     font-weight: 700;
-    font-size: 14px;
-    border-radius: 12px;
+    font-size: 15px;
+    border-radius: 18px;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
+}
+
+.pricing-tab-btn i {
+    font-size: 20px;
+    transition: var(--transition);
 }
 
 .pricing-tab-btn:hover {
-    background: var(--slate-soft);
-    color: var(--slate);
+    background: white;
+    border-color: var(--primary-soft);
+    color: var(--primary);
+    transform: translateY(-2px);
 }
 
 .pricing-tab-btn.is-active {
-    background: white;
+    background: linear-gradient(135deg, white, var(--primary-soft));
     color: var(--primary-deep);
-    box-shadow: var(--shadow-premium);
-    transform: scale(1.02);
+    border-color: var(--primary);
+    box-shadow: 0 10px 20px -5px rgba(194, 122, 77, 0.2);
+    transform: translateY(-4px);
 }
 
 .pricing-tab-btn .badge {
-    background: var(--slate-soft);
+    background: rgba(30, 41, 59, 0.05);
     color: var(--slate-light);
     font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-top: 4px;
+    border: 1px solid transparent;
 }
 
 .pricing-tab-btn.is-active .badge {
-    background: var(--primary-soft);
-    color: var(--primary);
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 6px rgba(194, 122, 77, 0.3);
 }
 
 /* Visibility Control for Tabs */

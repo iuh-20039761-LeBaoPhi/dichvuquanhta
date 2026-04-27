@@ -65,7 +65,8 @@ import core from "./core/app-core.js";
     if (!grid) return;
 
     try {
-      const resp = await fetch(core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json"));
+      const jsonUrl = core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json");
+      const resp = await fetch(`${jsonUrl}?v=${new Date().getTime()}`);
       if (!resp.ok) throw new Error("Thất bại khi tải file JSON");
       const data = await resp.json();
 

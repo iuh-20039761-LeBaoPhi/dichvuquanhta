@@ -214,29 +214,52 @@
                 margin: 12px auto !important;
             }
 
+            /* iPad / Tablet (4 items per row) */
             .other-service-item {
-                padding: 0.75rem 0.25rem;
-                border-radius: 12px;
+                padding: 1rem 0.5rem;
+                border-radius: 16px;
             }
 
             .other-service-icon {
-                width: 36px;
-                height: 36px;
-                font-size: 1rem;
-                margin-bottom: 0.4rem;
-                border-radius: 8px;
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+                margin-bottom: 0.6rem;
+                border-radius: 10px;
             }
 
             .other-service-name {
-                font-size: 0.75rem;
+                font-size: 0.85rem;
             }
 
-            .other-services-section .row.g-4 {
-                gap: 0.75rem !important;
-            }
+            /* Mobile (3 items per row) */
+            @media (max-width: 575.98px) {
+                .other-service-item {
+                    padding: 0.6rem 0.15rem;
+                    border-radius: 10px;
+                }
 
-            .other-services-section .col {
-                padding: 0 0.375rem !important;
+                .other-service-icon {
+                    width: 32px;
+                    height: 32px;
+                    font-size: 0.9rem;
+                    margin-bottom: 0.3rem;
+                    border-radius: 6px;
+                }
+
+                .other-service-name {
+                    font-size: 0.68rem;
+                    letter-spacing: -0.02em;
+                }
+
+                .other-services-section .row {
+                    gap: 0 !important;
+                }
+
+                .other-services-section .col {
+                    padding: 0 0.2rem !important;
+                    margin-bottom: 0.75rem;
+                }
             }
         }
     </style>
@@ -300,7 +323,7 @@
                 <div style="width: 50px; height: 3px; background-color: #f06292; margin: 20px auto;"></div>
             </div>
 
-            <div class="row g-4 row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 justify-content-center">
+            <div class="row g-2 g-md-4 row-cols-3 row-cols-md-4 row-cols-lg-4 row-cols-xl-6 justify-content-center">
 
                 <!-- Lau Dọn Vệ Sinh -->
                 <!-- <div class="col d-flex">

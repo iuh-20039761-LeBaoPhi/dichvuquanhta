@@ -40,18 +40,18 @@ const partialPaths = {
   };
 
   const SERVICE_PRICING_ID_MAP = {
-    chuyen_nha: "moving_house",
-    chuyen_van_phong: "moving_office",
-    chuyen_kho_bai: "moving_warehouse",
+    chuyen_nha: "chuyen_nha",
+    chuyen_van_phong: "chuyen_van_phong",
+    chuyen_kho_bai: "chuyen_kho_bai",
   };
 
   const PRICING_DATA_SERVICE_ID_MAP = {
-    chuyen_nha: "moving_house",
-    chuyen_van_phong: "moving_office",
-    chuyen_kho_bai: "moving_warehouse",
-    moving_house: "moving_house",
-    moving_office: "moving_office",
-    moving_warehouse: "moving_warehouse",
+    chuyen_nha: "chuyen_nha",
+    chuyen_van_phong: "chuyen_van_phong",
+    chuyen_kho_bai: "chuyen_kho_bai",
+    moving_house: "chuyen_nha",
+    moving_office: "chuyen_van_phong",
+    moving_warehouse: "chuyen_kho_bai",
   };
 
   const bookingVehicleFallbackOptions = {
@@ -109,6 +109,7 @@ const partialPaths = {
       .replace(/'/g, "&#039;");
   }
 
+
   function onReady(fn) {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", fn, { once: true });
@@ -140,9 +141,8 @@ const partialPaths = {
 
   function loadPricingReference() {
     if (!pricingReferencePromise) {
-      pricingReferencePromise = fetch(
-        core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json"),
-      )
+      const jsonUrl = core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json");
+      pricingReferencePromise = fetch(`${jsonUrl}?v=${new Date().getTime()}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(
@@ -191,6 +191,14 @@ const partialPaths = {
 
   function getSelectedLabel(select) {
     if (!select) return "";
+    if (select.tagName !== "SELECT") {
+      const rawValue = String(select.value || "").trim();
+      const timeMatch = rawValue.match(/^(\d{2}):(\d{2})/);
+      if (timeMatch) {
+        return `${timeMatch[1]}:${timeMatch[2]}`;
+      }
+      return rawValue;
+    }
     const option = select.options[select.selectedIndex];
     return option ? String(option.textContent || "").trim() : "";
   }
@@ -279,10 +287,10 @@ const partialPaths = {
       const normalizedService = Object.entries(SERVICE_PRICING_ID_MAP).find(
         ([, pricingId]) => pricingId === serviceId,
       )?.[0];
-      const vehicleEntries =
-        typeof core.getPricingVehicleEntries === "function"
+      const vehicleEntries = (typeof core.getPricingVehicleEntries === "function"
           ? core.getPricingVehicleEntries(serviceData)
-          : [];
+          : [])
+          .sort((a, b) => (Number(a.thu_tu) || 0) - (Number(b.thu_tu) || 0));
 
       if (!normalizedService || !vehicleEntries.length) return;
 
@@ -768,6 +776,23 @@ const partialPaths = {
     if (value === "toi") return "buoi_toi";
     if (value === "dem") return "ban_dem";
     if (value === "linh_dong") return "can_xac_nhan";
+    if (value === "sang" || value === "chieu") return "binh_thuong";
+
+    const timeMatch = value.match(/^(\d{2}):(\d{2})/);
+    if (timeMatch) {
+      const hours = parseInt(timeMatch[1], 10);
+      const minutes = parseInt(timeMatch[2], 10);
+      const timeInMinutes = hours * 60 + minutes;
+
+      if (timeInMinutes >= 17 * 60 && timeInMinutes < 21 * 60) {
+        return "buoi_toi";
+      }
+      if (timeInMinutes >= 21 * 60 || timeInMinutes < 6 * 60) {
+        return "ban_dem";
+      }
+      return "binh_thuong";
+    }
+
     return "binh_thuong";
   }
 
@@ -801,6 +826,7 @@ const partialPaths = {
       core,
       queryFirst,
       getSelectedLabel,
+      getCheckedLabel,
       getCheckedLabels,
       getCheckedLabelsFromSelectors,
       countFiles,
@@ -1535,6 +1561,23 @@ const partialPaths = {
     initInfoToggles(host);
     initServiceSelect(host);
     initFileInputs(host);
+
+    const dateInput = host.querySelector("#ngay-thuc-hien-dat-lich");
+    const timeInput = host.querySelector("#khung-gio-dat-lich");
+    if (dateInput && timeInput) {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      dateInput.value = `${yyyy}-${mm}-${dd}`;
+      
+      const target = new Date(now.getTime() + 90 * 60000); // +1.5 hours
+      const th = String(target.getHours()).padStart(2, '0');
+      const tm = String(target.getMinutes()).padStart(2, '0');
+      const ts = String(target.getSeconds()).padStart(2, '0');
+      timeInput.value = `${th}:${tm}:${ts}`;
+    }
+
     initBookingFormUi(host);
     await prefillBookingContactFields(host, customerPortalStore || null);
     initFormNotice(host, formType);
