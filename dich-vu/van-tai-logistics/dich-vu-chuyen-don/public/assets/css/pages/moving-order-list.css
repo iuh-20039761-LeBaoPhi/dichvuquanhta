@@ -48,6 +48,10 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
+.mv-orders-stats--6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
 .mv-orders-stat-cell {
   min-width: 0;
 }
@@ -171,23 +175,6 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
     0 0 0 4px rgba(45, 106, 79, 0.08);
 }
 
-.mv-orders-reload-btn {
-  min-height: 46px;
-  border-radius: 999px;
-  border: 0;
-  white-space: nowrap;
-  font-size: 0.85rem;
-  color: #ffffff !important;
-  background: linear-gradient(135deg, var(--mv-orders-primary-strong) 0%, var(--mv-orders-secondary) 100%);
-  box-shadow: 0 12px 24px rgba(27, 67, 50, 0.18);
-}
-
-.mv-orders-reload-btn:hover,
-.mv-orders-reload-btn:focus {
-  background: linear-gradient(135deg, #133023 0%, #24573f 100%);
-  box-shadow: 0 14px 28px rgba(27, 67, 50, 0.24);
-}
-
 .mv-orders-shell .btn-primary {
   border-color: transparent !important;
   color: #ffffff !important;
@@ -202,8 +189,8 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
 }
 
 .mv-orders-tabs-wrap {
-  margin-top: 0.5rem;
-  padding: 0 0.25rem;
+  margin-top: 14px;
+  padding: 0;
 }
 
 .mv-orders-tabs {
@@ -212,10 +199,11 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
   align-items: stretch;
   list-style: none;
   margin: 0;
-  padding: 6px !important;
+  padding: 8px !important;
   border: 1px solid var(--mv-orders-border);
-  border-radius: 16px !important;
-  background: linear-gradient(180deg, #f8fcf9 0%, #f2f8f4 100%) !important;
+  border-radius: 18px !important;
+  background: #f8fbf9 !important;
+  box-shadow: 0 10px 24px rgba(23, 53, 40, 0.06);
   gap: 6px !important;
   font-size: 0.82rem;
 }
@@ -259,19 +247,21 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
 }
 
 .mv-orders-inline-filters {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   align-items: end;
-  justify-content: space-between;
   gap: 12px;
   margin-top: 16px;
-  padding: 0 0.25rem;
+  padding: 14px;
+  border: 1px solid var(--mv-orders-border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(248, 252, 249, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
 }
 
 .mv-orders-inline-filter {
   display: grid;
   gap: 6px;
-  min-width: 220px;
+  min-width: 0;
 }
 
 .mv-orders-inline-filter span {
@@ -280,7 +270,8 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
   font-weight: 700;
 }
 
-.mv-orders-inline-filter select {
+.mv-orders-inline-filter select,
+.mv-orders-inline-filter input {
   min-height: 44px;
   border: 1px solid var(--mv-orders-border-strong);
   border-radius: 14px;
@@ -290,7 +281,8 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
   outline: none;
 }
 
-.mv-orders-inline-filter select:focus {
+.mv-orders-inline-filter select:focus,
+.mv-orders-inline-filter input:focus {
   border-color: rgba(45, 106, 79, 0.45);
   box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.08);
 }
@@ -303,6 +295,8 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
   color: var(--mv-orders-primary) !important;
   font-weight: 700 !important;
   padding-inline: 18px !important;
+  justify-self: start;
+  align-self: end;
 }
 
 .mv-orders-secondary-btn:hover,
@@ -482,7 +476,8 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
 @media (max-width: 768px) {
   .mv-orders-stats,
   .mv-orders-stats--4,
-  .mv-orders-stats--5 {
+  .mv-orders-stats--5,
+  .mv-orders-stats--6 {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -500,8 +495,7 @@ body[data-page="provider-jobs"] .customer-portal-page-main {
   }
 
   .mv-orders-inline-filters {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr;
   }
 
   .mv-orders-inline-filter {
