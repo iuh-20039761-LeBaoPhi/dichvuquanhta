@@ -6,8 +6,8 @@ require_once __DIR__ . '/admin_api_common.php';
 
 $admin = admin_require_login();
 
-// Lấy danh sách phụ thu
-$data  = admin_api_list_table('phu_thu_dac_biet');
+// Lấy danh sách dịch vụ chăm sóc vườn
+$data  = admin_api_list_table('cham_soc_vuon');
 $rows  = $data['rows'] ?? [];
 $error = $data['error'] ?? '';
 
@@ -46,51 +46,68 @@ function pt_val(array $row, string $key, string $default = ''): string
 
 function pt_loai_label(string $loai): string
 {
-    return $loai === 'le' ? 'Ngày lễ' : ($loai === 'dem' ? 'Ca đêm' : $loai);
+    return $loai === 'dinh_ky' ? 'Định kỳ' : ($loai === 'dot_xuat' ? 'Đột xuất' : $loai);
 }
 
-admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
+admin_render_layout_start('Quản Lý Chăm Sóc Vườn', 'cham_soc_vuon', $admin);
 ?>
 
 <style>
+    /* Đổi tông màu sang Xanh lá cây & Nâu đất */
+    :root {
+        --garden-green: #15803d;
+        --garden-light-green: #dcfce7;
+        --garden-dark: #064e3b;
+        --garden-accent: #a16207;
+    }
     .pt-page-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px; }
-    table th { white-space:nowrap !important; vertical-align:middle !important; }
+    table th { white-space:nowrap !important; vertical-align:middle !important; background-color: #f0fdf4 !important; }
     table td { vertical-align:middle !important; }
     .action-buttons { display:flex; gap:0.4rem; justify-content:flex-end; align-items:center; }
     .action-buttons .btn { min-width:32px; padding:0.25rem 0.45rem; display:flex; align-items:center; justify-content:center; }
-    .pt-form-card { border-left:4px solid #ec4899 !important; }
-    .pt-view-card { border-left:4px solid #db2777 !important; }
-    .form-label { font-weight:700; color:#831843; font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
-    .loai-badge-le  { background:#fce7f3; color:#be185d; border-radius:6px; padding:2px 8px; font-size:.82rem; font-weight:600; }
-    .loai-badge-dem { background:#ede9fe; color:#6d28d9; border-radius:6px; padding:2px 8px; font-size:.82rem; font-weight:600; }
+    
+    /* Màu sắc Form và Card */
+    .pt-form-card { border-left:4px solid var(--garden-green) !important; }
+    .pt-view-card { border-left:4px solid var(--garden-accent) !important; }
+    
+    .form-label { font-weight:700; color:var(--garden-dark); font-size:0.82rem; text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
+    
+    /* Badge cho trạng thái/loại hình chăm sóc */
+    .loai-badge-dinh_ky  { background:#dcfce7; color:#15803d; border-radius:6px; padding:2px 8px; font-size:.82rem; font-weight:600; }
+    .loai-badge-dot_xuat { background:#fef9c3; color:#a16207; border-radius:6px; padding:2px 8px; font-size:.82rem; font-weight:600; }
+    
     .info-row { display:flex; gap:8px; align-items:baseline; margin-bottom:4px; }
-    .info-label { font-weight:700; color:#831843; min-width:130px; font-size:.85rem; }
-    .info-val { color:#4a044e; font-size:.9rem; }
-    .view-modal-header { background:linear-gradient(90deg,#ec4899,#db2777); color:#fff; border-radius:10px 10px 0 0; padding:14px 18px; }
-    .percent-badge { background:#fff5f7; border:1px solid #fce7f3; color:#be185d; font-weight:700; border-radius:8px; padding:2px 10px; font-size:.9rem; }
-    @media(max-width:767px){ .pt-mobile-card{ background:#fff; border-radius:12px; border:1px solid #fce7f3; padding:12px; margin-bottom:10px; box-shadow:0 2px 6px rgba(131,24,67,.06); } }
+    .info-label { font-weight:700; color:var(--garden-dark); min-width:130px; font-size:.85rem; }
+    .info-val { color:#14532d; font-size:.9rem; }
+    
+    .view-modal-header { background:linear-gradient(90deg, var(--garden-green), var(--garden-dark)); color:#fff; border-radius:10px 10px 0 0; padding:14px 18px; }
+    .percent-badge { background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; font-weight:700; border-radius:8px; padding:2px 10px; font-size:.9rem; }
+    
+    .btn-primary { background-color: var(--garden-green); border-color: var(--garden-green); }
+    .btn-primary:hover { background-color: var(--garden-dark); border-color: var(--garden-dark); }
+    
+    @media(max-width:767px){ .pt-mobile-card{ background:#fff; border-radius:12px; border:1px solid #dcfce7; padding:12px; margin-bottom:10px; box-shadow:0 2px 6px rgba(21,128,61,.06); } }
 </style>
 
 <div class="pt-page-header">
-    <h2 class="h4 mb-0 fw-bold">Quản lý Phụ Thu Đặc Biệt</h2>
+    <h2 class="h4 mb-0 fw-bold text-success"><i class="bi bi-tree-fill me-2"></i>Quản lý Dịch Vụ Vườn</h2>
     <?php if (!$showForm): ?>
-        <a href="?them=1" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Thêm phụ thu</a>
+        <a href="?them=1" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Thêm dịch vụ</a>
     <?php else: ?>
         <a href="quan-ly-phu-thu.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Quay lại</a>
     <?php endif; ?>
 </div>
 
 <?php if ($flashMsg !== ''): ?>
-    <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2 mb-3"><?= admin_h($flashMsg) ?></div>
+    <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2 mb-3 border-0 shadow-sm"><?= admin_h($flashMsg) ?></div>
 <?php endif; ?>
 
-<!-- ===================== FORM THÊM / SỬA ===================== -->
 <?php if ($showForm): ?>
 <div class="card border-0 shadow-sm pt-form-card mb-4">
     <div class="card-header bg-white py-2 border-bottom">
         <h6 class="mb-0 fw-bold">
             <i class="bi bi-<?= $editId > 0 ? 'pencil-square text-warning' : 'plus-circle-fill text-success' ?> me-2"></i>
-            <?= $editId > 0 ? 'Chỉnh sửa phụ thu #' . $editId : 'Thêm phụ thu mới' ?>
+            <?= $editId > 0 ? 'Chỉnh sửa dịch vụ #' . $editId : 'Đăng ký dịch vụ chăm sóc mới' ?>
         </h6>
     </div>
     <div class="card-body p-3">
@@ -101,67 +118,62 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
             <?php endif; ?>
 
             <div class="row g-3">
-                <!-- Tên -->
                 <div class="col-md-5">
-                    <label class="form-label">Tên <span class="text-danger">*</span></label>
+                    <label class="form-label">Tên dịch vụ <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" name="ten" required
-                        value="<?= pt_val($editRow, 'ten') ?>" placeholder="VD: Quốc khánh, Ca đêm...">
+                        value="<?= pt_val($editRow, 'ten') ?>" placeholder="VD: Cắt cỏ bãi trước, Bón phân...">
                 </div>
 
-                <!-- Loại -->
                 <div class="col-md-3">
-                    <label class="form-label">Loại <span class="text-danger">*</span></label>
+                    <label class="form-label">Loại hình <span class="text-danger">*</span></label>
                     <select class="form-select" name="loai" id="selLoai" onchange="toggleLoai(this.value)">
-                        <option value="le"  <?= ($editRow['loai'] ?? 'le') === 'le'  ? 'selected' : '' ?>>Ngày lễ</option>
-                        <option value="dem" <?= ($editRow['loai'] ?? '') === 'dem' ? 'selected' : '' ?>>Ca đêm</option>
+                        <option value="dinh_ky"  <?= ($editRow['loai'] ?? 'dinh_ky') === 'dinh_ky'  ? 'selected' : '' ?>>Chăm sóc định kỳ</option>
+                        <option value="dot_xuat" <?= ($editRow['loai'] ?? '') === 'dot_xuat' ? 'selected' : '' ?>>Yêu cầu đột xuất</option>
                     </select>
                 </div>
 
-                <!-- % Phụ thu -->
                 <div class="col-md-2">
-                    <label class="form-label">Phụ thu (%)</label>
+                    <label class="form-label">Phí thêm (%)</label>
                     <input type="number" class="form-control" name="phu_thu_percent" min="0" step="0.01"
                         value="<?= pt_val($editRow, 'phu_thu_percent', '0') ?>">
                 </div>
 
-                <!-- Mô tả -->
                 <div class="col-md-2">
-                    <label class="form-label">Mô tả</label>
+                    <label class="form-label">Ghi chú nhanh</label>
                     <input type="text" class="form-control" name="mo_ta"
-                        value="<?= pt_val($editRow, 'mo_ta') ?>" placeholder="Ghi chú...">
+                        value="<?= pt_val($editRow, 'mo_ta') ?>" placeholder="Yêu cầu riêng...">
                 </div>
 
-                <!-- Nhóm Ngày lễ -->
                 <div class="col-12" id="grpNgayLe" style="display:none;">
                     <div class="row g-2">
+                        <div class="col-md-4">
+                            <div class="alert alert-info py-2 mb-0 small">Thiết lập ngày thực hiện trong tháng (VD: Ngày 15 hàng tháng)</div>
+                        </div>
                         <div class="col-md-2">
-                            <label class="form-label">Ngày</label>
+                            <label class="form-label">Ngày thực hiện</label>
                             <input type="number" class="form-control" name="ngay" min="1" max="31"
-                                value="<?= pt_val($editRow, 'ngay') ?>" placeholder="VD: 2">
+                                value="<?= pt_val($editRow, 'ngay') ?>" placeholder="VD: 5">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Tháng</label>
+                            <label class="form-label">Tháng bắt đầu</label>
                             <input type="number" class="form-control" name="thang" min="1" max="12"
-                                value="<?= pt_val($editRow, 'thang') ?>" placeholder="VD: 9">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Năm (tùy chọn)</label>
-                            <input type="number" class="form-control" name="nam" min="2000" max="2100"
-                                value="<?= pt_val($editRow, 'nam') ?>" placeholder="NULL = mọi năm">
+                                value="<?= pt_val($editRow, 'thang') ?>" placeholder="1-12">
                         </div>
                     </div>
                 </div>
 
-                <!-- Nhóm Ca đêm -->
                 <div class="col-12" id="grpCaDem" style="display:none;">
                     <div class="row g-2">
+                        <div class="col-md-4">
+                            <div class="alert alert-warning py-2 mb-0 small">Khung giờ thợ có thể đến xử lý</div>
+                        </div>
                         <div class="col-md-3">
-                            <label class="form-label">Giờ bắt đầu</label>
+                            <label class="form-label">Từ lúc</label>
                             <input type="time" class="form-control" name="gio_bat_dau"
                                 value="<?= pt_val($editRow, 'gio_bat_dau') ?>">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Giờ kết thúc</label>
+                            <label class="form-label">Đến lúc</label>
                             <input type="time" class="form-control" name="gio_ket_thuc"
                                 value="<?= pt_val($editRow, 'gio_ket_thuc') ?>">
                         </div>
@@ -170,10 +182,10 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
             </div>
 
             <div class="d-flex gap-2 mt-3 justify-content-end">
-                <a href="quan-ly-phu-thu.php" class="btn btn-light border">Hủy</a>
-                <button type="submit" class="btn btn-<?= $editId > 0 ? 'warning' : 'success' ?> px-4 fw-bold">
-                    <i class="bi bi-<?= $editId > 0 ? 'check2-circle' : 'plus-circle-fill' ?> me-1"></i>
-                    <?= $editId > 0 ? 'Cập nhật' : 'Lưu phụ thu' ?>
+                <a href="quan-ly-phu-thu.php" class="btn btn-light border">Hủy bỏ</a>
+                <button type="submit" class="btn btn-<?= $editId > 0 ? 'warning' : 'success' ?> px-4 fw-bold shadow-sm text-white">
+                    <i class="bi bi-<?= $editId > 0 ? 'check2-circle' : 'save' ?> me-1"></i>
+                    <?= $editId > 0 ? 'Cập nhật dịch vụ' : 'Lưu thông tin vườn' ?>
                 </button>
             </div>
         </form>
@@ -181,102 +193,97 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
 </div>
 <?php endif; ?>
 
-<!-- ===================== MODAL XEM CHI TIẾT ===================== -->
 <?php if ($viewId > 0 && !empty($viewRow)): ?>
 <div class="card border-0 shadow-sm pt-view-card mb-4">
     <div class="view-modal-header d-flex justify-content-between align-items-center">
-        <span class="fw-bold fs-6"><i class="bi bi-eye-fill me-2"></i>Chi tiết phụ thu #<?= $viewId ?></span>
-        <a href="quan-ly-phu-thu.php" class="btn btn-sm btn-light py-0 px-2">✕ Đóng</a>
+        <span class="fw-bold fs-6"><i class="bi bi-search me-2"></i>Chi tiết công việc #<?= $viewId ?></span>
+        <a href="quan-ly-phu-thu.php" class="btn btn-sm btn-light py-0 px-2 text-dark">✕ Đóng</a>
     </div>
     <div class="card-body p-3">
         <div class="row g-3">
             <div class="col-md-6">
-                <div class="info-row"><span class="info-label">Tên:</span><span class="info-val fw-bold"><?= pt_val($viewRow, 'ten') ?></span></div>
-                <div class="info-row"><span class="info-label">Loại:</span>
+                <div class="info-row"><span class="info-label">Dịch vụ:</span><span class="info-val fw-bold"><?= pt_val($viewRow, 'ten') ?></span></div>
+                <div class="info-row"><span class="info-label">Loại hình:</span>
                     <span class="loai-badge-<?= admin_h((string)($viewRow['loai'] ?? '')) ?>">
                         <?= pt_loai_label((string)($viewRow['loai'] ?? '')) ?>
                     </span>
                 </div>
-                <div class="info-row"><span class="info-label">Phụ thu:</span><span class="percent-badge"><?= pt_val($viewRow, 'phu_thu_percent') ?>%</span></div>
-                <div class="info-row"><span class="info-label">Mô tả:</span><span class="info-val"><?= pt_val($viewRow, 'mo_ta', '(Không có)') ?></span></div>
+                <div class="info-row"><span class="info-label">Phí bổ sung:</span><span class="percent-badge">+ <?= pt_val($viewRow, 'phu_thu_percent') ?>%</span></div>
+                <div class="info-row"><span class="info-label">Mô tả vườn:</span><span class="info-val"><?= pt_val($viewRow, 'mo_ta', '(Trống)') ?></span></div>
             </div>
             <div class="col-md-6">
-                <?php if (($viewRow['loai'] ?? '') === 'le'): ?>
-                    <div class="info-row"><span class="info-label">Ngày:</span><span class="info-val"><?= pt_val($viewRow, 'ngay', 'NULL') ?></span></div>
-                    <div class="info-row"><span class="info-label">Tháng:</span><span class="info-val"><?= pt_val($viewRow, 'thang', 'NULL') ?></span></div>
-                    <div class="info-row"><span class="info-label">Năm:</span><span class="info-val"><?= pt_val($viewRow, 'nam', 'NULL (mọi năm)') ?></span></div>
+                <?php if (($viewRow['loai'] ?? '') === 'dinh_ky'): ?>
+                    <div class="info-row"><span class="info-label">Ngày hàng tháng:</span><span class="info-val"><?= pt_val($viewRow, 'ngay', 'Chưa chọn') ?></span></div>
+                    <div class="info-row"><span class="info-label">Tháng thực hiện:</span><span class="info-val"><?= pt_val($viewRow, 'thang', 'Hàng tháng') ?></span></div>
                 <?php else: ?>
-                    <div class="info-row"><span class="info-label">Giờ bắt đầu:</span><span class="info-val"><?= pt_val($viewRow, 'gio_bat_dau', 'NULL') ?></span></div>
-                    <div class="info-row"><span class="info-label">Giờ kết thúc:</span><span class="info-val"><?= pt_val($viewRow, 'gio_ket_thuc', 'NULL') ?></span></div>
+                    <div class="info-row"><span class="info-label">Giờ thợ đến:</span><span class="info-val"><?= pt_val($viewRow, 'gio_bat_dau', '--:--') ?></span></div>
+                    <div class="info-row"><span class="info-label">Giờ hoàn tất dự kiến:</span><span class="info-val"><?= pt_val($viewRow, 'gio_ket_thuc', '--:--') ?></span></div>
                 <?php endif; ?>
             </div>
         </div>
         <div class="d-flex gap-2 mt-3 justify-content-end">
-            <a href="?edit_id=<?= $viewId ?>" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square me-1"></i>Sửa</a>
-            <a href="quan-ly-phu-thu.php" class="btn btn-outline-secondary btn-sm">Đóng</a>
+            <a href="?edit_id=<?= $viewId ?>" class="btn btn-warning btn-sm shadow-sm"><i class="bi bi-pencil-square me-1"></i>Chỉnh sửa</a>
+            <a href="quan-ly-phu-thu.php" class="btn btn-outline-secondary btn-sm">Quay lại</a>
         </div>
     </div>
 </div>
 <?php endif; ?>
 
-<!-- ===================== BẢNG DANH SÁCH ===================== -->
-<div class="card border-0 shadow-sm">
+<div class="card border-0 shadow-sm overflow-hidden" style="border-radius:15px;">
     <div class="card-body p-0 p-md-3">
         <?php if ($error !== ''): ?>
             <div class="alert alert-warning m-3"><?= admin_h($error) ?></div>
         <?php elseif (!$rows): ?>
             <div class="text-center py-5 text-secondary">
-                <i class="bi bi-inbox fs-2 d-block mb-2"></i>Chưa có phụ thu nào.
+                <i class="bi bi-flower1 fs-1 d-block mb-2 text-success" style="opacity: 0.3;"></i>Chưa có lịch chăm sóc vườn nào được tạo.
             </div>
         <?php else: ?>
 
-            <!-- Desktop table -->
             <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Tên</th>
-                            <th>Loại</th>
-                            <th>Ngày/Giờ áp dụng</th>
-                            <th>Phụ thu (%)</th>
-                            <th>Mô tả</th>
-                            <th class="text-end">Hành động</th>
+                            <th>Tên Dịch Vụ</th>
+                            <th>Loại Hình</th>
+                            <th>Lịch Trình / Khung Giờ</th>
+                            <th>Phí Thêm (%)</th>
+                            <th>Ghi Chú</th>
+                            <th class="text-end">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($rows as $row): ?>
                         <tr>
-                            <td class="fw-semibold text-primary">#<?= (int) ($row['id'] ?? 0) ?></td>
-                            <td class="fw-semibold"><?= pt_val($row, 'ten') ?></td>
+                            <td class="fw-semibold text-success">#<?= (int) ($row['id'] ?? 0) ?></td>
+                            <td class="fw-bold text-dark"><?= pt_val($row, 'ten') ?></td>
                             <td>
                                 <span class="loai-badge-<?= admin_h((string)($row['loai'] ?? '')) ?>">
                                     <?= pt_loai_label((string)($row['loai'] ?? '')) ?>
                                 </span>
                             </td>
-                            <td class="small text-secondary">
-                                <?php if (($row['loai'] ?? '') === 'le'): ?>
-                                    Ngày <?= pt_val($row, 'ngay', '?') ?>/<?= pt_val($row, 'thang', '?') ?>
-                                    <?= ($row['nam'] ?? '') ? '/' . pt_val($row, 'nam') : '' ?>
+                            <td class="small">
+                                <?php if (($row['loai'] ?? '') === 'dinh_ky'): ?>
+                                    <i class="bi bi-calendar-check me-1"></i>Ngày <?= pt_val($row, 'ngay', '?') ?> tháng <?= pt_val($row, 'thang', '?') ?>
                                 <?php else: ?>
-                                    <?= pt_val($row, 'gio_bat_dau', '--') ?> → <?= pt_val($row, 'gio_ket_thuc', '--') ?>
+                                    <i class="bi bi-clock-history me-1"></i><?= pt_val($row, 'gio_bat_dau', '--') ?> - <?= pt_val($row, 'gio_ket_thuc', '--') ?>
                                 <?php endif; ?>
                             </td>
                             <td><span class="percent-badge"><?= pt_val($row, 'phu_thu_percent') ?>%</span></td>
-                            <td class="text-secondary small"><?= pt_val($row, 'mo_ta', '—') ?></td>
+                            <td class="text-secondary small italic">"<?= pt_val($row, 'mo_ta', '...') ?>"</td>
                             <td class="text-end">
                                 <div class="action-buttons">
-                                    <a href="?view_id=<?= (int)($row['id'] ?? 0) ?>" class="btn btn-sm btn-outline-primary" title="Xem">
+                                    <a href="?view_id=<?= (int)($row['id'] ?? 0) ?>" class="btn btn-sm btn-outline-success" title="Xem chi tiết">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     <a href="?edit_id=<?= (int)($row['id'] ?? 0) ?>" class="btn btn-sm btn-outline-warning" title="Sửa">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
                                     <form method="post" action="xu-ly-phu-thu.php" class="d-inline" style="margin:0;"
-                                        onsubmit="return confirm('Xóa phụ thu này?');">
+                                        onsubmit="return confirm('Bạn chắc chắn muốn hủy dịch vụ này?');">
                                         <input type="hidden" name="action" value="xoa">
                                         <input type="hidden" name="id" value="<?= (int)($row['id'] ?? 0) ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa lịch">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -288,32 +295,30 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
                 </table>
             </div>
 
-            <!-- Mobile cards -->
             <div class="d-md-none p-2">
                 <?php foreach ($rows as $row): ?>
                 <div class="pt-mobile-card">
                     <div class="d-flex justify-content-between align-items-start mb-1">
                         <div>
-                            <span class="fw-bold text-primary me-1">#<?= (int)($row['id'] ?? 0) ?></span>
-                            <span class="fw-semibold"><?= pt_val($row, 'ten') ?></span>
+                            <span class="fw-bold text-success me-1">#<?= (int)($row['id'] ?? 0) ?></span>
+                            <span class="fw-bold"><?= pt_val($row, 'ten') ?></span>
                         </div>
                         <span class="loai-badge-<?= admin_h((string)($row['loai'] ?? '')) ?>">
                             <?= pt_loai_label((string)($row['loai'] ?? '')) ?>
                         </span>
                     </div>
                     <div class="small text-secondary mb-2">
-                        <?php if (($row['loai'] ?? '') === 'le'): ?>
-                            Ngày <?= pt_val($row, 'ngay', '?') ?>/<?= pt_val($row, 'thang', '?') ?>
-                            <?= ($row['nam'] ?? '') ? '/' . pt_val($row, 'nam') : '' ?>
+                        <?php if (($row['loai'] ?? '') === 'dinh_ky'): ?>
+                            Lịch: Ngày <?= pt_val($row, 'ngay', '?') ?>/<?= pt_val($row, 'thang', '?') ?>
                         <?php else: ?>
-                            <?= pt_val($row, 'gio_bat_dau', '--') ?> → <?= pt_val($row, 'gio_ket_thuc', '--') ?>
+                            Giờ: <?= pt_val($row, 'gio_bat_dau', '--') ?> → <?= pt_val($row, 'gio_ket_thuc', '--') ?>
                         <?php endif; ?>
-                        &nbsp;|&nbsp;<span class="percent-badge"><?= pt_val($row, 'phu_thu_percent') ?>%</span>
+                        &nbsp;|&nbsp;<span class="fw-bold text-success">+<?= pt_val($row, 'phu_thu_percent') ?>%</span>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="?view_id=<?= (int)($row['id'] ?? 0) ?>" class="btn btn-sm btn-outline-primary flex-grow-1"><i class="bi bi-eye me-1"></i>Xem</a>
+                        <a href="?view_id=<?= (int)($row['id'] ?? 0) ?>" class="btn btn-sm btn-outline-success flex-grow-1"><i class="bi bi-eye me-1"></i>Xem</a>
                         <a href="?edit_id=<?= (int)($row['id'] ?? 0) ?>" class="btn btn-sm btn-outline-warning flex-grow-1"><i class="bi bi-pencil me-1"></i>Sửa</a>
-                        <form method="post" action="xu-ly-phu-thu.php" style="flex:1;" onsubmit="return confirm('Xóa phụ thu này?');">
+                        <form method="post" action="xu-ly-phu-thu.php" style="flex:1;" onsubmit="return confirm('Xóa dịch vụ này?');">
                             <input type="hidden" name="action" value="xoa">
                             <input type="hidden" name="id" value="<?= (int)($row['id'] ?? 0) ?>">
                             <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="bi bi-trash me-1"></i>Xóa</button>
@@ -329,10 +334,11 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
 
 <script>
 function toggleLoai(val) {
-    document.getElementById('grpNgayLe').style.display = (val === 'le') ? '' : 'none';
-    document.getElementById('grpCaDem').style.display  = (val === 'dem') ? '' : 'none';
+    // Logic hiển thị phần tử ẩn dựa trên sự lựa chọn
+    document.getElementById('grpNgayLe').style.display = (val === 'dinh_ky') ? '' : 'none';
+    document.getElementById('grpCaDem').style.display  = (val === 'dot_xuat') ? '' : 'none';
 }
-// Init on load
+// Khởi tạo trạng thái form khi tải trang
 (function() {
     var sel = document.getElementById('selLoai');
     if (sel) toggleLoai(sel.value);

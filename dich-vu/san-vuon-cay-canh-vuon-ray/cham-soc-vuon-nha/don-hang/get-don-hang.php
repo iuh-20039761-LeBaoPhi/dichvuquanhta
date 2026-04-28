@@ -1,5 +1,5 @@
 <?php
-// get-hoa-don.php
+// get-don-hang.php
 require_once __DIR__ . '/../session_user.php';
 
 /**

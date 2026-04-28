@@ -1,307 +1,385 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
-  <script src="/ga.js"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dịch Vụ Quanh Ta - Chăm Sóc Vườn Nhà - Chi Tiết Dịch Vụ</title>
-  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo2.jpg" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --primary-green: #1a4d2e;
-      --accent-green: #4f6f52;
-      --soft-lime: #e8f3d6;
-      --nature-white: #f9fbf9;
-      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi Tiết Dịch Vụ - Chăm Sóc Vườn Nhà</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo2.jpg" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-green: #1a4d2e;
+            --accent-green: #4f6f52;
+            --soft-lime: #e8f3d6;
+            --nature-white: #f9fbf9;
+            --glass: rgba(255, 255, 255, 0.85);
+            --shadow-sm: 0 10px 30px rgba(26, 77, 46, 0.05);
+            --shadow-lg: 0 20px 50px rgba(26, 77, 46, 0.12);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
 
-    body {
-      font-family: "Quicksand", sans-serif;
-      padding-top: 96px;
-      background-color: var(--nature-white);
-    }
+        body {
+            font-family: "Quicksand", sans-serif;
+            background-color: var(--nature-white);
+            color: #333;
+            overflow-x: hidden;
+            padding-top: 80px;
+        }
 
-    /* --- CẬP NHẬT BANNER ĐỒNG NHẤT VỚI BÀI VIẾT --- */
-    .page-banner {
-      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-      padding: 140px 0 80px; /* Tăng padding để tạo không gian cho chữ mờ */
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid rgba(26, 77, 46, 0.05);
-      margin-bottom: 40px;
-    }
+        /* --- HERO BANNER --- */
+        .page-banner {
+            background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
+            padding: 100px 0 60px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(26, 77, 46, 0.05);
+        }
 
-    .page-banner::before {
-      content: "Details"; /* Chữ mờ chạy nền */
-      position: absolute;
-      font-family: 'Playfair Display';
-      font-size: 15vw;
-      font-weight: 900;
-      color: rgba(26, 77, 46, 0.03);
-      top: 0;
-      left: -2%;
-      z-index: 0;
-    }
+        .page-banner::before {
+            content: "Service";
+            position: absolute;
+            font-family: 'Playfair Display', serif;
+            font-size: 18vw;
+            font-weight: 900;
+            color: rgba(26, 77, 46, 0.03);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
 
-    .page-banner h2 {
-      font-family: 'Playfair Display', serif;
-      font-style: italic; /* Kiểu chữ nghiêng sang trọng */
-      color: var(--primary-green);
-      font-size: 3.5rem;
-      position: relative;
-      z-index: 1;
-    }
+        .page-banner h2 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--primary-green);
+            font-size: 3.5rem;
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(255,255,255,0.5);
+        }
 
-    .breadcrumb {
-      position: relative;
-      z-index: 1;
-    }
+        /* --- NỘI DUNG --- */
+        .img-wrapper {
+            position: relative;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 35px;
+            background: #eee;
+        }
 
-    .breadcrumb-item a {
-      color: var(--accent-green);
-      text-decoration: none;
-      font-weight: 600;
-    }
+        .service-header-img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            transition: var(--transition);
+            display: block;
+        }
 
-    .breadcrumb-item.active {
-      color: var(--primary-green);
-      font-weight: 700;
-    }
+        .img-wrapper:hover .service-header-img {
+            transform: scale(1.05);
+        }
 
-    /* --- GIỮ NGUYÊN STYLE CŨ CHO PHẦN NỘI DUNG --- */
-    h1, h4, h5 {
-      font-family: 'Playfair Display', serif;
-      color: var(--primary-green);
-    }
+        .info-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 35px;
+            padding: 35px;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 110px;
+        }
 
-    .service-header-img {
-      width: 100%;
-      max-height: 550px;
-      object-fit: cover;
-      border-radius: 45px; /* Bo góc lớn hơn cho hiện đại */
-      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    }
+        .price-display {
+            background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+            color: white;
+            padding: 25px;
+            border-radius: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
 
-    .badge-custom {
-      background: #fff;
-      color: var(--primary-green);
-      border: 1px solid var(--soft-lime);
-      border-radius: 50px;
-      font-weight: 700;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-    }
+        .price-display h3 { font-size: 1.7rem; font-weight: 700; margin: 0; }
 
-    .info-card {
-      background: #fff;
-      border-radius: 40px;
-      border: 1px solid rgba(0,0,0,0.03);
-      padding: 40px;
-      box-shadow: 0 15px 40px rgba(26, 77, 46, 0.08);
-    }
+        .meta-badge {
+            background: white;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #f0f0f0;
+        }
 
-    .sticky-info {
-      position: sticky;
-      top: 120px;
-    }
+        .tag-item {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--soft-lime);
+            color: var(--primary-green);
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin: 0 5px 8px 0;
+        }
 
-    .price-box {
-      background: var(--soft-lime);
-      border-left: 8px solid var(--primary-green);
-      padding: 20px;
-      border-radius: 0 20px 20px 0;
-    }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            color: var(--primary-green);
+        }
 
-    .tag-item {
-      display: inline-block;
-      padding: 6px 18px;
-      background: #fff;
-      border: 1px solid var(--soft-lime);
-      border-radius: 50px;
-      margin-right: 8px;
-      margin-bottom: 8px;
-      font-size: 0.85rem;
-      color: var(--primary-green);
-      font-weight: 700;
-    }
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 40px; height: 3px;
+            background: var(--accent-green);
+            border-radius: 2px;
+        }
 
-    .btn-book-now {
-      background-color: var(--primary-green);
-      color: white;
-      border: none;
-      padding: 15px;
-      transition: var(--transition);
-      border-radius: 50px;
-    }
+        .btn-book-now {
+            background: var(--primary-green);
+            color: white !important;
+            border: none;
+            padding: 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            width: 100%;
+            transition: var(--transition);
+            box-shadow: 0 8px 20px rgba(26, 77, 46, 0.15);
+        }
 
-    .btn-book-now:hover {
-      background-color: var(--accent-green);
-      color: white;
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(26, 77, 46, 0.2);
-    }
-  </style>
+        .btn-book-now:hover {
+            background: #0e2b1a;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(26, 77, 46, 0.25);
+        }
+
+        /* --- MODAL --- */
+        .modal-content { border-radius: 40px; border: none; overflow: hidden; }
+        .modal-header {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 20px 30px;
+            background: #fff;
+            position: relative;
+        }
+        
+        /* Căn giữa toàn bộ nội dung trong header */
+        .modal-title-custom { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px; 
+            width: 100%;
+        }
+
+        .modal-logo { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        
+        .modal-title-text {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--primary-green);
+            font-size: 1.4rem;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        /* Đảm bảo nút đóng không làm lệch tâm tiêu đề */
+        .modal-header .btn-close {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0;
+        }
+
+        #bookingFlowFrame {
+            width: 100%;
+            height: 75vh;
+            border: 0;
+            display: block;
+        }
+
+        .spinner-grow { width: 3rem; height: 3rem; color: var(--primary-green) !important; }
+    </style>
 </head>
 
 <body>
-  <div id="site-header"></div>
+    <div id="site-header"></div>
 
-  <section class="page-banner">
-    <div class="container position-relative">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-3">
-          <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
-          <li class="breadcrumb-item"><a href="dich-vu.html">Dịch vụ</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
-        </ol>
-      </nav>
-      <h2 class="fw-bold">Thông Tin <span style="color: var(--accent-green)">Dịch Vụ</span></h2>
-    </div>
-  </section>
-
-  <div class="container mb-5" id="detailContainer">
-    <div class="text-center py-5">
-      <div class="spinner-border text-success" role="status">
-        <span class="visually-hidden">Đang tải...</span>
-      </div>
-    </div>
-  </div>
-
-  <div id="site-footer"></div>
-
-  <div class="modal fade" id="bookingFlowModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
-        <div class="modal-header border-0 bg-light">
-          <h5 class="modal-title fw-bold">Đăng ký dịch vụ</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <section class="page-banner">
+        <div class="container position-relative">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-3">
+                    <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-success fw-bold">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="dich-vu.html" class="text-decoration-none text-success fw-bold">Dịch vụ</a></li>
+                    <li class="breadcrumb-item active fw-bold">Chi tiết</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold">Thông Tin <span style="color: var(--accent-green)">Dịch Vụ</span></h2>
         </div>
-        <div class="modal-body p-0">
-          <iframe id="bookingFlowFrame" src="about:blank" style="width:100%; height:550px; border:0;"></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    $(document).ready(async function() {
-      // 1. KẾT NỐI HEADER & FOOTER
-      if ($("#site-header").is(':empty')) $("#site-header").load("header.html");
-      if ($("#site-footer").is(':empty')) $("#site-footer").load("footer.html");
-
-      // 2. XỬ LÝ DỮ LIỆU DỊCH VỤ (GIỮ NGUYÊN)
-      const urlParams = new URLSearchParams(window.location.search);
-      const serviceId = urlParams.get('id');
-      const bookingModal = new bootstrap.Modal('#bookingFlowModal');
-
-      try {
-        const response = await fetch('dich-vu.json');
-        const services = await response.json();
-        const item = services.find(s => s.id == serviceId);
-
-        if (!item) {
-          $('#detailContainer').html(`
+    <main class="py-5">
+        <div class="container mb-5 pb-5" id="detailContainer">
             <div class="text-center py-5">
-              <h2 class="text-muted">Không tìm thấy dịch vụ yêu cầu!</h2>
-              <a href="dich-vu.html" class="btn btn-success mt-3 rounded-pill px-4">Quay lại danh sách</a>
+                <div class="spinner-grow" role="status"></div>
+                <p class="mt-4 text-muted fw-bold">Đang tải dữ liệu từ vườn nhà...</p>
             </div>
-          `);
-          return;
-        }
+        </div>
+    </main>
 
-        const tagsHTML = item.tags.map(t => `<span class="tag-item">#${t}</span>`).join('');
+    <div id="site-footer"></div>
 
-        $('#detailContainer').html(`
-          <div class="row g-5">
-            <div class="col-lg-7">
-              <img src="assets/images/${item.image}" class="service-header-img mb-5" alt="${item.name}" onerror="this.src='assets/vuon-nha-dep.png'">
-              
-              <h1 class="display-4 fw-bold mb-3">${item.name}</h1>
-              
-              <div class="mb-4 d-flex flex-wrap gap-2">
-                <span class="badge badge-custom px-3 py-2 text-dark">
-                  <i class="fas fa-star text-warning me-1"></i> ${item.rating} (${item.total_reviews} đánh giá)
-                </span>
-                <span class="badge badge-custom px-3 py-2 text-dark">
-                  <i class="fas fa-clock text-success me-1"></i> Dự kiến: ${item.duration_estimate}
-                </span>
-              </div>
-
-              <div class="content-detail mt-5">
-                <h4 class="fw-bold mb-3"><i class="fas fa-info-circle me-2 text-success"></i>Mô tả chi tiết</h4>
-                <p class="lead text-secondary lh-lg mb-5" style="font-size: 1.1rem; text-align: justify;">${item.description}</p>
-                
-                <h4 class="fw-bold mb-3"><i class="fas fa-map-marker-alt me-2 text-success"></i>Khu vực phục vụ</h4>
-                <p class="text-secondary mb-5 fs-5">${item.service_area}</p>
-                
-                <div class="mt-5">
-                  <h5 class="fw-bold mb-3">Tags:</h5>
-                  ${tagsHTML}
+    <div class="modal fade" id="bookingFlowModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header">
+                    <div class="modal-title-custom">
+                        <img src="assets/images/logo2.jpg" alt="Logo" class="modal-logo">
+                        <h5 class="modal-title-text">ĐẶT LỊCH DỊCH VỤ</h5>
+                        <img src="assets/images/logo2.jpg" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              </div>
+                <div class="modal-body p-0">
+                    <iframe id="bookingFlowFrame" src="about:blank"></iframe>
+                </div>
             </div>
+        </div>
+    </div>
 
-            <div class="col-lg-5">
-              <div class="info-card sticky-info shadow-sm">
-                <h4 class="fw-bold mb-4">Thông tin báo giá</h4>
-                
-                <div class="price-box mb-4">
-                  <h3 class="fw-bold text-success mb-1" style="font-family: 'Quicksand', sans-serif;">
-                    ${item.price_m2_min.toLocaleString()}đ - ${item.price_m2_max.toLocaleString()}đ
-                  </h3>
-                  <p class="text-muted small mb-0 fw-bold">Đơn vị: ${item.area_unit}</p>
-                </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="JS/api-client.js"></script>
 
-                <p class="text-secondary small mb-4">
-                   ${item.price_note}
-                </p>
-                
-                <hr class="my-4 opacity-50">
-                
-                <div class="mb-5">
-                   <div class="d-flex justify-content-between mb-3">
-                      <span class="text-muted fw-bold">Độ khó:</span>
-                      <span class="fw-bold text-uppercase text-success">${item.difficulty_level}</span>
-                   </div>
-                   <div class="d-flex justify-content-between mb-3">
-                      <span class="text-muted fw-bold">Thời gian thực hiện:</span>
-                      <span class="fw-bold text-dark">${item.duration_estimate}</span>
-                   </div>
-                   <div class="d-flex justify-content-between">
-                      <span class="text-muted fw-bold">Ngày cập nhật:</span>
-                      <span class="fw-bold text-dark">${item.updated_at || 'Mới nhất'}</span>
-                   </div>
-                </div>
+    <script>
+        $(document).ready(async function() {
+            $("#site-header").load("html/shared-header.html");
+            $("#site-footer").load("html/shared-footer.html");
 
-                <button class="btn btn-book-now w-100 py-3 fw-bold fs-5 mb-0 shadow-sm">
-                  ĐẶT LỊCH NGAY
-                </button>
-              </div>
-            </div>
-          </div>
-        `);
+            const urlParams = new URLSearchParams(window.location.search);
+            const serviceId = urlParams.get('id');
+            const bookingModal = new bootstrap.Modal('#bookingFlowModal');
 
-        $('.btn-book-now').on('click', function() {
-          const frame = document.getElementById('bookingFlowFrame');
-          frame.src = `dat-lich.html?embedded=1&serviceId=${item.id}`;
-          bookingModal.show();
+            if (!serviceId) {
+                $('#detailContainer').html('<div class="text-center py-5"><h3>ID dịch vụ không hợp lệ</h3><a href="dich-vu.html" class="btn btn-success rounded-pill px-4 mt-3">Quay lại danh sách</a></div>');
+                return;
+            }
+
+            try {
+                const services = await API.getServices();
+                const item = services.find(s => s.id == serviceId);
+
+                if (!item) {
+                    $('#detailContainer').html('<div class="text-center py-5"><h3>Rất tiếc, dịch vụ không tồn tại</h3></div>');
+                    return;
+                }
+
+                const tagsHTML = item.tags.map(t => `<span class="tag-item">#${t}</span>`).join('');
+
+                $('#detailContainer').html(`
+                    <div class="row g-lg-5">
+                        <div class="col-lg-8">
+                            <div class="img-wrapper">
+                                <img src="assets/images/${item.image}" class="service-header-img" alt="${item.name}" onerror="this.src='assets/images/vuon-nha-dep.png'">
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-3 mb-4">
+                                <div class="meta-badge"><i class="fas fa-star text-warning"></i> ${item.rating} (${item.total_reviews} đánh giá)</div>
+                                <div class="meta-badge"><i class="fas fa-clock text-success"></i> ${item.duration_estimate}</div>
+                                <div class="meta-badge"><i class="fas fa-shield-alt text-primary"></i> Bảo hành 7 ngày</div>
+                            </div>
+
+                            <h1 class="display-5 fw-bold mb-4" style="font-family: 'Playfair Display', serif; color: var(--primary-green);">${item.name}</h1>
+                            
+                            <div class="service-description mb-5">
+                                <h4 class="section-title">Chi tiết dịch vụ</h4>
+                                <div class="lh-lg text-secondary" style="font-size: 1.1rem; text-align: justify;">
+                                    ${item.description}
+                                </div>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="p-4 rounded-4 border bg-white shadow-sm h-100">
+                                        <h5 class="fw-bold text-success mb-3"><i class="fas fa-map-marked-alt me-2"></i>Khu vực</h5>
+                                        <p class="text-muted mb-0">${item.service_area || 'Toàn thành phố'}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-4 rounded-4 border bg-white shadow-sm h-100">
+                                        <h5 class="fw-bold text-success mb-3"><i class="fas fa-tags me-2"></i>Phân loại</h5>
+                                        <div>${tagsHTML}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="info-card">
+                                <h5 class="fw-bold mb-4 text-center" style="font-family: 'Playfair Display', serif;">Báo Giá Dự Kiến</h5>
+                                
+                                <div class="price-display shadow-sm">
+                                    <p class="small mb-1 opacity-75">Đơn giá tham khảo</p>
+                                    <h3>${item.price_m2_min.toLocaleString()}đ - ${item.price_m2_max.toLocaleString()}đ</h3>
+                                    <p class="small mt-2 mb-0 fw-bold">Đơn vị: ${item.area_unit}</p>
+                                </div>
+
+                                <ul class="list-unstyled mb-4">
+                                    <li class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                                        <span class="text-muted">Độ khó</span>
+                                        <span class="fw-bold text-success">${item.difficulty_level || 'Cơ bản'}</span>
+                                    </li>
+                                    <li class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                                        <span class="text-muted">Thời gian</span>
+                                        <span class="fw-bold">${item.duration_estimate}</span>
+                                    </li>
+                                </ul>
+
+                                <div class="alert alert-success border-0 small mb-4" style="background: #f0f7f0; color: var(--primary-green);">
+                                    <i class="fas fa-info-circle me-2"></i> ${item.price_note || 'Giá thực tế dựa trên khảo sát hiện trạng.'}
+                                </div>
+
+                                <button class="btn btn-book-now fs-5 py-3" id="openBooking">
+                                    ĐẶT LỊCH NGAY
+                                </button>
+                                
+                                <div class="text-center mt-4 p-3 rounded-4" style="background: #f8faf8;">
+                                    <p class="small text-muted mb-1">Hỗ trợ kỹ thuật 24/7</p>
+                                    <p class="fw-bold text-success mb-0" style="font-size: 1.2rem;">1900 6789</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+                $(document).on('click', '#openBooking', function() {
+                    const frame = document.getElementById('bookingFlowFrame');
+                    frame.src = `dat-lich.html?id=${item.id}&embedded=true`;
+                    bookingModal.show();
+                });
+
+            } catch (error) {
+                console.error("Lỗi tải dịch vụ:", error);
+                $('#detailContainer').html('<div class="text-center py-5"><h2 class="text-danger">Không thể kết nối máy chủ</h2><p>Vui lòng kiểm tra lại kết nối mạng.</p></div>');
+            }
         });
-
-      } catch (e) {
-        console.error(e);
-        $('#detailContainer').html('<div class="alert alert-danger">Lỗi tải dữ liệu.</div>');
-      }
-    });
-  </script>
-
-  <script src="JS/shared-layout.js"></script>
-  <script src="JS/user-nav-menu.js"></script>
+    </script>
 </body>
 
 </html>

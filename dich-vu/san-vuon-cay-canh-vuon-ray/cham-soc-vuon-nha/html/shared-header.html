@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-2">
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3"> 
   <style>
     :root {
       /* MÀU XANH CẢNH QUAN CAO CẤP */
@@ -16,32 +16,39 @@
       transition: all 0.3s ease;
       border-bottom: 1px solid rgba(26, 77, 46, 0.05);
       z-index: 1050;
+      min-height: 85px; 
     }
 
     .brand-wrapper {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 12px; 
       text-decoration: none !important;
     }
 
     .brand-text {
       color: var(--primary-green);
       font-weight: 800;
-      font-size: 1.25rem;
+      font-size: 1.4rem;
       letter-spacing: -0.5px;
       margin: 0;
       white-space: nowrap;
     }
 
-    /* --- CÁCH ĐIỆU MENU LINKS --- */
+    /* --- TỐI ƯU MENU LINKS TRÊN 1 HÀNG --- */
+    .navbar-nav {
+      flex-wrap: nowrap !important;
+    }
+
     .navbar-nav .nav-link {
       color: var(--text-dark) !important;
       position: relative !important; 
-      padding: 0.5rem 1rem !important;
+      padding: 0.5rem 0.8rem !important;
       transition: color 0.3s ease;
       border-radius: 8px;
       overflow: hidden; 
+      font-size: 1rem; 
+      white-space: nowrap;
     }
 
     .navbar-nav .nav-link::after {
@@ -67,7 +74,7 @@
       background-color: var(--soft-lime);
     }
 
-    /* --- HIỆU ỨNG RIPPLE KHI CLICK --- */
+    /* --- HIỆU ỨNG RIPPLE --- */
     .ripple {
       position: absolute;
       border-radius: 50%;
@@ -79,10 +86,7 @@
     }
 
     @keyframes ripple-animation {
-      to {
-        transform: scale(4);
-        opacity: 0;
-      }
+      to { transform: scale(4); opacity: 0; }
     }
 
     /* Dropdown */
@@ -94,50 +98,132 @@
       border: 1px solid rgba(26, 77, 46, 0.05);
     }
 
-    .dropdown-item {
-      border-radius: 8px !important;
-      padding: 8px 15px !important;
-      font-weight: 500;
-      transition: var(--transition);
-    }
-
-    .dropdown-item:hover {
-      background-color: var(--soft-lime) !important;
-      color: var(--primary-green) !important;
-    }
-
     .btn-user-nav {
       background: white;
       border: 1px solid #eee;
       transition: all 0.3s ease;
+      white-space: nowrap;
     }
 
-    .btn-user-nav:hover {
-      background: var(--soft-lime);
-      border-color: var(--primary-green);
-    }
-
+    /* --- SIÊU NÂNG CẤP MENU MOBILE HIỆN ĐẠI --- */
     @media (max-width: 991.98px) {
-      .navbar-collapse {
-        background: white;
-        margin-top: 15px;
-        padding: 20px;
-        border-radius: 20px;
-        box-shadow: 0 15px 30px rgba(26, 77, 46, 0.1);
+      .navbar-nav { 
+        flex-wrap: wrap !important; 
+        padding-top: 10px;
       }
-      .navbar-nav { gap: 8px !important; }
+
+      .navbar-toggler {
+        width: 45px;
+        height: 45px;
+        position: relative;
+        transition: var(--transition);
+        border-radius: 12px !important;
+        background: var(--soft-lime) !important;
+      }
+
+      .navbar-collapse {
+        /* Hiệu ứng Glassmorphism Layer */
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(25px);
+        margin-top: 15px;
+        padding: 20px !important;
+        border-radius: 25px !important;
+        box-shadow: 0 25px 50px rgba(26, 77, 46, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        animation: mobileMenuSlide 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+
+      @keyframes mobileMenuSlide {
+        from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      .navbar-nav .nav-item {
+        width: 100%;
+        margin-bottom: 8px;
+        opacity: 0;
+        animation: fadeInRight 0.4s ease forwards;
+      }
+
+      /* Delay animation cho từng mục để tạo hiệu ứng mượt */
+      .navbar-nav .nav-item:nth-child(1) { animation-delay: 0.1s; }
+      .navbar-nav .nav-item:nth-child(2) { animation-delay: 0.15s; }
+      .navbar-nav .nav-item:nth-child(3) { animation-delay: 0.2s; }
+      .navbar-nav .nav-item:nth-child(4) { animation-delay: 0.25s; }
+      .navbar-nav .nav-item:nth-child(5) { animation-delay: 0.3s; }
+      .navbar-nav .nav-item:nth-child(6) { animation-delay: 0.35s; }
+
+      @keyframes fadeInRight {
+        from { opacity: 0; transform: translateX(-15px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      .navbar-nav .nav-link {
+        padding: 14px 20px !important;
+        font-size: 1.1rem;
+        background: rgba(26, 77, 46, 0.03);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .navbar-nav .nav-link::before {
+        content: '\f105'; /* Icon mũi tên */
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        float: right;
+        opacity: 0.5;
+      }
+
+      /* Chỉnh lại cụm nút Đăng nhập & Đặt lịch trên mobile */
+      .navbar-nav.align-items-center.gap-2 {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px !important;
+        margin-top: 15px;
+        padding-top: 20px;
+        border-top: 1px dashed rgba(26, 77, 46, 0.1);
+      }
+
+      .navbar-nav.align-items-center.gap-2 .nav-item {
+        opacity: 1; 
+        animation: none;
+      }
+
+      .navbar-nav.align-items-center.gap-2 .btn {
+        width: 100%;
+        padding: 12px 5px !important;
+        font-size: 0.9rem !important;
+        justify-content: center;
+      }
+
+      .brand-text { font-size: 1.1rem; }
+      .brand-wrapper img { width: 40px !important; }
+      
+      #userMenuContainer {
+        grid-column: span 2;
+        margin-left: 0 !important;
+      }
+      .btn-user-nav { width: 100%; justify-content: center; padding: 12px !important; }
+    }
+
+    @media (min-width: 1200px) {
+      .navbar-nav.mx-auto { gap: 5px !important; }
     }
   </style>
 
-  <div class="container">
+  <div class="container-fluid container-lg">
     <div class="d-flex align-items-center">
-      <a class="brand-wrapper" href="../../../index.html">
-        <img style="width: 65px; height: auto;" src="assets/images/logo1.jpg" alt="logo-main" />
-      </a>
-      <span class="brand-text ms-2 d-none d-sm-block">Chăm Sóc Vườn Nhà</span>
-      <a class="brand-wrapper ms-2" href="index.html">
-        <img style="width: 65px; height: auto;" src="assets/images/logo2.jpg" alt="logo-sub" />
-      </a>
+      <div class="brand-wrapper">
+        <a href="../../../index.html">
+          <img style="width: 55px; height: auto;" src="assets/images/logo1.jpg" alt="logo-1" />
+        </a>
+        <span class="brand-text">Chăm Sóc Vườn Nhà</span>
+        <a href="index.html">
+          <img style="width: 55px; height: auto;" src="assets/images/logo2.jpg" alt="logo-2" />
+        </a>
+      </div>
     </div>
 
     <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
@@ -145,51 +231,47 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navMenu">
-      <ul class="navbar-nav mx-auto align-items-center gap-1">
-        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="home" href="index.html">Trang Chủ</a></li>
-        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="about" href="gioi-thieu.html">Giới Thiệu</a></li>
-        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="services" href="dich-vu.html">Dịch Vụ</a></li>
-        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="blog" href="bai-viet.html">Bài Viết</a></li>
-        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="terms" href="dieu-khoan.html">Điều khoản</a></li>
-        <li class="nav-item"><a class="nav-link fw-bold px-3 py-2" data-nav-key="contact" href="lien-he.html">Liên Hệ</a></li>
-      
+      <ul class="navbar-nav mx-auto align-items-center gap-0">
+        <li class="nav-item">
+          <a class="nav-link fw-bold" href="./">Trang chủ</a>
+        </li>
+        <li class="nav-item"><a class="nav-link fw-bold" data-nav-key="about" href="gioi-thieu.html">Giới Thiệu</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold" data-nav-key="services" href="dich-vu.html">Dịch Vụ</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold" data-nav-key="blog" href="bai-viet.html">Bài Viết</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold" data-nav-key="terms" href="dieu-khoan.html">Điều khoản</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold" data-nav-key="contact" href="lien-he.html">Liên Hệ</a></li>
       </ul>
 
       <ul class="navbar-nav align-items-center gap-2">
-  <li class="nav-item">
-    <a href="dat-lich.html" 
-       class="btn rounded-pill px-4 py-2 shadow-sm fw-bold d-flex align-items-center gap-2" 
-       style="background-color: var(--soft-lime); color: var(--primary-green); border: 1px solid rgba(26, 77, 46, 0.2); transition: var(--transition); font-size: 0.9rem;">
-       <i class="far fa-calendar-check" style="font-size: 1.1rem;"></i> 
-       <span>Đặt Lịch</span>
-    </a>
-  </li>
+        <li class="nav-item">
+          <a href="dat-lich.html" 
+             class="btn rounded-pill px-3 py-2 shadow-sm fw-bold d-flex align-items-center gap-2" 
+             style="background-color: var(--soft-lime); color: var(--primary-green); border: 1px solid rgba(26, 77, 46, 0.2); transition: var(--transition); font-size: 0.95rem; white-space: nowrap;">
+             <i class="far fa-calendar-check"></i> 
+             <span>Đặt Lịch</span>
+          </a>
+        </li>
 
-  <li class="nav-item" id="loginNavItem">
-    <a id="btnLoginCheck" 
-       href="../../../public/dang-nhap.html?service=vuonnha" 
-       class="btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" 
-       style="background-color: var(--primary-green); transition: var(--transition); font-size: 0.9rem;"
-       onmouseover="this.style.backgroundColor='var(--hover-green)'; this.style.transform='translateY(-2px)'"
-       onmouseout="this.style.backgroundColor='var(--primary-green)'; this.style.transform='translateY(0)'">
-       Đăng Nhập
-    </a>
-  </li>
-        <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
+        <li class="nav-item" id="loginNavItem">
+          <a id="btnLoginCheck" 
+             href="../../../public/dang-nhap.html?service=vuonnha" 
+             class="btn text-white rounded-pill px-3 py-2 shadow-sm fw-bold" 
+             style="background-color: var(--primary-green); transition: var(--transition); font-size: 0.95rem; white-space: nowrap;">
+             Đăng Nhập
+          </a>
+        </li>
+        
+        <li class="nav-item ms-lg-2 d-none" id="userMenuContainer">
           <div class="dropdown">
             <button class="btn btn-user-nav rounded-pill px-2 py-1 d-inline-flex align-items-center gap-2 shadow-sm" 
                     type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img id="navAvatar" src="assets/images/logo2.jpg" alt="avatar" width="32" height="32" class="rounded-circle border" />
-              <span id="navUserName" class="fw-bold small text-dark">Tài khoản</span>
+              <img id="navAvatar" src="assets/images/logo2.jpg" alt="avatar" width="35" height="35" class="rounded-circle border" />
+              <span id="navUserName" class="fw-bold text-dark d-none d-xl-inline">Tài khoản</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end border-0 text-center">
-              <li><a class="dropdown-item" id="navInvoiceLink" href="don-hang/index.php">
-                <i class="fas fa-file-invoice me-2"></i>Danh sách hóa đơn</a>
-              </li>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+              <li><a class="dropdown-item" id="navInvoiceLink" href="don-hang/index.php">Hóa đơn</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="logout.php">
-                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a>
-              </li>
+              <li><a class="dropdown-item text-danger" href="logout.php">Đăng xuất</a></li>
             </ul>
           </div>
         </li>
@@ -203,13 +285,10 @@
         const rect = this.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-
         let ripples = document.createElement('span');
-        ripples.style.left = x + 'px';
-        ripples.style.top = y + 'px';
+        ripples.style.left = x + 'px'; ripples.style.top = y + 'px';
         ripples.classList.add('ripple');
         this.appendChild(ripples);
-
         setTimeout(() => { ripples.remove(); }, 600);
       });
     });
