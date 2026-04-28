@@ -93,6 +93,19 @@ const customerHistoryModule = (function (window, document) {
     return Number.isFinite(page) && page > 0 ? page : fallback;
   }
 
+  function parseDateFilterMs(value, mode = "start") {
+    const raw = String(value || "").trim();
+    if (!raw) return null;
+    const suffix = mode === "end" ? "T23:59:59" : "T00:00:00";
+    const date = new Date(`${raw}${suffix}`);
+    return Number.isNaN(date.getTime()) ? null : date.getTime();
+  }
+
+  function getItemCreatedMs(item) {
+    const date = new Date(item?.created_at || "");
+    return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+  }
+
   function buildPaginationModel(currentPage, totalPages) {
     if (totalPages <= 1) return [];
 
@@ -125,6 +138,8 @@ const customerHistoryModule = (function (window, document) {
     const params = new URLSearchParams(window.location.search);
     const initialKeyword = String(params.get("search") || "").trim();
     const initialStatus = normalizeStatusFilterValue(params.get("status") || "all");
+    const initialFromDate = String(params.get("fromDate") || "").trim();
+    const initialToDate = String(params.get("toDate") || "").trim();
     let currentTab = "all";
     let currentPage = normalizePageNumber(params.get("page"), 1);
 
@@ -133,20 +148,22 @@ const customerHistoryModule = (function (window, document) {
         getStatusMeta(item)?.status_class || "all",
       );
       if (statusValue === "moi") return "pending";
-      if (statusValue === "da-nhan" || statusValue === "dang-trien-khai") return "shipping";
+      if (statusValue === "da-nhan") return "accepted";
+      if (statusValue === "dang-trien-khai") return "shipping";
       if (statusValue === "da-hoan-thanh") return "done";
       if (statusValue === "da-huy") return "cancel";
       return "all";
     }
 
     if (initialStatus === "moi") currentTab = "pending";
-    if (initialStatus === "da-nhan" || initialStatus === "dang-trien-khai") currentTab = "shipping";
+    if (initialStatus === "da-nhan") currentTab = "accepted";
+    if (initialStatus === "dang-trien-khai") currentTab = "shipping";
     if (initialStatus === "da-hoan-thanh") currentTab = "done";
     if (initialStatus === "da-huy") currentTab = "cancel";
 
     root.innerHTML = `
       <div class="mv-orders-shell">
-        <div class="mb-4 mv-orders-stats mv-orders-stats--4">
+        <div class="mb-4 mv-orders-stats mv-orders-stats--6">
           <div class="mv-orders-stat-cell">
             <div class="card border-0 shadow-sm p-3 p-md-4 h-100 mv-orders-stat-card">
               <div class="d-flex align-items-center gap-3">
@@ -172,8 +189,40 @@ const customerHistoryModule = (function (window, document) {
                 <div class="overflow-hidden">
                   <div class="h4 fw-bold mb-0" id="stat-pending">0</div>
                   <div class="text-muted small fw-semibold text-nowrap">
-                    <span class="mv-orders-stat-label-full">Chờ xử lý</span>
-                    <span class="mv-orders-stat-label-short">Chờ</span>
+                    <span class="mv-orders-stat-label-full">Mới tiếp nhận</span>
+                    <span class="mv-orders-stat-label-short">Mới</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mv-orders-stat-cell">
+            <div class="card border-0 shadow-sm p-3 p-md-4 h-100 mv-orders-stat-card">
+              <div class="d-flex align-items-center gap-3">
+                <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info mv-orders-stat-icon">
+                  <i class="fas fa-handshake fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                  <div class="h4 fw-bold mb-0" id="stat-accepted">0</div>
+                  <div class="text-muted small fw-semibold text-nowrap">
+                    <span class="mv-orders-stat-label-full">Đã nhận đơn</span>
+                    <span class="mv-orders-stat-label-short">Nhận</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mv-orders-stat-cell">
+            <div class="card border-0 shadow-sm p-3 p-md-4 h-100 mv-orders-stat-card">
+              <div class="d-flex align-items-center gap-3">
+                <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary mv-orders-stat-icon">
+                  <i class="fas fa-truck-moving fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                  <div class="h4 fw-bold mb-0" id="stat-shipping">0</div>
+                  <div class="text-muted small fw-semibold text-nowrap">
+                    <span class="mv-orders-stat-label-full">Đang triển khai</span>
+                    <span class="mv-orders-stat-label-short">Triển</span>
                   </div>
                 </div>
               </div>
@@ -225,17 +274,27 @@ const customerHistoryModule = (function (window, document) {
                   <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted small"></i></span>
                   <input type="text" class="form-control bg-light border-0 small mv-orders-search-input" id="orderSearchInput" value="${escapeHtml(initialKeyword)}" placeholder="Mã đơn, dịch vụ, địa chỉ..." />
                 </div>
-                <button class="btn btn-primary px-4 fw-semibold shadow-sm mv-orders-reload-btn" type="button" id="customer-history-reload">
-                  <i class="fas fa-sync-alt me-2"></i>Tải lại
-                </button>
               </div>
+            </div>
+
+            <div class="mv-orders-inline-filters">
+              <label class="mv-orders-inline-filter" for="customer-history-from-date">
+                <span>Từ ngày</span>
+                <input type="date" id="customer-history-from-date" value="${escapeHtml(initialFromDate)}" />
+              </label>
+              <label class="mv-orders-inline-filter" for="customer-history-to-date">
+                <span>Đến ngày</span>
+                <input type="date" id="customer-history-to-date" value="${escapeHtml(initialToDate)}" />
+              </label>
+              <button class="btn btn-light mv-orders-secondary-btn" type="button" id="customer-history-reset">Đặt lại</button>
             </div>
 
             <div class="mv-orders-tabs-wrap">
               <ul class="nav nav-pills nav-fill bg-light p-1 flex-column flex-md-row gap-1 w-100 mv-orders-tabs">
                 <li class="nav-item"><a class="nav-link fw-bold ${currentTab === "all" ? "active" : ""}" href="#" id="tabAll" data-tab="all">Tất cả <span class="badge bg-secondary ms-1" id="countAll">0</span></a></li>
-                <li class="nav-item"><a class="nav-link fw-bold ${currentTab === "pending" ? "active" : ""}" href="#" id="tabPending" data-tab="pending">Chờ xử lý <span class="badge bg-warning text-dark ms-1" id="countPending">0</span></a></li>
-                <li class="nav-item"><a class="nav-link fw-bold ${currentTab === "shipping" ? "active" : ""}" href="#" id="tabShipping" data-tab="shipping">Đang xử lý <span class="badge bg-primary ms-1" id="countShipping">0</span></a></li>
+                <li class="nav-item"><a class="nav-link fw-bold ${currentTab === "pending" ? "active" : ""}" href="#" id="tabPending" data-tab="pending">Mới tiếp nhận <span class="badge bg-warning text-dark ms-1" id="countPending">0</span></a></li>
+                <li class="nav-item"><a class="nav-link fw-bold ${currentTab === "accepted" ? "active" : ""}" href="#" id="tabAccepted" data-tab="accepted">Đã nhận đơn <span class="badge bg-info ms-1" id="countAccepted">0</span></a></li>
+                <li class="nav-item"><a class="nav-link fw-bold ${currentTab === "shipping" ? "active" : ""}" href="#" id="tabShipping" data-tab="shipping">Đang triển khai <span class="badge bg-primary ms-1" id="countShipping">0</span></a></li>
                 <li class="nav-item"><a class="nav-link fw-bold ${currentTab === "done" ? "active" : ""}" href="#" id="tabDone" data-tab="done">Hoàn thành <span class="badge bg-success ms-1" id="countDone">0</span></a></li>
                 <li class="nav-item"><a class="nav-link fw-bold ${currentTab === "cancel" ? "active" : ""}" href="#" id="tabCancel" data-tab="cancel">Đã hủy <span class="badge bg-danger ms-1" id="countCancel">0</span></a></li>
               </ul>
@@ -278,20 +337,25 @@ const customerHistoryModule = (function (window, document) {
     `;
 
     const keywordInput = root.querySelector("#orderSearchInput");
-    const reloadButton = root.querySelector("#customer-history-reload");
     const tableBodyNode = root.querySelector("#customer-history-table-body");
     const mobileListNode = root.querySelector("#customer-history-mobile-list");
     const emptyNode = root.querySelector("#customer-history-empty");
     const paginationWrapNode = root.querySelector("#customer-history-pagination-wrap");
     const paginationSummaryNode = root.querySelector("#customer-history-pagination-summary");
     const paginationNode = root.querySelector("#customer-history-pagination");
+    const fromDateInput = root.querySelector("#customer-history-from-date");
+    const toDateInput = root.querySelector("#customer-history-to-date");
+    const resetButton = root.querySelector("#customer-history-reset");
 
     function syncFilterUrl() {
       const url = new URL(window.location.href);
       const nextKeyword = String(keywordInput?.value || "").trim();
+      const nextFromDate = String(fromDateInput?.value || "").trim();
+      const nextToDate = String(toDateInput?.value || "").trim();
       let nextStatus = "all";
 
       if (currentTab === "pending") nextStatus = "moi";
+      if (currentTab === "accepted") nextStatus = "da-nhan";
       if (currentTab === "shipping") nextStatus = "dang-trien-khai";
       if (currentTab === "done") nextStatus = "da-hoan-thanh";
       if (currentTab === "cancel") nextStatus = "da-huy";
@@ -300,6 +364,18 @@ const customerHistoryModule = (function (window, document) {
         url.searchParams.set("search", nextKeyword);
       } else {
         url.searchParams.delete("search");
+      }
+
+      if (nextFromDate) {
+        url.searchParams.set("fromDate", nextFromDate);
+      } else {
+        url.searchParams.delete("fromDate");
+      }
+
+      if (nextToDate) {
+        url.searchParams.set("toDate", nextToDate);
+      } else {
+        url.searchParams.delete("toDate");
       }
 
       if (nextStatus !== "all") {
@@ -317,8 +393,19 @@ const customerHistoryModule = (function (window, document) {
 
     function renderList() {
       const keyword = String(keywordInput?.value || "").trim().toLowerCase();
+      const fromTime = parseDateFilterMs(fromDateInput?.value || "", "start");
+      const toTime = parseDateFilterMs(toDateInput?.value || "", "end");
 
-      const filtered = items.filter((item) => {
+      const itemsByDate = items.filter((item) => {
+        if (fromTime == null && toTime == null) return true;
+        const createdMs = getItemCreatedMs(item);
+        if (!createdMs) return false;
+        if (fromTime != null && createdMs < fromTime) return false;
+        if (toTime != null && createdMs > toTime) return false;
+        return true;
+      });
+
+      const filtered = itemsByDate.filter((item) => {
         if (currentTab !== "all" && deriveTabKey(item) !== currentTab) return false;
 
         if (!keyword) return true;
@@ -352,29 +439,38 @@ const customerHistoryModule = (function (window, document) {
       const startLabel = totalItems ? startIndex + 1 : 0;
       const endLabel = totalItems ? startIndex + paginatedItems.length : 0;
 
-      root.querySelector("#stat-total").textContent = String(items.length);
+      root.querySelector("#stat-total").textContent = String(itemsByDate.length);
       root.querySelector("#stat-pending").textContent = String(
-        items.filter((item) => ["pending", "shipping"].includes(deriveTabKey(item))).length,
+        itemsByDate.filter((item) => deriveTabKey(item) === "pending").length,
+      );
+      root.querySelector("#stat-accepted").textContent = String(
+        itemsByDate.filter((item) => deriveTabKey(item) === "accepted").length,
+      );
+      root.querySelector("#stat-shipping").textContent = String(
+        itemsByDate.filter((item) => deriveTabKey(item) === "shipping").length,
       );
       root.querySelector("#stat-success").textContent = String(
-        items.filter((item) => deriveTabKey(item) === "done").length,
+        itemsByDate.filter((item) => deriveTabKey(item) === "done").length,
       );
       root.querySelector("#stat-fail").textContent = String(
-        items.filter((item) => deriveTabKey(item) === "cancel").length,
+        itemsByDate.filter((item) => deriveTabKey(item) === "cancel").length,
       );
 
-      root.querySelector("#countAll").textContent = String(items.length);
+      root.querySelector("#countAll").textContent = String(itemsByDate.length);
       root.querySelector("#countPending").textContent = String(
-        items.filter((item) => deriveTabKey(item) === "pending").length,
+        itemsByDate.filter((item) => deriveTabKey(item) === "pending").length,
+      );
+      root.querySelector("#countAccepted").textContent = String(
+        itemsByDate.filter((item) => deriveTabKey(item) === "accepted").length,
       );
       root.querySelector("#countShipping").textContent = String(
-        items.filter((item) => deriveTabKey(item) === "shipping").length,
+        itemsByDate.filter((item) => deriveTabKey(item) === "shipping").length,
       );
       root.querySelector("#countDone").textContent = String(
-        items.filter((item) => deriveTabKey(item) === "done").length,
+        itemsByDate.filter((item) => deriveTabKey(item) === "done").length,
       );
       root.querySelector("#countCancel").textContent = String(
-        items.filter((item) => deriveTabKey(item) === "cancel").length,
+        itemsByDate.filter((item) => deriveTabKey(item) === "cancel").length,
       );
 
       root.querySelectorAll(".mv-orders-tabs .nav-link").forEach((link) => {
@@ -488,6 +584,14 @@ const customerHistoryModule = (function (window, document) {
       renderList();
     });
 
+    [fromDateInput, toDateInput].forEach((input) => {
+      input?.addEventListener("change", function () {
+        currentPage = 1;
+        syncFilterUrl();
+        renderList();
+      });
+    });
+
     root.querySelector(".mv-orders-tabs")?.addEventListener("click", function (event) {
       const tab = event.target.closest("[data-tab]");
       if (!tab) return;
@@ -498,19 +602,14 @@ const customerHistoryModule = (function (window, document) {
       renderList();
     });
 
-    reloadButton?.addEventListener("click", async function () {
-      const button = reloadButton;
-      button.disabled = true;
-      button.innerHTML = '<i class="fas fa-sync-alt me-2 fa-spin"></i>Tải lại';
-      try {
-        const result = await store.fetchHistory?.();
-        renderHistory(result || null);
-      } catch (error) {
-        console.error("Cannot reload customer history store:", error);
-      } finally {
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Tải lại';
-      }
+    resetButton?.addEventListener("click", function () {
+      if (keywordInput) keywordInput.value = "";
+      if (fromDateInput) fromDateInput.value = "";
+      if (toDateInput) toDateInput.value = "";
+      currentTab = "all";
+      currentPage = 1;
+      syncFilterUrl();
+      renderList();
     });
 
     paginationNode?.addEventListener("click", function (event) {

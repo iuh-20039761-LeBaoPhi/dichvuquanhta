@@ -63,45 +63,7 @@
 
           <!-- <div class="row g-3 stats-grid" id="statsGrid"></div> -->
 
-          <div class="status-filter-container mt-4 shadow-sm" id="statusFilterContainer">
-            <button class="status-filter-mobile-trigger" id="statusFilterTrigger">
-              <i class="fas fa-filter me-2"></i>
-              <span>Trạng thái: <strong id="currentStatusLabel">Tất cả</strong></span>
-              <i class="fas fa-chevron-down ms-auto trigger-arrow"></i>
-            </button>
-            <div class="status-filter-scroll" id="statusFilterBar">
-              <button class="status-filter-btn active" data-status="all">
-                <i class="fas fa-list-ul"></i>
-                <span class="status-label">Tất cả</span>
-                <span class="status-count" id="count-all">0</span>
-              </button>
-              <button class="status-filter-btn" data-status="pending">
-                <i class="far fa-clock"></i>
-                <span class="status-label">Chờ xác nhận</span>
-                <span class="status-count" id="count-pending">0</span>
-              </button>
-              <button class="status-filter-btn" data-status="accepted">
-                <i class="fas fa-check-circle"></i>
-                <span class="status-label">Đã xác nhận</span>
-                <span class="status-count" id="count-accepted">0</span>
-              </button>
-              <button class="status-filter-btn" data-status="processing">
-                <i class="fas fa-spinner"></i>
-                <span class="status-label">Đang thực hiện</span>
-                <span class="status-count" id="count-processing">0</span>
-              </button>
-              <button class="status-filter-btn" data-status="completed">
-                <i class="fas fa-clipboard-check"></i>
-                <span class="status-label">Hoàn thành</span>
-                <span class="status-count" id="count-completed">0</span>
-              </button>
-              <button class="status-filter-btn" data-status="canceled">
-                <i class="fas fa-times-circle"></i>
-                <span class="status-label">Đã hủy</span>
-                <span class="status-count" id="count-canceled">0</span>
-              </button>
-            </div>
-          </div>
+
 
           <article class="panel-card mt-3">
             <div class="panel-head">
@@ -153,22 +115,57 @@
                       type="date"
                     />
                   </div>
-                </div>
-
-                <div class="filter-actions mt-3">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search" aria-hidden="true"></i>
-                    Tìm kiếm
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    id="filterReset"
-                  >
-                    Đặt lại
-                  </button>
+                  <div class="d-flex align-items-end">
+                    <button
+                      type="button"
+                      class="btn btn-primary w-100"
+                      id="filterReset"
+                    >
+                      Đặt lại
+                    </button>
+                  </div>
                 </div>
               </form>
+
+              <div class="status-filter-container mt-3 shadow-sm" id="statusFilterContainer">
+                <button class="status-filter-mobile-trigger" id="statusFilterTrigger">
+                  <i class="fas fa-filter me-2"></i>
+                  <span>Trạng thái: <strong id="currentStatusLabel">Tất cả</strong></span>
+                  <i class="fas fa-chevron-down ms-auto trigger-arrow"></i>
+                </button>
+                <div class="status-filter-scroll" id="statusFilterBar">
+                  <button class="status-filter-btn active" data-status="all">
+                    <i class="fas fa-list-ul"></i>
+                    <span class="status-label">Tất cả</span>
+                    <span class="status-count" id="count-all">0</span>
+                  </button>
+                  <button class="status-filter-btn" data-status="pending">
+                    <i class="far fa-clock"></i>
+                    <span class="status-label">Chờ xác nhận</span>
+                    <span class="status-count" id="count-pending">0</span>
+                  </button>
+                  <button class="status-filter-btn" data-status="accepted">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="status-label">Đã xác nhận</span>
+                    <span class="status-count" id="count-accepted">0</span>
+                  </button>
+                  <button class="status-filter-btn" data-status="processing">
+                    <i class="fas fa-spinner"></i>
+                    <span class="status-label">Đang thực hiện</span>
+                    <span class="status-count" id="count-processing">0</span>
+                  </button>
+                  <button class="status-filter-btn" data-status="completed">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span class="status-label">Hoàn thành</span>
+                    <span class="status-count" id="count-completed">0</span>
+                  </button>
+                  <button class="status-filter-btn" data-status="canceled">
+                    <i class="fas fa-times-circle"></i>
+                    <span class="status-label">Đã hủy</span>
+                    <span class="status-count" id="count-canceled">0</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div class="table-responsive">
@@ -184,14 +181,14 @@
                     <th>Thao tác</th>
                   </tr>
                 </thead>
-                <tbody id="summaryTableBody">
-                  <tr class="table-light fw-bold">
-                    <td colspan="5" class="text-end">Tổng cộng (<span id="totalOrdersCount">0</span>):</td>
-                    <td id="totalOrdersAmount">0 đ</td>
-                    <td></td>
-                  </tr>
-                </tbody>
                 <tbody id="ordersTableBody"></tbody>
+                <tfoot id="summaryTableBody" class="table-light fw-bold border-top-2">
+                  <tr>
+                    <td colspan="5" class="text-end">Tổng cộng:</td>
+                    <td id="totalOrdersCount" class="text-center">0</td>
+                    <td id="totalOrdersAmount" class="text-primary">0đ</td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
 

@@ -17,7 +17,7 @@
       <div class="container py-4 ghn-orders-shell" id="shipper-shell">
 
         <!-- ===== STAT CARDS ===== -->
-        <div class="mb-4 ghn-orders-stats ghn-orders-stats--5">
+        <div class="mb-4 ghn-orders-stats ghn-orders-stats--6">
           <div class="ghn-orders-stat-cell">
             <div class="card border-0 shadow-sm p-3 p-md-4 h-100 ghn-orders-stat-card">
               <div class="d-flex align-items-center gap-3">
@@ -45,6 +45,22 @@
                   <div class="text-muted small fw-semibold text-nowrap">
                     <span class="ghn-orders-stat-label-full">Chờ nhận</span>
                     <span class="ghn-orders-stat-label-short">Chờ</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ghn-orders-stat-cell">
+            <div class="card border-0 shadow-sm p-3 p-md-4 h-100 ghn-orders-stat-card">
+              <div class="d-flex align-items-center gap-3">
+                <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info ghn-orders-stat-icon">
+                  <i class="fas fa-handshake fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                  <div class="h4 fw-bold mb-0" id="stat-accepted">0</div>
+                  <div class="text-muted small fw-semibold text-nowrap">
+                    <span class="ghn-orders-stat-label-full">Đã nhận đơn</span>
+                    <span class="ghn-orders-stat-label-short">Đã nhận</span>
                   </div>
                 </div>
               </div>
@@ -113,10 +129,19 @@
                   <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted small"></i></span>
                   <input type="text" class="form-control bg-light border-0 small ghn-orders-search-input" placeholder="Mã đơn, người gửi, người nhận..." id="orderSearchInput" oninput="filterOrders()">
                 </div>
-                <button class="btn btn-primary px-4 fw-semibold shadow-sm ghn-orders-reload-btn" onclick="loadShipperOrders()">
-                  <i class="fas fa-sync-alt me-2"></i>Tải lại
-                </button>
               </div>
+            </div>
+
+            <div class="ghn-orders-inline-filters">
+              <label class="ghn-orders-inline-filter" for="orderFromDate">
+                <span>Từ ngày</span>
+                <input type="date" id="orderFromDate" onchange="filterOrders()">
+              </label>
+              <label class="ghn-orders-inline-filter" for="orderToDate">
+                <span>Đến ngày</span>
+                <input type="date" id="orderToDate" onchange="filterOrders()">
+              </label>
+              <button class="btn btn-light ghn-orders-secondary-btn" type="button" onclick="resetFilters()">Đặt lại</button>
             </div>
 
             <!-- Status Tabs -->
@@ -130,6 +155,11 @@
                 <li class="nav-item">
                   <a class="nav-link fw-bold" href="#" id="tabPending" onclick="switchTab('pending');return false;">
                     Chờ nhận <span class="badge bg-warning text-dark ms-1" id="countPending">0</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link fw-bold" href="#" id="tabAccepted" onclick="switchTab('accepted');return false;">
+                    Đã nhận đơn <span class="badge bg-info ms-1" id="countAccepted">0</span>
                   </a>
                 </li>
                 <li class="nav-item">
@@ -226,13 +256,26 @@
         const el = document.getElementById(id);
         if (el) el.textContent = value;
       }
+      function parseDateFilterMs(v, mode) {
+        const raw = String(v || '').trim();
+        if (!raw) return null;
+        const suffix = mode === 'end' ? 'T23:59:59' : 'T00:00:00';
+        const d = new Date(raw + suffix);
+        return isNaN(d.getTime()) ? null : d.getTime();
+      }
+      function orderFilterDateMs(o) {
+        const raw = normalizeText(o.created_at || o.created_date || o.ngay_lay_hang || '');
+        if (!raw) return 0;
+        const d = new Date(raw);
+        return isNaN(d.getTime()) ? 0 : d.getTime();
+      }
 
       /* ── Trạng thái ── */
       function deriveStatus(o) {
         if (normalizeText(o.ngayhuy)) return 'cancel';
         if (normalizeText(o.ngayhoanthanhthucte)) return 'done';
         if (normalizeText(o.ngaybatdauthucte)) return 'shipping';
-        if (normalizeText(o.thoidiemnhandon || o.ngaynhan)) return 'pending';
+        if (normalizeText(o.thoidiemnhandon || o.ngaynhan)) return 'accepted';
         const s = String(o.trang_thai || o.status || '').toLowerCase();
         if (['cancelled','canceled','da_huy'].includes(s)) return 'cancel';
         if (['completed','success','delivered'].includes(s)) return 'done';
@@ -242,6 +285,7 @@
 
       const STATUS_META = {
         pending:  { label: 'Chờ nhận',   cls: 'bg-warning text-warning' },
+        accepted: { label: 'Đã nhận đơn', cls: 'bg-info text-info' },
         shipping: { label: 'Đang giao',  cls: 'bg-primary text-primary' },
         done:     { label: 'Hoàn thành', cls: 'bg-success text-success' },
         cancel:   { label: 'Đã hủy',     cls: 'bg-danger text-danger'   },
@@ -253,23 +297,27 @@
       }
 
       /* ── Tab đếm ── */
-      function updateTabCounts() {
-        setText('countAll', allOrders.length);
-        setText('countPending', allOrders.filter(o => deriveStatus(o) === 'pending').length);
-        setText('countShipping', allOrders.filter(o => deriveStatus(o) === 'shipping').length);
-        setText('countDone', allOrders.filter(o => deriveStatus(o) === 'done').length);
-        setText('countCancel', allOrders.filter(o => deriveStatus(o) === 'cancel').length);
+      function updateTabCounts(baseList) {
+        const source = Array.isArray(baseList) ? baseList : allOrders;
+        setText('countAll', source.length);
+        setText('countPending', source.filter(o => deriveStatus(o) === 'pending').length);
+        setText('countAccepted', source.filter(o => deriveStatus(o) === 'accepted').length);
+        setText('countShipping', source.filter(o => deriveStatus(o) === 'shipping').length);
+        setText('countDone', source.filter(o => deriveStatus(o) === 'done').length);
+        setText('countCancel', source.filter(o => deriveStatus(o) === 'cancel').length);
       }
 
       /* ── Stat cards ── */
-      function updateStats() {
-        const revenue = allOrders
+      function updateStats(baseList) {
+        const source = Array.isArray(baseList) ? baseList : allOrders;
+        const revenue = source
           .filter(o => deriveStatus(o) === 'done')
           .reduce((sum, o) => sum + Number(o.tong_cuoc || o.shipping_fee || 0), 0);
-        setText('stat-total', allOrders.length);
-        setText('stat-pending', allOrders.filter(o => deriveStatus(o) === 'pending').length);
-        setText('stat-shipping', allOrders.filter(o => deriveStatus(o) === 'shipping').length);
-        setText('stat-success', allOrders.filter(o => deriveStatus(o) === 'done').length);
+        setText('stat-total', source.length);
+        setText('stat-pending', source.filter(o => deriveStatus(o) === 'pending').length);
+        setText('stat-accepted', source.filter(o => deriveStatus(o) === 'accepted').length);
+        setText('stat-shipping', source.filter(o => deriveStatus(o) === 'shipping').length);
+        setText('stat-success', source.filter(o => deriveStatus(o) === 'done').length);
         setText('stat-revenue', revenue.toLocaleString('vi-VN') + 'đ');
       }
 
@@ -408,7 +456,19 @@
       /* ── Filter ── */
       window.filterOrders = function () {
         const q = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
-        let list = allOrders;
+        const fromTime = parseDateFilterMs(document.getElementById('orderFromDate')?.value, 'start');
+        const toTime = parseDateFilterMs(document.getElementById('orderToDate')?.value, 'end');
+        let list = allOrders.filter(o => {
+          if (fromTime == null && toTime == null) return true;
+          const orderTime = orderFilterDateMs(o);
+          if (!orderTime) return false;
+          if (fromTime != null && orderTime < fromTime) return false;
+          if (toTime != null && orderTime > toTime) return false;
+          return true;
+        });
+
+        updateStats(list);
+        updateTabCounts(list);
 
         if (currentTab !== 'all') {
           list = list.filter(o => deriveStatus(o) === currentTab);
@@ -422,14 +482,29 @@
             return code.includes(q) || sender.includes(q) || recv.includes(q) || phone.includes(q);
           });
         }
+        currentPage = Math.max(1, Math.min(currentPage, Math.max(1, Math.ceil(list.length / ITEMS_PER_PAGE))));
         renderTable(list);
+      };
+
+      window.resetFilters = function () {
+        const searchNode = document.getElementById('orderSearchInput');
+        const fromNode = document.getElementById('orderFromDate');
+        const toNode = document.getElementById('orderToDate');
+        if (searchNode) searchNode.value = '';
+        if (fromNode) fromNode.value = '';
+        if (toNode) toNode.value = '';
+        currentTab = 'all';
+        currentPage = 1;
+        document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
+        document.getElementById('tabAll')?.classList.add('active');
+        filterOrders();
       };
 
       /* ── Switch Tab ── */
       window.switchTab = function (tab) {
         currentTab = tab;
         currentPage = 1;
-        const tabMap = { all:'tabAll', pending:'tabPending', shipping:'tabShipping', done:'tabDone', cancel:'tabCancel' };
+        const tabMap = { all:'tabAll', pending:'tabPending', accepted:'tabAccepted', shipping:'tabShipping', done:'tabDone', cancel:'tabCancel' };
         document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
         if (tabMap[tab]) document.getElementById(tabMap[tab])?.classList.add('active');
         filterOrders();
@@ -483,8 +558,6 @@
                 || (sessionName && nccName.includes(sessionName));
           }).reverse();
 
-          updateStats();
-          updateTabCounts();
           filterOrders();
 
           if (!allOrders.length) {

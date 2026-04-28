@@ -17,7 +17,7 @@
       <div class="container py-4 ghn-orders-shell" id="customer-shell">
 
         <!-- ===== STAT CARDS ===== -->
-        <div class="mb-4 ghn-orders-stats ghn-orders-stats--4" id="stat-row">
+        <div class="mb-4 ghn-orders-stats ghn-orders-stats--6" id="stat-row">
           <div class="ghn-orders-stat-cell">
             <div class="card border-0 shadow-sm p-3 p-md-4 h-100 ghn-orders-stat-card">
               <div class="d-flex align-items-center gap-3">
@@ -43,8 +43,40 @@
                 <div class="overflow-hidden">
                   <div class="h4 fw-bold mb-0" id="stat-pending">0</div>
                   <div class="text-muted small fw-semibold text-nowrap">
-                    <span class="ghn-orders-stat-label-full">Chờ xử lý</span>
-                    <span class="ghn-orders-stat-label-short">Chờ</span>
+                    <span class="ghn-orders-stat-label-full">Chưa xử lý</span>
+                    <span class="ghn-orders-stat-label-short">Chưa</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ghn-orders-stat-cell">
+            <div class="card border-0 shadow-sm p-3 p-md-4 h-100 ghn-orders-stat-card">
+              <div class="d-flex align-items-center gap-3">
+                <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info ghn-orders-stat-icon">
+                  <i class="fas fa-handshake fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                  <div class="h4 fw-bold mb-0" id="stat-accepted">0</div>
+                  <div class="text-muted small fw-semibold text-nowrap">
+                    <span class="ghn-orders-stat-label-full">Đã nhận đơn</span>
+                    <span class="ghn-orders-stat-label-short">Đã nhận</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ghn-orders-stat-cell">
+            <div class="card border-0 shadow-sm p-3 p-md-4 h-100 ghn-orders-stat-card">
+              <div class="d-flex align-items-center gap-3">
+                <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary ghn-orders-stat-icon">
+                  <i class="fas fa-truck fa-lg"></i>
+                </div>
+                <div class="overflow-hidden">
+                  <div class="h4 fw-bold mb-0" id="stat-shipping">0</div>
+                  <div class="text-muted small fw-semibold text-nowrap">
+                    <span class="ghn-orders-stat-label-full">Đang giao</span>
+                    <span class="ghn-orders-stat-label-short">Giao</span>
                   </div>
                 </div>
               </div>
@@ -87,7 +119,7 @@
         <!-- ===== MAIN CARD ===== -->
         <div class="card border-0 shadow-sm ghn-orders-main-card">
           <div class="card-header bg-white py-3 border-0">
-            <!-- Tiêu đề + Search + Tải lại -->
+            <!-- Tiêu đề + Search -->
             <div class="ghn-orders-toolbar">
               <div>
                 <h5 class="fw-bold mb-1">Đơn hàng của tôi</h5>
@@ -98,10 +130,19 @@
                   <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted small"></i></span>
                   <input type="text" class="form-control bg-light border-0 small ghn-orders-search-input" placeholder="Mã đơn, địa chỉ..." id="orderSearchInput" oninput="filterOrders()">
                 </div>
-                <button class="btn btn-primary px-4 fw-semibold shadow-sm ghn-orders-reload-btn" onclick="loadMyOrders()">
-                  <i class="fas fa-sync-alt me-2"></i>Tải lại
-                </button>
               </div>
+            </div>
+
+            <div class="ghn-orders-inline-filters">
+              <label class="ghn-orders-inline-filter" for="orderFromDate">
+                <span>Từ ngày</span>
+                <input type="date" id="orderFromDate" onchange="filterOrders()">
+              </label>
+              <label class="ghn-orders-inline-filter" for="orderToDate">
+                <span>Đến ngày</span>
+                <input type="date" id="orderToDate" onchange="filterOrders()">
+              </label>
+              <button class="btn btn-light ghn-orders-secondary-btn" type="button" onclick="resetFilters()">Đặt lại</button>
             </div>
 
             <!-- Status Tabs -->
@@ -114,7 +155,12 @@
                 </li>
                 <li class="nav-item">
                   <a class="nav-link fw-bold" href="#" id="tabPending" onclick="switchTab('pending');return false;">
-                    Chờ xử lý <span class="badge bg-warning text-dark ms-1" id="countPending">0</span>
+                    Chưa xử lý <span class="badge bg-warning text-dark ms-1" id="countPending">0</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link fw-bold" href="#" id="tabAccepted" onclick="switchTab('accepted');return false;">
+                    Đã nhận đơn <span class="badge bg-info ms-1" id="countAccepted">0</span>
                   </a>
                 </li>
                 <li class="nav-item">
@@ -207,12 +253,26 @@
         return isNaN(d) ? esc(v) : d.toLocaleDateString('vi-VN');
       }
       function normalizeText(v) { return String(v || '').replace(/\s+/g,' ').trim(); }
+      function parseDateFilterMs(v, mode) {
+        const raw = String(v || '').trim();
+        if (!raw) return null;
+        const suffix = mode === 'end' ? 'T23:59:59' : 'T00:00:00';
+        const d = new Date(raw + suffix);
+        return isNaN(d.getTime()) ? null : d.getTime();
+      }
+      function orderFilterDateMs(o) {
+        const raw = normalizeText(o.created_at || o.created_date || o.ngay_lay_hang || '');
+        if (!raw) return 0;
+        const d = new Date(raw);
+        return isNaN(d.getTime()) ? 0 : d.getTime();
+      }
 
       /* ── Trạng thái ── */
       function deriveStatus(o) {
         if (normalizeText(o.ngayhuy)) return 'cancel';
         if (normalizeText(o.ngayhoanthanhthucte)) return 'done';
-        if (normalizeText(o.ngaybatdauthucte || o.thoidiemnhandon || o.ngaynhan)) return 'shipping';
+        if (normalizeText(o.ngaybatdauthucte)) return 'shipping';
+        if (normalizeText(o.thoidiemnhandon || o.ngaynhan)) return 'accepted';
         const s = String(o.trang_thai || o.status || '').toLowerCase();
         if (['cancelled','canceled','da_huy'].includes(s)) return 'cancel';
         if (['completed','success','delivered'].includes(s)) return 'done';
@@ -221,7 +281,8 @@
       }
 
       const STATUS_META = {
-        pending:  { label: 'Chờ xử lý',  cls: 'bg-warning text-warning' },
+        pending:  { label: 'Chưa xử lý', cls: 'bg-warning text-warning' },
+        accepted: { label: 'Đã nhận đơn', cls: 'bg-info text-info' },
         shipping: { label: 'Đang giao',  cls: 'bg-primary text-primary' },
         done:     { label: 'Hoàn thành', cls: 'bg-success text-success' },
         cancel:   { label: 'Đã hủy',     cls: 'bg-danger text-danger'   },
@@ -233,20 +294,25 @@
       }
 
       /* ── Tab đếm ── */
-      function updateTabCounts() {
-        document.getElementById('countAll').textContent     = allOrders.length;
-        document.getElementById('countPending').textContent = allOrders.filter(o => deriveStatus(o) === 'pending').length;
-        document.getElementById('countShipping').textContent= allOrders.filter(o => deriveStatus(o) === 'shipping').length;
-        document.getElementById('countDone').textContent    = allOrders.filter(o => deriveStatus(o) === 'done').length;
-        document.getElementById('countCancel').textContent  = allOrders.filter(o => deriveStatus(o) === 'cancel').length;
+      function updateTabCounts(baseList) {
+        const source = Array.isArray(baseList) ? baseList : allOrders;
+        document.getElementById('countAll').textContent     = source.length;
+        document.getElementById('countPending').textContent = source.filter(o => deriveStatus(o) === 'pending').length;
+        document.getElementById('countAccepted').textContent= source.filter(o => deriveStatus(o) === 'accepted').length;
+        document.getElementById('countShipping').textContent= source.filter(o => deriveStatus(o) === 'shipping').length;
+        document.getElementById('countDone').textContent    = source.filter(o => deriveStatus(o) === 'done').length;
+        document.getElementById('countCancel').textContent  = source.filter(o => deriveStatus(o) === 'cancel').length;
       }
 
       /* ── Stat cards ── */
-      function updateStats() {
-        document.getElementById('stat-total').textContent   = allOrders.length;
-        document.getElementById('stat-pending').textContent = allOrders.filter(o => ['pending','shipping'].includes(deriveStatus(o))).length;
-        document.getElementById('stat-success').textContent = allOrders.filter(o => deriveStatus(o) === 'done').length;
-        document.getElementById('stat-fail').textContent    = allOrders.filter(o => deriveStatus(o) === 'cancel').length;
+      function updateStats(baseList) {
+        const source = Array.isArray(baseList) ? baseList : allOrders;
+        document.getElementById('stat-total').textContent   = source.length;
+        document.getElementById('stat-pending').textContent = source.filter(o => deriveStatus(o) === 'pending').length;
+        document.getElementById('stat-accepted').textContent= source.filter(o => deriveStatus(o) === 'accepted').length;
+        document.getElementById('stat-shipping').textContent= source.filter(o => deriveStatus(o) === 'shipping').length;
+        document.getElementById('stat-success').textContent = source.filter(o => deriveStatus(o) === 'done').length;
+        document.getElementById('stat-fail').textContent    = source.filter(o => deriveStatus(o) === 'cancel').length;
       }
 
       /* ── Pagination ── */
@@ -378,7 +444,19 @@
       /* ── Filter ── */
       window.filterOrders = function () {
         const q = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
-        let list = allOrders;
+        const fromTime = parseDateFilterMs(document.getElementById('orderFromDate')?.value, 'start');
+        const toTime = parseDateFilterMs(document.getElementById('orderToDate')?.value, 'end');
+        let list = allOrders.filter(o => {
+          if (fromTime == null && toTime == null) return true;
+          const orderTime = orderFilterDateMs(o);
+          if (!orderTime) return false;
+          if (fromTime != null && orderTime < fromTime) return false;
+          if (toTime != null && orderTime > toTime) return false;
+          return true;
+        });
+
+        updateStats(list);
+        updateTabCounts(list);
 
         if (currentTab !== 'all') {
           list = list.filter(o => deriveStatus(o) === currentTab);
@@ -391,14 +469,29 @@
             return code.includes(q) || from.includes(q) || to.includes(q);
           });
         }
+        currentPage = Math.max(1, Math.min(currentPage, Math.max(1, Math.ceil(list.length / ITEMS_PER_PAGE))));
         renderTable(list);
+      };
+
+      window.resetFilters = function () {
+        const searchNode = document.getElementById('orderSearchInput');
+        const fromNode = document.getElementById('orderFromDate');
+        const toNode = document.getElementById('orderToDate');
+        if (searchNode) searchNode.value = '';
+        if (fromNode) fromNode.value = '';
+        if (toNode) toNode.value = '';
+        currentTab = 'all';
+        currentPage = 1;
+        document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
+        document.getElementById('tabAll')?.classList.add('active');
+        filterOrders();
       };
 
       /* ── Switch Tab ── */
       window.switchTab = function (tab) {
         currentTab = tab;
         currentPage = 1;
-        const tabMap = { all:'tabAll', pending:'tabPending', shipping:'tabShipping', done:'tabDone', cancel:'tabCancel' };
+        const tabMap = { all:'tabAll', pending:'tabPending', accepted:'tabAccepted', shipping:'tabShipping', done:'tabDone', cancel:'tabCancel' };
         document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
         if (tabMap[tab]) document.getElementById(tabMap[tab])?.classList.add('active');
         filterOrders();
@@ -442,8 +535,6 @@
             return byId || byPhone;
           }).reverse();
 
-          updateStats();
-          updateTabCounts();
           filterOrders();
 
           if (!allOrders.length) {

@@ -1317,6 +1317,12 @@
       if (countEl) {
         countEl.textContent = statusCounts[key];
       }
+      
+      // Also update assigned counts for providers if they exist
+      var assignedCountEl = document.getElementById("count-assigned-" + key);
+      if (assignedCountEl) {
+        assignedCountEl.textContent = statusCounts[key];
+      }
     });
   }
 
@@ -1434,6 +1440,12 @@
       "providerAssignedFilterForm",
     );
 
+    var today = new Date().toISOString().split("T")[0];
+    ["filterFromDate", "filterToDate", "providerFilterFromDate", "providerFilterToDate"].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = today;
+    });
+
     renderStats(statsOrders, role);
 
     function updateCount() {
@@ -1482,6 +1494,16 @@
               assignedState.filtered.length +
               " đơn"
             : "Không có dữ liệu phù hợp bộ lọc.";
+      }
+
+      var totalCountEl = document.getElementById("totalAssignedOrdersCount");
+      var totalAmountEl = document.getElementById("totalAssignedOrdersAmount");
+      if (totalCountEl && totalAmountEl) {
+        var totalAmount = assignedState.filtered.reduce(function (sum, order) {
+          return sum + calculateTotal(order);
+        }, 0);
+        totalCountEl.textContent = assignedState.filtered.length;
+        totalAmountEl.textContent = formatCurrency(totalAmount);
       }
     }
 
@@ -1776,10 +1798,52 @@
       });
     }
 
-    var statusFilterTrigger = document.getElementById("statusFilterTrigger");
-    if (statusFilterTrigger) {
-      statusFilterTrigger.addEventListener("click", function () {
-        var container = document.getElementById("statusFilterContainer");
+    function applyAssignedStatusFilter(status) {
+      var statusNode = document.getElementById("providerFilterStatus");
+      if (statusNode) {
+        statusNode.value = status;
+      }
+      
+      var filterBar = document.getElementById("providerStatusFilterBar");
+      if (filterBar) {
+        var buttons = filterBar.querySelectorAll(".status-filter-btn");
+        var activeLabel = "Tất cả";
+        buttons.forEach(function (btn) {
+          var isActive = btn.dataset.status === status;
+          btn.classList.toggle("active", isActive);
+          if (isActive) {
+            activeLabel = btn.querySelector(".status-label").textContent;
+          }
+        });
+
+        var currentLabelNode = document.getElementById("providerCurrentStatusLabel");
+        if (currentLabelNode) {
+          currentLabelNode.textContent = activeLabel;
+        }
+
+        var container = document.getElementById("providerStatusFilterContainer");
+        if (container) {
+          container.classList.remove("is-open");
+        }
+      }
+
+      applyAssignedFilter();
+    }
+
+    var providerStatusFilterBar = document.getElementById("providerStatusFilterBar");
+    if (providerStatusFilterBar) {
+      providerStatusFilterBar.addEventListener("click", function (e) {
+        var btn = e.target.closest(".status-filter-btn");
+        if (!btn) return;
+        var status = btn.dataset.status;
+        applyAssignedStatusFilter(status);
+      });
+    }
+
+    var providerStatusFilterTrigger = document.getElementById("providerStatusFilterTrigger");
+    if (providerStatusFilterTrigger) {
+      providerStatusFilterTrigger.addEventListener("click", function () {
+        var container = document.getElementById("providerStatusFilterContainer");
         if (container) {
           container.classList.toggle("is-open");
         }
@@ -1836,6 +1900,16 @@
         event.preventDefault();
         applyFilter();
       });
+
+      // Live filter events
+      ["filterOrderCode", "filterFromDate", "filterToDate"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener(el.type === "text" ? "input" : "change", function () {
+            applyFilter();
+          });
+        }
+      });
     }
 
     if (assignedFilterForm) {
@@ -1843,12 +1917,26 @@
         event.preventDefault();
         applyAssignedFilter();
       });
+
+      // Live filter events for provider
+      ["providerFilterOrderCode", "providerFilterFromDate", "providerFilterToDate"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener(el.type === "text" ? "input" : "change", function () {
+            applyAssignedFilter();
+          });
+        }
+      });
     }
 
     var resetBtn = document.getElementById("filterReset");
     if (resetBtn) {
       resetBtn.addEventListener("click", function () {
         if (form) form.reset();
+        ["filterFromDate", "filterToDate"].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.value = today;
+        });
         applyStatusFilter("all");
       });
     }
@@ -1857,6 +1945,10 @@
     if (assignedResetBtn) {
       assignedResetBtn.addEventListener("click", function () {
         if (assignedFilterForm) assignedFilterForm.reset();
+        ["providerFilterFromDate", "providerFilterToDate"].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.value = today;
+        });
         applyAssignedFilter();
       });
     }
@@ -1897,12 +1989,8 @@
 
     /* Provider Start/Complete handled in detail page */
 
-    renderRows();
-    renderAssignedRows();
-    renderPagination();
-    renderAssignedPagination();
-    updateCount();
-    updateAssignedCount();
+    applyFilter();
+    applyAssignedFilter();
   }
 
   // ==========================================

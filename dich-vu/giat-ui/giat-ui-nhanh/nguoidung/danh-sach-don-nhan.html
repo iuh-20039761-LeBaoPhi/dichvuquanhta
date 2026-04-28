@@ -65,7 +65,7 @@
             </p>
           </div>
 
-          <div class="row g-3 stats-grid" id="statsGrid"></div>
+          <!-- <div class="row g-3 stats-grid" id="statsGrid"></div> -->
 
           <article class="panel-card mt-3">
             <div class="panel-head">
@@ -115,20 +115,15 @@
                       type="date"
                     />
                   </div>
-                </div>
-
-                <div class="filter-actions mt-3">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search" aria-hidden="true"></i>
-                    Tìm kiếm
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    id="filterReset"
-                  >
-                    Đặt lại
-                  </button>
+                  <div class="d-flex align-items-end">
+                    <button
+                      type="button"
+                      class="btn btn-primary w-100"
+                      id="filterReset"
+                    >
+                      Đặt lại
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
@@ -189,21 +184,7 @@
                     />
                   </div>
 
-                  <div>
-                    <label class="form-label" for="providerFilterStatus"
-                      >Trạng thái</label
-                    >
-                    <select
-                      class="form-select"
-                      id="providerFilterStatus"
-                      name="status"
-                    >
-                      <option value="all">Tất cả</option>
-                      <option value="accepted">Đã xác nhận</option>
-                      <option value="processing">Đang thực hiện</option>
-                      <option value="completed">Hoàn thành</option>
-                    </select>
-                  </div>
+                  <input type="hidden" id="providerFilterStatus" name="status" value="all" />
 
                   <div>
                     <label class="form-label" for="providerFilterFromDate"
@@ -228,22 +209,47 @@
                       type="date"
                     />
                   </div>
-                </div>
-
-                <div class="filter-actions mt-3">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search" aria-hidden="true"></i>
-                    Tìm kiếm
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    id="providerFilterReset"
-                  >
-                    Đặt lại
-                  </button>
+                  <div class="d-flex align-items-end">
+                    <button
+                      type="button"
+                      class="btn btn-primary w-100"
+                      id="providerFilterReset"
+                    >
+                      Đặt lại
+                    </button>
+                  </div>
                 </div>
               </form>
+
+              <div class="status-filter-container mt-3 shadow-sm" id="providerStatusFilterContainer">
+                <button class="status-filter-mobile-trigger" id="providerStatusFilterTrigger">
+                  <i class="fas fa-filter me-2"></i>
+                  <span>Trạng thái: <strong id="providerCurrentStatusLabel">Tất cả</strong></span>
+                  <i class="fas fa-chevron-down ms-auto trigger-arrow"></i>
+                </button>
+                <div class="status-filter-scroll" id="providerStatusFilterBar">
+                  <button class="status-filter-btn active" data-status="all">
+                    <i class="fas fa-list-ul"></i>
+                    <span class="status-label">Tất cả</span>
+                    <span class="status-count" id="count-assigned-all">0</span>
+                  </button>
+                  <button class="status-filter-btn" data-status="accepted">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="status-label">Đã xác nhận</span>
+                    <span class="status-count" id="count-assigned-accepted">0</span>
+                  </button>
+                  <button class="status-filter-btn" data-status="processing">
+                    <i class="fas fa-spinner"></i>
+                    <span class="status-label">Đang thực hiện</span>
+                    <span class="status-count" id="count-assigned-processing">0</span>
+                  </button>
+                  <button class="status-filter-btn" data-status="completed">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span class="status-label">Hoàn thành</span>
+                    <span class="status-count" id="count-assigned-completed">0</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div class="table-responsive">
@@ -259,6 +265,13 @@
                     <th>Thao tác</th>
                   </tr>
                 </thead>
+                <tbody id="summaryAssignedTableBody">
+                  <tr class="table-light fw-bold">
+                    <td colspan="5" class="text-end">Tổng cộng (<span id="totalAssignedOrdersCount">0</span>):</td>
+                    <td id="totalAssignedOrdersAmount">0 đ</td>
+                    <td></td>
+                  </tr>
+                </tbody>
                 <tbody id="providerAssignedTableBody">
                   <tr>
                     <td colspan="7" class="text-center py-4 text-muted">

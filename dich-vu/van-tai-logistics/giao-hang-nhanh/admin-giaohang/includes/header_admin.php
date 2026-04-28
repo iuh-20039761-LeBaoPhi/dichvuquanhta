@@ -31,11 +31,12 @@ $unreadCount = 0;
                 <li class="<?php echo in_array($currentPage, ['index.php', 'admin_stats.php'], true) ? 'active' : ''; ?>">
                     <a href="index.php">Dashboard</a>
                 </li>
-                <li class="has-submenu <?php echo in_array($currentPage, ['orders_manage.php', 'users_manage.php', 'articles_manage.php'], true) ? 'active' : ''; ?>">
+                <li class="has-submenu <?php echo in_array($currentPage, ['orders_manage.php', 'users_manage.php', 'articles_manage.php', 'admin_service_content.php'], true) ? 'active' : ''; ?>">
                     <a href="#" class="submenu-toggle">Quản lý <span class="arrow">▼</span></a>
                     <ul class="submenu">
                         <li class="<?php echo $currentPage === 'orders_manage.php' ? 'active' : ''; ?>"><a href="orders_manage.php">Đơn hàng</a></li>
                         <li class="<?php echo $currentPage === 'users_manage.php' ? 'active' : ''; ?>"><a href="users_manage.php">Người dùng</a></li>
+                        <li class="<?php echo $currentPage === 'admin_service_content.php' ? 'active' : ''; ?>"><a href="admin_service_content.php">Nội dung dịch vụ</a></li>
                         <li class="<?php echo $currentPage === 'articles_manage.php' ? 'active' : ''; ?>"><a href="articles_manage.php">Cẩm nang</a></li>
                     </ul>
                 </li>

@@ -11,6 +11,8 @@ const orderManager = (function () {
         filters: {
             search: "",
             status: "",
+            fromDate: "",
+            toDate: "",
             service: "",
             provider: "",
             survey: "",
@@ -19,8 +21,7 @@ const orderManager = (function () {
         },
         orderIdToDelete: null,
         currentPage: 1,
-        limit: 20,
-        hasMore: true,
+        pageSize: 20,
     };
 
     function normalizeText(value) {
@@ -65,6 +66,10 @@ const orderManager = (function () {
             currency: "VND",
             maximumFractionDigits: 0,
         }).format(amount);
+    }
+
+    function getOrderAmount(order) {
+        return Number(order?.tong_tam_tinh || order?.tong_tien || 0);
     }
 
     function formatDate(value, withTime = false) {
@@ -128,10 +133,20 @@ const orderManager = (function () {
         return createdMs >= getStartOfTodayMs() && createdMs < getStartOfTomorrowMs();
     }
 
-    async function fetchOrdersFromApi(page = 1) {
-        const batch = await window.adminApi.list(window.adminApi.ORDERS_TABLE, {
-            page,
-            limit: state.limit,
+    function parseDateFilterMs(value, mode = "start") {
+        const raw = normalizeText(value);
+        if (!raw) {
+            return null;
+        }
+        const suffix = mode === "end" ? "T23:59:59" : "T00:00:00";
+        const date = new Date(`${raw}${suffix}`);
+        return Number.isNaN(date.getTime()) ? null : date.getTime();
+    }
+
+    async function fetchOrdersFromApi() {
+        const batch = await window.adminApi.listAll(window.adminApi.ORDERS_TABLE, {
+            limit: 200,
+            maxPages: 20,
             sort: { created_at: "desc", id: "desc" },
         });
         return Array.isArray(batch) ? batch : [];
@@ -300,7 +315,10 @@ const orderManager = (function () {
     async function fetchOrders() {
         const tbody = document.getElementById("orderListBody");
         renderSkeleton(tbody, 5);
-        setTextContent("cd-admin-orders-summary", `Đang tải trang ${state.currentPage}...`);
+        const summary = document.querySelector(".cd-admin-orders-summary");
+        if (summary) {
+            summary.textContent = "Đang tải toàn bộ dữ liệu đơn hàng...";
+        }
 
         try {
             await window.adminApi.ensureNguoidungTable();
@@ -308,7 +326,7 @@ const orderManager = (function () {
 
             const [providers, orders] = await Promise.all([
                 window.adminApi.listProviders(),
-                fetchOrdersFromApi(state.currentPage),
+                fetchOrdersFromApi(),
             ]);
 
             state.providers = providers
@@ -320,58 +338,72 @@ const orderManager = (function () {
             state.providerMap = new Map(state.providers.map((provider) => [String(provider.id), provider]));
             populateProviderSelects();
 
-            state.allOrders = orders.map(normalizeOrder);
-            state.hasMore = state.allOrders.length === state.limit;
-            
-            updateStats();
+            state.allOrders = orders.map(normalizeOrder).sort(compareOrdersByCreatedDesc);
             applyFilters();
-            updatePaginationUI();
         } catch (error) {
             tbody.innerHTML = `<tr><td colspan="6" class="orders-table-message-row orders-table-message-row-danger">${escapeHtml(error?.message || "Không thể tải dữ liệu đơn hàng.")}</td></tr>`;
             showToast(error?.message || "Không thể tải dữ liệu đơn hàng.", "danger");
         }
     }
 
-    function updatePaginationUI() {
-        setTextContent("currentPageDisplay", state.currentPage);
+    function updatePaginationUI(totalItems = state.filteredOrders.length) {
+        const totalPages = Math.max(1, Math.ceil(totalItems / state.pageSize));
+        const wrap = document.getElementById("paginationWrap");
+        setTextContent("currentPageDisplay", `${state.currentPage}/${totalPages}`);
         const btnPrev = document.getElementById("btnPrev");
         const btnNext = document.getElementById("btnNext");
         if (btnPrev) btnPrev.disabled = state.currentPage <= 1;
-        if (btnNext) btnNext.disabled = !state.hasMore;
-        
+        if (btnNext) btnNext.disabled = state.currentPage >= totalPages;
+        if (wrap) wrap.hidden = totalItems <= state.pageSize;
+
         const summary = document.querySelector(".cd-admin-orders-summary");
         if (summary) {
-            summary.textContent = `Trang ${state.currentPage} - Hiển thị tối đa ${state.limit} đơn hàng mới nhất.`;
+            summary.textContent = `Trang ${state.currentPage}/${totalPages} • ${Number(totalItems || 0).toLocaleString("vi-VN")} đơn sau lọc.`;
         }
     }
 
     function changePage(delta) {
         const next = state.currentPage + delta;
         if (next < 1) return;
-        if (delta > 0 && !state.hasMore) return;
+        const totalPages = Math.max(1, Math.ceil(state.filteredOrders.length / state.pageSize));
+        if (next > totalPages) return;
         state.currentPage = next;
-        fetchOrders();
+        renderTable();
+        updatePaginationUI();
     }
 
-    function updateStats() {
-        const totalOrders = state.allOrders.length;
-        const newOrders = state.allOrders.filter((order) => order.status_meta.key === "pending").length;
-        const activeOrders = state.allOrders.filter((order) => ["accepted", "shipping"].includes(order.status_meta.key)).length;
-        const completedOrders = state.allOrders.filter((order) => order.status_meta.key === "completed").length;
-        const cancelledOrders = state.allOrders.filter((order) => order.status_meta.key === "cancelled").length;
+    function updateStats(baseOrders = state.allOrders) {
+        const totalOrders = baseOrders.length;
+        const newOrders = baseOrders.filter((order) => order.status_meta.key === "pending").length;
+        const acceptedOrders = baseOrders.filter((order) => order.status_meta.key === "accepted").length;
+        const shippingOrders = baseOrders.filter((order) => order.status_meta.key === "shipping").length;
+        const completedOrders = baseOrders.filter((order) => order.status_meta.key === "completed").length;
+        const cancelledOrders = baseOrders.filter((order) => order.status_meta.key === "cancelled").length;
 
         setTextContent("statsTotalOrders", totalOrders);
         setTextContent("statsNewOrders", newOrders);
-        setTextContent("statsActiveOrders", activeOrders);
+        setTextContent("statsAcceptedOrders", acceptedOrders);
+        setTextContent("statsShippingOrders", shippingOrders);
         setTextContent("statsCompletedOrders", completedOrders);
         setTextContent("statsCancelledOrders", cancelledOrders);
 
-        // Update tab badges if they exist
         setTextContent("count-all", totalOrders);
         setTextContent("count-pending", newOrders);
-        setTextContent("count-active", activeOrders);
+        setTextContent("count-accepted", acceptedOrders);
+        setTextContent("count-shipping", shippingOrders);
         setTextContent("count-completed", completedOrders);
         setTextContent("count-cancelled", cancelledOrders);
+    }
+
+    function getStatusFilterLabel(statusKey) {
+        const statusMap = {
+            pending: "Mới tiếp nhận",
+            accepted: "Đã nhận đơn",
+            shipping: "Đang triển khai",
+            completed: "Hoàn thành",
+            cancelled: "Đã hủy",
+        };
+        return statusMap[statusKey] || statusKey;
     }
 
     function renderFilterChips() {
@@ -384,9 +416,14 @@ const orderManager = (function () {
         if (state.filters.search) {
             chips.push({ key: "search", label: `Tìm: ${state.filters.search}` });
         }
+        if (state.filters.fromDate) {
+            chips.push({ key: "fromDate", label: `Từ ngày: ${state.filters.fromDate}` });
+        }
+        if (state.filters.toDate) {
+            chips.push({ key: "toDate", label: `Đến ngày: ${state.filters.toDate}` });
+        }
         if (state.filters.status) {
-            const statusOption = document.querySelector(`#statusFilter option[value="${state.filters.status}"]`);
-            chips.push({ key: "status", label: `Trạng thái: ${statusOption?.textContent || state.filters.status}` });
+            chips.push({ key: "status", label: `Trạng thái: ${getStatusFilterLabel(state.filters.status)}` });
         }
         if (state.filters.service) {
             chips.push({ key: "service", label: `Dịch vụ: ${getServiceLabel(state.filters.service)}` });
@@ -409,9 +446,53 @@ const orderManager = (function () {
             .join("");
     }
 
+    function updateFilteredTotalBar() {
+        const countNode = document.getElementById("ordersFilteredCount");
+        const totalNode = document.getElementById("ordersFilteredTotal");
+        if (!countNode && !totalNode) {
+            return;
+        }
+
+        const totalAmount = state.filteredOrders.reduce((sum, order) => sum + getOrderAmount(order), 0);
+        if (countNode) {
+            countNode.textContent = Number(state.filteredOrders.length || 0).toLocaleString("vi-VN");
+        }
+        if (totalNode) {
+            totalNode.textContent = formatMoney(totalAmount);
+        }
+    }
+
     function applyFilters() {
         const keyword = normalizeLowerText(state.filters.search);
-        state.filteredOrders = state.allOrders.filter((order) => {
+        const fromTime = parseDateFilterMs(state.filters.fromDate, "start");
+        const toTime = parseDateFilterMs(state.filters.toDate, "end");
+
+        const dateFilteredOrders = state.allOrders.filter((order) => {
+            if (fromTime == null && toTime == null) {
+                return true;
+            }
+            const createdMs = getOrderCreatedMs(order);
+            if (!createdMs) {
+                return false;
+            }
+            if (fromTime != null && createdMs < fromTime) {
+                return false;
+            }
+            if (toTime != null && createdMs > toTime) {
+                return false;
+            }
+            return true;
+        });
+
+        updateStats(dateFilteredOrders);
+
+        state.filteredOrders = dateFilteredOrders.filter((order) => {
+            if (state.filters.status) {
+                if (order.status_meta.key !== state.filters.status) {
+                    return false;
+                }
+            }
+
             if (keyword) {
                 const haystack = [
                     order.display_code,
@@ -427,14 +508,6 @@ const orderManager = (function () {
                 ].map((value) => normalizeLowerText(value)).join(" ");
 
                 if (!haystack.includes(keyword)) {
-                    return false;
-                }
-            }
-
-            if (state.filters.status) {
-                if (state.filters.status === 'active') {
-                    if (!["accepted", "shipping"].includes(order.status_meta.key)) return false;
-                } else if (order.status_meta.key !== state.filters.status) {
                     return false;
                 }
             }
@@ -466,8 +539,18 @@ const orderManager = (function () {
             return true;
         });
 
+        const totalPages = Math.max(1, Math.ceil(state.filteredOrders.length / state.pageSize));
+        if (state.currentPage > totalPages) {
+            state.currentPage = totalPages;
+        }
+        if (state.currentPage < 1) {
+            state.currentPage = 1;
+        }
+
         renderTable();
         renderFilterChips();
+        updateFilteredTotalBar();
+        updatePaginationUI();
     }
 
     function renderTable() {
@@ -477,10 +560,13 @@ const orderManager = (function () {
             return;
         }
 
-        tbody.innerHTML = state.filteredOrders.map((order) => {
+        const startIndex = (state.currentPage - 1) * state.pageSize;
+        const paginatedOrders = state.filteredOrders.slice(startIndex, startIndex + state.pageSize);
+
+        tbody.innerHTML = paginatedOrders.map((order) => {
             const schedule = [formatDate(order.ngay_thuc_hien), normalizeText(order.khung_gio_thuc_hien)].filter(Boolean).join(" • ") || "--";
             const providerName = order.provider_name || "Chưa gán";
-            const pricingValue = Number(order.tong_tam_tinh || order.tong_tien || 0);
+            const pricingValue = getOrderAmount(order);
             const feedbackText = Number(order.customer_rating || 0) > 0 ? `${Number(order.customer_rating || 0)}/5 sao` : "Chưa có";
             const chips = [
                 order.ten_cong_ty ? `<span class="order-chip"><i class="fas fa-building"></i>${escapeHtml(order.ten_cong_ty)}</span>` : "",
@@ -775,38 +861,42 @@ const orderManager = (function () {
 
     function handleSearch(value) {
         state.filters.search = normalizeText(value);
+        state.currentPage = 1;
         applyFilters();
     }
 
     function handleFilterChange() {
-        state.filters.status = document.getElementById("statusFilter") ? document.getElementById("statusFilter").value : "";
+        state.filters.fromDate = document.getElementById("orderFromDate") ? document.getElementById("orderFromDate").value : "";
+        state.filters.toDate = document.getElementById("orderToDate") ? document.getElementById("orderToDate").value : "";
         state.filters.service = document.getElementById("serviceFilter") ? document.getElementById("serviceFilter").value : "";
         state.filters.provider = document.getElementById("providerFilter") ? document.getElementById("providerFilter").value : "";
         state.filters.survey = document.getElementById("surveyFilter") ? document.getElementById("surveyFilter").value : "";
         state.filters.alert = document.getElementById("alertFilter") ? document.getElementById("alertFilter").value : "";
         state.filters.feedback = document.getElementById("feedbackFilter") ? document.getElementById("feedbackFilter").value : "";
+        state.currentPage = 1;
         applyFilters();
     }
 
     function handleTabFilter(statusKey) {
         state.filters.status = statusKey;
-        state.currentPage = 1; // Reset về trang 1 khi đổi tab
-        document.querySelectorAll(".nav-pills .order-chip--tab").forEach((el) => {
-            el.classList.remove("order-chip--tab-active");
+        state.currentPage = 1;
+        document.querySelectorAll(".cd-admin-orders-tabs .nav-link").forEach((el) => {
+            el.classList.remove("active");
         });
         
         let activeId = 'tab-all';
         if (statusKey === 'pending') activeId = 'tab-pending';
-        if (statusKey === 'active') activeId = 'tab-active';
+        if (statusKey === 'accepted') activeId = 'tab-accepted';
+        if (statusKey === 'shipping') activeId = 'tab-shipping';
         if (statusKey === 'completed') activeId = 'tab-completed';
         if (statusKey === 'cancelled') activeId = 'tab-cancelled';
         
         const activeTab = document.getElementById(activeId);
         if (activeTab) {
-            activeTab.classList.add("order-chip--tab-active");
+            activeTab.classList.add("active");
         }
-        
-        fetchOrders(); // Re-fetch from API for the new tab
+
+        applyFilters();
     }
 
     function clearFilter(key) {
@@ -814,8 +904,15 @@ const orderManager = (function () {
         if (key === "search") {
             document.getElementById("orderSearchInput").value = "";
         }
+        if (key === "fromDate") {
+            document.getElementById("orderFromDate").value = "";
+        }
+        if (key === "toDate") {
+            document.getElementById("orderToDate").value = "";
+        }
         if (key === "status") {
-            document.getElementById("statusFilter").value = "";
+            handleTabFilter("");
+            return;
         }
         if (key === "service") {
             document.getElementById("serviceFilter").value = "";
@@ -832,6 +929,45 @@ const orderManager = (function () {
         if (key === "feedback") {
             document.getElementById("feedbackFilter").value = "";
         }
+        state.currentPage = 1;
+        applyFilters();
+    }
+
+    function resetFilters() {
+        state.filters.search = "";
+        state.filters.status = "";
+        state.filters.fromDate = "";
+        state.filters.toDate = "";
+        state.filters.service = "";
+        state.filters.provider = "";
+        state.filters.survey = "";
+        state.filters.alert = "";
+        state.filters.feedback = "";
+        state.currentPage = 1;
+
+        const searchInput = document.getElementById("orderSearchInput");
+        const fromDateInput = document.getElementById("orderFromDate");
+        const toDateInput = document.getElementById("orderToDate");
+        const serviceFilter = document.getElementById("serviceFilter");
+        const providerFilter = document.getElementById("providerFilter");
+        const surveyFilter = document.getElementById("surveyFilter");
+        const alertFilter = document.getElementById("alertFilter");
+        const feedbackFilter = document.getElementById("feedbackFilter");
+
+        if (searchInput) searchInput.value = "";
+        if (fromDateInput) fromDateInput.value = "";
+        if (toDateInput) toDateInput.value = "";
+        if (serviceFilter) serviceFilter.value = "";
+        if (providerFilter) providerFilter.value = "";
+        if (surveyFilter) surveyFilter.value = "";
+        if (alertFilter) alertFilter.value = "";
+        if (feedbackFilter) feedbackFilter.value = "";
+
+        document.querySelectorAll(".cd-admin-orders-tabs .nav-link").forEach((el) => {
+            el.classList.remove("active");
+        });
+        document.getElementById("tab-all")?.classList.add("active");
+
         applyFilters();
     }
 
@@ -888,6 +1024,7 @@ const orderManager = (function () {
         handleTabFilter,
         changePage,
         clearFilter,
+        resetFilters,
         showOrderModal,
         closeModal,
         handleSubmit,

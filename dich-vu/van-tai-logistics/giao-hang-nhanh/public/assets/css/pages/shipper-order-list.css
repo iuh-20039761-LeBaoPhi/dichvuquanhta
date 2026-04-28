@@ -23,6 +23,10 @@ body[data-shipper-page="orders"] .customer-portal-page-main {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
+.ghn-orders-stats--6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
 .ghn-orders-stat-cell {
   min-width: 0;
 }
@@ -127,19 +131,59 @@ body[data-shipper-page="orders"] .customer-portal-page-main {
   box-shadow: none;
 }
 
-.ghn-orders-reload-btn {
-  min-height: 46px;
-  border-radius: 999px;
-  border: 0;
-  white-space: nowrap;
-  font-size: 0.85rem;
-  background: linear-gradient(135deg, #0a2a66 0%, #123b87 100%);
-  box-shadow: 0 12px 24px rgba(10, 42, 102, 0.2);
+.ghn-orders-inline-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  align-items: end;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid #dbe5f5;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(248, 250, 255, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+.ghn-orders-inline-filter {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ghn-orders-inline-filter span {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ghn-orders-inline-filter input {
+  min-height: 44px;
+  border: 1px solid #d8e2f4;
+  border-radius: 14px;
+  background: #f8fbff;
+  color: #0f172a;
+  padding: 0 14px;
+  outline: none;
+}
+
+.ghn-orders-inline-filter input:focus {
+  border-color: rgba(18, 59, 135, 0.35);
+  box-shadow: 0 0 0 4px rgba(18, 59, 135, 0.08);
+}
+
+.ghn-orders-secondary-btn {
+  min-height: 44px;
+  border-radius: 999px !important;
+  border: 1px solid #d8e2f4 !important;
+  background: #ffffff !important;
+  color: #0a2a66 !important;
+  font-weight: 700 !important;
+  padding-inline: 18px !important;
+  justify-self: start;
 }
 
 .ghn-orders-tabs-wrap {
-  margin-top: 0.5rem;
-  padding: 0 0.25rem;
+  margin-top: 14px;
+  padding: 0;
 }
 
 .ghn-orders-tabs {
@@ -150,8 +194,9 @@ body[data-shipper-page="orders"] .customer-portal-page-main {
   margin: 0;
   padding: 6px !important;
   border: 1px solid #e2e8f0;
-  border-radius: 16px !important;
+  border-radius: 18px !important;
   background: #f8fbff !important;
+  box-shadow: 0 10px 24px rgba(148, 163, 184, 0.12);
   gap: 6px !important;
   font-size: 0.82rem;
 }
@@ -280,7 +325,8 @@ body[data-shipper-page="orders"] .customer-portal-page-main {
 
 @media (max-width: 768px) {
   .ghn-orders-stats,
-  .ghn-orders-stats--5 {
+  .ghn-orders-stats--5,
+  .ghn-orders-stats--6 {
     grid-template-columns: 1fr;
   }
 
@@ -295,6 +341,15 @@ body[data-shipper-page="orders"] .customer-portal-page-main {
   .ghn-orders-toolbar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .ghn-orders-inline-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .ghn-orders-secondary-btn {
+    width: 100%;
+    justify-self: stretch;
   }
 
   .ghn-orders-search {

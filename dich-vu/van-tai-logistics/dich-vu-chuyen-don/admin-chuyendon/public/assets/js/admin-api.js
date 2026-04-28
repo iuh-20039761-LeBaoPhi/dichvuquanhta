@@ -8,6 +8,8 @@
     const CONTACT_TABLE = "lien_he";
     const USERS_TABLE = "nguoidung";
     const ORDERS_TABLE = "dich_vu_chuyen_don_dat_lich";
+    const MOVING_PAGE_CONTENT_TABLE = "noi_dung_trang_chuyen_don";
+    const MOVING_PAGE_SERVICES_TABLE = "noi_dung_trang_chuyen_don_dich_vu";
 
     function normalizeText(value) {
         return String(value || "").replace(/\s+/g, " ").trim();
@@ -312,6 +314,8 @@
         USERS_TABLE,
         ORDERS_TABLE,
         CONTACT_TABLE,
+        MOVING_PAGE_CONTENT_TABLE,
+        MOVING_PAGE_SERVICES_TABLE,
         MOVING_SERVICE_ID,
         normalizeText,
         normalizeLowerText,
@@ -511,6 +515,100 @@
                 { name: "don_gia", type: "number" },
                 { name: "thu_tu", type: "number" },
             ], undefined, "Khong the khoi tao bang bang_gia_chuyen_don_muc.");
+        },
+
+        ensureMovingServiceContentTables: async () => {
+            await invokeKrudSafe("ensure", MOVING_PAGE_CONTENT_TABLE, [
+                { name: "page_slug", type: "text" },
+                { name: "section_key", type: "text" },
+                { name: "eyebrow", type: "text" },
+                { name: "title", type: "text" },
+                { name: "description", type: "text" },
+                { name: "primary_cta_label", type: "text" },
+                { name: "primary_cta_url", type: "text" },
+                { name: "secondary_cta_label", type: "text" },
+                { name: "secondary_cta_url", type: "text" },
+                { name: "updated_at", type: "text" },
+            ], undefined, `Khong the khoi tao bang ${MOVING_PAGE_CONTENT_TABLE}.`);
+
+            return invokeKrudSafe("ensure", MOVING_PAGE_SERVICES_TABLE, [
+                { name: "page_slug", type: "text" },
+                { name: "service_key", type: "text" },
+                { name: "is_visible", type: "text" },
+                { name: "label", type: "text" },
+                { name: "title", type: "text" },
+                { name: "summary", type: "text" },
+                { name: "image", type: "text" },
+                { name: "image_alt", type: "text" },
+                { name: "service_items_json", type: "text" },
+                { name: "booking_label", type: "text" },
+                { name: "booking_url", type: "text" },
+                { name: "pricing_label", type: "text" },
+                { name: "pricing_url", type: "text" },
+                { name: "sort_order", type: "number" },
+                { name: "updated_at", type: "text" },
+            ], undefined, `Khong the khoi tao bang ${MOVING_PAGE_SERVICES_TABLE}.`);
+        },
+
+        listMovingServicePageSections: async (pageSlug = "") => {
+            const rows = await adminApi.list(MOVING_PAGE_CONTENT_TABLE, { limit: 100 });
+            if (!pageSlug) {
+                return rows;
+            }
+            return rows.filter((row) => normalizeText(row?.page_slug) === normalizeText(pageSlug));
+        },
+
+        listMovingServicePageCards: async (pageSlug = "") => {
+            const rows = await adminApi.list(MOVING_PAGE_SERVICES_TABLE, { limit: 100 });
+            if (!pageSlug) {
+                return rows;
+            }
+            return rows.filter((row) => normalizeText(row?.page_slug) === normalizeText(pageSlug));
+        },
+
+        saveMovingServicePageSection: async (row, currentRow = null) => {
+            const payload = {
+                page_slug: normalizeText(row?.page_slug),
+                section_key: normalizeText(row?.section_key),
+                eyebrow: normalizeText(row?.eyebrow),
+                title: normalizeText(row?.title),
+                description: normalizeText(row?.description),
+                primary_cta_label: normalizeText(row?.primary_cta_label),
+                primary_cta_url: normalizeText(row?.primary_cta_url),
+                secondary_cta_label: normalizeText(row?.secondary_cta_label),
+                secondary_cta_url: normalizeText(row?.secondary_cta_url),
+                updated_at: normalizeText(row?.updated_at),
+            };
+
+            if (currentRow?.id) {
+                return adminApi.update(MOVING_PAGE_CONTENT_TABLE, payload, currentRow.id);
+            }
+            return adminApi.insert(MOVING_PAGE_CONTENT_TABLE, payload);
+        },
+
+        saveMovingServicePageCard: async (row, currentRow = null) => {
+            const payload = {
+                page_slug: normalizeText(row?.page_slug),
+                service_key: normalizeText(row?.service_key),
+                is_visible: String(row?.is_visible ?? "1").trim() === "0" ? "0" : "1",
+                label: normalizeText(row?.label),
+                title: normalizeText(row?.title),
+                summary: normalizeText(row?.summary),
+                image: normalizeText(row?.image),
+                image_alt: normalizeText(row?.image_alt),
+                service_items_json: normalizeText(row?.service_items_json),
+                booking_label: normalizeText(row?.booking_label),
+                booking_url: normalizeText(row?.booking_url),
+                pricing_label: normalizeText(row?.pricing_label),
+                pricing_url: normalizeText(row?.pricing_url),
+                sort_order: Number(row?.sort_order || 0),
+                updated_at: normalizeText(row?.updated_at),
+            };
+
+            if (currentRow?.id) {
+                return adminApi.update(MOVING_PAGE_SERVICES_TABLE, payload, currentRow.id);
+            }
+            return adminApi.insert(MOVING_PAGE_SERVICES_TABLE, payload);
         },
 
         listProviders: async () => {
