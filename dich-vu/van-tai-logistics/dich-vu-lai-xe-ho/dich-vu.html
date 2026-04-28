@@ -10,16 +10,12 @@
     content="thuê tài xế, đặt lịch tài xế, lái xe hộ, tài xế theo giờ, tài xế riêng, dịch vụ lái xe, thuê lái xe, tài xế chuyên nghiệp">
   <title>Dịch Vụ - Thuê Tài Xế Lái Xe Hộ</title>
   <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
-  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
-  <!-- Schema.org JSON-LD cho Dịch vụ Lái Xe Hộ -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -54,12 +50,13 @@
       padding-top: 96px;
     }
 
+    /* SỬA: navbar z-index tăng lên 9999 */
     .navbar {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      z-index: 1050;
+      z-index: 9999;
     }
 
     .navbar .container {
@@ -97,6 +94,7 @@
         height: 42px !important;
       }
 
+      /* SỬA: navbar-collapse z-index tăng lên 9999 */
       .navbar-collapse {
         position: absolute;
         top: 100%;
@@ -104,7 +102,7 @@
         right: 0;
         width: auto;
         background: #fff;
-        z-index: 999;
+        z-index: 9999;
         border-radius: 0 0 12px 12px;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       }
@@ -142,7 +140,9 @@
       max-width: 500px;
     }
 
+    /* SỬA: dùng dvh thay vì vh, có fallback cho trình duyệt cũ */
     #bookingFlowModal .modal-body {
+      height: calc(100dvh - 170px);
       height: calc(100vh - 170px);
     }
 
@@ -316,10 +316,8 @@
 </head>
 
 <body style="font-family: 'Quicksand', sans-serif" data-nav-active="services" data-nav-active-style="large">
-  <!-- Navigation -->
   <div id="site-header"></div>
 
-  <!-- Services Hero Banner -->
   <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #fff3e0 100%);">
     <div class="container py-lg-5 text-center">
       <h1 class="display-3 fw-bold mb-3">
@@ -331,7 +329,6 @@
     </div>
   </section>
 
-  <!-- Services Detail -->
   <section class="py-5">
     <div class="container py-lg-5">
       <div id="servicesContainer">
@@ -345,7 +342,6 @@
     </div>
   </section>
 
-  <!-- Other Services Exploration -->
   <section class="py-5 other-services-section">
     <div class="container py-lg-4">
       <div class="text-center mb-5">
@@ -355,7 +351,6 @@
       </div>
 
       <div class="row g-3 row-cols-3 row-cols-md-4 row-cols-lg-4 row-cols-xl-6 justify-content-center">
-        <!-- Chăm Sóc Mẹ & Bé -->
         <div class="col d-flex">
           <a href="../cham-soc/me-va-be/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #ec4899;">
@@ -364,7 +359,6 @@
             <h3 class="other-service-name">Chăm Sóc Mẹ & Bé</h3>
           </a>
         </div>
-        <!-- Chăm Sóc Người Già -->
         <div class="col d-flex">
           <a href="../cham-soc/nguoi-gia/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #f97316;">
@@ -373,7 +367,6 @@
             <h3 class="other-service-name">Chăm Sóc Người Già</h3>
           </a>
         </div>
-        <!-- Chăm Sóc Bệnh Nhân -->
         <div class="col d-flex">
           <a href="../cham-soc/nguoi-benh/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #ef4444;">
@@ -382,7 +375,6 @@
             <h3 class="other-service-name">Chăm Sóc Bệnh Nhân</h3>
           </a>
         </div>
-        <!-- Lau Dọn Vệ Sinh -->
         <div class="col d-flex">
           <a href="../../ve-sinh/tap-vu-lau-don-ve-sinh/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #06b6d4;">
@@ -391,7 +383,6 @@
             <h3 class="other-service-name">Lau Dọn Vệ Sinh</h3>
           </a>
         </div>
-        <!-- Chăm Sóc Vườn Nhà -->
         <div class="col d-flex">
           <a href="../../san-vuon-cay-canh-vuon-ray/cham-soc-vuon-nha/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #22c55e;">
@@ -400,7 +391,6 @@
             <h3 class="other-service-name">Chăm Sóc Vườn Nhà</h3>
           </a>
         </div>
-        <!-- Giặt Ủi Nhanh -->
         <div class="col d-flex">
           <a href="../../giat-ui/giat-ui-nhanh/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #f43f5e;">
@@ -409,7 +399,6 @@
             <h3 class="other-service-name">Giặt Ủi Nhanh</h3>
           </a>
         </div>
-        <!-- Giao Hàng Nhanh -->
         <div class="col d-flex">
           <a href="../../van-tai-logistics/giao-hang-nhanh/dich-vu-giao-hang.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #6366f1;">
@@ -418,7 +407,6 @@
             <h3 class="other-service-name">Giao Hàng Nhanh</h3>
           </a>
         </div>
-        <!-- Chuyển Dọn -->
         <div class="col d-flex">
           <a href="../../van-tai-logistics/dich-vu-chuyen-don/dich-vu-chuyen-don.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #14532d;">
@@ -427,7 +415,6 @@
             <h3 class="other-service-name">Chuyển Dọn</h3>
           </a>
         </div>
-        <!-- Thuê Xe -->
         <div class="col d-flex">
           <a href="../../van-tai-logistics/thue-xe/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #0ea5e9;">
@@ -436,7 +423,6 @@
             <h3 class="other-service-name">Thuê Xe</h3>
           </a>
         </div>
-        <!-- Lái Xe Hộ -->
         <div class="col d-flex">
           <a href="../../van-tai-logistics/dich-vu-lai-xe-ho/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #3b82f6;">
@@ -445,7 +431,6 @@
             <h3 class="other-service-name">Lái Xe Hộ</h3>
           </a>
         </div>
-        <!-- Sửa Xe Lưu Động -->
         <div class="col d-flex">
           <a href="../../sua-chua/sua-xe-luu-dong/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #8b5cf6;">
@@ -454,7 +439,6 @@
             <h3 class="other-service-name">Sửa Xe</h3>
           </a>
         </div>
-        <!-- Thợ Nhà -->
         <div class="col d-flex">
           <a href="../../sua-chua/tho-nha/dich-vu.html" class="other-service-item w-100">
             <div class="other-service-icon" style="background-color: #0d9488;">
@@ -467,12 +451,10 @@
     </div>
   </section>
 
-  <!-- Booking Section -->
   <section class="py-5" style="background-color: var(--primary-l);">
     <div class="container py-5 text-center">
       <h2 class="fw-bold display-5 mb-3">📞 Liên Hệ Tư Vấn Ngay</h2>
       <p class="lead text-muted mb-4">Hãy liên hệ với chúng tôi để đặt lịch thuê tài xế và tư vấn miễn phí</p>
-
       <button class="btn text-white rounded-pill px-5 py-3 shadow-sm" id="openBookingFromCta"
         style="background-color: var(--primary); border: none; font-weight: 700; cursor: pointer; transition: 0.3s;"
         type="button" onmouseover="this.style.backgroundColor='var(--primary-d)'; this.style.transform='scale(1.05)';"
@@ -482,10 +464,8 @@
     </div>
   </section>
 
-  <!-- Footer -->
   <div id="site-footer"></div>
 
-  <!-- Modal Booking -->
   <div class="modal fade" id="bookingFlowModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content border-0 rounded-4 overflow-hidden">
@@ -514,19 +494,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- KRUD API -->
   <script src="https://api.dvqt.vn/js/krud.js"></script>
   <script>
     if (typeof krud === 'undefined') {
       console.warn('krud chưa load, tạo fallback');
-
       const KRUD_API_URL = "https://api.dvqt.vn";
-
       function krud(action, table, data = {}, id = null) {
         const payload = { action, table, data };
         if (id !== null) payload.id = id;
-
         return fetch(KRUD_API_URL + "/krud/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -561,16 +536,13 @@
       function renderServiceCards(list) {
         var $container = $('#servicesContainer');
         $container.empty();
-
         if (!list || list.length === 0) {
           $container.html('<div class="text-center py-5"><p class="text-muted">Không tìm thấy dịch vụ nào.</p></div>');
           return;
         }
-
         list.forEach(function (service, index) {
           var reverse = index % 2 ? 'flex-lg-row-reverse' : '';
           var serviceAlt = (service.alt || service.name || 'Dịch vụ thuê tài xế lái xe hộ').replace(/"/g, '&quot;');
-
           var includesArr = [];
           if (Array.isArray(service.includes)) {
             includesArr = service.includes;
@@ -582,13 +554,9 @@
               includesArr = service.includes.split('\n').filter(item => item.trim() !== '');
             }
           }
-
-          var includesHTML = includesArr
-            .map(function (item) {
-              return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:var(--primary)"></i>' + item + '</li>';
-            })
-            .join('');
-
+          var includesHTML = includesArr.map(function (item) {
+            return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:var(--primary)"></i>' + item + '</li>';
+          }).join('');
           var isDriveId = service.image && service.image.indexOf('/') === -1 && service.image.indexOf('.') === -1;
           var mediaHTML = '';
           if (isDriveId && service.image) {
@@ -601,7 +569,6 @@
           } else {
             mediaHTML = '<img src="' + (service.image || '') + '" alt="' + serviceAlt + '" class="img-fluid rounded-4 shadow-lg w-100" style="aspect-ratio: 4/3; object-fit: cover; border: none;">';
           }
-
           $container.append(
             '<div class="row align-items-center mb-5 g-5 ' + reverse + '">' +
             '<div class="col-lg-6">' + mediaHTML + '</div>' +
@@ -638,9 +605,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ table: 'dichvu_taixe' })
           }).then(r => r.json());
-
           SERVICES = normalizeRows(res);
-
           if (SERVICES.length === 0) {
             console.warn('Bảng dichvu_taixe không có dữ liệu, chuyển sang load services.json');
             await loadServicesFromJson();
@@ -688,11 +653,7 @@
 
       window.addEventListener('message', function (event) {
         if (!event || !event.data || !event.data.type) return;
-
-        if (event.data.type === 'booking:success') {
-          return;
-        }
-
+        if (event.data.type === 'booking:success') return;
         if (event.data.type === 'booking:close' && bookingModal) {
           bookingModal.hide();
         }
