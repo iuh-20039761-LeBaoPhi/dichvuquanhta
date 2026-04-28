@@ -212,7 +212,18 @@ async function loadAllServices() {
     const krud = window.DVQTKrud;
     if (!krud) return [];
     try {
-        allCategories = await krud.listTable('danhmuc_thonha');
+        allCategories = await krud.listTable('danhmuc_thonha', { limit: 1000 }).catch(() => []);
+        window.allServices = await krud.listTable('dichvu_thonha', { limit: 1000 }).catch(() => []);
+        
+        allCategories.forEach(cat => {
+            cat.services = window.allServices.filter(s => String(s.id_danhmuc) === String(cat.id));
+        });
+        
+        // Kích hoạt tính toán lại thống kê sau khi nạp xong
+        if (typeof loadDashboardStats === 'function') {
+            loadDashboardStats();
+        }
+        
         return allCategories;
     } catch (e) {
         console.error('loadAllServices fail:', e);

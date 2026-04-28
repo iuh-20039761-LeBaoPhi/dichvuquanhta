@@ -129,7 +129,7 @@
             const statusTxt = c.trang_thai === 'active' ? 'Hiển thị' : 'Ẩn';
             return `<tr>
                 <td><span class="text-muted small">#${c.id}</span></td>
-                <td class="text-center"><i class="fas ${c.icon || 'fa-folder'} text-primary fs-5"></i></td>
+                <td><img src="${resolveDriveUrl(c.anh_dai_dien) || '../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'}" class="rounded shadow-sm" style="width:48px;height:48px;object-fit:cover;" onerror="this.src='../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'"></td>
                 <td><div class="fw-bold">${c.ten_danhmuc}</div><div class="small text-muted text-truncate" style="max-width:200px;">${c.mo_ta || ''}</div></td>
                 <td>${c.thu_tu || 0}</td>
                 <td><span class="badge ${statusCls}">${statusTxt}</span></td>
@@ -149,7 +149,7 @@
                 return `
                     <div class="mobile-card">
                         <div class="mobile-card-head">
-                            <i class="fas ${c.icon || 'fa-folder'} text-primary fs-4 me-3"></i>
+                            <img src="${resolveDriveUrl(c.anh_dai_dien) || '../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'}" class="rounded me-3" style="width:50px;height:50px;object-fit:cover;" onerror="this.src='../public/assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'">
                             <div style="flex:1">
                                 <h4 class="mobile-title">${c.ten_danhmuc}</h4>
                                 <p class="mobile-code">ID: #${c.id} - Thứ tự: ${c.thu_tu || 0}</p>
