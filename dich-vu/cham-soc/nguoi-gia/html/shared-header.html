@@ -1,15 +1,25 @@
+<style>
+  @media (max-width: 575.98px) {
+    .header-logo { width: 50px !important; height: auto !important; }
+    .header-title { font-size: 14px !important; }
+    .navbar-toggler { padding: 0.25rem; }
+  }
+  .header-logo { width: 80px; height: 60px; object-fit: contain; }
+  #menuToggle { cursor: pointer; touch-action: manipulation; z-index: 1050; }
+</style>
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../../../index.html"
-      style="color: #2e7d32">
-      <img style="width: 80px; height: 60px" src="assets/logo.png" alt="cham-soc-nguoi-gia" />
-    </a>
-    <span style="color: #2e7d32; font-weight: 800;">Chăm Sóc Người Cao Tuổi</span>
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #2e7d32">
-      <img style="width: 80px; height: 60px" src="assets/logong.png" alt="cham-soc-nguoi-gia" />
-    </a>
-    <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse"
-      data-bs-target="#navMenu">
+    <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
+      <a class="navbar-brand m-0 p-0 d-flex align-items-center gap-2 fw-bold fs-3" href="../../../index.html" style="color: #2e7d32">
+        <img class="header-logo" src="assets/logo.png" alt="cham-soc-nguoi-gia" />
+      </a>
+      <span class="header-title mx-1 mx-sm-2 text-center" style="color: #2e7d32; font-weight: 800; white-space: nowrap;">Chăm Sóc Người Cao Tuổi</span>
+      <a class="navbar-brand m-0 p-0 d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #2e7d32">
+        <img class="header-logo" src="assets/logong.png" alt="cham-soc-nguoi-gia" />
+      </a>
+    </div>
+    <button class="navbar-toggler border-0 ms-2" type="button" id="menuToggle" data-bs-toggle="collapse"
+      data-bs-target="#navMenu" onclick="void(0)">
       <span class="navbar-toggler-icon"></span>
     </button>
 
