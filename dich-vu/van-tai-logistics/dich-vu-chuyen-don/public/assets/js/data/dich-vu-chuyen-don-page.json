@@ -1,0 +1,94 @@
+{
+    "hero": {
+        "eyebrow": "Ba nhóm dịch vụ chuyển dọn",
+        "title": "Chọn đúng dịch vụ chuyển dọn cho nhu cầu của bạn",
+        "description": "Dù bạn đang muốn chuyển đến một căn hộ mới, di dời trụ sở văn phòng hay tổ chức lại toàn bộ hệ thống kho bãi, chúng tôi đều cung cấp dịch vụ chuyên nghiệp trọn gói. Khám phá chi tiết các hạng mục hỗ trợ và chọn ngay giải pháp phù hợp nhất.",
+        "primary_cta_label": "Đặt lịch ngay",
+        "primary_cta_url": "dat-lich-chuyendon.html",
+        "secondary_cta_label": "Xem bảng giá",
+        "secondary_cta_url": "bang-gia-chuyen-don.html"
+    },
+    "services_section": {
+        "eyebrow": "Ba nhóm dịch vụ chính",
+        "title": "Ba nhóm dịch vụ chuyển dọn chính",
+        "description": "Mỗi khối dịch vụ tập trung vào phần bạn cần xem nhanh: mô tả ngắn, hình ảnh và các hạng mục bao gồm. Giá và công thức tính được tách riêng sang trang bảng giá để tránh trùng lặp."
+    },
+    "services": [
+        {
+            "id": "chuyen-nha",
+            "service_key": "chuyen-nha",
+            "is_visible": "1",
+            "label": "Chuyển Nhà Trọn Gói",
+            "title": "Đóng gói, vận chuyển và sắp xếp lại tại nơi ở mới",
+            "summary": "Phù hợp cho căn hộ, nhà phố, phòng trọ hoặc chung cư cần di dời đồ sinh hoạt và nội thất gia đình theo quy trình gọn, rõ ràng và hạn chế phát sinh.",
+            "image": "https://lh3.googleusercontent.com/u/0/d/10vfYzMyhMLV1o8AIBTFlUNN_2mNFNI0C",
+            "image_alt": "Dịch vụ chuyển nhà trọn gói",
+            "service_items": [
+                "Xe tải vận chuyển",
+                "Nhân công bốc xếp",
+                "Đóng gói và bọc lót",
+                "Tháo lắp nội thất",
+                "Hỗ trợ kỹ thuật",
+                "Sắp xếp tại nhà mới"
+            ],
+            "cta": {
+                "booking_label": "Đặt lịch chuyển nhà",
+                "booking_url": "dat-lich-chuyendon.html?dich-vu=chuyen_nha",
+                "pricing_label": "Xem bảng giá",
+                "pricing_url": "bang-gia-chuyen-don.html"
+            },
+            "sort_order": 1
+        },
+        {
+            "id": "chuyen-van-phong",
+            "service_key": "chuyen-van-phong",
+            "is_visible": "1",
+            "label": "Chuyển Văn Phòng Công Ty",
+            "title": "Di dời văn phòng gọn, đúng kế hoạch và hạn chế gián đoạn vận hành",
+            "summary": "Phù hợp cho văn phòng cần di dời bàn ghế, hồ sơ, máy tính, server và thiết bị vận hành với thứ tự bàn giao rõ ràng.",
+            "image": "https://lh3.googleusercontent.com/u/0/d/1t6-_ovc0Ew-ED_frFnumGud4ZWTTEHr4",
+            "image_alt": "Dịch vụ chuyển văn phòng công ty",
+            "service_items": [
+                "Xe tải vận chuyển",
+                "Nhân công bốc xếp",
+                "Phân loại hồ sơ theo phòng ban",
+                "Bảo vệ thiết bị IT",
+                "Tháo lắp nội thất văn phòng",
+                "Lắp đặt tại văn phòng mới"
+            ],
+            "cta": {
+                "booking_label": "Đặt lịch chuyển văn phòng",
+                "booking_url": "dat-lich-chuyendon.html?dich-vu=chuyen_van_phong",
+                "pricing_label": "Xem bảng giá",
+                "pricing_url": "bang-gia-chuyen-don.html"
+            },
+            "sort_order": 2
+        },
+        {
+            "id": "chuyen-kho-bai",
+            "service_key": "chuyen-kho-bai",
+            "is_visible": "1",
+            "label": "Chuyển Kho Bãi",
+            "title": "Di dời pallet, máy móc và hàng nặng theo phương án rõ ràng",
+            "summary": "Phù hợp cho kho hàng, nhà xưởng hoặc mô hình logistics cần kết hợp xe tải, xe nâng hoặc xe cẩu để di dời hàng hóa cồng kềnh.",
+            "image": "https://lh3.googleusercontent.com/u/0/d/1wHyXXZiMFQgaBHuzilalsbjxAiWodO3o",
+            "image_alt": "Dịch vụ chuyển kho bãi",
+            "service_items": [
+                "Xe tải và xe thùng kín",
+                "Nhân công bốc xếp",
+                "Luân chuyển pallet",
+                "Xe nâng hoặc xe cẩu",
+                "Đóng gói và gia cố",
+                "Kiểm kê và bàn giao theo khu vực"
+            ],
+            "cta": {
+                "booking_label": "Đặt lịch chuyển kho bãi",
+                "booking_url": "dat-lich-chuyendon.html?dich-vu=chuyen_kho_bai",
+                "pricing_label": "Xem bảng giá",
+                "pricing_url": "bang-gia-chuyen-don.html"
+            },
+            "sort_order": 3
+        }
+    ],
+    "updated_at": "2026-04-28T15:04:42+02:00"
+}

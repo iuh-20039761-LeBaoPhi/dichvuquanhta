@@ -11,7 +11,7 @@ body {
 
 .ghn-admin-orders-stats {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 16px;
     margin-bottom: 24px !important;
 }
@@ -113,20 +113,63 @@ body {
     box-shadow: none;
 }
 
-.ghn-admin-orders-reload-btn {
-    min-height: 46px;
-    border: 0;
-    white-space: nowrap;
-    font-size: 0.85rem;
-    background: linear-gradient(135deg, #0a2a66 0%, #123b87 100%);
-    box-shadow: 0 12px 24px rgba(10, 42, 102, 0.2);
+.ghn-admin-orders-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 14px;
+    border: 1px solid #dbe5f5;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(248, 250, 255, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+.ghn-admin-orders-filter {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.ghn-admin-orders-filter span {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.ghn-admin-orders-filter .form-control {
+    min-height: 44px;
+    border: 1px solid #d8e2f4;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #0f172a;
+    box-shadow: none;
+}
+
+.ghn-admin-orders-filter .form-control:focus {
+    border-color: rgba(18, 59, 135, 0.35);
+    box-shadow: 0 0 0 4px rgba(18, 59, 135, 0.08);
+}
+
+.ghn-admin-orders-reset-btn {
+    min-height: 44px;
+    padding-inline: 18px;
+    border-radius: 999px;
+    border: 1px solid #d8e2f4;
+    background: #ffffff;
+    color: #0a2a66;
+    font-weight: 800;
+    justify-self: start;
 }
 
 .ghn-admin-orders-tabs {
+    margin-top: 0;
     padding: 6px !important;
     border: 1px solid #e2e8f0;
-    border-radius: 16px !important;
+    border-radius: 18px !important;
     background: #f8fbff !important;
+    box-shadow: 0 10px 24px rgba(148, 163, 184, 0.12);
     gap: 6px !important;
 }
 
@@ -148,6 +191,37 @@ body {
     color: #0a2a66;
     background: #fff;
     box-shadow: 0 10px 24px rgba(148, 163, 184, 0.18);
+}
+
+.ghn-admin-orders-total-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid #dbe5f5;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.78);
+}
+
+.ghn-admin-orders-total-bar > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ghn-admin-orders-total-label {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.ghn-admin-orders-total-bar strong {
+    color: #0a2a66;
+    font-size: 16px;
+    font-weight: 900;
 }
 
 .ghn-admin-orders-table {
@@ -272,6 +346,15 @@ body {
         align-items: stretch;
     }
 
+    .ghn-admin-orders-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .ghn-admin-orders-reset-btn {
+        width: 100%;
+        justify-self: stretch;
+    }
+
     .order-search-wrap,
     .ghn-admin-orders-search {
         min-width: 100% !important;
@@ -279,6 +362,12 @@ body {
 
     .ghn-admin-orders-main-header {
         padding: 18px 16px 16px;
+    }
+
+    .ghn-admin-orders-total-bar,
+    .ghn-admin-orders-total-bar > div {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .ghn-admin-orders-table-grid th:nth-child(3),

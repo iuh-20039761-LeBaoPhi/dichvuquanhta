@@ -61,10 +61,26 @@ require_once __DIR__ . '/../includes/header_admin.php';
             <div class="admin-card cd-admin-stat-card p-3 p-md-4 h-100">
                 <div class="d-flex align-items-center gap-3">
                     <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info cd-admin-stat-icon">
+                        <i class="fas fa-handshake fa-lg"></i>
+                    </div>
+                    <div>
+                        <div class="h4 fw-bold mb-0" id="statsAcceptedOrders">0</div>
+                        <div class="text-muted small fw-semibold">
+                            <span class="cd-admin-stat-label-full">Đã nhận đơn</span>
+                            <span class="cd-admin-stat-label-short">Nhận</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cd-admin-orders-stat-cell">
+            <div class="admin-card cd-admin-stat-card p-3 p-md-4 h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary cd-admin-stat-icon">
                         <i class="fas fa-truck-moving fa-lg"></i>
                     </div>
                     <div>
-                        <div class="h4 fw-bold mb-0" id="statsActiveOrders">0</div>
+                        <div class="h4 fw-bold mb-0" id="statsShippingOrders">0</div>
                         <div class="text-muted small fw-semibold">
                             <span class="cd-admin-stat-label-full">Đang triển khai</span>
                             <span class="cd-admin-stat-label-short">Đang</span>
@@ -119,13 +135,60 @@ require_once __DIR__ . '/../includes/header_admin.php';
                         <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted small"></i></span>
                         <input type="text" class="form-control bg-light border-0 cd-admin-orders-search-input" id="orderSearchInput" placeholder="Mã đơn, khách hàng, SĐT, địa chỉ..." oninput="orderManager.handleSearch(this.value)">
                     </div>
-                    <button class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm cd-admin-orders-reload-btn" type="button" onclick="orderManager.fetchOrders()">
-                        <i class="fas fa-sync-alt me-2"></i>Tải lại
-                    </button>
                 </div>
             </div>
 
             <div class="mt-2">
+                <div class="cd-admin-orders-filters" aria-label="Bộ lọc đơn hàng">
+                    <label class="cd-admin-orders-filter" for="orderFromDate">
+                        <span>Từ ngày</span>
+                        <input type="date" id="orderFromDate" class="form-control" onchange="orderManager.handleFilterChange()">
+                    </label>
+                    <label class="cd-admin-orders-filter" for="orderToDate">
+                        <span>Đến ngày</span>
+                        <input type="date" id="orderToDate" class="form-control" onchange="orderManager.handleFilterChange()">
+                    </label>
+                    <label class="cd-admin-orders-filter" for="serviceFilter">
+                        <span>Dịch vụ</span>
+                        <select id="serviceFilter" class="form-select" onchange="orderManager.handleFilterChange()">
+                            <option value="">Tất cả</option>
+                            <option value="chuyen-nha">Chuyển nhà</option>
+                            <option value="van-phong">Chuyển văn phòng</option>
+                            <option value="kho-bai">Chuyển kho bãi</option>
+                        </select>
+                    </label>
+                    <label class="cd-admin-orders-filter" for="providerFilter">
+                        <span>Nhà cung cấp</span>
+                        <select id="providerFilter" class="form-select" onchange="orderManager.handleFilterChange()">
+                            <option value="">Tất cả</option>
+                        </select>
+                    </label>
+                    <label class="cd-admin-orders-filter" for="surveyFilter">
+                        <span>Khảo sát trước</span>
+                        <select id="surveyFilter" class="form-select" onchange="orderManager.handleFilterChange()">
+                            <option value="">Tất cả</option>
+                            <option value="yes">Có</option>
+                            <option value="no">Không</option>
+                        </select>
+                    </label>
+                    <label class="cd-admin-orders-filter" for="alertFilter">
+                        <span>Cảnh báo</span>
+                        <select id="alertFilter" class="form-select" onchange="orderManager.handleFilterChange()">
+                            <option value="">Tất cả</option>
+                            <option value="late">Quá SLA 120 phút</option>
+                            <option value="cancelled">Đã hủy</option>
+                        </select>
+                    </label>
+                    <label class="cd-admin-orders-filter" for="feedbackFilter">
+                        <span>Đánh giá</span>
+                        <select id="feedbackFilter" class="form-select" onchange="orderManager.handleFilterChange()">
+                            <option value="">Tất cả</option>
+                            <option value="has-feedback">Có đánh giá</option>
+                            <option value="low-rating">Từ 3 sao trở xuống</option>
+                        </select>
+                    </label>
+                    <button class="btn btn-light cd-admin-orders-reset-btn" type="button" onclick="orderManager.resetFilters()">Đặt lại</button>
+                </div>
                 <ul class="nav nav-pills nav-fill order-tabs cd-admin-orders-tabs bg-light p-1 flex-column flex-md-row gap-1 w-100">
                     <li class="nav-item">
                         <a class="nav-link active fw-bold" href="#" id="tab-all" onclick="orderManager.handleTabFilter(''); return false;">
@@ -138,8 +201,13 @@ require_once __DIR__ . '/../includes/header_admin.php';
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-bold" href="#" id="tab-active" onclick="orderManager.handleTabFilter('active'); return false;">
-                            Đang triển khai <span class="badge bg-primary ms-1" id="count-active">0</span>
+                        <a class="nav-link fw-bold" href="#" id="tab-accepted" onclick="orderManager.handleTabFilter('accepted'); return false;">
+                            Đã nhận đơn <span class="badge bg-info ms-1" id="count-accepted">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="#" id="tab-shipping" onclick="orderManager.handleTabFilter('shipping'); return false;">
+                            Đang triển khai <span class="badge bg-primary ms-1" id="count-shipping">0</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -154,6 +222,16 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     </li>
                 </ul>
                 <div id="filterChips" class="filter-chips orders-filter-chips"></div>
+                <div class="cd-admin-orders-total-bar" aria-live="polite">
+                    <div>
+                        <span class="cd-admin-orders-total-label">Đơn đang lọc</span>
+                        <strong id="ordersFilteredCount">0</strong>
+                    </div>
+                    <div>
+                        <span class="cd-admin-orders-total-label">Tổng tiền</span>
+                        <strong id="ordersFilteredTotal">0&nbsp;₫</strong>
+                    </div>
+                </div>
             </div>
         </div>
 

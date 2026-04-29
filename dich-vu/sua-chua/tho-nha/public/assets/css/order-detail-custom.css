@@ -938,3 +938,12 @@
     box-shadow: 0 8px 15px rgba(16, 185, 129, 0.2);
     border-color: var(--primary-emerald);
 }
+
+/* ==========================================================================
+   THO NHA - ORDER DETAIL MARGIN ADJUSTMENT
+   Reduce side margins of the order detail form to 5px.
+   ========================================================================= */
+.content-area:has([id$="DetailSection"]:not([hidden])) {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+}

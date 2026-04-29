@@ -87,10 +87,11 @@
     var toggler = document.querySelector('.navbar-toggler');
     if (!navMenu || !toggler) return;
 
-    // Ngăn chặn sự kiện click lan truyền ra ngoài toggler (fix lỗi iPhone tự đóng menu)
-    toggler.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
+    // Removed stopPropagation as it prevents Bootstrap 5's data-api from working
+    // on document-level event delegation.
+    // toggler.addEventListener('click', function (e) {
+    //   e.stopPropagation();
+    // });
 
     // Đóng menu khi click vào các link (trên mobile)
     var navLinks = navMenu.querySelectorAll('.nav-link:not(.dropdown-toggle)');

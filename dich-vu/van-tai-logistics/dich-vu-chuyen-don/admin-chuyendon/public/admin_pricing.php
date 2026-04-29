@@ -31,9 +31,9 @@ require_once __DIR__ . '/../includes/header_admin.php';
             <a href="index.php" class="btn btn-outline" style="font-size: 13px; padding: 6px 12px;">
                 <i class="fas fa-arrow-left"></i> Quay lại Dashboard
             </a>
-            <a href="../../index.html" target="_blank" class="btn btn-outline"
+            <a href="../../bang-gia-chuyen-don.html" target="_blank" rel="noopener" class="btn btn-outline"
                 style="font-size: 13px; padding: 6px 12px;">
-                <i class="fas fa-external-link-alt"></i> Xem Website
+                <i class="fas fa-external-link-alt"></i> Xem bảng giá web
             </a>
         </div>
     </div>

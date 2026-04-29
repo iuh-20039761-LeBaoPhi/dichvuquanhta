@@ -62,6 +62,22 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 <div class="admin-card admin-stat-card p-3 p-md-4 h-100">
                     <div class="d-flex align-items-center gap-3">
                         <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info ghn-admin-stat-icon">
+                            <i class="fas fa-handshake fa-lg"></i>
+                        </div>
+                        <div>
+                            <div class="h4 fw-bold mb-0" id="stat-accepted">0</div>
+                            <div class="text-muted small fw-semibold">
+                                <span class="ghn-admin-stat-label-full">Đã nhận đơn</span>
+                                <span class="ghn-admin-stat-label-short">Đã nhận</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ghn-admin-orders-stat-cell">
+                <div class="admin-card admin-stat-card p-3 p-md-4 h-100">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info ghn-admin-stat-icon">
                             <i class="fas fa-truck fa-lg"></i>
                         </div>
                         <div>
@@ -83,7 +99,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         <div>
                             <div class="h4 fw-bold mb-0" id="stat-completed">0</div>
                             <div class="text-muted small fw-semibold">
-                                <span class="ghn-admin-stat-label-full">Hoàn tất</span>
+                                <span class="ghn-admin-stat-label-full">Hoàn thành</span>
                                 <span class="ghn-admin-stat-label-short">Xong</span>
                             </div>
                         </div>
@@ -111,7 +127,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         <!-- ===== MAIN CARD ===== -->
         <div class="admin-card ghn-admin-orders-main">
             <div class="ghn-admin-orders-main-header">
-                <!-- Tiêu đề + Search + Tải lại -->
+                <!-- Tiêu đề + Search -->
                 <div class="ghn-admin-orders-toolbar">
                     <div>
                         <h5 class="fw-bold mb-1 ghn-admin-orders-heading">Danh sách đơn hàng</h5>
@@ -122,14 +138,22 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                             <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted small"></i></span>
                             <input type="text" class="form-control bg-light border-0 ghn-admin-orders-search-input" placeholder="Mã đơn, tên, SĐT..." id="orderSearchInput" oninput="filterOrders()">
                         </div>
-                        <button class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm ghn-admin-orders-reload-btn" onclick="loadAllOrders()">
-                            <i class="fas fa-sync-alt me-2"></i>Tải lại
-                        </button>
                     </div>
                 </div>
 
                 <!-- Status Tabs (giống mẫu Thuê Xe) -->
                 <div class="mt-2">
+                    <div class="ghn-admin-orders-filters">
+                        <label class="ghn-admin-orders-filter" for="orderFromDate">
+                            <span>Từ ngày</span>
+                            <input type="date" class="form-control" id="orderFromDate" onchange="filterOrders()">
+                        </label>
+                        <label class="ghn-admin-orders-filter" for="orderToDate">
+                            <span>Đến ngày</span>
+                            <input type="date" class="form-control" id="orderToDate" onchange="filterOrders()">
+                        </label>
+                        <button class="btn btn-light ghn-admin-orders-reset-btn" type="button" onclick="resetFilters()">Đặt lại</button>
+                    </div>
                     <ul class="nav nav-pills nav-fill order-tabs ghn-admin-orders-tabs bg-light p-1 flex-column flex-md-row gap-1 w-100">
                         <li class="nav-item">
                             <a class="nav-link active fw-bold" href="#" id="tabAll" onclick="switchTab('all');return false;">
@@ -138,7 +162,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         </li>
                         <li class="nav-item">
                             <a class="nav-link fw-bold" href="#" id="tabPending" onclick="switchTab('pending');return false;">
-                                Chờ xử lý <span class="badge bg-warning text-dark ms-1" id="countPending">0</span>
+                                Chưa xử lý <span class="badge bg-warning text-dark ms-1" id="countPending">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-bold" href="#" id="tabAccepted" onclick="switchTab('accepted');return false;">
+                                Đã nhận đơn <span class="badge bg-info ms-1" id="countAccepted">0</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -157,6 +186,16 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                             </a>
                         </li>
                     </ul>
+                    <div class="ghn-admin-orders-total-bar" aria-live="polite">
+                        <div>
+                            <span class="ghn-admin-orders-total-label">Đơn đang lọc</span>
+                            <strong id="ordersFilteredCount">0</strong>
+                        </div>
+                        <div>
+                            <span class="ghn-admin-orders-total-label">Tổng cước</span>
+                            <strong id="ordersFilteredTotal">0đ</strong>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -208,17 +247,17 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         'use strict';
         const TABLE = 'giaohangnhanh_dat_lich';
         const DETAIL_URL = '../../chi-tiet-don-hang-giaohang.html?viewer=admin&madonhang=';
-        const LIMIT = 20; // Số đơn mỗi trang
-        let allOrders = []; // Đơn hàng của trang hiện tại
+        const PAGE_SIZE = 20;
+        let allOrders = [];
         let currentTab = 'all';
         let currentPage = 1;
-        let hasMore = true;
 
         /* ── Helpers ── */
         function esc(v) {
             return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
         function fmtMoney(v) { return Number(v || 0).toLocaleString('vi-VN') + 'đ'; }
+        function orderFeeValue(order) { return Number(order?.tong_cuoc || order?.shipping_fee || 0); }
         function fmtDate(v) {
             if (!v) return '--';
             const d = new Date(v);
@@ -238,6 +277,13 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             const date = new Date(raw);
             return isNaN(date.getTime()) ? 0 : date.getTime();
         }
+        function parseDateFilterMs(v, mode) {
+            const raw = String(v || '').trim();
+            if (!raw) return null;
+            const suffix = mode === 'end' ? 'T23:59:59' : 'T00:00:00';
+            const date = new Date(raw + suffix);
+            return isNaN(date.getTime()) ? null : date.getTime();
+        }
         function compareOrdersByCreatedDesc(left, right) {
             const leftCreatedMs = orderCreatedMs(left);
             const rightCreatedMs = orderCreatedMs(right);
@@ -251,26 +297,34 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             return createdMs >= startOfToday() && createdMs < startOfTomorrow();
         }
 
-        async function fetchOrdersFromApi(page = 1, status = 'all', search = '') {
-            const params = {
-                table: TABLE,
-                page,
-                limit: LIMIT,
-                sort: { created_at: 'desc', id: 'desc' },
-            };
-
-            // Nếu krudList hỗ trợ filter trực tiếp, có thể thêm vào đây
-            // Ở phiên bản hiện tại, chúng ta tải và lọc ở client cho search nhưng phân trang ở server
-            
-            let batch = [];
-            if (typeof window.krudList === 'function') {
-                const res = await window.krudList(params);
-                batch = Array.isArray(res) ? res : (res?.data || res?.items || []);
-            } else if (typeof window.crud === 'function') {
-                batch = await window.crud('list', TABLE, { p: page, limit: LIMIT });
+        async function fetchAllOrdersFromApi() {
+            if (typeof window.DVQTKrud?.listTable === 'function') {
+                const rows = await window.DVQTKrud.listTable(TABLE);
+                return Array.isArray(rows) ? rows : [];
             }
 
-            return Array.isArray(batch) ? batch : [];
+            const rows = [];
+            const limit = 200;
+            const maxPages = 20;
+            for (let page = 1; page <= maxPages; page += 1) {
+                let batch = [];
+                if (typeof window.krudList === 'function') {
+                    const res = await window.krudList({
+                        table: TABLE,
+                        page,
+                        limit,
+                        sort: { created_at: 'desc', id: 'desc' },
+                    });
+                    batch = Array.isArray(res) ? res : (res?.data || res?.items || []);
+                } else if (typeof window.crud === 'function') {
+                    batch = await window.crud('list', TABLE, { p: page, limit });
+                }
+
+                if (!Array.isArray(batch) || !batch.length) break;
+                rows.push(...batch);
+                if (batch.length < limit) break;
+            }
+            return rows;
         }
 
         /* ── Trạng thái ── */
@@ -278,6 +332,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             if (normalizeText(o.ngayhuy)) return 'cancel';
             if (normalizeText(o.ngayhoanthanhthucte)) return 'done';
             if (normalizeText(o.ngaybatdauthucte)) return 'shipping';
+            if (normalizeText(o.thoidiemnhandon || o.ngaynhan)) return 'accepted';
             const s = String(o.trang_thai || o.status || '').toLowerCase();
             if (['cancelled','canceled','da_huy'].includes(s)) return 'cancel';
             if (['completed','success','delivered'].includes(s)) return 'done';
@@ -286,7 +341,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         }
 
         const STATUS_META = {
-            pending:  { label: 'Chờ xử lý',  cls: 'bg-warning text-warning' },
+            pending:  { label: 'Chưa xử lý', cls: 'bg-warning text-warning' },
+            accepted: { label: 'Đã nhận đơn', cls: 'bg-info text-info' },
             shipping: { label: 'Đang giao',  cls: 'bg-primary text-primary' },
             done:     { label: 'Hoàn thành', cls: 'bg-success text-success' },
             cancel:   { label: 'Đã hủy',     cls: 'bg-danger text-danger'   },
@@ -298,29 +354,43 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         }
 
         /* ── Counts ── */
-        function updateCounts() {
-            // Lưu ý: Đếm thực tế cần API hỗ trợ count. Tạm thời hiển thị tổng theo trang hoặc số lượng hiện có.
+        function updateCounts(baseList, filteredList) {
+            const source = Array.isArray(baseList) ? baseList : allOrders;
+            const filtered = Array.isArray(filteredList) ? filteredList : source;
+            const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+            const wrap = document.getElementById('paginationWrap');
+
             document.getElementById('orders-summary').textContent =
-                `Trang ${currentPage} - Hiển thị tối đa ${LIMIT} đơn hàng mới nhất`;
-            
-            document.getElementById('currentPageDisplay').textContent = currentPage;
+                `Trang ${currentPage}/${totalPages} • ${Number(filtered.length || 0).toLocaleString('vi-VN')} đơn sau lọc`;
+            document.getElementById('currentPageDisplay').textContent = `${currentPage}/${totalPages}`;
             document.getElementById('btnPrev').disabled = currentPage <= 1;
-            document.getElementById('idNext').disabled = !hasMore;
+            document.getElementById('idNext').disabled = currentPage >= totalPages;
+            if (wrap) wrap.hidden = filtered.length <= PAGE_SIZE;
+
+            document.getElementById('countAll').textContent = source.length;
+            document.getElementById('countPending').textContent = source.filter(o => deriveStatus(o) === 'pending').length;
+            document.getElementById('countAccepted').textContent = source.filter(o => deriveStatus(o) === 'accepted').length;
+            document.getElementById('countShipping').textContent = source.filter(o => deriveStatus(o) === 'shipping').length;
+            document.getElementById('countDone').textContent = source.filter(o => deriveStatus(o) === 'done').length;
+            document.getElementById('countCancel').textContent = source.filter(o => deriveStatus(o) === 'cancel').length;
         }
 
         /* ── Stat Cards ── */
-        function updateStats() {
-            document.getElementById('stat-total').textContent     = allOrders.length;
-            document.getElementById('stat-pending').textContent   = allOrders.filter(o => deriveStatus(o) === 'pending').length;
-            document.getElementById('stat-shipping').textContent  = allOrders.filter(o => deriveStatus(o) === 'shipping').length;
-            document.getElementById('stat-completed').textContent = allOrders.filter(o => deriveStatus(o) === 'done').length;
-            document.getElementById('stat-cancelled').textContent = allOrders.filter(o => deriveStatus(o) === 'cancel').length;
+        function updateStats(baseList) {
+            const source = Array.isArray(baseList) ? baseList : allOrders;
+            document.getElementById('stat-total').textContent     = source.length;
+            document.getElementById('stat-pending').textContent   = source.filter(o => deriveStatus(o) === 'pending').length;
+            document.getElementById('stat-accepted').textContent  = source.filter(o => deriveStatus(o) === 'accepted').length;
+            document.getElementById('stat-shipping').textContent  = source.filter(o => deriveStatus(o) === 'shipping').length;
+            document.getElementById('stat-completed').textContent = source.filter(o => deriveStatus(o) === 'done').length;
+            document.getElementById('stat-cancelled').textContent = source.filter(o => deriveStatus(o) === 'cancel').length;
         }
 
         /* ── Render ── */
         function renderTable(list) {
             const tbody = document.getElementById('adminOrderBody');
             const mob   = document.getElementById('adminOrderMobileList');
+            updateFilteredTotalBar(list);
 
             if (!list.length) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted">Không có đơn hàng nào khớp.</td></tr>`;
@@ -328,8 +398,10 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 return;
             }
 
+            const paginatedList = list.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
             /* Desktop */
-            tbody.innerHTML = list.map(o => {
+            tbody.innerHTML = paginatedList.map(o => {
                 const st   = deriveStatus(o);
                 const code = normalizeText(o.ma_don_hang_noi_bo || o.order_code || o.ma_don_hang || '');
                 const disp = code || `#${String(o.id).padStart(7,'0')}`;
@@ -339,7 +411,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 const recvPhone   = esc(normalizeText(o.so_dien_thoai_nguoi_nhan || o.nguoi_nhan_so_dien_thoai || ''));
                 const svc  = esc(normalizeText(o.ten_dich_vu || o.dich_vu || ''));
                 const date = fmtDate(o.ngay_lay_hang || o.created_at);
-                const fee  = fmtMoney(o.tong_cuoc || o.shipping_fee);
+                const fee  = fmtMoney(orderFeeValue(o));
                 const url  = DETAIL_URL + encodeURIComponent(code || o.id);
                 return `<tr>
                     <td class="ps-4">
@@ -369,7 +441,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             }).join('');
 
             /* Mobile */
-            mob.innerHTML = list.map(o => {
+            mob.innerHTML = paginatedList.map(o => {
                 const st   = deriveStatus(o);
                 const m    = STATUS_META[st] || STATUS_META.pending;
                 const code = normalizeText(o.ma_don_hang_noi_bo || o.order_code || o.ma_don_hang || '');
@@ -377,7 +449,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 const sender = esc(normalizeText(o.ho_ten_nguoi_gui || o.nguoi_gui_ho_ten || ''));
                 const recv   = esc(normalizeText(o.ho_ten_nguoi_nhan || o.nguoi_nhan_ho_ten || ''));
                 const ncc    = esc(normalizeText(o.nha_cung_cap_ho_ten || o.shipper_name || ''));
-                const fee    = fmtMoney(o.tong_cuoc || o.shipping_fee);
+                const fee    = fmtMoney(orderFeeValue(o));
                 const url    = DETAIL_URL + encodeURIComponent(code || o.id);
                 return `<div class="mobile-order-card">
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -396,13 +468,33 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 </div>`;
             }).join('');
 
-            updateCounts(list);
+        }
+
+        function updateFilteredTotalBar(list) {
+            const orders = Array.isArray(list) ? list : [];
+            const totalAmount = orders.reduce((sum, order) => sum + orderFeeValue(order), 0);
+            const countNode = document.getElementById('ordersFilteredCount');
+            const totalNode = document.getElementById('ordersFilteredTotal');
+            if (countNode) countNode.textContent = Number(orders.length || 0).toLocaleString('vi-VN');
+            if (totalNode) totalNode.textContent = fmtMoney(totalAmount);
         }
 
         /* ── Filter ── */
         window.filterOrders = function () {
             const q = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
-            let list = allOrders;
+            const fromTime = parseDateFilterMs(document.getElementById('orderFromDate')?.value, 'start');
+            const toTime = parseDateFilterMs(document.getElementById('orderToDate')?.value, 'end');
+            let list = allOrders.filter(o => {
+                if (fromTime == null && toTime == null) return true;
+                const createdMs = orderCreatedMs(o);
+                if (!createdMs) return false;
+                if (fromTime != null && createdMs < fromTime) return false;
+                if (toTime != null && createdMs > toTime) return false;
+                return true;
+            });
+
+            const baseList = list.slice();
+            updateStats(baseList);
 
             if (currentTab !== 'all') {
                 list = list.filter(o => deriveStatus(o) === currentTab);
@@ -420,25 +512,43 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     return fields.includes(q);
                 });
             }
+            currentPage = Math.max(1, Math.min(currentPage, Math.max(1, Math.ceil(list.length / PAGE_SIZE))));
+            updateCounts(baseList, list);
             renderTable(list);
         };
 
         /* ── Switch Tab ── */
         window.switchTab = function (tab) {
             currentTab = tab;
-            currentPage = 1; // Reset về trang 1 khi đổi tab
-            const tabMap = { all:'tabAll', pending:'tabPending', shipping:'tabShipping', done:'tabDone', cancel:'tabCancel' };
+            currentPage = 1;
+            const tabMap = { all:'tabAll', pending:'tabPending', accepted:'tabAccepted', shipping:'tabShipping', done:'tabDone', cancel:'tabCancel' };
             document.querySelectorAll('.order-tabs .nav-link').forEach(el => el.classList.remove('active'));
             if (tabMap[tab]) document.getElementById(tabMap[tab])?.classList.add('active');
-            loadAllOrders();
+            filterOrders();
         };
 
         window.changePage = function (delta) {
             const next = currentPage + delta;
             if (next < 1) return;
-            if (delta > 0 && !hasMore) return;
+            const totalFiltered = document.getElementById('ordersFilteredCount')?.textContent?.replace(/\D/g,'') || '0';
+            const totalPages = Math.max(1, Math.ceil(Number(totalFiltered || 0) / PAGE_SIZE));
+            if (next > totalPages) return;
             currentPage = next;
-            loadAllOrders();
+            filterOrders();
+        };
+
+        window.resetFilters = function () {
+            const searchNode = document.getElementById('orderSearchInput');
+            const fromNode = document.getElementById('orderFromDate');
+            const toNode = document.getElementById('orderToDate');
+            if (searchNode) searchNode.value = '';
+            if (fromNode) fromNode.value = '';
+            if (toNode) toNode.value = '';
+            currentTab = 'all';
+            currentPage = 1;
+            document.querySelectorAll('.order-tabs .nav-link').forEach(el => el.classList.remove('active'));
+            document.getElementById('tabAll')?.classList.add('active');
+            filterOrders();
         };
 
         /* ── Load All (Admin: không lọc role) ── */
@@ -447,16 +557,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             const mob   = document.getElementById('adminOrderMobileList');
             tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5"><div class="spinner-border text-primary spinner-border-sm me-2"></div>Đang tải trang ${currentPage}...</td></tr>`;
             mob.innerHTML   = '';
-            document.getElementById('orders-summary').textContent = 'Đang tải dữ liệu...';
+            document.getElementById('orders-summary').textContent = 'Đang tải toàn bộ dữ liệu...';
 
             try {
-                const rows = await fetchOrdersFromApi(currentPage, currentTab);
-                allOrders = rows;
-                hasMore = allOrders.length === LIMIT;
-                
-                updateStats();
+                const rows = await fetchAllOrdersFromApi();
+                allOrders = Array.isArray(rows) ? rows.sort(compareOrdersByCreatedDesc) : [];
                 filterOrders();
-                updateCounts();
             } catch (err) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Lỗi: ${esc(err.message || 'Không thể tải dữ liệu')}</td></tr>`;
                 document.getElementById('orders-summary').textContent = 'Không tải được dữ liệu.';

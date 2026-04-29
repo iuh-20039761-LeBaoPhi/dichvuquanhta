@@ -1,5 +1,5 @@
 <?php
-// Fallback proxy for legacy flows such as CCCD. Intentionally does not send folderKey.
+// Public upload proxy. Supports optional folder_key for flows that need explicit Drive folder mapping.
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -21,6 +21,8 @@ $file = $_FILES['file'];
 $name = isset($_POST['name']) ? trim((string) $_POST['name']) : trim((string) ($file['name'] ?? ''));
 $mime = trim((string) ($file['type'] ?? 'application/octet-stream'));
 $tmpPath = (string) ($file['tmp_name'] ?? '');
+$folderKey = isset($_POST['folder_key']) ? (int) $_POST['folder_key'] : 0;
+$allowedFolderKeys = [12, 32, 33];
 
 if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($tmpPath)) {
     echo json_encode([
@@ -31,11 +33,17 @@ if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_fil
 }
 
 $fileContent = base64_encode((string) file_get_contents($tmpPath));
-$payload = json_encode([
+$requestPayload = [
     'name' => $name !== '' ? $name : 'media',
     'file' => $fileContent,
     'type' => $mime !== '' ? $mime : 'application/octet-stream',
-], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+];
+
+if (in_array($folderKey, $allowedFolderKeys, true)) {
+    $requestPayload['folderKey'] = $folderKey;
+}
+
+$payload = json_encode($requestPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
 if ($payload === false) {
     echo json_encode(['success' => false, 'message' => 'Không thể mã hóa dữ liệu tải lên'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -62,9 +70,12 @@ if ($response === false) {
 
 $decoded = json_decode($response, true);
 if (is_array($decoded) && isset($decoded['status']) && $decoded['status'] === 'success' && !empty($decoded['fileId'])) {
+    $fileId = (string) $decoded['fileId'];
+    $viewLink = "https://lh3.googleusercontent.com/u/0/d/" . $fileId;
     echo json_encode([
         'success' => true,
-        'fileId' => (string) $decoded['fileId'],
+        'fileId' => $fileId,
+        'url' => $viewLink,
         'name' => $name !== '' ? $name : (string) ($file['name'] ?? 'media'),
         'type' => $mime !== '' ? $mime : 'application/octet-stream',
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -72,9 +83,12 @@ if (is_array($decoded) && isset($decoded['status']) && $decoded['status'] === 's
 }
 
 if ($httpCode >= 200 && $httpCode < 300 && is_array($decoded) && !empty($decoded['fileId'])) {
+    $fileId = (string) $decoded['fileId'];
+    $viewLink = "https://lh3.googleusercontent.com/u/0/d/" . $fileId;
     echo json_encode([
         'success' => true,
-        'fileId' => (string) $decoded['fileId'],
+        'fileId' => $fileId,
+        'url' => $viewLink,
         'name' => $name !== '' ? $name : (string) ($file['name'] ?? 'media'),
         'type' => $mime !== '' ? $mime : 'application/octet-stream',
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

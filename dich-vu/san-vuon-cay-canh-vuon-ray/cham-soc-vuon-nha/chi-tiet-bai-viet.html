@@ -163,8 +163,8 @@
     $(document).ready(function() {
       // 1. KẾT NỐI HEADER & FOOTER
       // Nếu các file JS layout không tự động load, ta load thủ công:
-      if($("#site-header").is(':empty')) $("#site-header").load("header.html");
-      if($("#site-footer").is(':empty')) $("#site-footer").load("footer.html");
+      if($("#site-header").is(':empty')) $("#site-header").load("html/shared-header.html");
+      if($("#site-footer").is(':empty')) $("#site-footer").load("html/shared-footer.html");
 
       // 2. XỬ LÝ NỘI DUNG BÀI VIẾT (GIỮ NGUYÊN)
       const params = new URLSearchParams(window.location.search);
@@ -172,7 +172,7 @@
 
       if (!postId) { window.location.href = 'bai-viet.html'; return; }
 
-      $.getJSON('bai-viet.json').done(function(data) {
+      API.getPosts().then(function(data) {
           const post = data.find(p => p.id === postId);
           if (post) {
             renderFullArticle(post);
@@ -183,6 +183,8 @@
           } else {
             $('#main-article').html('<div class="alert alert-warning">Bài viết không tồn tại.</div>');
           }
+      }).catch(function() {
+          $('#main-article').html('<div class="alert alert-warning">Không thể tải dữ liệu bài viết.</div>');
       });
 
       $(window).scroll(function() {
