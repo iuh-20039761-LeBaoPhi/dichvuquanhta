@@ -7,7 +7,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
 // Script URL (Inherited from the existing ecosystem config)
-$scriptUrl = "https://script.google.com/macros/s/AKfycbzTT7c7pINUsAd9k3z_zP-TBaR7h0s1GXd4ylsWOhBFeijeD3z37el1pzVRfiuJb7DFag/exec";
+$scriptUrl = "https://script.google.com/macros/s/AKfycbxtMgHP8YRAaDO1U_4oqYjFEWUgSjemT2jk1q9baoW6KXz2ggfR-bfmLnuZSiZkIAMAuA/exec";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Yêu cầu không hợp lệ']);

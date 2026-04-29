@@ -579,9 +579,7 @@
 
                 const uName = (payload.hovaten || currentUser.hovaten || 'user').replace(/\s+/g, '-');
                 const uPhone = currentUser.sdt || currentUser.sodienthoai || '';
-                const d = new Date();
-                const pad = (n) => String(n).padStart(2, '0');
-                const ts = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-${d.getMilliseconds()}`;
+                const ts = `${pad(d.getDate())}${pad(d.getMonth()+1)}${d.getFullYear()}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-${d.getMilliseconds()}`;
                 const baseSlug = `${uName}-${uPhone}-${ts}`;
 
                 if (avatarFile) {

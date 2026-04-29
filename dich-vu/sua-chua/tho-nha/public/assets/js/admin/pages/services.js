@@ -388,7 +388,32 @@
         if (fileInput && fileInput.files && fileInput.files[0]) {
             try {
                 showNotify('Đang tải ảnh lên...', 'info');
-                const customName = data.ten_danhmuc || data.ten_dichvu || 'thonha';
+                
+                const now = new Date();
+                const d = String(now.getDate()).padStart(2, '0');
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const y = now.getFullYear();
+                const h = String(now.getHours()).padStart(2, '0');
+                const mi = String(now.getMinutes()).padStart(2, '0');
+                const s = String(now.getSeconds()).padStart(2, '0');
+                const ms = String(now.getMilliseconds()).padStart(3, '0');
+                const timeStr = `${d}${m}${y}_${h}${mi}${s}_${ms}`;
+
+                let catNameStr = 'danhmuc';
+                let customName = '';
+                
+                if (table === SVC_TABLE) {
+                    const catObj = allCategories.find(c => String(c.id) === String(data.id_danhmuc));
+                    if (catObj) catNameStr = catObj.ten_danhmuc;
+                    customName = `${catNameStr}_thonha_${timeStr}_${data.ten_dichvu}`;
+                } else {
+                    catNameStr = data.ten_danhmuc || 'danhmuc';
+                    customName = `${catNameStr}_thonha_${timeStr}_danhmuc`;
+                }
+
+                // Làm sạch chuỗi tên file
+                customName = customName.replace(/[\s\/\\\?\#\:\;\=\+\*\&\%]/g, '-');
+
                 const up = await DVQTApp.uploadFile(fileInput.files[0], { folderKey: 9, customName: customName });
                 if (up && up.success && up.fileId) {
                     data.anh_dai_dien = up.fileId;
