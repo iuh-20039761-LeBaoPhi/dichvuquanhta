@@ -173,6 +173,23 @@ body {
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid rgba(148, 163, 184, 0.28);
     backdrop-filter: blur(14px);
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .navbar .navbar-collapse::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .navbar .navbar-collapse::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+
+  .navbar.scrolled .navbar-collapse::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
   }
 
   .navbar.scrolled .navbar-collapse {

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../session_user.php';
-require_once __DIR__ . '/get-hoa-don.php';
+require_once __DIR__ . '/get-don-hang.php';
 require_once __DIR__ . '/xu-ly-phan-trang.php';
 
 $flashOk = isset($_GET['ok']) ? ((string) $_GET['ok'] === '1') : null;

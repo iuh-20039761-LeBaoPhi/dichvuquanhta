@@ -26,7 +26,7 @@
       padding-top: 96px; 
     }
 
-    /* --- HERO SECTION ĐỒNG NHẤT VỚI TRANG DỊCH VỤ --- */
+    /* --- GIỮ NGUYÊN CSS CŨ --- */
     .hero-section {
       background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
       padding: 160px 0 100px;
@@ -65,7 +65,6 @@
       border-radius: 50px;
     }
 
-    /* --- POST CARD PHONG CÁCH MỚI --- */
     .post-card { 
       border: none; 
       background: #ffffff;
@@ -111,7 +110,6 @@
       margin-bottom: 15px;
     }
 
-    /* --- FILTER BUTTONS --- */
     .btn-filter { 
       border: 1px solid transparent; 
       background: #fff; 
@@ -129,7 +127,6 @@
       color: #fff; 
     }
 
-    /* --- SIDEBAR SEARCH --- */
     .sidebar-box {
       border-radius: 35px;
       background: #fff;
@@ -147,6 +144,42 @@
     .search-input:focus {
       box-shadow: none;
       border-color: var(--accent-green);
+    }
+
+    /* Phân trang */
+    .page-link {
+        color: var(--primary-green);
+        border: none;
+        margin: 0 5px;
+        border-radius: 10px !important;
+        font-weight: 600;
+    }
+    .page-item.active .page-link {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+    }
+
+    @media (max-width: 991px) {
+      .navbar-collapse {
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(15px);
+        padding: 25px;
+        border-radius: 20px;
+        margin-top: 15px;
+        box-shadow: 0 15px 35px rgba(26, 77, 46, 0.15) !important;
+        position: relative;
+        z-index: 2000;
+        border: 1px solid rgba(26, 77, 46, 0.08);
+      }
+      .navbar-nav .nav-link {
+        padding: 12px 15px !important;
+        color: var(--primary-green) !important;
+        border-radius: 12px;
+        margin-bottom: 5px;
+      }
+      .navbar-nav .nav-link:hover {
+        background: var(--soft-lime);
+      }
     }
 
     @media (max-width: 768px) {
@@ -176,7 +209,7 @@
           </div>
           
           <div class="row g-4" id="posts-grid">
-            </div>
+          </div>
 
           <nav class="mt-5">
             <ul class="pagination justify-content-center" id="pagination"></ul>
@@ -202,113 +235,178 @@
   <div id="site-footer"></div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    const JSON_URL = 'bai-viet.json'; 
-    const PER_PAGE = 6;
-    let allPosts = [], filtered = [], curCat = 'all', curQ = '', curPage = 1;
-
-    $(document).ready(function() {
-      $.getJSON(JSON_URL)
-        .done(function(data) {
-          allPosts = data;
-          buildFilters();
-          applyFilter();
-        })
-        .fail(function() {
-          $('#posts-grid').html('<div class="col-12 text-center py-5">Lỗi tải bài viết. Vui lòng kiểm tra file JSON.</div>');
-        });
-
-      $('#search-input').on('input', function() {
-        curQ = $(this).val().toLowerCase();
-        curPage = 1; 
-        applyFilter();
-      });
-    });
-
-    function applyFilter() {
-      filtered = allPosts.filter(p => {
-        const mCat = (curCat === 'all' || p.category === curCat);
-        const mSearch = (p.title.toLowerCase().includes(curQ) || p.category.toLowerCase().includes(curQ));
-        return mCat && mSearch;
-      });
-      renderGrid();
-      renderPagination();
-    }
-
-    function renderGrid() {
-      const grid = $('#posts-grid');
-      const start = (curPage - 1) * PER_PAGE;
-      const slice = filtered.slice(start, start + PER_PAGE);
-      
-      if (slice.length === 0) {
-        grid.html('<div class="col-12 text-center py-5"><p class="text-muted">Không có bài viết nào phù hợp với tìm kiếm của bạn.</p></div>');
-        return;
-      }
-
-      const html = slice.map(p => `
-        <div class="col-md-6">
-          <div class="post-card shadow-sm" onclick="window.location.href='chi-tiet-bai-viet.html?id=${p.id}'">
-            <div class="post-img-wrapper">
-              <img src="assets/images/${p.image}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/400x250?text=Green+Garden'">
-            </div>
-            <div class="card-body p-3">
-              <span class="cat-badge">${p.category}</span>
-              <h4 class="fw-bold h5 mb-3" style="font-family: 'Playfair Display', serif; line-height:1.4">${p.title}</h4>
-              <div class="d-flex justify-content-between text-muted small mt-auto">
-                <span><i class="far fa-calendar-alt me-1"></i> ${p.date}</span>
-                <span><i class="far fa-clock me-1"></i> ${p.readingTime || 5} phút đọc</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      `).join('');
-      
-      grid.html(html);
-    }
-
-    function buildFilters() {
-      const cats = [...new Set(allPosts.map(p => p.category))];
-      cats.forEach(c => {
-        $('#filter-bar').append(`<button class="btn-filter" onclick="filterCat('${c}', this)">${c}</button>`);
-        $('#sb-cats').append(`
-          <a href="javascript:void(0)" onclick="filterCatLink('${c}')" class="text-decoration-none text-dark d-flex justify-content-between align-items-center">
-            <span class="fw-medium">${c}</span>
-            <span class="badge rounded-pill bg-light text-dark border">${allPosts.filter(x => x.category === c).length}</span>
-          </a>
-        `);
-      });
-    }
-
-    function filterCat(cat, btn) {
-      curCat = cat; curPage = 1;
-      $('.btn-filter').removeClass('active');
-      if (btn) $(btn).addClass('active');
-      applyFilter();
-    }
-
-    function filterCatLink(cat) {
-      $(`.btn-filter:contains('${cat}')`).click();
-      window.scrollTo({ top: 400, behavior: 'smooth' });
-    }
-
-    function renderPagination() {
-      const total = Math.ceil(filtered.length / PER_PAGE);
-      let html = '';
-      if (total <= 1) { $('#pagination').html(''); return; }
-      
-      for(let i=1; i<=total; i++) {
-        html += `<li class="page-item ${i===curPage?'active':''}">
-                  <a class="page-link shadow-sm mx-1 rounded-3" href="javascript:void(0)" onclick="changePage(${i})">${i}</a>
-                </li>`;
-      }
-      $('#pagination').html(html);
-    }
-
-    function changePage(p) { curPage = p; renderGrid(); renderPagination(); window.scrollTo({ top: 300, behavior: 'smooth' }); }
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="JS/api-client.js"></script>
   
   <script src="JS/shared-layout.js"></script>
   <script src="JS/user-nav-menu.js"></script>
+
+  <script>
+    $(document).ready(async function () {
+      let allPosts = [];
+      let filteredPosts = [];
+      const postsPerPage = 6;
+      let currentPage = 1;
+
+      // 1. Kết nối Header và Footer
+      if ($("#site-header").is(':empty')) {
+          $("#site-header").load("header.html", function() {
+              const navMenu = document.getElementById('navMenu');
+              if (navMenu && typeof bootstrap !== 'undefined') {
+                  new bootstrap.Collapse(navMenu, { toggle: false });
+              }
+          });
+      }
+      if ($("#site-footer").is(':empty')) $("#site-footer").load("html/shared-footer.html");
+
+      // 2. Hàm hiển thị bài viết theo trang
+      function displayPosts(page) {
+          const postsGrid = $('#posts-grid');
+          postsGrid.empty();
+
+          const startIndex = (page - 1) * postsPerPage;
+          const endIndex = startIndex + postsPerPage;
+          const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+          if (paginatedPosts.length === 0) {
+              postsGrid.html('<p class="text-center w-100">Không có bài viết nào phù hợp.</p>');
+              return;
+          }
+
+          paginatedPosts.forEach(post => {
+              postsGrid.append(`
+                <div class="col-md-6">
+                  <div class="post-card shadow-sm" onclick="window.location.href='chi-tiet-bai-viet.html?id=${post.id}'">
+                    <div class="post-img-wrapper">
+                      <img src="assets/images/${post.image}" alt="${post.title}" onerror="this.src='https://via.placeholder.com/400x250?text=Green+Garden'">
+                    </div>
+                    <div class="card-body p-3">
+                      <span class="cat-badge">${post.category || 'Tin tức'}</span>
+                      <h4 class="fw-bold h5 mb-3" style="font-family: 'Playfair Display', serif; line-height:1.4; color: var(--primary-green)">
+                        ${post.title}
+                      </h4>
+                      <div class="d-flex justify-content-between text-muted small mt-auto">
+                        <span><i class="far fa-calendar-alt me-1"></i> ${post.date || '01/01/2024'}</span>
+                        <span><i class="far fa-clock me-1"></i> ${post.readingTime || 5} phút đọc</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `);
+          });
+          renderPagination();
+      }
+
+      // 3. Hàm tạo nút phân trang
+      function renderPagination() {
+          const pagination = $('#pagination');
+          pagination.empty();
+          const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+          if (totalPages <= 1) return;
+
+          for (let i = 1; i <= totalPages; i++) {
+              pagination.append(`
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                  <a class="page-link shadow-sm" href="javascript:void(0)" data-page="${i}">${i}</a>
+                </li>
+              `);
+          }
+      }
+
+      // 4. Tải dữ liệu bài viết
+      try {
+        allPosts = await API.getPosts();
+        
+        // Xử lý khi API trả về rỗng hoặc không phải mảng
+        if (!allPosts || !Array.isArray(allPosts) || allPosts.length === 0) {
+          $('#posts-grid').html(`
+            <div class="col-12">
+              <div class="text-center py-5">
+                <div style="font-size: 3rem; color: #ccc; margin-bottom: 20px;">
+                  <i class="fas fa-inbox"></i>
+                </div>
+                <h3 class="text-muted">Chưa có bài viết nào</h3>
+                <p class="text-secondary">Hệ thống hiện chưa có bài viết nào. Vui lòng quay lại sau để xem những bài viết mới nhất.</p>
+              </div>
+            </div>
+          `);
+          $('#pagination-container').html('');
+          $('#filter-bar').html(`<button class="btn-filter active" data-cat="all">Tất cả</button>`);
+          $('#sb-cats').html(`<p class="text-muted small px-3">Không có chuyên mục</p>`);
+          return;
+        }
+        
+        filteredPosts = [...allPosts];
+        
+        displayPosts(currentPage);
+
+        // Tự động tạo Chuyên mục
+        const categories = [...new Set(allPosts.map(p => p.category))];
+        const filterBar = $('#filter-bar');
+        const sbCats = $('#sb-cats');
+
+        categories.forEach(cat => {
+            if(cat) {
+                filterBar.append(`<button class="btn-filter" data-cat="${cat}">${cat}</button>`);
+                sbCats.append(`
+                    <a href="#" class="text-decoration-none text-dark d-flex justify-content-between align-items-center sidebar-cat-link" data-cat="${cat}">
+                        <span class="fw-medium">${cat}</span>
+                        <span class="badge rounded-pill bg-light text-dark border">${allPosts.filter(p => p.category === cat).length}</span>
+                    </a>
+                `);
+            }
+        });
+
+        // Xử lý click lọc
+        $(document).on('click', '.btn-filter', function() {
+            $('.btn-filter').removeClass('active');
+            $(this).addClass('active');
+            
+            const selectedCat = $(this).data('cat');
+            currentPage = 1;
+
+            if (!selectedCat || selectedCat === 'all') {
+                filteredPosts = [...allPosts];
+            } else {
+                filteredPosts = allPosts.filter(p => p.category === selectedCat);
+            }
+            displayPosts(currentPage);
+        });
+
+        $('.btn-filter:first').attr('data-cat', 'all');
+
+        // Xử lý click chuyển trang
+        $(document).on('click', '.page-link', function() {
+            currentPage = parseInt($(this).data('page'));
+            displayPosts(currentPage);
+            window.scrollTo({ top: 400, behavior: 'smooth' });
+        });
+
+        // Sidebar click lọc
+        $(document).on('click', '.sidebar-cat-link', function(e) {
+            e.preventDefault();
+            const cat = $(this).data('cat');
+            $(`.btn-filter[data-cat="${cat}"]`).click();
+        });
+
+      } catch (e) { 
+        console.error("Lỗi tải dữ liệu bài viết:", e); 
+        $('#posts-grid').html(`
+          <div class="col-12">
+            <div class="text-center py-5">
+              <div style="font-size: 3rem; color: #dc3545; margin-bottom: 20px;">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <h3 class="text-danger">Không thể tải bài viết</h3>
+              <p class="text-muted mb-4">Đã xảy ra lỗi khi tải danh sách bài viết. Vui lòng thử lại sau.</p>
+              <button class="btn btn-outline-danger rounded-pill" onclick="window.location.reload()"><i class="fas fa-redo me-1"></i>Thử lại</button>
+            </div>
+          </div>
+        `);
+      }
+    });
+  </script>
 
 </body>
 </html>

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/slidebar.php';
-require_once __DIR__ . '/get_hoadon.php';
+require_once __DIR__ . '/get_don-hang.php';
 
 $admin = admin_require_login();
 $id = (int) ($_GET['id'] ?? 0);
