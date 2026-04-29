@@ -337,11 +337,15 @@ require_once __DIR__ . '/../includes/header_admin.php';
         <a href="#dashboard">3. Dashboard và cảnh báo</a>
         <a href="#don-hang">4. Đơn hàng và trạng thái</a>
         <a href="#nguoi-dung">5. Nhà cung cấp và người dùng</a>
-        <a href="#bang-gia">6. Bảng giá và export JSON</a>
-        <a href="#lien-he-noi-dung">7. Liên hệ, thông báo, cẩm nang</a>
-        <a href="#upload">8. Upload và hồ sơ giấy tờ</a>
-        <a href="#su-co">9. Sự cố thường gặp</a>
-        <a href="#checklist">10. Checklist bàn giao ca</a>
+        <a href="#noi-dung-dich-vu">6. Nội dung dịch vụ</a>
+        <a href="#bang-gia">7. Bảng giá và export JSON</a>
+        <a href="#lien-he">8. Liên hệ</a>
+        <a href="#thong-bao">9. Thông báo</a>
+        <a href="#cam-nang">10. Cẩm nang</a>
+        <a href="#upload">11. Upload và hồ sơ giấy tờ</a>
+        <a href="#auth">12. Đăng nhập / đăng xuất</a>
+        <a href="#su-co">13. Sự cố thường gặp</a>
+        <a href="#checklist">14. Checklist bàn giao ca</a>
     </aside>
 
     <div class="guide-stack">
@@ -354,7 +358,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <span class="guide-chip"><i class="fas fa-envelope-open-text"></i> Bảng liên hệ: `lien_he`</span>
                 <span class="guide-chip"><i class="fas fa-cloud-arrow-up"></i> Upload limit đọc qua `public/upload_settings.php`</span>
             </div>
-            <p>Màn admin hiện có các khu chính: `Dashboard`, `Đơn hàng`, `Nhà cung cấp & người dùng`, `Bảng giá`, `Liên hệ`, `Cẩm nang`, `Thông báo`, `Cấu hình`, và trang `Hướng dẫn` này.</p>
+            <p>Màn admin hiện có các khu chính: `Dashboard`, `Đơn hàng`, `Nhà cung cấp & người dùng`, `Nội dung dịch vụ`, `Bảng giá`, `Liên hệ`, `Cẩm nang`, `Thông báo`, `Cấu hình upload`, và trang `Hướng dẫn` này.</p>
             <div class="guide-note">Admin không nên sửa trực tiếp Apps Script Google Drive hoặc Google Sheet để ép đổi folder upload. Các route upload và folder mapping của chuyển dọn đã được chốt riêng.</div>
             <div class="guide-grid">
                 <article class="guide-card">
@@ -384,10 +388,11 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <li>Vào `Thông báo` nếu cần danh sách cảnh báo theo từng record, sau đó nhảy sang đơn hoặc contact tương ứng.</li>
                 <li>Mở `Đơn hàng`, lọc theo trạng thái và provider để xử lý các đơn mới, đơn cần gán nhà cung cấp, hoặc đơn có khảo sát trước.</li>
                 <li>Rà `Nhà cung cấp & người dùng` để xác minh các provider đang `pending` hoặc thiếu `avatar + CCCD`.</li>
+                <li>Nếu cần cập nhật trang dịch vụ chuyển dọn ngoài site, xử lý ở `Nội dung dịch vụ`, lưu xong rồi kiểm tra JSON public và giao diện thực tế.</li>
                 <li>Nếu có thay đổi chính sách giá hoặc phụ phí, xử lý ở `Bảng giá`, xác nhận export JSON thành công rồi mới bàn giao.</li>
                 <li>Cuối ca, kiểm tra `Liên hệ` và `Cẩm nang` để tránh bỏ sót inbox mới hoặc bài viết đang cần cập nhật.</li>
             </ol>
-            <div class="guide-note">Rule tự hủy hiện là `lazy sweep`: đơn chờ quá `120 phút` mà chưa được nhận sẽ bị đẩy sang `da_huy` khi có luồng tải dữ liệu từ khách hàng hoặc nhà cung cấp. Đây chưa phải cron job nền độc lập.</div>
+            <div class="guide-note">Rule tự hủy hiện là kiểu `lazy sweep`: đơn chờ quá `120 phút` mà chưa được nhận sẽ bị đẩy sang `da_huy` khi có luồng tải dữ liệu từ khách hàng hoặc nhà cung cấp. Nghĩa là hệ thống chỉ dọn khi có request chạy qua, chưa phải job nền độc lập.</div>
         </article>
 
         <article class="guide-section" id="dashboard">
@@ -452,7 +457,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 </table>
             </div>
             <h3>Trang chi tiết đơn</h3>
-            <p>`order_detail.php` dùng để đọc sâu dữ liệu một đơn và xem media hiện trường. Đây là giao diện <strong>Master Standalone</strong> tái tạo lại góc nhìn của Nhà cung cấp giúp Admin hỗ trợ chính xác nhất.</p>
+            <p>`order_detail.php` dùng để đọc sâu dữ liệu một đơn và xem media hiện trường. Đây là giao diện chi tiết độc lập, tái tạo lại gần với góc nhìn của Nhà cung cấp để Admin hỗ trợ và đối chiếu chính xác hơn.</p>
             <div class="guide-note guide-danger">Nếu gặp đơn đã ở `da_xac_nhan` nhưng chưa có `completed_at`, hãy ưu tiên lưu lại đơn một lần từ admin để mốc hoàn tất được bổ sung cho dữ liệu sạch hơn.</div>
         </article>
 
@@ -474,6 +479,28 @@ require_once __DIR__ . '/../includes/header_admin.php';
             <div class="guide-note">Vì module ở chế độ Chỉ xem, mọi yêu cầu thay đổi thông tin tài khoản cần được thực hiện bởi Admin tổng hoặc thông qua các yêu cầu hỗ trợ.</div>
         </article>
 
+        <article class="guide-section" id="noi-dung-dich-vu">
+            <h2><i class="fas fa-layer-group"></i> Nội dung dịch vụ</h2>
+            <p>`admin_service_content.php` là màn chỉnh nội dung cho trang `dich-vu-chuyen-don.html`. Màn này cho phép cập nhật Hero đầu trang, phần giới thiệu nhóm dịch vụ, nội dung từng card dịch vụ, ảnh minh họa và các CTA dẫn sang đặt lịch hoặc bảng giá.</p>
+            <h3>Những gì đang quản lý được</h3>
+            <ul>
+                <li>Hero: eyebrow, tiêu đề, mô tả, CTA chính và CTA phụ.</li>
+                <li>Khối giới thiệu dịch vụ: eyebrow, tiêu đề và mô tả chung phía trên danh sách card.</li>
+                <li>Từng dịch vụ: label, tiêu đề, mô tả ngắn, ảnh, alt ảnh, danh sách hạng mục dịch vụ, CTA đặt lịch và CTA xem bảng giá.</li>
+            </ul>
+            <h3>Nguồn dữ liệu và export</h3>
+            <ul>
+                <li>Hero được bootstrap từ `dich-vu-chuyen-don.html` nếu KRUD chưa có dữ liệu.</li>
+                <li>Danh sách dịch vụ cũ được bootstrap từ `public/assets/js/data/services-hub.json` nếu cần.</li>
+                <li>Sau khi lưu, hệ thống export lại `public/assets/js/data/dich-vu-chuyen-don-page.json` qua `api/service_content_export.php` để frontend public đọc.</li>
+            </ul>
+            <div class="guide-note">Nếu lưu thành công ở KRUD nhưng trang ngoài site chưa đổi, hãy ưu tiên kiểm tra bước export JSON và làm mới cứng trang public trước khi kết luận dữ liệu bị mất.</div>
+            <div class="guide-link-row">
+                <a class="guide-link" href="admin_service_content.php"><i class="fas fa-pen-ruler"></i> Mở Nội dung dịch vụ</a>
+                <a class="guide-link" href="../../dich-vu-chuyen-don.html" target="_blank" rel="noopener"><i class="fas fa-arrow-up-right-from-square"></i> Xem trang ngoài site</a>
+            </div>
+        </article>
+
         <article class="guide-section" id="bang-gia">
             <h2><i class="fas fa-money-bill-trend-up"></i> Bảng giá và export JSON</h2>
             <p>`admin_pricing.php` là màn chỉnh dữ liệu giá cho chuyển dọn. Nguồn chính hiện là KRUD; file `public/assets/js/data/bang-gia-minh-bach.json` chỉ là bản export để frontend public đọc nhanh.</p>
@@ -482,7 +509,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <li>Nếu KRUD trống, màn admin có thể bootstrap dữ liệu từ JSON fallback.</li>
                 <li>Khi admin lưu hoặc xóa một dòng, màn bảng giá sẽ cập nhật state cục bộ trước, không reload toàn trang như trước.</li>
                 <li>Sau khi state đã cập nhật, admin gọi `api/pricing_export.php` để ghi lại `bang-gia-minh-bach.json` cho public.</li>
-                <li>Nếu lưu KRUD thành công nhưng export JSON thất bại, màn admin sẽ báo lỗi partial-save thay vì giả vờ thành công hoàn toàn.</li>
+                <li>Nếu lưu KRUD thành công nhưng export JSON thất bại, màn admin sẽ báo lỗi lưu một phần thay vì giả vờ thành công hoàn toàn.</li>
             </ul>
             <div class="guide-grid">
                 <article class="guide-card">
@@ -504,30 +531,46 @@ require_once __DIR__ . '/../includes/header_admin.php';
             </div>
         </article>
 
-        <article class="guide-section" id="lien-he-noi-dung">
-            <h2><i class="fas fa-inbox"></i> Liên hệ, thông báo và cẩm nang</h2>
-            <p>Ba khu này thường bị bỏ qua, nhưng là nơi phát sinh việc chưa chạm vào đơn hàng.</p>
-            <h3>Liên hệ</h3>
+        <article class="guide-section" id="lien-he">
+            <h2><i class="fas fa-inbox"></i> Liên hệ</h2>
+            <p>`contact_manage.php` là nơi xử lý các liên hệ và yêu cầu đổ đúng về ngữ cảnh chuyển dọn. Đây thường là nguồn việc đến sớm hơn cả đơn hàng đã xác nhận.</p>
             <ul>
                 <li>`contact_manage.php` chỉ hiển thị các contact có gắn service chuyển dọn.</li>
                 <li>Record `lien_he` không có service sẽ không còn bị lẫn vào inbox chuyển dọn.</li>
                 <li>Dùng màn này để cập nhật `status`, ghi chú xử lý và điều phối sang sale hoặc vận hành.</li>
             </ul>
-            <h3>Thông báo</h3>
+            <div class="guide-link-row">
+                <a class="guide-link" href="contact_manage.php"><i class="fas fa-headset"></i> Mở Liên hệ</a>
+            </div>
+        </article>
+
+        <article class="guide-section" id="thong-bao">
+            <h2><i class="fas fa-bell"></i> Thông báo</h2>
+            <p>`notifications.php` là màn rà nhanh cảnh báo đầu ca. Nó gom các điểm cần chú ý mà admin cần chuyển tiếp sang Đơn hàng, Users hoặc Liên hệ.</p>
             <ul>
                 <li>`notifications.php` tổng hợp đơn quá SLA, provider cần rà hồ sơ và contact mới.</li>
                 <li>Đây là màn phù hợp để đầu ca rà nhanh từng cảnh báo rồi nhảy sang màn xử lý tương ứng.</li>
             </ul>
-            <h3>Cẩm nang</h3>
+            <div class="guide-link-row">
+                <a class="guide-link" href="notifications.php"><i class="fas fa-bell"></i> Mở Thông báo</a>
+            </div>
+        </article>
+
+        <article class="guide-section" id="cam-nang">
+            <h2><i class="fas fa-newspaper"></i> Cẩm nang</h2>
+            <p>`articles_manage.php` quản lý bài viết/cẩm nang của chuyển dọn. Đây là khu cập nhật nội dung hỗ trợ SEO, tư vấn và hướng dẫn cho người dùng ngoài site.</p>
             <ul>
                 <li>`articles_manage.php` quản lý bài viết/cẩm nang của chuyển dọn.</li>
                 <li>Khi sửa nội dung, cần kiểm tra lại trang danh sách và trang chi tiết bài viết nếu thay đổi tiêu đề, slug hoặc ảnh.</li>
             </ul>
+            <div class="guide-link-row">
+                <a class="guide-link" href="articles_manage.php"><i class="fas fa-pen-to-square"></i> Mở Cẩm nang</a>
+            </div>
         </article>
 
         <article class="guide-section" id="upload">
             <h2><i class="fas fa-cloud-arrow-up"></i> Upload, hồ sơ giấy tờ và cấu hình</h2>
-            <p>`admin_profile.php` hiện dùng để cấu hình dung lượng upload tối đa cho toàn cụm chuyển dọn. Đây là điểm kiểm soát kích thước file, không phải nơi đổi route upload hay folder Drive.</p>
+            <p>`admin_profile.php` hiện là màn Cấu hình upload cho toàn cụm chuyển dọn. Đây là điểm kiểm soát kích thước file, không phải nơi đổi route upload hay folder Drive.</p>
             <div class="guide-table-wrap">
                 <table class="guide-table">
                     <thead>
@@ -563,6 +606,20 @@ require_once __DIR__ . '/../includes/header_admin.php';
             </div>
             <p>Admin cấu hình limit qua `admin_profile.php`, dữ liệu được ghi vào `admin-chuyendon/api/settings.php`, sau đó frontend đọc lại qua `public/upload_settings.php`.</p>
             <div class="guide-note">Nếu người dùng báo không upload được, hãy kiểm tra theo thứ tự: dung lượng file, route upload đúng loại file, và response của `upload_settings.php`. Không sửa tay file public JSON hoặc Apps Script khi chưa xác minh nguyên nhân.</div>
+            <div class="guide-link-row">
+                <a class="guide-link" href="admin_profile.php"><i class="fas fa-cloud-arrow-up"></i> Mở Cấu hình upload</a>
+            </div>
+        </article>
+
+        <article class="guide-section" id="auth">
+            <h2><i class="fas fa-right-to-bracket"></i> Đăng nhập / đăng xuất</h2>
+            <p>`login.php` của chuyển dọn không dùng form nhập riêng. Trang này kiểm tra cookie admin chung `admin_e` và `admin_p`; nếu hợp lệ thì tạo `PHP session` admin và chuyển thẳng vào dashboard.</p>
+            <ul>
+                <li>Nếu đã có session admin hợp lệ, mở `login.php` sẽ tự chuyển về `index.php`.</li>
+                <li>Nếu cookie không hợp lệ, hệ thống sẽ xóa session/cookie admin cũ rồi trả về trang đăng nhập admin chung.</li>
+                <li>`logout.php` dùng để thoát khỏi cụm admin chuyển dọn và dọn session hiện tại.</li>
+            </ul>
+            <div class="guide-note">Nếu admin bị văng ra ngoài hoặc không vào được cụm chuyển dọn, hãy kiểm tra trước tiên cookie admin chung còn hợp lệ hay không, thay vì sửa dữ liệu trong module.</div>
         </article>
 
         <article class="guide-section" id="su-co">
@@ -583,7 +640,12 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <li>Hiện inbox chuyển dọn chỉ lấy contact có service gắn đúng ngữ cảnh chuyển dọn.</li>
                 <li>Nếu record không hiện, rà lại `service_key` hoặc `service_name` từ phía form tạo contact.</li>
             </ul>
-            <h3>4. Đơn đã hoàn tất nhưng trang chi tiết hiển thị lạ</h3>
+            <h3>4. Nội dung dịch vụ đã lưu nhưng trang ngoài site chưa đổi</h3>
+            <ul>
+                <li>Kiểm tra bước export `dich-vu-chuyen-don-page.json` có báo lỗi hay không.</li>
+                <li>Nếu KRUD đã lưu nhưng JSON chưa cập nhật, mở lại màn Nội dung dịch vụ và lưu lại một thay đổi hợp lệ để export lại.</li>
+            </ul>
+            <h3>5. Đơn đã hoàn tất nhưng trang chi tiết hiển thị lạ</h3>
             <ul>
                 <li>Rà `trang_thai`, `accepted_at`, `completed_at` trong đơn.</li>
                 <li>Với đơn ở `da_xac_nhan`, hệ thống hiện đã coi là hoàn tất; nếu mốc thiếu, lưu lại đơn để bổ sung mốc.</li>

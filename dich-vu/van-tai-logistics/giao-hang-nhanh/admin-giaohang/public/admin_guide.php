@@ -336,10 +336,10 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 </p>
             </div>
             <div class="guide-hero__meta">
-                <span><strong>14+</strong>Màn / nhóm chức năng</span>
+                <span><strong>15+</strong>Màn / nhóm chức năng</span>
                 <span><strong>KRUD</strong>Nguồn dữ liệu chính</span>
                 <span><strong>JSON</strong>Cache và dữ liệu cục bộ</span>
-                <span><strong>PHP</strong>Render admin</span>
+                <span><strong>PHP</strong>Render giao diện admin</span>
             </div>
         </section>
 
@@ -355,6 +355,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 <a href="#orders">Quản lý đơn hàng</a>
                 <a href="#order-detail">Chi tiết đơn hàng</a>
                 <a href="#users">Quản lý người dùng</a>
+                <a href="#service-content">Nội dung dịch vụ</a>
                 <a href="#articles">Quản lý cẩm nang</a>
                 <a href="#contacts">Hòm thư & khiếu nại</a>
                 <a href="#pricing">Bảng giá</a>
@@ -370,7 +371,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     <h3><i class="fa-solid fa-compass"></i> Tổng quan admin</h3>
                     <p>
                         Admin Giao Hàng Nhanh là cụm PHP nằm trong <code>admin-giaohang</code>. Giao diện khách hàng
-                        và shipper chủ yếu là HTML/CSS/JS tĩnh, còn admin dùng PHP để kiểm tra session và render trang.
+                        và shipper chủ yếu là HTML/CSS/JS tĩnh, còn admin dùng PHP để kiểm tra session và dựng trang.
                     </p>
                     <div class="guide-grid">
                         <div class="guide-mini">
@@ -379,11 +380,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         </div>
                         <div class="guide-mini">
                             <strong>JSON export</strong>
-                            <span><code>public/data/pricing-data.json</code> là cache public cho calculator, không phải nguồn chỉnh sửa chính.</span>
+                            <span><code>public/data/pricing-data.json</code> là cache public cho công cụ tính giá, không phải nguồn chỉnh sửa chính.</span>
                         </div>
                         <div class="guide-mini">
                             <strong>JSON nội bộ</strong>
-                            <span>Lưu hồ sơ admin, thông báo cục bộ và dữ liệu cẩm nang public.</span>
+                            <span>Lưu hồ sơ admin, thông báo cục bộ và một phần dữ liệu phục vụ giao diện public.</span>
                         </div>
                         <div class="guide-mini">
                             <strong>Session admin</strong>
@@ -433,13 +434,18 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                                     <td><code>users_manage.php</code></td>
                                 </tr>
                                 <tr>
-                                    <td>Sửa bảng giá public</td>
+                                    <td>Cập nhật nội dung trang dịch vụ giao hàng</td>
+                                    <td>Sửa Hero, khối dịch vụ hoặc từng gói dịch vụ; lưu xong thì kiểm tra bước cập nhật JSON public và mở trang ngoài site để đối chiếu.</td>
+                                    <td><code>admin_service_content.php</code>, <code>dich-vu-giao-hang.html</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Sửa bảng giá ngoài site</td>
                                     <td>Sửa cấu hình trong bảng giá, đợi KRUD lưu xong, kiểm tra đồng bộ JSON; nếu cần dữ liệu vùng/quận huyện thì qua Dữ liệu giá.</td>
                                     <td><code>admin_pricing.php</code>, <code>pricing_support.php</code></td>
                                 </tr>
                                 <tr>
                                     <td>Cập nhật bài cẩm nang</td>
-                                    <td>Chọn bài, sửa nội dung, kiểm tra trạng thái hiển thị, lưu rồi mở trang public để xem kết quả.</td>
+                                    <td>Chọn bài, sửa nội dung, kiểm tra trạng thái hiển thị, lưu rồi mở trang ngoài site để xem kết quả.</td>
                                     <td><code>articles_manage.php</code>, <code>cam-nang.html</code></td>
                                 </tr>
                             </tbody>
@@ -456,7 +462,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         </div>
                         <div class="guide-mini">
                             <strong>Sau khi sửa bảng giá</strong>
-                            <span>Đợi thông báo lưu thành công, kiểm tra đồng bộ public JSON, thử lại calculator hoặc form đặt lịch nếu thay đổi ảnh hưởng giá.</span>
+                            <span>Đợi thông báo lưu thành công, kiểm tra đồng bộ JSON public, rồi thử lại công cụ tính giá hoặc form đặt lịch nếu thay đổi ảnh hưởng giá.</span>
                         </div>
                         <div class="guide-mini">
                             <strong>Khi đơn hàng bị báo lỗi</strong>
@@ -495,14 +501,19 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                                     <td>Xóa bộ lọc, tải lại trang, đăng nhập lại nếu bị redirect, kiểm tra console/API nếu vẫn rỗng.</td>
                                 </tr>
                                 <tr>
-                                    <td>Bảng giá public chưa đổi</td>
-                                    <td>KRUD đã lưu nhưng export JSON public lỗi hoặc trình duyệt đang cache dữ liệu cũ.</td>
-                                    <td>Dùng nút kiểm tra đồng bộ/export lại JSON ở Bảng giá, sau đó tải lại trang public.</td>
+                                    <td>Bảng giá ngoài site chưa đổi</td>
+                                    <td>KRUD đã lưu nhưng bước export JSON public lỗi hoặc trình duyệt đang cache dữ liệu cũ.</td>
+                                    <td>Dùng nút kiểm tra đồng bộ hoặc export lại JSON ở Bảng giá, sau đó tải lại trang ngoài site.</td>
                                 </tr>
                                 <tr>
                                     <td>Không lưu được cẩm nang</td>
                                     <td>File JSON hoặc thư mục dữ liệu cẩm nang không ghi được, payload thiếu tiêu đề/nội dung.</td>
                                     <td>Kiểm tra thông báo lỗi trên màn, đảm bảo tiêu đề và HTML content không rỗng, kiểm tra quyền ghi server nếu cần.</td>
+                                </tr>
+                                <tr>
+                                    <td>Sửa nội dung dịch vụ nhưng trang ngoài site chưa đổi</td>
+                                    <td>KRUD đã lưu nhưng bước export <code>dich-vu-giao-hang-page.json</code> lỗi hoặc trình duyệt đang dùng cache cũ.</td>
+                                    <td>Lưu lại từ màn Nội dung dịch vụ, kiểm tra thông báo export, rồi tải lại trang ngoài site bằng làm mới cứng.</td>
                                 </tr>
                                 <tr>
                                     <td>Không thấy thông báo</td>
@@ -537,7 +548,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         </div>
                         <div class="guide-mini">
                             <strong>Cẩn thận với HTML cẩm nang</strong>
-                            <span>Nội dung bài viết render HTML trực tiếp trên public, nên tránh script, iframe lạ hoặc markup phá layout.</span>
+                            <span>Nội dung bài viết render HTML trực tiếp ở ngoài site, nên tránh script, iframe lạ hoặc markup phá layout.</span>
                         </div>
                         <div class="guide-mini">
                             <strong>Chi tiết đơn admin chủ yếu để xem</strong>
@@ -665,6 +676,47 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     </div>
                 </section>
 
+                <section class="guide-section" id="service-content">
+                    <h3><i class="fa-solid fa-layer-group"></i> Nội dung dịch vụ</h3>
+                    <p>
+                        Màn <code>admin_service_content.php</code> dùng để chỉnh phần Hero, khối dịch vụ và danh sách
+                        gói dịch vụ của trang <code>dich-vu-giao-hang.html</code>. Dữ liệu được nạp ban đầu từ HTML hiện tại
+                        và file dịch vụ cũ, sau đó lưu vào KRUD rồi cập nhật ra JSON public.
+                    </p>
+                    <div class="guide-grid">
+                        <div class="guide-mini">
+                            <strong>Hero</strong>
+                            <span>Quản lý badge nhỏ, tiêu đề chính và mô tả đầu trang dịch vụ.</span>
+                        </div>
+                        <div class="guide-mini">
+                            <strong>Khối dịch vụ</strong>
+                            <span>Quản lý tiêu đề và mô tả nằm phía trên danh sách card dịch vụ.</span>
+                        </div>
+                        <div class="guide-mini">
+                            <strong>Danh sách gói dịch vụ</strong>
+                            <span>Cho phép thêm, sửa, ẩn/hiện hoặc xóa từng gói dịch vụ trong danh sách.</span>
+                        </div>
+                        <div class="guide-mini">
+                            <strong>Cập nhật JSON public</strong>
+                            <span>Sau khi lưu, hệ thống gọi <code>api/service_content_export.php</code> để cập nhật <code>public/data/dich-vu-giao-hang-page.json</code>.</span>
+                        </div>
+                    </div>
+                    <h4>Nguồn dữ liệu liên quan</h4>
+                    <ul>
+                        <li><code>dich-vu-giao-hang.html</code>: nguồn HTML public để bootstrap Hero và khối mô tả hiện có.</li>
+                        <li><code>public/data/dsdichvugiaohang.json</code>: nguồn dữ liệu cũ để bootstrap danh sách gói dịch vụ.</li>
+                        <li><code>public/data/dich-vu-giao-hang-page.json</code>: JSON public mới mà frontend đọc sau khi export.</li>
+                    </ul>
+                    <div class="guide-note">
+                        Màn này hiện chỉ quản lý nội dung văn bản và trạng thái hiển thị của gói dịch vụ. Nút CTA của
+                        card ngoài site vẫn giữ theo code hiện tại, không đổi từ màn admin này.
+                    </div>
+                    <div class="guide-link-row">
+                        <a class="guide-link" href="admin_service_content.php"><i class="fa-solid fa-pen-ruler"></i> Mở nội dung dịch vụ</a>
+                        <a class="guide-link" href="../../dich-vu-giao-hang.html" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem trang ngoài site</a>
+                    </div>
+                </section>
+
                 <section class="guide-section" id="articles">
                     <h3><i class="fa-solid fa-newspaper"></i> Quản lý cẩm nang</h3>
                     <p>
@@ -693,20 +745,20 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                                 </tr>
                                 <tr>
                                     <td><code>img</code>, <code>description</code></td>
-                                    <td>Ảnh đại diện và mô tả ngắn trên public.</td>
-                                    <td>Đường dẫn ảnh cần khớp file public.</td>
+                                    <td>Ảnh đại diện và mô tả ngắn ngoài site.</td>
+                                    <td>Đường dẫn ảnh cần khớp với file public thực tế.</td>
                                 </tr>
                                 <tr>
                                     <td><code>content</code>, <code>status</code></td>
                                     <td>Nội dung HTML và trạng thái hiển thị.</td>
-                                    <td>Content render trực tiếp, cần nhập HTML cẩn thận.</td>
+                                    <td>Nội dung render trực tiếp, cần nhập HTML cẩn thận.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="guide-link-row">
                         <a class="guide-link" href="articles_manage.php"><i class="fa-solid fa-pen-to-square"></i> Mở quản lý cẩm nang</a>
-                        <a class="guide-link" href="../../cam-nang.html" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem trang public</a>
+                        <a class="guide-link" href="../../cam-nang.html" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem trang ngoài site</a>
                     </div>
                 </section>
 
@@ -727,7 +779,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         lên KRUD.
                     </p>
                     <div class="guide-link-row">
-                        <a class="guide-link" href="contact_manage.php"><i class="fa-solid fa-envelope-open-text"></i> Mở hòm thư</a>
+                        <a class="guide-link" href="contact_manage.php"><i class="fa-solid fa-envelope-open-text"></i> Mở liên hệ</a>
                     </div>
                 </section>
 
@@ -735,7 +787,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     <h3><i class="fa-solid fa-tags"></i> Bảng giá</h3>
                     <p>
                         Màn <code>admin_pricing.php</code> là nơi chỉnh cấu hình giá chính. KRUD là nguồn dữ liệu chính,
-                        còn <code>public/data/pricing-data.json</code> chỉ là cache export để public calculator đọc nhanh.
+                        còn <code>public/data/pricing-data.json</code> chỉ là cache export để công cụ tính giá ngoài site đọc nhanh.
                     </p>
                     <div class="guide-grid">
                         <div class="guide-mini">
@@ -775,7 +827,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 <section class="guide-section" id="pricing-support">
                     <h3><i class="fa-solid fa-database"></i> Dữ liệu giá</h3>
                     <p>
-                        Màn <code>pricing_support.php</code> quản lý dữ liệu phụ trợ cho calculator: thành phố,
+                        Màn <code>pricing_support.php</code> quản lý dữ liệu phụ trợ cho công cụ tính giá: thành phố,
                         quận/huyện và nhãn vùng. Các dữ liệu này lưu theo bảng giá đang áp dụng rồi export JSON public sau khi lưu.
                     </p>
                     <ul>
@@ -850,8 +902,13 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                                 </tr>
                                 <tr>
                                     <td><code>api/order_media_upload.php</code></td>
-                                    <td>Lưu ảnh/video chứng từ hoặc media đơn hàng.</td>
-                                    <td><code>public/uploads/order_media</code></td>
+                                    <td>API cũ đã bị vô hiệu hóa; media đơn hàng hiện đi qua các luồng upload Google Drive.</td>
+                                    <td>Không còn sử dụng</td>
+                                </tr>
+                                <tr>
+                                    <td><code>api/service_content_export.php</code></td>
+                                    <td>Export dữ liệu nội dung dịch vụ từ KRUD ra JSON public cho trang dịch vụ giao hàng.</td>
+                                    <td><code>public/data/dich-vu-giao-hang-page.json</code></td>
                                 </tr>
                                 <tr>
                                     <td><code>api/pricing_export.php</code></td>

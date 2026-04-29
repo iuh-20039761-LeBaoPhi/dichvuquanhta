@@ -73,6 +73,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             grid-template-columns: 1.4fr 1fr;
             gap: 24px;
             margin-top: 24px;
+            min-width: 0;
         }
 
         .stats-panel {
@@ -81,6 +82,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             border-radius: 24px;
             box-shadow: 0 12px 26px rgba(15, 23, 42, 0.05);
             overflow: hidden;
+            min-width: 0;
         }
 
         .stats-panel-head {
@@ -96,22 +98,26 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             margin: 0;
             color: #0a2a66;
             font-size: 18px;
+            line-height: 1.35;
         }
 
         .stats-panel-head p {
             margin: 4px 0 0;
             color: #64748b;
             font-size: 13px;
+            line-height: 1.5;
         }
 
         .stats-panel-body {
             padding: 20px 22px 24px;
             overflow-x: auto;
+            min-width: 0;
         }
 
         .stats-chart-wrap {
             height: 320px;
             position: relative;
+            min-width: 0;
         }
 
         .stats-chart-wrap.is-compact {
@@ -141,6 +147,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             padding: 14px 0;
             text-align: left;
             border-bottom: 1px solid #edf2f7;
+            vertical-align: top;
         }
 
         .stats-top-users th {
@@ -160,6 +167,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
         .stats-top-users small {
             color: #64748b;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         @media (max-width: 1200px) {
@@ -183,6 +196,10 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 align-items: flex-start;
                 flex-direction: column;
             }
+
+            .stats-chart-wrap {
+                height: 280px;
+            }
         }
 
         @media (max-width: 640px) {
@@ -195,13 +212,91 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             }
 
             .stats-hero,
+            .stats-panel {
+                border-radius: 20px;
+            }
+
+            .stats-hero,
             .stats-panel-body {
                 padding-left: 18px;
                 padding-right: 18px;
             }
 
+            .stats-panel-head {
+                padding: 16px 18px;
+                gap: 10px;
+            }
+
+            .stats-panel-body {
+                padding-top: 16px;
+                padding-bottom: 18px;
+            }
+
+            .stats-chart-wrap,
+            .stats-chart-wrap.is-compact {
+                height: 220px;
+            }
+
+            .stats-top-users,
+            .stats-top-users thead,
+            .stats-top-users tbody,
+            .stats-top-users tr,
+            .stats-top-users td {
+                display: block;
+                width: 100%;
+            }
+
             .stats-top-users {
-                min-width: 520px;
+                min-width: 0;
+            }
+
+            .stats-top-users thead {
+                display: none;
+            }
+
+            .stats-top-users tr {
+                padding: 14px 0;
+                border-bottom: 1px solid #edf2f7;
+            }
+
+            .stats-top-users tr:last-child {
+                border-bottom: none;
+            }
+
+            .stats-top-users td {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 16px;
+                padding: 6px 0;
+                border-bottom: none;
+                text-align: right;
+            }
+
+            .stats-top-users td::before {
+                content: attr(data-label);
+                flex: 0 0 108px;
+                color: #8aa0c5;
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                text-align: left;
+            }
+
+            .stats-top-users td:first-child {
+                display: block;
+                text-align: left;
+                padding-top: 0;
+            }
+
+            .stats-top-users td:first-child::before {
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            .stats-top-users td:last-child {
+                padding-bottom: 0;
             }
         }
     </style>
@@ -350,12 +445,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         <tbody>
                             ${topUsers.map((user) => `
                                 <tr>
-                                    <td>
+                                    <td data-label="Khách hàng">
                                         <strong>${escapeHtml(user.fullname)}</strong><br>
                                         <small>@${escapeHtml(normalizeText(user.username) || "khach-le")}</small>
                                     </td>
-                                    <td style="font-weight:800; color:#0a2a66;">${Number(user.total_orders || 0).toLocaleString("vi-VN")}</td>
-                                    <td style="font-weight:800; color:#d9534f;">${formatMoney(user.total_spent)}</td>
+                                    <td data-label="Đơn" style="font-weight:800; color:#0a2a66;">${Number(user.total_orders || 0).toLocaleString("vi-VN")}</td>
+                                    <td data-label="Chi tiêu" style="font-weight:800; color:#d9534f;">${formatMoney(user.total_spent)}</td>
                                 </tr>
                             `).join("")}
                         </tbody>
