@@ -95,6 +95,44 @@ const ThoNhaOrderActions = (() => {
                 } else if (action === 'complete-order') {
                     if (!(await confirmAction('Xác nhận hoàn thành', 'Bạn chắc chắn đã hoàn thành mọi hạng mục công việc?', 'success', '#10b981'))) return;
                     payload = { ngayhoanthanhthucte: now };
+                    
+                    // Lưu vị trí hiện tại của NCC
+                    if (session && session.id && navigator.geolocation) {
+                        if (window.Swal) {
+                            window.Swal.fire({
+                                title: 'Đang xử lý',
+                                html: 'Đang ghi nhận vị trí hoàn thành...',
+                                allowOutsideClick: false,
+                                didOpen: () => { window.Swal.showLoading(); }
+                            });
+                        }
+                        await new Promise((resolve) => {
+                            navigator.geolocation.getCurrentPosition(async (pos) => {
+                                const lat = pos.coords.latitude;
+                                const lng = pos.coords.longitude;
+                                let addr = `${lat}, ${lng}`;
+                                try {
+                                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+                                        headers: { 'User-Agent': 'DVQTApp/1.0', 'Accept-Language': 'vi' }
+                                    });
+                                    const data = await r.json();
+                                    if (data && data.display_name) addr = data.display_name.split(', ').slice(0, 5).join(', ');
+                                } catch (e) {}
+                                
+                                if (window.DVQTKrud) {
+                                    try {
+                                        await window.DVQTKrud.updateRow('nguoidung', session.id, {
+                                            diachihientai: addr,
+                                            lat_hientai: lat,
+                                            lng_hientai: lng
+                                        });
+                                    } catch (e) {}
+                                }
+                                resolve();
+                            }, () => { resolve(); }, { enableHighAccuracy: true, timeout: 6000 });
+                        });
+                        if (window.Swal && window.Swal.isVisible()) window.Swal.close();
+                    }
                 } else if (action === 'open-pricing-modal') {
                     const modalEl = document.getElementById('pricingModal');
                     if (modalEl) {

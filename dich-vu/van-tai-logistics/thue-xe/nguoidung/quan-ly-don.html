@@ -177,6 +177,43 @@
                         if (action === 'accept') await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'rented' });
                         else if (['complete', 'cancel'].includes(action)) await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'available' });
                     }
+
+                    if (action === 'complete' && session && session.id && navigator.geolocation) {
+                        Swal.fire({
+                            title: 'Đang xử lý',
+                            html: 'Đang ghi nhận vị trí hoàn thành...',
+                            allowOutsideClick: false,
+                            didOpen: () => { Swal.showLoading(); }
+                        });
+                        
+                        await new Promise((resolve) => {
+                            navigator.geolocation.getCurrentPosition(async (pos) => {
+                                const lat = pos.coords.latitude;
+                                const lng = pos.coords.longitude;
+                                let addr = `${lat}, ${lng}`;
+                                try {
+                                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+                                        headers: { 'User-Agent': 'DVQTApp/1.0', 'Accept-Language': 'vi' }
+                                    });
+                                    const data = await r.json();
+                                    if (data && data.display_name) addr = data.display_name.split(', ').slice(0, 5).join(', ');
+                                } catch (e) {}
+                                
+                                if (window.DVQTKrud) {
+                                    try {
+                                        await window.DVQTKrud.updateRow('nguoidung', session.id, {
+                                            diachihientai: addr,
+                                            lat_hientai: lat,
+                                            lng_hientai: lng
+                                        });
+                                    } catch (e) {}
+                                }
+                                resolve();
+                            }, () => { resolve(); }, { enableHighAccuracy: true, timeout: 6000 });
+                        });
+                        if (window.Swal && window.Swal.isVisible()) window.Swal.close();
+                    }
+
                     Swal.fire('Thành công', 'Đã cập nhật trạng thái.', 'success');
                     loadProviderOrders();
                 } catch (e) { Swal.fire('Lỗi', e.message, 'error'); }
@@ -240,17 +277,8 @@
                 
                 if (o.ngayhuy) statusBadge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy</span>';
                 else if (o.ngayhoanthanhthucte) statusBadge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Đã hoàn thành</span>';
-                else if (o.ngaybatdauthucte) {
-                    statusBadge = '<span class="badge bg-primary text-primary bg-opacity-10 px-2 py-1 rounded-pill">Đã bắt đầu</span>';
-                    actions += `<button class="btn btn-sm btn-info text-white px-2 rounded-pill" onclick="updateOrderStatus(${o.id},'complete',${o.id_xe||0})">Nhận xe</button>`;
-                }
-                else if (o.ngaynhan) {
-                    statusBadge = '<span class="badge bg-info text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đã nhận</span>';
-                    actions += `<button class="btn btn-sm btn-success px-2 rounded-pill" onclick="updateOrderStatus(${o.id},'start',${o.id_xe||0})">Giao xe</button>`;
-                } else {
-                    actions += `<button class="btn btn-sm btn-primary px-2 rounded-pill me-1" onclick="updateOrderStatus(${o.id},'accept',${o.id_xe||0})">Nhận</button>
-                               <button class="btn btn-sm btn-outline-danger px-2 rounded-pill" onclick="updateOrderStatus(${o.id},'cancel',${o.id_xe||0})">Hủy</button>`;
-                }
+                else if (o.ngaybatdauthucte) statusBadge = '<span class="badge bg-primary text-primary bg-opacity-10 px-2 py-1 rounded-pill">Đã bắt đầu</span>';
+                else if (o.ngaynhan) statusBadge = '<span class="badge bg-info text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đã nhận</span>';
 
                 return `<tr>
                     <td class="ps-4">
@@ -276,17 +304,8 @@
                     let mobActions = `<button class="btn btn-sm btn-light flex-grow-1" onclick="viewOrderDetail(${o.id})"><i class="fas fa-eye text-primary"></i> Chi tiết</button>`;
                     if (o.ngayhuy) { statusTxt = 'Đã hủy'; statusCls = 'bg-danger'; }
                     else if (o.ngayhoanthanhthucte) { statusTxt = 'Đã hoàn thành'; statusCls = 'bg-success'; }
-                    else if (o.ngaybatdauthucte) { 
-                        statusTxt = 'Đã bắt đầu'; statusCls = 'bg-primary'; 
-                        mobActions = `<button class="btn btn-sm btn-info text-white flex-grow-1" onclick="updateOrderStatus(${o.id},'complete',${o.id_xe||0})">Nhận xe trả</button>` + mobActions;
-                    }
-                    else if (o.ngaynhan) { 
-                        statusTxt = 'Đã nhận'; statusCls = 'bg-info'; 
-                        mobActions = `<button class="btn btn-sm btn-success flex-grow-1" onclick="updateOrderStatus(${o.id},'start',${o.id_xe||0})">Giao xe</button>` + mobActions;
-                    } else {
-                        mobActions = `<button class="btn btn-sm btn-primary flex-grow-1" onclick="updateOrderStatus(${o.id},'accept',${o.id_xe||0})">Nhận đơn</button>
-                                     <button class="btn btn-sm btn-outline-danger" onclick="updateOrderStatus(${o.id},'cancel',${o.id_xe||0})">Hủy</button>` + mobActions;
-                    }
+                    else if (o.ngaybatdauthucte) { statusTxt = 'Đã bắt đầu'; statusCls = 'bg-primary'; }
+                    else if (o.ngaynhan) { statusTxt = 'Đã nhận'; statusCls = 'bg-info'; }
 
                     return `
                     <div class="mobile-card shadow-sm border mb-3 p-3 bg-white" style="border-radius: 15px;">
