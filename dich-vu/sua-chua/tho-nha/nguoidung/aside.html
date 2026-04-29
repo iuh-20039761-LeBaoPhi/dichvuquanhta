@@ -10,7 +10,7 @@
             <div class="brand-name" style="font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; color: #fff;">
                 Thợ Nhà</div>
             <div class="brand-tag"
-                style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8;">
+                style="font-size: 10px; color: rgba(255, 255, 255, 0.7); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8;">
                 Hệ sinh thái dịch vụ</div>
         </div>
     </div>
@@ -18,7 +18,7 @@
     <div class="nav-group" id="sidebarNav" style="padding: 10px 0; overflow-y: auto;">
         <!-- Luôn hiển thị cho mọi người dùng -->
         <div class="nav-label"
-            style="padding: 0 28px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">
+            style="padding: 0 28px; font-size: 11px; font-weight: 700; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">
             Trang cá nhân</div>
         <a href="#" class="nav-link nav-item" data-page="don-hang"
             style="display: flex; align-items: center; gap: 14px; padding: 14px 28px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin: 4px 16px; border-radius: 12px;">
@@ -62,16 +62,20 @@
 </aside>
 
 <style>
+    .nav-link {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
     .nav-link:hover {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.05);
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.1) !important;
     }
 
     .nav-link.active {
-        background: #10b981;
-        color: #fff;
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: #fff !important;
         font-weight: 600;
-        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .nav-link i {

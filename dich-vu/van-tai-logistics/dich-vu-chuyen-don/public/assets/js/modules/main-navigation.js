@@ -7,6 +7,13 @@ import core from "./core/app-core.js";
 
   const hamburgerBtn = document.getElementById("hamburger-btn");
   const navMenu = document.getElementById("nav-menu");
+  const setMobileMenuState = (isOpen = false) => {
+    if (!hamburgerBtn || !navMenu) return;
+
+    hamburgerBtn.classList.toggle("active", !!isOpen);
+    navMenu.classList.toggle("active", !!isOpen);
+    hamburgerBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  };
   const closeAllDropdowns = () => {
     document.querySelectorAll(".dropdown").forEach((dropdown) => {
       dropdown.classList.remove("open");
@@ -21,10 +28,11 @@ import core from "./core/app-core.js";
   };
 
   if (hamburgerBtn && navMenu) {
+    hamburgerBtn.setAttribute("aria-expanded", "false");
     hamburgerBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      hamburgerBtn.classList.toggle("active");
-      navMenu.classList.toggle("active");
+      const willOpen = !navMenu.classList.contains("active");
+      setMobileMenuState(willOpen);
     });
   }
 
@@ -82,8 +90,7 @@ import core from "./core/app-core.js";
           window.innerWidth <= 768 &&
           !this.parentElement.classList.contains("dropdown")
         ) {
-          if (hamburgerBtn) hamburgerBtn.classList.remove("active");
-          if (navMenu) navMenu.classList.remove("active");
+          setMobileMenuState(false);
 
           document.querySelectorAll(".dropdown-menu").forEach((menu) => {
             menu.classList.remove("active");
@@ -96,8 +103,7 @@ import core from "./core/app-core.js";
   document.querySelectorAll(".dropdown-menu a").forEach((link) => {
     link.addEventListener("click", function () {
       if (window.innerWidth <= 768) {
-        if (hamburgerBtn) hamburgerBtn.classList.remove("active");
-        if (navMenu) navMenu.classList.remove("active");
+        setMobileMenuState(false);
 
         closeAllDropdowns();
       }
@@ -107,8 +113,7 @@ import core from "./core/app-core.js";
   document.querySelectorAll(".submenu a").forEach((link) => {
     link.addEventListener("click", function () {
       if (window.innerWidth <= 768) {
-        if (hamburgerBtn) hamburgerBtn.classList.remove("active");
-        if (navMenu) navMenu.classList.remove("active");
+        setMobileMenuState(false);
 
         document.querySelectorAll(".has-submenu").forEach((item) => {
           item.classList.remove("open");
@@ -122,12 +127,18 @@ import core from "./core/app-core.js";
     const isInsideHamburger = hamburgerBtn && hamburgerBtn.contains(e.target);
 
     if (!isInsideMenu && !isInsideHamburger) {
-      if (hamburgerBtn) hamburgerBtn.classList.remove("active");
-      if (navMenu) navMenu.classList.remove("active");
+      setMobileMenuState(false);
 
       document.querySelectorAll(".has-submenu").forEach((item) => {
         item.classList.remove("open");
       });
+      closeAllDropdowns();
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      setMobileMenuState(false);
       closeAllDropdowns();
     }
   });

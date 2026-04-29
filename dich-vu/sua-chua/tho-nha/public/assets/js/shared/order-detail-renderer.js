@@ -120,7 +120,6 @@ const ThoNhaOrderDetailRenderer = (() => {
         }
 
         let provAvatar = order.provider && order.provider.avatar;
-        if (!provAvatar && role === 'provider' && session) provAvatar = session.link_avatar || session.avatar || session.avatartenfile || '';
 
         const provAvatarEl = container.querySelector('#providerAvatarBadge');
         if (provAvatarEl && provAvatar) {

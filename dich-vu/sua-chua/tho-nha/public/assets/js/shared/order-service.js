@@ -31,7 +31,7 @@ const ThoNhaOrderService = (() => {
     async function fetchAllOrders() {
         if (!window.DVQTKrud) return [];
         try {
-            const rows = await window.DVQTKrud.listTable('datlich_thonha');
+            const rows = await window.DVQTKrud.listTable('datlich_thonha', { limit: 2000 });
             return Array.isArray(rows) ? rows : [];
         } catch (e) {
             console.error('[OrderService] Fetch failed:', e);

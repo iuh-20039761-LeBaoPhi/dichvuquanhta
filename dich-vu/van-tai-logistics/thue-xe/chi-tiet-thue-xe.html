@@ -829,37 +829,47 @@
             </div>
 
             <!-- Entities Grid -->
-            <div class="identity-card">
-                <div class="panel-head">
-                    <h4 class="panel-title">Khách hàng</h4>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-badge" id="custAvatar">KH</div>
-                    <div>
-                        <div class="id-name" id="custName">---</div>
-                        <div class="id-info"><i class="fas fa-phone-alt"></i> <span id="custPhone">---</span></div>
+            <div class="identity-grid" style="grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <article class="identity-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                    <div class="identity-head" style="border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; margin-bottom: 15px;">
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="custAvatar" style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; flex-shrink: 0; overflow: hidden;">KH</span>
+                            <h3 style="font-size: 1.1rem; font-weight: 800; margin: 0; color: #1e293b;">Khách hàng</h3>
+                        </div>
                     </div>
-                </div>
-                <div class="mt-3 pt-3 border-top">
-                    <div class="id-info"><i class="fas fa-envelope"></i> <span id="custEmail">---</span></div>
-                    <div class="id-info"><i class="fas fa-map-marker-alt"></i> <span id="custAddr">---</span></div>
-                </div>
-            </div>
+                    <div class="identity-body">
+                        <div class="identity-main">
+                            <div>
+                                <h4 class="identity-name" id="custName" style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 12px;">---</h4>
+                                <div class="identity-contacts" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <p style="margin: 0; color: #64748b; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-phone text-primary" style="width: 16px;"></i> <span id="custPhone">---</span></p>
+                                    <p style="margin: 0; color: #64748b; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-envelope text-primary" style="width: 16px;"></i> <span id="custEmail">---</span></p>
+                                    <p style="margin: 0; color: #64748b; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-map-marker-alt text-primary" style="width: 16px;"></i> <span id="custAddr">---</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
 
-            <div class="identity-card">
-                <div class="panel-head">
-                    <h4 class="panel-title">Đơn vị cho thuê</h4>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-badge" style="background:var(--slate-800)" id="nccAvatar">NC</div>
-                    <div>
-                        <div class="id-name" id="nccName">---</div>
-                        <div class="id-info"><i class="fas fa-phone-alt"></i> <span id="nccPhone">---</span></div>
+                <article class="identity-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                    <div class="identity-head" style="border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; margin-bottom: 15px;">
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="nccAvatar" style="width: 36px; height: 36px; border-radius: 50%; background: var(--slate-800, #1e293b); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; flex-shrink: 0; overflow: hidden;">NC</span>
+                            <h3 style="font-size: 1.1rem; font-weight: 800; margin: 0; color: #1e293b;">Đơn vị cho thuê</h3>
+                        </div>
                     </div>
-                </div>
-                <div class="mt-3 pt-3 border-top">
-                    <div class="id-info"><i class="fas fa-map-marker-alt"></i> <span id="nccAddr">---</span></div>
-                </div>
+                    <div class="identity-body">
+                        <div class="identity-main">
+                            <div>
+                                <h4 class="identity-name" id="nccName" style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 12px;">---</h4>
+                                <div class="identity-contacts" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <p style="margin: 0; color: #64748b; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-phone text-primary" style="width: 16px;"></i> <span id="nccPhone">---</span></p>
+                                    <p style="margin: 0; color: #64748b; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;"><i class="fas fa-map-marker-alt text-primary" style="width: 16px;"></i> <span id="nccAddr">---</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
             </div>
 
             <!-- Evidence Section (Wide) -->
@@ -1121,6 +1131,17 @@
                         return;
                     }
 
+                    // Lấy Avatar
+                    try {
+                        const users = await DVQTKrud.listTable('nguoidung', { limit: 2000 });
+                        const cust = users.find(u => String(u.id) === String(currentOrder.id_nguoidung));
+                        if (cust) currentOrder._custAvatar = cust.link_avatar || cust.avatar || cust.avatartenfile;
+                        if (vehicleInfo && vehicleInfo.provider_id) {
+                            const ncc = users.find(u => String(u.id) === String(vehicleInfo.provider_id));
+                            if (ncc) currentOrder._nccAvatar = ncc.link_avatar || ncc.avatar || ncc.avatartenfile;
+                        }
+                    } catch (e) {}
+
                     const roleStr = session ? String(session.trangthai || session.role || '').toLowerCase() : '';
                     const isAdmin = isAdminSession || roleStr === 'admin' || roleStr === 'quantrivien';
                     window._currentSessionRole = isAdmin ? 'admin' : (session && Number(session.id) === Number(currentOrder.id_nguoidung) ? 'customer' : 'provider');
@@ -1181,9 +1202,11 @@
 
                     if (photoIds.length > 0) {
                         imgContainer.innerHTML = photoIds.map(id => {
-                            const url = DVQTApp.getDriveUrl(id);
-                            return `<div class="order-media-item" style="width:100px;height:100px;border-radius:12px;overflow:hidden;border:2px solid #f1f5f9;cursor:pointer;" onclick="window.open('${url}', '_blank')">
-                                <img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.onerror=null;this.src='public/assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
+                            const url = `https://drive.google.com/file/d/${id}/preview`;
+                            const viewUrl = `https://drive.google.com/file/d/${id}/view`;
+                            return `<div class="order-media-item" style="position:relative; width:100px; height:100px; border-radius:12px; overflow:hidden; border:2px solid #f1f5f9; cursor:pointer;">
+                                <iframe src="${url}" frameborder="0" scrolling="no" style="width: 200%; height: 200%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                                <a href="${viewUrl}" target="_blank" style="display:block; position:absolute; inset:0; z-index:10;"></a>
                             </div>`;
                         }).join('');
                         imgSection.style.display = 'block';
@@ -1247,13 +1270,49 @@
                 document.getElementById('custPhone').textContent = o.sdtkhachhang || o.dien_thoai || '---';
                 document.getElementById('custEmail').textContent = o.emailkhachhang || o.email || '---';
                 document.getElementById('custAddr').textContent = o.diachikhachhang || o.dia_chi || '---';
-                document.getElementById('custAvatar').textContent = (o.tenkhachhang || 'KH').substring(0, 2).toUpperCase();
+                
+                const custAvatarEl = document.getElementById('custAvatar');
+                if (o._custAvatar) {
+                    if (o._custAvatar.startsWith('http') || o._custAvatar.includes('/')) {
+                        const url = o._custAvatar.startsWith('http') ? o._custAvatar : (((window.DVQTApp && window.DVQTApp.ROOT_URL) || '') + '/public/uploads/users/' + o._custAvatar);
+                        custAvatarEl.innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    } else {
+                        custAvatarEl.innerHTML = `
+                            <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                <iframe src="https://drive.google.com/file/d/${o._custAvatar}/preview" 
+                                        frameborder="0" scrolling="no"
+                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                            </div>`;
+                    }
+                    custAvatarEl.style.padding = '0';
+                    custAvatarEl.style.background = 'transparent';
+                } else {
+                    custAvatarEl.textContent = (o.tenkhachhang || 'KH').substring(0, 2).toUpperCase();
+                }
 
                 if (o.ngaynhan || o.tenncc) {
                     document.getElementById('nccName').textContent = o.tenncc || 'Đối tác DVQT';
                     document.getElementById('nccPhone').textContent = o.sdtncc || '---';
                     document.getElementById('nccAddr').textContent = o.diachincc || '---';
-                    document.getElementById('nccAvatar').textContent = (o.tenncc || 'NC').substring(0, 2).toUpperCase();
+                    
+                    const nccAvatarEl = document.getElementById('nccAvatar');
+                    if (o._nccAvatar) {
+                        if (o._nccAvatar.startsWith('http') || o._nccAvatar.includes('/')) {
+                            const url = o._nccAvatar.startsWith('http') ? o._nccAvatar : (((window.DVQTApp && window.DVQTApp.ROOT_URL) || '') + '/public/uploads/users/' + o._nccAvatar);
+                            nccAvatarEl.innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                        } else {
+                            nccAvatarEl.innerHTML = `
+                                <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                    <iframe src="https://drive.google.com/file/d/${o._nccAvatar}/preview" 
+                                            frameborder="0" scrolling="no"
+                                            style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                                </div>`;
+                        }
+                        nccAvatarEl.style.padding = '0';
+                        nccAvatarEl.style.background = 'transparent';
+                    } else {
+                        nccAvatarEl.textContent = (o.tenncc || 'NC').substring(0, 2).toUpperCase();
+                    }
                 }
 
                 const renderRev = (raw, badgeId, msgId, mediaId, role) => {

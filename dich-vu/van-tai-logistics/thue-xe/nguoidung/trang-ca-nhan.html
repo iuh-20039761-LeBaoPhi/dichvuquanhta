@@ -17,7 +17,7 @@
             --primary-dark: #1d4ed8;
             --primary-soft: rgba(59, 130, 246, 0.1);
             --bg: #f8fafc;
-            --sidebar-bg: #0f172a;
+            --sidebar-bg: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-sub: #64748b;
@@ -113,7 +113,7 @@
             padding: 0 24px;
             font-size: 11px;
             font-weight: 700;
-            color: #475569;
+            color: rgba(255, 255, 255, 0.5);
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 12px;
@@ -124,7 +124,7 @@
             align-items: center;
             gap: 12px;
             padding: 12px 16px;
-            color: #94a3b8;
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             transition: 0.2s;
             margin: 2px 8px;
@@ -133,14 +133,14 @@
 
         .nav-link:hover {
             color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .nav-link.active {
-            background: var(--primary);
+            background: rgba(255, 255, 255, 0.2);
             color: #fff;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .nav-link i {

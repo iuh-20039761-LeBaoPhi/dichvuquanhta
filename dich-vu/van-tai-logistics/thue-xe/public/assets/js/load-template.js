@@ -152,16 +152,23 @@ function initAuthNav(pathPrefix, BASE) {
                 const avatarLink = data.link_avatar || data.avatar || data.avatartenfile || '';
                 
                 if (avatarLink) {
-                    const resolveAvatar = (link) => {
-                        if (link.startsWith('http')) return link;
-                        // Nếu là Drive ID
-                        if (link.match(/^[a-zA-Z0-9_-]{20,}$/)) return `https://lh3.googleusercontent.com/u/0/d/${link}`;
-                        // Đường dẫn local cũ
-                        return (ROOT + '/public/uploads/users/' + link);
-                    };
-                    const finalUrl = resolveAvatar(avatarLink);
-                    const defaultAvatar = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzk0YTNiOCI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==";
-                    avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.onerror=null; this.src='${defaultAvatar}';">`;
+                    if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
+                        const resolveAvatar = (link) => {
+                            if (link.startsWith('http')) return link;
+                            return (ROOT + '/public/uploads/users/' + link);
+                        };
+                        const finalUrl = resolveAvatar(avatarLink);
+                        const defaultAvatar = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzk0YTNiOCI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==";
+                        avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.onerror=null; this.src='${defaultAvatar}';">`;
+                    } else {
+                        // Ảnh Drive (ID)
+                        avatarEl.innerHTML = `
+                             <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                        frameborder="0" scrolling="no"
+                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                            </div>`;
+                    }
                 } else {
                     avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
                 }

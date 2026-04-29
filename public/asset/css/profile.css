@@ -7,7 +7,7 @@
     --primary: #3b82f6;
     --primary-soft: rgba(59, 130, 246, 0.1);
     --bg: #f3f6f9;
-    --sidebar-bg: #1e293b;
+    --sidebar-bg: linear-gradient(135deg, #2563eb, #06b6d4);
     --text-main: #1e293b;
     --text-sub: #64748b;
     --border: #e2e8f0;
@@ -85,7 +85,7 @@ body {
     padding: 0 24px; 
     font-size: 11px; 
     font-weight: 700; 
-    color: #475569; 
+    color: rgba(255, 255, 255, 0.5); 
     text-transform: uppercase; 
     letter-spacing: 1.5px; 
     margin-bottom: 12px; 
@@ -96,7 +96,7 @@ body {
     align-items: center; 
     gap: 12px; 
     padding: 14px 24px; 
-    color: #94a3b8; 
+    color: rgba(255, 255, 255, 0.7); 
     text-decoration: none; 
     transition: 0.2s; 
     margin: 4px 16px; 
@@ -110,14 +110,14 @@ body {
 
 .nav-link:hover { 
     color: #fff; 
-    background: rgba(255,255,255,0.05); 
+    background: rgba(255,255,255,0.1); 
 }
 
 .nav-link.active { 
-    background: var(--primary); 
+    background: rgba(255, 255, 255, 0.2); 
     color: #fff; 
     font-weight: 600; 
-    box-shadow: 0 4px 12px rgba(59,130,246,0.3); 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
 }
 
 .nav-link i { 

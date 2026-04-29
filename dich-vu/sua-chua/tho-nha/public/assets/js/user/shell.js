@@ -163,8 +163,17 @@
             const avatarLink = profile.link_avatar || profile.avatar || profile.avatartenfile || '';
             if (avatarLink) {
                 const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) || '';
-                const finalUrl = avatarLink.startsWith('http') ? avatarLink : (avatarLink.includes('/') ? root + '/public/uploads/users/' + avatarLink : `https://lh3.googleusercontent.com/u/0/d/${avatarLink}`);
-                avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.parentElement.textContent='${(profile.name || 'U').charAt(0).toUpperCase()}'">`;
+                if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
+                    const finalUrl = avatarLink.startsWith('http') ? avatarLink : root + '/public/uploads/users/' + avatarLink;
+                    avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.parentElement.textContent='${(profile.name || 'U').charAt(0).toUpperCase()}'">`;
+                } else {
+                    avatarEl.innerHTML = `
+                        <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                            <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                    frameborder="0" scrolling="no"
+                                    style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                        </div>`;
+                }
             } else {
                 avatarEl.textContent = (profile.name || 'U').charAt(0).toUpperCase();
             }

@@ -6,7 +6,7 @@ moving_admin_require_login();
 
 header('Content-Type: application/json; charset=utf-8');
 
-$scriptUrl = 'https://script.google.com/macros/s/AKfycbzTT7c7pINUsAd9k3z_zP-TBaR7h0s1GXd4ylsWOhBFeijeD3z37el1pzVRfiuJb7DFag/exec';
+$scriptUrl = 'https://script.google.com/macros/s/AKfycbxtMgHP8YRAaDO1U_4oqYjFEWUgSjemT2jk1q9baoW6KXz2ggfR-bfmLnuZSiZkIAMAuA/exec';
 $folderKey = 12; // Chuyển sang kiểu int cho đồng bộ
 
 $publicPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public';

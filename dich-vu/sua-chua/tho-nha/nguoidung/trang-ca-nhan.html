@@ -21,7 +21,7 @@
             --primary-dark: #059669;
             --primary-soft: rgba(16, 185, 129, 0.1);
             --bg: #f3f6f9;
-            --sidebar-bg: #1e293b;
+            --sidebar-bg: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-sub: #64748b;
@@ -120,13 +120,15 @@
     <!-- Scripts -->
     <script src="../../../../public/asset/js/dvqt-app.js"></script>
     <script src="../../../../public/asset/js/dvqt-krud.js"></script>
-    <script src="../public/assets/js/shared/order-view-utils.js?v=177735515"></script>
-    <script src="../public/assets/js/shared/order-store.js?v=177735515"></script>
-    <script src="../public/assets/js/shared/order-service.js?v=177735515"></script>
-    <script src="../public/assets/js/shared/order-ui-composer.js?v=177735515"></script>
-    <script src="../public/assets/js/shared/order-detail-renderer.js?v=177735515"></script>
-    <script src="../public/assets/js/shared/order-actions.js?v=177735515"></script>
-    <script src="../public/assets/js/user/shell.js?v=177735515"></script>
+    <script src="../public/assets/js/shared/order-view-utils.js"></script>
+    <script src="../public/assets/js/shared/order-store.js"></script>
+    <script src="../public/assets/js/shared/order-service.js"></script>
+    <script src="../public/assets/js/shared/order-ui-composer.js"></script>
+    <script src="../public/assets/js/shared/order-detail-renderer.js"></script>
+    <script src="../public/assets/js/shared/order-actions.js"></script>
+    <script>
+        document.write('<script src="../public/assets/js/user/shell.js?v=' + Date.now() + '"><\/script>');
+    </script>
 
     <script>
         // Load Sidebar

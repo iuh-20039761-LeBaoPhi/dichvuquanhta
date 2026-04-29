@@ -47,7 +47,11 @@ require_once __DIR__ . '/../includes/header_admin.php';
 
 <section class="pricing-tabs-nav" id="moving-pricing-tabs">
     <?php foreach ($services as $idx => $svc): ?>
-        <button type="button" class="pricing-tab-btn" data-tab-id="<?php echo moving_admin_escape($svc['id']); ?>"
+        <button type="button"
+            class="pricing-tab-btn<?php echo $idx === 0 ? ' is-active' : ''; ?>"
+            data-tab-id="<?php echo moving_admin_escape($svc['id']); ?>"
+            aria-pressed="<?php echo $idx === 0 ? 'true' : 'false'; ?>"
+            aria-controls="pricing-card-<?php echo moving_admin_escape($svc['id']); ?>"
             onclick="window.__ADMIN_PRICING_TABS__.setActive('<?php echo moving_admin_escape($svc['id']); ?>')">
             <i class="fas fa-truck-moving"></i>
             <?php echo moving_admin_escape($svc['ten_dich_vu'] ?? ''); ?>
@@ -63,7 +67,11 @@ require_once __DIR__ . '/../includes/header_admin.php';
 
     <?php foreach ($services as $idx => $svc):
         $svcId = $svc['id'] ?? ''; ?>
-        <section class="pricing-card" data-pricing-service-card="<?php echo moving_admin_escape($svcId); ?>">
+        <section
+            id="pricing-card-<?php echo moving_admin_escape($svcId); ?>"
+            class="pricing-card<?php echo $idx === 0 ? ' is-active' : ''; ?>"
+            data-pricing-service-card="<?php echo moving_admin_escape($svcId); ?>"
+            <?php echo $idx === 0 ? '' : 'hidden'; ?>>
             <div class="pricing-card__head">
                 <div>
                     <h2 style="color: var(--primary-deep);"><?php echo moving_admin_escape($svc['ten_dich_vu'] ?? ''); ?>
@@ -275,6 +283,20 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 đổi</button>
         </div>
     </div>
+
+    <div class="modal modal-confirm" id="modal-confirm-dialog" style="display: none;">
+        <div class="modal-header">
+            <h2 id="modal-confirm-title">Xác nhận thao tác</h2>
+            <button type="button" class="btn-delete-small" id="modal-confirm-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-confirm__message" id="modal-confirm-message">Bạn có chắc chắn muốn tiếp tục?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="modal-confirm-cancel">Hủy</button>
+            <button type="button" class="btn btn-primary" id="modal-confirm-accept">Xác nhận</button>
+        </div>
+    </div>
 </div>
 
 
@@ -321,12 +343,19 @@ require_once __DIR__ . '/../includes/header_admin.php';
         const overlay = document.getElementById('modal-moving-pricing-overlay');
         const vehicleModal = document.getElementById('modal-vehicle-editor');
         const itemModal = document.getElementById('modal-item-editor');
+        const confirmModal = document.getElementById('modal-confirm-dialog');
+        const confirmTitle = document.getElementById('modal-confirm-title');
+        const confirmMessage = document.getElementById('modal-confirm-message');
+        const confirmAcceptBtn = document.getElementById('modal-confirm-accept');
+        const confirmCancelBtn = document.getElementById('modal-confirm-cancel');
+        const confirmCloseBtn = document.getElementById('modal-confirm-close');
         const sourceBox = document.getElementById('moving-pricing-source');
         const lastUpdatedBadge = document.getElementById('moving-pricing-last-updated-badge');
         const lastUpdatedTime = document.getElementById('moving-pricing-last-updated-time');
         const fallbackServices = Array.isArray(window.__MOVING_PRICING_FALLBACK__)
             ? window.__MOVING_PRICING_FALLBACK__
             : [];
+        let confirmResolver = null;
         const ITEM_VIEW_CONFIG = {
             checkbox_main: {
                 actualGroup: 'checkbox',
@@ -590,10 +619,43 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 document.body.classList.add('pricing-modal-open');
             },
             close: () => {
-                overlay.style.display = 'none';
                 vehicleModal.style.display = 'none';
                 itemModal.style.display = 'none';
-                document.body.classList.remove('pricing-modal-open');
+                modalManager.closeConfirm(false);
+                modalManager.syncOverlayState();
+            },
+            closeConfirm: (result = false) => {
+                confirmModal.style.display = 'none';
+                if (confirmResolver) {
+                    const resolve = confirmResolver;
+                    confirmResolver = null;
+                    resolve(result);
+                }
+                modalManager.syncOverlayState();
+            },
+            syncOverlayState: () => {
+                const hasOpenModal = [vehicleModal, itemModal, confirmModal]
+                    .some((modalEl) => modalEl && modalEl.style.display !== 'none');
+                overlay.style.display = hasOpenModal ? 'flex' : 'none';
+                document.body.classList.toggle('pricing-modal-open', hasOpenModal);
+            },
+            askConfirm: ({
+                title = 'Xác nhận thao tác',
+                message = 'Bạn có chắc chắn muốn tiếp tục?',
+                confirmText = 'Xác nhận',
+                tone = 'danger'
+            } = {}) => {
+                confirmTitle.textContent = title;
+                confirmMessage.textContent = message;
+                confirmAcceptBtn.textContent = confirmText;
+                confirmAcceptBtn.classList.toggle('is-danger', tone === 'danger');
+                overlay.style.display = 'flex';
+                confirmModal.style.display = 'block';
+                document.body.classList.add('pricing-modal-open');
+
+                return new Promise((resolve) => {
+                    confirmResolver = resolve;
+                });
             },
             openAddVehicle: (svcId) => {
                 const form = document.getElementById('form-vehicle-editor');
@@ -673,7 +735,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
                         await finalizePricingMutation('Đã lưu dữ liệu xe thành công.');
                     }
                 } catch (e) {
-                    alert('Lỗi: ' + e.message);
+                    showMessage('Lỗi: ' + e.message, 'error', 5000);
                 } finally {
                     setBusy(false);
                 }
@@ -709,14 +771,20 @@ require_once __DIR__ . '/../includes/header_admin.php';
                         await finalizePricingMutation('Đã lưu hạng mục thành công.');
                     }
                 } catch (e) {
-                    alert('Lỗi: ' + e.message);
+                    showMessage('Lỗi: ' + e.message, 'error', 5000);
                 } finally {
                     setBusy(false);
                 }
             },
 
             deleteVehicle: async (id) => {
-                if (!confirm('Bạn có chắc chắn muốn xóa loại xe này?')) return;
+                const accepted = await modalManager.askConfirm({
+                    title: 'Xóa loại xe',
+                    message: 'Bạn có chắc chắn muốn xóa loại xe này không?',
+                    confirmText: 'Xóa loại xe',
+                    tone: 'danger'
+                });
+                if (!accepted) return;
                 setBusy(true);
                 try {
                     await window.adminApi.deleteMovingPricingVehicle(id);
@@ -726,14 +794,20 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     // Export JSON dựa trên state mới đã xóa
                     await finalizePricingMutation('Đã xóa loại xe.');
                 } catch (e) {
-                    alert('Lỗi: ' + e.message);
+                    showMessage('Lỗi: ' + e.message, 'error', 5000);
                 } finally {
                     setBusy(false);
                 }
             },
 
             deleteItem: async (id) => {
-                if (!confirm('Bạn có chắc chắn muốn xóa hạng mục này?')) return;
+                const accepted = await modalManager.askConfirm({
+                    title: 'Xóa hạng mục',
+                    message: 'Bạn có chắc chắn muốn xóa hạng mục này không?',
+                    confirmText: 'Xóa hạng mục',
+                    tone: 'danger'
+                });
+                if (!accepted) return;
                 setBusy(true);
                 try {
                     await window.adminApi.deleteMovingPricingItem(id);
@@ -743,7 +817,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     // Export JSON dựa trên state mới đã xóa
                     await finalizePricingMutation('Đã xóa hạng mục.');
                 } catch (e) {
-                    alert('Lỗi: ' + e.message);
+                    showMessage('Lỗi: ' + e.message, 'error', 5000);
                 } finally {
                     setBusy(false);
                 }
@@ -752,16 +826,46 @@ require_once __DIR__ . '/../includes/header_admin.php';
 
         window.__ADMIN_PRICING_MODAL__ = modalManager;
 
+        [confirmAcceptBtn, confirmCancelBtn, confirmCloseBtn].forEach((button) => {
+            if (!button) return;
+            button.addEventListener('click', () => {
+                modalManager.closeConfirm(button === confirmAcceptBtn);
+            });
+        });
+
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                modalManager.close();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && overlay.style.display === 'flex') {
+                modalManager.close();
+            }
+        });
+
         const tabManager = {
-            setActive: (tabId) => {
+            setActive: (tabId, { scrollTab = true } = {}) => {
                 // Update Tab Buttons
+                let activeButton = null;
                 document.querySelectorAll('#moving-pricing-tabs .pricing-tab-btn').forEach(btn => {
-                    btn.classList.toggle('is-active', btn.dataset.tabId === tabId);
+                    const isActive = btn.dataset.tabId === tabId;
+                    btn.classList.toggle('is-active', isActive);
+                    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                    if (isActive) {
+                        activeButton = btn;
+                    }
                 });
                 // Update Cards
                 document.querySelectorAll('#moving-pricing-container .pricing-card').forEach(card => {
-                    card.classList.toggle('is-active', card.dataset.pricingServiceCard === tabId);
+                    const isActive = card.dataset.pricingServiceCard === tabId;
+                    card.classList.toggle('is-active', isActive);
+                    card.hidden = !isActive;
                 });
+                if (scrollTab && activeButton && typeof activeButton.scrollIntoView === 'function') {
+                    activeButton.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+                }
                 // Persist to session/local storage if needed
                 localStorage.setItem('moving_pricing_active_tab', tabId);
             },
@@ -769,9 +873,9 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 const savedTab = localStorage.getItem('moving_pricing_active_tab');
                 const firstTab = document.querySelector('#moving-pricing-tabs .pricing-tab-btn')?.dataset.tabId;
                 if (savedTab && document.querySelector(`[data-tab-id="${savedTab}"]`)) {
-                    tabManager.setActive(savedTab);
+                    tabManager.setActive(savedTab, { scrollTab: false });
                 } else if (firstTab) {
-                    tabManager.setActive(firstTab);
+                    tabManager.setActive(firstTab, { scrollTab: false });
                 }
             }
         };
@@ -1019,7 +1123,11 @@ require_once __DIR__ . '/../includes/header_admin.php';
         function setBusy(val) {
             state.isBusy = val;
             document.body.style.cursor = val ? 'wait' : '';
-            document.querySelectorAll('button').forEach(btn => btn.disabled = val);
+            document.querySelectorAll(
+                '#moving-pricing-tabs button, #moving-pricing-container button, #modal-moving-pricing-overlay button, #modal-moving-pricing-overlay input, #modal-moving-pricing-overlay textarea, #modal-moving-pricing-overlay select'
+            ).forEach((element) => {
+                element.disabled = val;
+            });
             if (val) {
                 setSourceStatus('Đang xử lý...');
             }
@@ -1033,10 +1141,10 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     .sort((a, b) => (Number(a.thu_tu) || 0) - (Number(b.thu_tu) || 0));
                 tbody.innerHTML = rows.map(v => `
                 <tr>
-                    <td style="text-align: center; font-weight: 800; color: var(--primary-deep);">
+                    <td data-label="Thứ tự" style="text-align: center; font-weight: 800; color: var(--primary-deep);">
                         ${v.thu_tu || 0}
                     </td>
-                    <td>
+                    <td data-label="Loại xe">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div class="vehicle-icon-circle" style="width: 32px; height: 32px; flex-shrink: 0;">
                                 ${getVehicleIcon(v.slug_xe)}
@@ -1046,18 +1154,18 @@ require_once __DIR__ . '/../includes/header_admin.php';
                             </div>
                         </div>
                     </td>
-                    <td><span class="pricing-value">${formatMoney(v.gia_mo_cua)}</span></td>
-                    <td><span class="pricing-value">${formatMoney(v.don_gia_km_6_15)}</span></td>
-                    <td><span class="pricing-value">${formatMoney(v.don_gia_km_16_30)}</span></td>
-                    <td><span class="pricing-value">${formatMoney(v.don_gia_km_31_tro_len)}</span></td>
-                    <td style="text-align: center;">
-                        <div style="display: flex; gap: 8px; justify-content: center;">
+                    <td data-label="Mở cửa (5km)"><span class="pricing-value">${formatMoney(v.gia_mo_cua)}</span></td>
+                    <td data-label="6-15km"><span class="pricing-value">${formatMoney(v.don_gia_km_6_15)}</span></td>
+                    <td data-label="16-30km"><span class="pricing-value">${formatMoney(v.don_gia_km_16_30)}</span></td>
+                    <td data-label="31km+"><span class="pricing-value">${formatMoney(v.don_gia_km_31_tro_len)}</span></td>
+                    <td data-label="Tác vụ" style="text-align: center;">
+                        <div class="pricing-row-actions">
                             <button type="button" class="btn-edit-small" onclick="window.__ADMIN_PRICING_MODAL__.openEditVehicle('${v.id}')"><i class="fas fa-edit"></i></button>
                             <button type="button" class="btn-delete-small" onclick="window.__ADMIN_PRICING_MODAL__.deleteVehicle('${v.id}')" style="color: var(--danger);"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>
                 </tr>
-            `).join('') || '<tr><td colspan="7" class="muted" style="text-align: center; padding: 24px;">Chưa có loại xe nào.</td></tr>';
+            `).join('') || '<tr class="pricing-empty-row"><td data-label="" colspan="7" class="muted" style="text-align: center; padding: 24px;">Chưa có loại xe nào.</td></tr>';
             });
 
             document.querySelectorAll('[data-tbody-items]').forEach(tbody => {
@@ -1070,13 +1178,13 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     .sort((a, b) => (Number(a.thu_tu) || 0) - (Number(b.thu_tu) || 0));
 
                 if (!rows.length) {
-                    tbody.innerHTML = `<tr><td colspan="${config.showPrice ? 3 : 2}" class="muted" style="text-align: center; padding: 12px;">Chưa có.</td></tr>`;
+                    tbody.innerHTML = `<tr class="pricing-empty-row"><td data-label="" colspan="${config.showPrice ? 3 : 2}" class="muted" style="text-align: center; padding: 12px;">Chưa có.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = rows.map(i => {
                     const actions = `
-                    <div style="display: flex; gap: 4px;">
+                    <div class="pricing-row-actions pricing-row-actions--compact">
                         <button type="button" class="btn-delete-small" onclick="window.__ADMIN_PRICING_MODAL__.openEditItem('${i.id}')"><i class="fas fa-edit"></i></button>
                         <button type="button" class="btn-delete-small" onclick="window.__ADMIN_PRICING_MODAL__.deleteItem('${i.id}')" style="color: var(--danger);"><i class="fas fa-trash"></i></button>
                     </div>
@@ -1085,21 +1193,21 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     if (!config.showPrice) {
                         return `
                         <tr>
-                            <td>
+                            <td data-label="Hạng mục">
                                 <div style="font-weight: 600;">${i.ten_muc}</div>
                             </td>
-                            <td>${actions}</td>
+                            <td data-label="Tác vụ">${actions}</td>
                         </tr>
                     `;
                     }
 
                     return `
                     <tr>
-                        <td>
+                        <td data-label="Hạng mục">
                             <div style="font-weight: 600;">${i.ten_muc}</div>
                         </td>
-                        <td><span class="pricing-value">${formatMoney(i.don_gia)}</span></td>
-                        <td>${actions}</td>
+                        <td data-label="Đơn giá"><span class="pricing-value">${formatMoney(i.don_gia)}</span></td>
+                        <td data-label="Tác vụ">${actions}</td>
                     </tr>
                 `;
                 }).join('');
