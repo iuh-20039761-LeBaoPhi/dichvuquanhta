@@ -85,14 +85,21 @@
 
   function setupMobileMenu() {
     var navMenu = document.getElementById('navMenu');
-    var toggler = document.querySelector('.navbar-toggler');
+    var toggler = document.getElementById('menuToggle');
     if (!navMenu || !toggler) return;
 
-    // Removed stopPropagation as it prevents Bootstrap 5's data-api from working
-    // on document-level event delegation.
-    // toggler.addEventListener('click', function (e) {
-    //   e.stopPropagation();
-    // });
+    // Toggle menu: dùng Bootstrap Collapse nếu có, fallback toggle class
+    function doToggle(e) {
+      e.preventDefault();
+      if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+        var bsCollapse = bootstrap.Collapse.getOrCreateInstance(navMenu);
+        bsCollapse.toggle();
+      } else {
+        navMenu.classList.toggle('show');
+      }
+    }
+    toggler.addEventListener('click', doToggle);
+    toggler.addEventListener('touchend', doToggle, { passive: false });
 
     // Đóng menu khi click vào các link (trên mobile)
     var navLinks = navMenu.querySelectorAll('.nav-link:not(.dropdown-toggle)');
@@ -100,8 +107,8 @@
       link.addEventListener('click', function () {
         if (window.getComputedStyle(toggler).display !== 'none') {
           if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
-            var bsCollapse = bootstrap.Collapse.getInstance(navMenu) || new bootstrap.Collapse(navMenu, { toggle: false });
-            bsCollapse.hide();
+            var bsCollapse = bootstrap.Collapse.getInstance(navMenu);
+            if (bsCollapse) bsCollapse.hide();
           } else {
             navMenu.classList.remove('show');
           }
@@ -109,12 +116,9 @@
       });
     });
 
-    // Đóng menu khi click ra ngoài vùng menu (Safari/iPhone fix)
+    // Đóng menu khi click ra ngoài (Safari/iPhone fix)
     document.addEventListener('click', function (e) {
-      var isClickInsideMenu = navMenu.contains(e.target);
-      var isClickOnToggler = toggler.contains(e.target);
-
-      if (!isClickInsideMenu && !isClickOnToggler && navMenu.classList.contains('show')) {
+      if (!navMenu.contains(e.target) && !toggler.contains(e.target) && navMenu.classList.contains('show')) {
         if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
           var bsCollapse = bootstrap.Collapse.getInstance(navMenu);
           if (bsCollapse) bsCollapse.hide();
