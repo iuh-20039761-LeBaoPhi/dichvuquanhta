@@ -1809,19 +1809,23 @@
         : null;
       var toTime = toDate ? new Date(toDate + "T23:59:59").getTime() : null;
 
-      state.filtered = state.all.filter(function (order) {
+      var baseFiltered = state.all.filter(function (order) {
         var codeMatched =
           !codeText ||
           orderCode(order.id).toLowerCase().indexOf(codeText) !== -1;
-
-        var statusMatched =
-          !statusNode || status === "all" || order.status === status;
 
         var orderTime = new Date(order.createdAt).getTime();
         var fromMatched = fromTime == null || orderTime >= fromTime;
         var toMatched = toTime == null || orderTime <= toTime;
 
-        return codeMatched && statusMatched && fromMatched && toMatched;
+        return codeMatched && fromMatched && toMatched;
+      });
+
+      // Cập nhật lại số lượng trên các badge trạng thái dựa trên bộ lọc (mã đơn, ngày tháng)
+      renderStats(baseFiltered, role);
+
+      state.filtered = baseFiltered.filter(function (order) {
+        return !statusNode || status === "all" || order.status === status;
       });
 
       state.page = 1;
@@ -1906,12 +1910,10 @@
         : null;
       var toTime = toDate ? new Date(toDate + "T23:59:59").getTime() : null;
 
-      assignedState.filtered = assignedState.all.filter(function (order) {
+      var baseFiltered = assignedState.all.filter(function (order) {
         var codeMatched =
           !codeText ||
           orderCode(order.id).toLowerCase().indexOf(codeText) !== -1;
-
-        var statusMatched = status === "all" || order.status === status;
 
         var orderDateRaw =
           order.startedAt ||
@@ -1922,7 +1924,14 @@
         var fromMatched = fromTime == null || orderTime >= fromTime;
         var toMatched = toTime == null || orderTime <= toTime;
 
-        return codeMatched && statusMatched && fromMatched && toMatched;
+        return codeMatched && fromMatched && toMatched;
+      });
+
+      // Cập nhật lại số lượng trên các badge trạng thái (phần đơn nhận)
+      renderStats(baseFiltered, role);
+
+      assignedState.filtered = baseFiltered.filter(function (order) {
+        return status === "all" || order.status === status;
       });
 
       assignedState.page = 1;
