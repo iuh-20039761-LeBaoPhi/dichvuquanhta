@@ -1856,7 +1856,7 @@ include 'layout-header.php';
 			));
 			if (!matched) return null;
 
-			
+
 			// Cần có đơn hàng để xác định role
 			if (!app.$datlich_nguoibenh) return null;
 
@@ -2564,7 +2564,7 @@ include 'layout-header.php';
 			for (const file of files) {
 				const fd = new FormData();
 				fd.append('file', file, file.name);
-				const res = await fetch('upload.php', { method: 'POST', body: fd });
+				const res = await fetch('../upload.php', { method: 'POST', body: fd });
 				const json = await res.json();
 				if (!json?.success) throw new Error(json?.message || 'Upload ảnh/video thất bại');
 				ids.push(json.fileId);

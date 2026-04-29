@@ -5,6 +5,7 @@
 const CarMapPicker = (() => {
     const HCM = [10.7769, 106.7009];
     const instances = {};
+    let timer = null;
 
     const config = {
         addr: {
@@ -21,6 +22,7 @@ const CarMapPicker = (() => {
         if (!cfg) return;
         if (instances[key]) {
             instances[key].map.invalidateSize();
+            geocodeCurrentAddress(key);
             return;
         }
         const map = L.map(cfg.mapId).setView(HCM, 13);
@@ -30,6 +32,12 @@ const CarMapPicker = (() => {
         }).addTo(map);
         instances[key] = { map, marker: null };
         map.on('click', e => pick(key, e.latlng.lat, e.latlng.lng));
+
+        // Gán sự kiện tìm kiếm địa chỉ khi người dùng gõ phím
+        bindGeocoding(key);
+
+        // Tự động tìm kiếm địa chỉ đã nhập trước đó (nếu có)
+        geocodeCurrentAddress(key);
     }
 
     function pick(key, lat, lng) {
@@ -70,6 +78,62 @@ const CarMapPicker = (() => {
                 input.placeholder = orig;
                 input.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
             });
+    }
+
+    /**
+     * Lắng nghe sự kiện gõ phím trên ô input để tự động tìm kiếm vị trí (Geocoding).
+     */
+    function bindGeocoding(key) {
+        const cfg = config[key];
+        if (!cfg) return;
+        const input = document.getElementById(cfg.inputId);
+        if (!input) return;
+
+        input.addEventListener('input', () => {
+            clearTimeout(timer);
+            const query = input.value.trim();
+            if (query.length < 5) return;
+
+            timer = setTimeout(() => {
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=vn`;
+                fetch(url, { headers: { 'User-Agent': 'DVQTApp/1.0' } })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data[0]) {
+                            const lat = parseFloat(data[0].lat);
+                            const lng = parseFloat(data[0].lon);
+                            pick(key, lat, lng);
+                            if (instances[key]) instances[key].map.setView([lat, lng], 16);
+                        }
+                    })
+                    .catch(e => console.warn('Lỗi tìm kiếm địa chỉ:', e));
+            }, 800);
+        });
+    }
+
+    /**
+     * Tự động tìm kiếm địa chỉ hiện có trong ô input và trỏ ghim trên bản đồ.
+     */
+    function geocodeCurrentAddress(key) {
+        const cfg = config[key];
+        if (!cfg) return;
+        const input = document.getElementById(cfg.inputId);
+        if (!input) return;
+        const query = input.value.trim();
+        if (query.length < 5) return;
+
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=vn`;
+        fetch(url, { headers: { 'User-Agent': 'DVQTApp/1.0' } })
+            .then(r => r.json())
+            .then(data => {
+                if (data && data[0]) {
+                    const lat = parseFloat(data[0].lat);
+                    const lng = parseFloat(data[0].lon);
+                    pick(key, lat, lng);
+                    if (instances[key]) instances[key].map.setView([lat, lng], 16);
+                }
+            })
+            .catch(e => console.warn('Lỗi tìm kiếm địa chỉ tự động:', e));
     }
 
     function toggle(key) {

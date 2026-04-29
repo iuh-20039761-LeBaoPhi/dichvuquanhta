@@ -31,6 +31,7 @@ window.mapPicker = (function () {
         if (!mapEl) return;
         if (map) {
             map.invalidateSize();
+            geocodeCurrentAddress();
             return;
         }
         map = L.map(mapEl).setView(HCM, 13);
@@ -44,6 +45,9 @@ window.mapPicker = (function () {
 
         // Gán sự kiện tìm kiếm địa chỉ khi người dùng gõ phím
         bindGeocoding();
+
+        // Tự động tìm kiếm địa chỉ đã nhập trước đó (nếu có)
+        geocodeCurrentAddress();
     }
 
     /**
@@ -130,6 +134,29 @@ window.mapPicker = (function () {
                     .catch(e => console.warn('Lỗi tìm kiếm địa chỉ:', e));
             }, 800);
         });
+    }
+
+    /**
+     * Tự động tìm kiếm địa chỉ hiện có trong ô input và trỏ ghim trên bản đồ.
+     */
+    function geocodeCurrentAddress() {
+        const { addr } = getEls();
+        if (!addr) return;
+        const query = addr.value.trim();
+        if (query.length < 5) return;
+
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=vn`;
+        fetch(url, { headers: { 'User-Agent': 'DVQTApp/1.0' } })
+            .then(r => r.json())
+            .then(data => {
+                if (data && data[0]) {
+                    const lat = parseFloat(data[0].lat);
+                    const lng = parseFloat(data[0].lon);
+                    pick(lat, lng, false); // false vì đã gõ địa chỉ rồi, không cần reverse geocode nữa
+                    if (map) map.setView([lat, lng], 16);
+                }
+            })
+            .catch(e => console.warn('Lỗi tìm kiếm địa chỉ tự động:', e));
     }
 
     /**

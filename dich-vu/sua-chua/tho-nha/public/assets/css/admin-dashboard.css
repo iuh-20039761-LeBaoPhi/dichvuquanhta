@@ -41,7 +41,7 @@ body {
 
 /* Sidebar - Premium Dark Mode */
 .sidebar-shell {
-    background: linear-gradient(180deg, var(--admin-dark) 0%, var(--admin-dark-2) 100%) !important;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
     color: #cbd5e1 !important;
     border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
     transition: transform 0.3s ease;
@@ -105,7 +105,7 @@ body {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #64748b !important;
+    color: rgba(255, 255, 255, 0.5) !important;
     font-weight: 700;
 }
 
@@ -115,7 +115,7 @@ body {
     gap: 12px;
     padding: 11px 16px;
     border-radius: 12px;
-    color: #94a3b8 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
     text-decoration: none;
     margin-bottom: 5px;
     font-weight: 600;
@@ -131,15 +131,15 @@ body {
 }
 
 .nav-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #f1f5f9 !important;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff !important;
     transform: translateX(4px);
 }
 
 .nav-item.active {
-    background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-2) 100%) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
     color: #fff !important;
-    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-footer {
