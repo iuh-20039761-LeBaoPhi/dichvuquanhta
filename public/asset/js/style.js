@@ -30,6 +30,17 @@ document.addEventListener("DOMContentLoaded", function () {
       bsCollapse.hide();
     });
   });
+
+  if (navbarCollapse) {
+    navbarCollapse.addEventListener("show.bs.collapse", function () {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    });
+    navbarCollapse.addEventListener("hide.bs.collapse", function () {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    });
+  }
 });
 
 const sel = document.getElementById("serviceSelect");
