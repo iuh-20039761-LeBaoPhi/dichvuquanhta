@@ -341,6 +341,24 @@
       );
     }
 
+    function orderCode(id) {
+      var numeric = Number(id);
+      if (!Number.isFinite(numeric) || numeric <= 0) return "-";
+      return String(Math.floor(numeric)).padStart(7, "0");
+    }
+
+    function getUploadTimestamp() {
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, "0");
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const y = now.getFullYear();
+      const h = String(now.getHours()).padStart(2, "0");
+      const min = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
+      const ms = String(now.getMilliseconds()).padStart(3, "0");
+      return `${d}${m}${y}_${h}${min}${s}_${ms}`;
+    }
+
     async function handleConfirmSubmit() {
       const originalText = confirmBtn.textContent;
 
@@ -360,7 +378,7 @@
             payload.name,
             payload.phone,
           );
-          
+
           if (accountRes && accountRes.isNew === false) {
             console.log("[BookingFlow] Sử dụng tài khoản hiện có cho booking.");
           } else {
@@ -372,13 +390,26 @@
           );
         }
 
-        // --- BƯỚC 2: UPLOAD ẢNH & VIDEO LÊN GOOGLE DRIVE ---
+        // --- BƯỚC 2: LƯU DB TRƯỚC ĐỂ LẤY ID ĐƠN HÀNG ---
+        confirmBtn.textContent = "Đang khởi tạo đơn hàng...";
+        const dbRes = await saveToKrudApi(payload);
+        const bookingId = dbRes.id || (dbRes.data && dbRes.data.id);
+        if (!bookingId) {
+          throw new Error("Không lấy được mã đơn hàng sau khi lưu.");
+        }
+        const orderCodeText = orderCode(bookingId);
+
+        // --- BƯỚC 3: UPLOAD ẢNH & VIDEO VỚI TÊN CHỨA ID ---
+        let imageIdsString = "";
+        let videoIdsString = "";
+
         try {
           const uploadOne = async (file) => {
             const fd = new FormData();
             fd.append("file", file);
             fd.append("folderKey", "28");
-            fd.append("name", file.name);
+            const fileName = orderCodeText + "_suaxe_" + getUploadTimestamp() + "_" + file.name;
+            fd.append("name", fileName);
             try {
               const resp = await fetch("../../../public/upload_to_drive.php", {
                 method: "POST",
@@ -397,36 +428,35 @@
 
           if (imageFiles.length > 0 || videoFiles.length > 0) {
             confirmBtn.textContent = "Đang tải ảnh/video...";
+            const [imageIds, videoIds] = await Promise.all([
+              Promise.all(imageFiles.map(uploadOne)),
+              Promise.all(videoFiles.map(uploadOne)),
+            ]);
+
+            imageIdsString = imageIds.filter((id) => id).join(",");
+            videoIdsString = videoIds.filter((id) => id).join(",");
+
+            // Cập nhật lại ID media vào DB
+            if (imageIdsString || videoIdsString) {
+              await krud("update", config.BOOKING_KRUD_TABLE, {
+                anh_id: imageIdsString,
+                video_id: videoIdsString
+              }, bookingId);
+            }
           }
-
-          const [imageIds, videoIds] = await Promise.all([
-            Promise.all(imageFiles.map(uploadOne)),
-            Promise.all(videoFiles.map(uploadOne)),
-          ]);
-
-          payload.anh_id = imageIds.filter((id) => id).join(",");
-          payload.video_id = videoIds.filter((id) => id).join(",");
         } catch (driveErr) {
           console.error("Lỗi lưu media lên Google Drive:", driveErr);
         }
 
-        // --- BƯỚC 3: LƯU DỮ LIỆU ---
-        confirmBtn.textContent = "Đang lưu...";
-
-        // 3.1 ĐƯA DỮ LIỆU VÀO GOOGLE SHEET
+        // --- BƯỚC 4: LƯU GOOGLE SHEET VỚI ĐẦY ĐỦ THÔNG TIN ---
+        confirmBtn.textContent = "Đang hoàn tất...";
+        payload.anh_id = imageIdsString;
+        payload.video_id = videoIdsString;
         try {
           await saveToGoogleSheet(payload);
           console.log("Lưu Google Sheet thành công.");
         } catch (sheetErr) {
           console.error("Lỗi lưu Google Sheet:", sheetErr);
-        }
-
-        // 3.2 LƯU VÀO CƠ SỞ DỮ LIỆU (DB)
-        try {
-          await saveToKrudApi(payload);
-          console.log("Lưu Database thành công.");
-        } catch (dbErr) {
-          console.error("Lỗi lưu Database (KRUD):", dbErr);
         }
 
         bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();

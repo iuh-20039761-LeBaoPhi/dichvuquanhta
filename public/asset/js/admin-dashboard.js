@@ -569,7 +569,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Helper để render ảnh (hỗ trợ Google Drive ID, Tên file vật lý và icon mặc định)
         const renderImage = (val, type = 'avatar') => {
             if (!val) {
-                if (type === 'avatar') return `<img src="asset/image/default-avatar.png" class="rounded-circle border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;">`;
+                const defaultAvatar = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzk0YTNiOCI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==";
+                if (type === 'avatar') return `<img src="${defaultAvatar}" class="rounded-circle border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;">`;
                 return `<i class="fas ${type === 'front' ? 'fa-id-card' : 'fa-id-card'} fa-2x text-muted opacity-25"></i>`;
             }
 
@@ -603,7 +604,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             if (type === 'avatar') {
-                return `<img src="${finalUrl}" class="rounded-circle border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" onerror="this.src='asset/image/default-avatar.png'">`;
+                const defaultAvatar = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzk0YTNiOCI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==";
+                return `<img src="${finalUrl}" class="rounded-circle border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" onerror="this.onerror=null; this.src='${defaultAvatar}';">`;
             } else {
                 return `<img src="${finalUrl}" class="img-fluid" style="height:100%; width:100%; object-fit: contain; cursor: pointer;" onclick="window.open('${finalUrl}')" onerror="this.parentElement.innerHTML='<small class=&quot;text-muted&quot;>Lỗi ảnh</small>'">`;
             }

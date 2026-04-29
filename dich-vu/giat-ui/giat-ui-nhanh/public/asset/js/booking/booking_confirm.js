@@ -495,6 +495,24 @@
       });
     }
 
+    function orderCode(id) {
+      var numeric = Number(id);
+      if (!Number.isFinite(numeric) || numeric <= 0) return "-";
+      return String(Math.floor(numeric)).padStart(7, "0");
+    }
+
+    function getUploadTimestamp() {
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, "0");
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const y = now.getFullYear();
+      const h = String(now.getHours()).padStart(2, "0");
+      const min = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
+      const ms = String(now.getMilliseconds()).padStart(3, "0");
+      return `${d}${m}${y}_${h}${min}${s}_${ms}`;
+    }
+
     // Xử lý khi nhấn nút xác nhận cuối cùng
     async function handleConfirmSubmit() {
       const originalText = confirmBtn.textContent;
@@ -515,7 +533,7 @@
             data.name,
             data.phone,
           );
-          
+
           if (accountRes && accountRes.isNew === false) {
             console.log("[BookingFlow] Sử dụng tài khoản hiện có cho booking.");
           } else {
@@ -527,71 +545,90 @@
           );
         }
 
-        // 1. XỬ LÝ UPLOAD MEDIA LÊN GG DRIVE
+        // --- BƯỚC 1: LƯU DB TRƯỚC ĐỂ LẤY ID ĐƠN HÀNG ---
+        confirmBtn.textContent = "Đang khởi tạo đơn hàng...";
+        const dbRes = await saveToKrudApi(data);
+        const bookingId = dbRes.id || (dbRes.data && dbRes.data.id);
+        if (!bookingId) {
+          throw new Error("Không lấy được mã đơn hàng sau khi lưu.");
+        }
+        const orderCodeText = orderCode(bookingId);
+
+        // --- BƯỚC 2: XỬ LÝ UPLOAD MEDIA LÊN GG DRIVE VỚI TÊN CHỨA ID ---
+        let imageIdsString = "";
+        let videoIdsString = "";
+
         try {
           const imageFiles = imageInput?.files ? Array.from(imageInput.files) : [];
           const videoFiles = videoInput?.files ? Array.from(videoInput.files) : [];
 
-          const uploadFileNode = async (file, prefix) => {
-            const formData = new FormData();
-            formData.append("upload", "1");
-            formData.append("file", file);
-            formData.append("folderKey", "31");
-            formData.append("name", `${prefix}_${Date.now()}_${file.name}`);
+          if (imageFiles.length > 0 || videoFiles.length > 0) {
+            confirmBtn.textContent = "Đang tải ảnh/video...";
 
-            const res = await fetch("../../../public/upload_to_drive.php", {
-              method: "POST",
-              body: formData,
-            });
-            const result = await res.json();
-            if (result && result.fileId) {
-              return result.fileId;
+            const uploadFileNode = async (file) => {
+              const formData = new FormData();
+              formData.append("upload", "1");
+              formData.append("file", file);
+              formData.append("folderKey", "31");
+              const fileName = orderCodeText + "_giatui_" + getUploadTimestamp() + "_" + file.name;
+              formData.append("name", fileName);
+
+              const res = await fetch("../../../public/upload_to_drive.php", {
+                method: "POST",
+                body: formData,
+              });
+              const result = await res.json();
+              if (result && result.fileId) {
+                return result.fileId;
+              }
+              throw new Error(`Upload ${file.name} thất bại.`);
+            };
+
+            const uploadedAnhIds = [];
+            for (const file of imageFiles) {
+              try {
+                const fid = await uploadFileNode(file);
+                uploadedAnhIds.push(fid);
+              } catch (err) {
+                console.error("[DriveUpload] Lỗi ảnh:", err);
+              }
             }
-            throw new Error(`Upload ${file.name} thất bại.`);
-          };
 
-          const uploadedAnhIds = [];
-          for (const file of imageFiles) {
-            try {
-              const fid = await uploadFileNode(file, "IMAGE");
-              uploadedAnhIds.push(fid);
-            } catch (err) {
-              console.error("[DriveUpload] Lỗi ảnh:", err);
+            const uploadedVideoIds = [];
+            for (const file of videoFiles) {
+              try {
+                const fid = await uploadFileNode(file);
+                uploadedVideoIds.push(fid);
+              } catch (err) {
+                console.error("[DriveUpload] Lỗi video:", err);
+              }
+            }
+
+            imageIdsString = uploadedAnhIds.join(",");
+            videoIdsString = uploadedVideoIds.join(",");
+
+            // Cập nhật lại ID media vào DB
+            if (imageIdsString || videoIdsString) {
+              await krud("update", config.BOOKING_KRUD_TABLE, {
+                anh_id: imageIdsString,
+                video_id: videoIdsString
+              }, bookingId);
             }
           }
-
-          const uploadedVideoIds = [];
-          for (const file of videoFiles) {
-            try {
-              const fid = await uploadFileNode(file, "VIDEO");
-              uploadedVideoIds.push(fid);
-            } catch (err) {
-              console.error("[DriveUpload] Lỗi video:", err);
-            }
-          }
-
-          data.anh_id = uploadedAnhIds.join(",");
-          data.video_id = uploadedVideoIds.join(",");
         } catch (driveErr) {
           console.error("Lỗi lưu media lên Google Drive:", driveErr);
         }
 
-        // 2. ĐƯA DỮ LIỆU VÀO GOOGLE SHEET
+        // --- BƯỚC 3: ĐƯA DỮ LIỆU VÀO GOOGLE SHEET VỚI ĐẦY ĐỦ THÔNG TIN ---
+        confirmBtn.textContent = "Đang hoàn tất...";
+        data.anh_id = imageIdsString;
+        data.video_id = videoIdsString;
+
         try {
           await saveToGoogleSheet(data);
           console.log("Lưu Google Sheet thành công.");
         } catch (sheetErr) {
           console.error("Lỗi lưu Google Sheet:", sheetErr);
-        }
-
-        // 3. LƯU VÀO CƠ SỞ DỮ LIỆU (DB)
-        try {
-          await saveToKrudApi(data);
-          console.log("Lưu Database thành công.");
-        } catch (dbErr) {
-          console.error("Lỗi lưu Database (KRUD):", dbErr);
-          // Nếu lưu DB thất bại, ta vẫn xem xét là có lỗi nghiêm trọng nếu cần, 
-          // nhưng ở đây ta làm theo yêu cầu tách biệt hoàn toàn.
         }
 
         hideConfirmAndQueueReturn("submit-success");

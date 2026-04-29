@@ -3,7 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
-$scriptUrl = "https://script.google.com/macros/s/AKfycbxThLPP2mI062gddeEyAAy3XYzUMJ-CIzMP3dMFWQ7v31t5H10ZESvx_i-ZKzWO5A_pog/exec";
+$scriptUrl = "https://script.google.com/macros/s/AKfycbxd5t21qz6CFkrysQhnYYjRibRjVYlv7IMyq5upu0RUd5aEqVfTcEfqpCIXfEx5cQeDrQ/exec";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['file'])) {
     echo json_encode(['success' => false, 'message' => 'Yêu cầu không hợp lệ']);
