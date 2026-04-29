@@ -31,6 +31,34 @@
   const getEl = (id) => document.getElementById(id);
 
   /**
+   * LAYOUT LOADER (Thay thế shared-layout.js)
+   */
+  async function loadLayout() {
+    const headerEl = getEl('site-header');
+    const footerEl = getEl('site-footer');
+
+    const fetchPartial = async (url) => {
+      try {
+        const res = await fetch(new URL(url, projectBase).href);
+        return res.ok ? await res.text() : '';
+      } catch (e) { return ''; }
+    };
+
+    if (headerEl && !headerEl.innerHTML.trim()) {
+      const html = await fetchPartial('html/shared-header.html');
+      headerEl.innerHTML = html;
+      initNavState();
+    }
+
+    if (footerEl && !footerEl.innerHTML.trim()) {
+      const html = await fetchPartial('html/shared-footer.html');
+      footerEl.innerHTML = html;
+    }
+  }
+
+  loadLayout();
+
+  /**
    * XỬ LÝ AUTH STORAGE
    */
   function clearClientAuthStorage() {

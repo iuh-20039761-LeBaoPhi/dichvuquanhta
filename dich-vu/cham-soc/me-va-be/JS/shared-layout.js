@@ -85,26 +85,43 @@
 
   function setupMobileMenu() {
     var navMenu = document.getElementById('navMenu');
-    var toggler = document.getElementById('menuToggle');
+    var toggler = document.querySelector('.navbar-toggler');
     if (!navMenu || !toggler) return;
 
-    // Chỉ dùng click (giống tho-nha) — button luôn bắt click trên iOS Safari
-    // Không dùng touchend để tránh double-toggle (touchend + click = 2 lần)
-    toggler.addEventListener('click', function () {
-      navMenu.classList.toggle('show');
-    });
+    // Removed stopPropagation as it prevents Bootstrap 5's data-api from working
+    // on document-level event delegation.
+    // toggler.addEventListener('click', function (e) {
+    //   e.stopPropagation();
+    // });
 
-    // Đóng khi bấm link trong menu
-    navMenu.querySelectorAll('.nav-link:not(.dropdown-toggle)').forEach(function (link) {
+    // Đóng menu khi click vào các link (trên mobile)
+    var navLinks = navMenu.querySelectorAll('.nav-link:not(.dropdown-toggle)');
+    navLinks.forEach(function (link) {
       link.addEventListener('click', function () {
-        navMenu.classList.remove('show');
+        if (window.getComputedStyle(toggler).display !== 'none') {
+          if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+            var bsCollapse = bootstrap.Collapse.getInstance(navMenu) || new bootstrap.Collapse(navMenu, { toggle: false });
+            bsCollapse.hide();
+          } else {
+            navMenu.classList.remove('show');
+          }
+        }
       });
     });
 
-    // Đóng khi click ra ngoài
+    // Đóng menu khi click ra ngoài vùng menu (Safari/iPhone fix)
     document.addEventListener('click', function (e) {
-      if (!navMenu.contains(e.target) && !toggler.contains(e.target)) {
-        navMenu.classList.remove('show');
+      var isClickInsideMenu = navMenu.contains(e.target);
+      var isClickOnToggler = toggler.contains(e.target);
+
+      if (!isClickInsideMenu && !isClickOnToggler && navMenu.classList.contains('show')) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+          var bsCollapse = bootstrap.Collapse.getInstance(navMenu);
+          if (bsCollapse) bsCollapse.hide();
+          else navMenu.classList.remove('show');
+        } else {
+          navMenu.classList.remove('show');
+        }
       }
     });
   }
