@@ -1049,17 +1049,16 @@
     if (!textValue) return;
 
     if (isGDrive) {
-      var img = document.createElement("img");
-      img.src = "https://lh3.googleusercontent.com/d/" + textValue;
-      img.className = "avatar-image";
-      img.alt = fallback;
-      img.onerror = function() {
-        node.classList.remove("has-image");
-        node.textContent = fallback;
-      };
+      var iframe = document.createElement("iframe");
+      iframe.src = "https://drive.google.com/file/d/" + textValue + "/preview";
+      iframe.style.border = "none";
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.display = "block";
+      iframe.loading = "lazy";
       
       node.textContent = "";
-      node.appendChild(img);
+      node.appendChild(iframe);
       node.classList.add("has-image");
       return;
     }
@@ -1402,17 +1401,15 @@
       const isDriveId = item && !item.includes("/") && !item.includes(".") && !item.includes(":");
       
       if (isDriveId) {
-        // Sử dụng link lh3 làm ảnh đại diện (thumbnail) để tránh lỗi CSP frame-ancestors
-        const thumbUrl = "https://lh3.googleusercontent.com/d/" + item;
+        const previewUrl = "https://drive.google.com/file/d/" + item + "/preview";
         const fullUrl = "https://drive.google.com/file/d/" + item + "/view";
         
         const wrapper = document.createElement("div");
         wrapper.className = "ratio ratio-1x1 mb-2 border rounded overflow-hidden shadow-sm position-relative";
-        // Cho phép nhấn vào để xem chi tiết trên Drive nếu không load được frame
         wrapper.innerHTML = `
-          <a href="${fullUrl}" target="_blank" class="d-block w-100 h-100">
-            <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover;" alt="Đánh giá" onerror="this.src='../../../../public/asset/image/no-image.png'">
-            <div class="position-absolute bottom-0 end-0 bg-dark text-white p-1" style="font-size:10px; opacity:0.7;">Drive</div>
+          <iframe src="${previewUrl}" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>
+          <a href="${fullUrl}" target="_blank" class="position-absolute top-0 end-0 m-1 btn btn-sm btn-dark opacity-50" style="padding: 2px 5px; font-size: 10px;" title="Mở trong tab mới">
+            <i class="fas fa-external-link-alt"></i>
           </a>
         `;
         grid.appendChild(wrapper);
@@ -2333,13 +2330,16 @@
     if (anhIds.length > 0) {
       containerImages.className = "row g-2";
       anhIds.forEach((id) => {
-        // Sử dụng link trực tiếp ảnh của Google Drive để tránh lỗi frame-ancestors CSP
-        const url = "https://lh3.googleusercontent.com/d/" + id;
+        const previewUrl = "https://drive.google.com/file/d/" + id + "/preview";
+        const fullUrl = "https://drive.google.com/file/d/" + id + "/view";
         const col = document.createElement("div");
         col.className = "col-4";
         col.innerHTML = `
-          <div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm">
-            <img src="${url}" style="width:100%; height:100%; object-fit:cover;" alt="Hình ảnh hiện trường" onerror="this.src='../../../../public/asset/image/no-image.png'">
+          <div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm position-relative">
+            <iframe src="${previewUrl}" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>
+            <a href="${fullUrl}" target="_blank" class="position-absolute top-0 end-0 m-1 btn btn-sm btn-dark opacity-50" style="padding: 2px 5px; font-size: 10px; z-index:10;" title="Mở trong tab mới">
+              <i class="fas fa-external-link-alt"></i>
+            </a>
           </div>`;
         containerImages.appendChild(col);
       });

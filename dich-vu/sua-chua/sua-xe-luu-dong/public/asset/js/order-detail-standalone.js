@@ -872,17 +872,16 @@
     if (!textValue) return;
 
     if (isGDrive) {
-      var img = document.createElement("img");
-      img.src = "https://lh3.googleusercontent.com/d/" + textValue;
-      img.style.border = "0";
-      img.style.width = "100%";
-      img.style.height = "100%";
-      img.style.display = "block";
-      img.style.objectFit = "cover";
-      img.loading = "lazy";
+      var iframe = document.createElement("iframe");
+      iframe.src = "https://drive.google.com/file/d/" + textValue + "/preview";
+      iframe.style.border = "none";
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.display = "block";
+      iframe.loading = "lazy";
       
       node.textContent = "";
-      node.appendChild(img);
+      node.appendChild(iframe);
       node.classList.add("has-image");
       return;
     }
@@ -1210,8 +1209,13 @@
       var preview;
       if (isGoogleDrive) {
         preview = document.createElement("div");
-        preview.className = "ratio ratio-1x1 border rounded overflow-hidden bg-light";
-        preview.innerHTML = '<img src="https://lh3.googleusercontent.com/d/' + item + '" style="border:0; width:100%; height:100%; object-fit: cover;" loading="lazy" />';
+        preview.className = "ratio ratio-1x1 border rounded overflow-hidden bg-light position-relative";
+        preview.innerHTML = `
+          <iframe src="https://drive.google.com/file/d/${item}/preview" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>
+          <a href="https://drive.google.com/file/d/${item}/view" target="_blank" class="position-absolute top-0 end-0 m-1 btn btn-sm btn-dark opacity-50" style="padding: 2px 5px; font-size: 10px; z-index: 10;" title="Mở trong tab mới">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        `;
       } else if (isVideo) {
         preview = document.createElement("video");
         preview.controls = true;
