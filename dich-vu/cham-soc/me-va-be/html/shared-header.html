@@ -30,6 +30,24 @@
     margin-left: auto;
   }
 
+  /* Active Nav Link */
+  .nav-link.active {
+    color: #f06292 !important;
+    position: relative;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2.5px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #f06292, #f48fb1);
+  }
+
   /* Mobile Style */
   @media (max-width: 991.98px) {
     .navbar { height: var(--header-h-mb); }
@@ -97,6 +115,14 @@
       padding: 12px !important;
       font-size: 1.1rem;
       border-radius: 10px;
+    }
+
+    .nav-link.active {
+      background: rgba(240, 98, 146, 0.1);
+    }
+
+    .nav-link.active::after {
+      display: none;
     }
   }
 </style>

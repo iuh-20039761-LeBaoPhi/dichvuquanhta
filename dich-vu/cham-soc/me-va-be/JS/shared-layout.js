@@ -74,54 +74,32 @@
     var activeLink = document.querySelector('[data-nav-key="' + navKey + '"]');
     if (!activeLink) return;
 
+    // Thêm class active — CSS trong shared-header.html sẽ xử lý style
     activeLink.classList.add('active');
-    activeLink.style.color = '#f06292';
-
-    var activeStyle = (document.body && document.body.getAttribute('data-nav-active-style')) || 'large';
-    if (activeStyle === 'large') {
-      activeLink.style.fontSize = 'larger';
-    }
   }
 
   function setupMobileMenu() {
+    var menuCb = document.getElementById('menu-cb');
     var navMenu = document.getElementById('navMenu');
-    var toggler = document.querySelector('.navbar-toggler');
-    if (!navMenu || !toggler) return;
+    if (!menuCb || !navMenu) return;
 
-    // Removed stopPropagation as it prevents Bootstrap 5's data-api from working
-    // on document-level event delegation.
-    // toggler.addEventListener('click', function (e) {
-    //   e.stopPropagation();
-    // });
-
-    // Đóng menu khi click vào các link (trên mobile)
+    // Đóng menu khi click vào nav-link (trên mobile)
     var navLinks = navMenu.querySelectorAll('.nav-link:not(.dropdown-toggle)');
     navLinks.forEach(function (link) {
       link.addEventListener('click', function () {
-        if (window.getComputedStyle(toggler).display !== 'none') {
-          if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
-            var bsCollapse = bootstrap.Collapse.getInstance(navMenu) || new bootstrap.Collapse(navMenu, { toggle: false });
-            bsCollapse.hide();
-          } else {
-            navMenu.classList.remove('show');
-          }
+        // Chỉ đóng khi đang ở chế độ mobile (menu đang hiện)
+        if (menuCb.checked) {
+          menuCb.checked = false;
         }
       });
     });
 
-    // Đóng menu khi click ra ngoài vùng menu (Safari/iPhone fix)
+    // Đóng menu khi click ra ngoài header
     document.addEventListener('click', function (e) {
-      var isClickInsideMenu = navMenu.contains(e.target);
-      var isClickOnToggler = toggler.contains(e.target);
-
-      if (!isClickInsideMenu && !isClickOnToggler && navMenu.classList.contains('show')) {
-        if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
-          var bsCollapse = bootstrap.Collapse.getInstance(navMenu);
-          if (bsCollapse) bsCollapse.hide();
-          else navMenu.classList.remove('show');
-        } else {
-          navMenu.classList.remove('show');
-        }
+      if (!menuCb.checked) return;
+      var header = menuCb.closest('nav');
+      if (header && !header.contains(e.target)) {
+        menuCb.checked = false;
       }
     });
   }

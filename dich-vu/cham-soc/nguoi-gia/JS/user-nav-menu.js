@@ -31,6 +31,40 @@
   const getEl = (id) => document.getElementById(id);
 
   /**
+   * ACTIVE NAV — Đánh dấu menu item của trang hiện tại
+   */
+  function applyActiveNav() {
+    const navKey = document.body && document.body.getAttribute('data-nav-active');
+    if (!navKey) return;
+    const activeLink = document.querySelector('[data-nav-key="' + navKey + '"]');
+    if (!activeLink) return;
+    activeLink.classList.add('active');
+  }
+
+  /**
+   * MOBILE MENU — Đóng menu checkbox-hack khi click link hoặc click ngoài
+   */
+  function setupMobileMenu() {
+    const menuCb = getEl('menu-cb');
+    const navMenu = getEl('navMenu');
+    if (!menuCb || !navMenu) return;
+
+    // Đóng khi click vào nav-link
+    navMenu.querySelectorAll('.nav-link:not(.dropdown-toggle)').forEach(function (link) {
+      link.addEventListener('click', function () {
+        if (menuCb.checked) menuCb.checked = false;
+      });
+    });
+
+    // Đóng khi click ra ngoài nav
+    document.addEventListener('click', function (e) {
+      if (!menuCb.checked) return;
+      const nav = menuCb.closest('nav');
+      if (nav && !nav.contains(e.target)) menuCb.checked = false;
+    });
+  }
+
+  /**
    * LAYOUT LOADER (Thay thế shared-layout.js)
    */
   async function loadLayout() {
@@ -47,7 +81,9 @@
     if (headerEl && !headerEl.innerHTML.trim()) {
       const html = await fetchPartial('html/shared-header.html');
       headerEl.innerHTML = html;
-      initNavState();
+      applyActiveNav();   // ← Active nav ngay sau khi header được inject
+      setupMobileMenu();  // ← Setup mobile menu
+      initNavState();     // ← Kiểm tra login/logout
     }
 
     if (footerEl && !footerEl.innerHTML.trim()) {
