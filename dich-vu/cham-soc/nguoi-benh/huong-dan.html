@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng Dẫn Sử Dụng - Hệ Thống Chăm Sóc Người Bệnh</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #475569;
+            --border-color: #e2e8f0;
+            --accent-soft: #eff6ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        /* Header */
+        header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .sidebar h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            margin-top: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            transition: var(--transition);
+        }
+
+        .sidebar li a:hover, .sidebar li a.active {
+            background-color: var(--accent-soft);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Main Content Area */
+        main {
+            padding: 40px 0;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .section-intro {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* Feature Card & Accordion */
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: var(--transition);
+        }
+
+        .feature-header {
+            padding: 20px;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .feature-header:hover {
+            background-color: #fafafa;
+        }
+
+        .feature-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feature-header h3 i {
+            color: var(--primary-color);
+            width: 20px;
+        }
+
+        .feature-header .toggle-icon {
+            font-size: 0.8rem;
+            transition: var(--transition);
+            color: var(--secondary-color);
+        }
+
+        .feature-content {
+            display: none;
+            padding: 0 20px 25px;
+            border-top: 1px solid transparent;
+        }
+
+        .feature-card.open .feature-content {
+            display: block;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .feature-card.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Flow Visuals */
+        .flow-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fdfdfd;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .flow-step {
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 20px;
+        }
+
+        .flow-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-step::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 25px;
+            bottom: -15px;
+            width: 2px;
+            background-color: var(--border-color);
+        }
+
+        .flow-step:last-child::before {
+            display: none;
+        }
+
+        .flow-dot {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 22px;
+            height: 22px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        .flow-step h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        .flow-step p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Info blocks */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-box {
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .info-box span {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .result-box {
+            padding: 15px;
+            background-color: #ecfdf5;
+            border: 1px solid #d1fae5;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .result-box i {
+            color: var(--success);
+            margin-top: 3px;
+        }
+
+        .result-box p {
+            font-size: 0.9rem;
+            color: #065f46;
+        }
+
+        /* Role Badge */
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .role-customer { background: #dbeafe; color: #1e40af; }
+        .role-provider { background: #fef3c7; color: #92400e; }
+        .role-admin { background: #e0e7ff; color: #3730a3; }
+
+        /* Helpers */
+        .mb-4 { margin-bottom: 1.5rem; }
+        .text-primary { color: var(--primary-color); }
+        .fw-bold { font-weight: 700; }
+
+        /* Search bar */
+        .search-container {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-container input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-book-medical"></i>
+                <span>User Guide • Care Patient</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h4>Khám phá</h4>
+            <ul>
+                <li><a href="#tong-quan" class="active">Tổng quan hệ thống</a></li>
+            </ul>
+
+            <h4>Khách hàng</h4>
+            <ul>
+                <li><a href="#kh-dat-lich">Quy trình đặt lịch</a></li>
+                <li><a href="#kh-theo-doi">Theo dõi tiến độ</a></li>
+                <li><a href="#kh-danh-gia">Đánh giá & Phản hồi</a></li>
+            </ul>
+
+            <h4>Nhân viên (NCC)</h4>
+            <ul>
+                <li><a href="#ncc-thuc-hien">Quy trình thực hiện</a></li>
+            </ul>
+
+            <h4>Quản trị viên</h4>
+            <ul>
+                <li><a href="#admin-dich-vu">Quản lý dịch vụ</a></li>
+                <li><a href="#admin-don-hang">Quản lý đơn hàng</a></li>
+            </ul>
+        </aside>
+
+        <main>
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm chức năng hoặc hướng dẫn..." id="searchInput">
+            </div>
+
+            <!-- Overview -->
+            <section id="tong-quan">
+                <h1 class="section-title">Tổng quan hệ thống</h1>
+                <p class="section-intro">
+                    Hệ thống **Chăm Sóc Người Bệnh** là nền tảng chuyên nghiệp kết nối gia đình với đội ngũ nhân viên chăm sóc sức khỏe. Hệ thống tối ưu hóa quy trình từ đặt lịch, thực hiện công việc hàng ngày đến giám sát tiến độ thực tế thông qua các chỉ số minh bạch.
+                </p>
+
+                <div class="info-grid">
+                    <div class="info-box">
+                        <span>Giá trị cốt lõi</span>
+                        <p>Minh bạch tiến độ (Progress Ring), Nhật ký làm việc hàng ngày (Daily Log) và Đánh giá đa chiều giữa khách hàng và nhân viên.</p>
+                    </div>
+                    <div class="info-box">
+                        <span>Dịch vụ tiêu biểu</span>
+                        <p>Chăm sóc hỗ trợ sinh hoạt từ mức nhẹ, trung bình đến chăm sóc đặc biệt 24/7 tại nhà hoặc bệnh viện.</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h3 class="mb-3">Vai trò người dùng</h3>
+                    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div class="info-box" style="background: #eff6ff;">
+                            <div class="role-badge role-customer">Khách hàng</div>
+                            <p style="font-size: 0.85rem;">Đặt lịch, cung cấp thông tin bệnh nhân, theo dõi nhật ký làm việc hàng ngày và đánh giá sau khi hoàn thành.</p>
+                        </div>
+                        <div class="info-box" style="background: #fffbeb;">
+                            <div class="role-badge role-provider">Nhân viên (NCC)</div>
+                            <p style="font-size: 0.85rem;">Tiếp nhận đơn hàng, thực hiện Check-in/Check-out, tích chọn checklist công việc hàng ngày và báo cáo hình ảnh.</p>
+                        </div>
+                        <div class="info-box" style="background: #f5f3ff;">
+                            <div class="role-badge role-admin">Admin</div>
+                            <p style="font-size: 0.85rem;">Quản lý danh mục gói dịch vụ, cấu hình bảng giá, duyệt đơn hàng và giám sát toàn bộ quá trình thực hiện.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CUSTOMER SECTION -->
+            <section id="khach-hang">
+                <h2 class="section-title">Dành cho Khách hàng</h2>
+                
+                <!-- KH: Đặt lịch -->
+                <div class="feature-card" id="kh-dat-lich">
+                    <div class="feature-header">
+                        <h3><i class="fas fa-calendar-plus"></i> Quy trình Đặt lịch Chăm sóc</h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="feature-content">
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <span>Điều kiện</span>
+                                <p>Đăng nhập vào hệ thống bằng Số điện thoại và Mật khẩu.</p>
+                            </div>
+                        </div>
+                        <div class="flow-container">
+                            <div class="flow-step">
+                                <div class="flow-dot">1</div>
+                                <h4>Thông tin liên hệ & Địa chỉ</h4>
+                                <p>Nhập họ tên, SĐT và chọn địa chỉ phục vụ thông qua **Bản đồ trực tuyến (Map Picker)**.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">2</div>
+                                <h4>Chọn Gói & Công việc</h4>
+                                <p>Chọn mức độ chăm sóc (Nhẹ/TB/Nặng/24/7). Hệ thống hiển thị **Checklist công việc** đi kèm để khách hàng nắm rõ.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">3</div>
+                                <h4>Cấu hình thời gian</h4>
+                                <p>Chọn Ngày bắt đầu, Ngày kết thúc và Khung giờ chăm sóc cụ thể trong ngày.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">4</div>
+                                <h4>Tính toán bảng giá</h4>
+                                <p>Xem chi tiết bảng giá gồm: Phí cơ bản, **Phí đi lại (Travel Fee)**, Phí đêm/lễ (nếu có).</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">5</div>
+                                <h4>Xác nhận</h4>
+                                <p>Nhấn "Xác nhận đặt lịch" để gửi yêu cầu đến hệ thống.</p>
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Đơn hàng được tạo ở trạng thái **"Chờ duyệt"**. Khách hàng có thể xem lại trong mục "Đơn hàng của tôi".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KH: Theo dõi -->
+                <div class="feature-card" id="kh-theo-doi">
+                    <div class="feature-header">
+                        <h3><i class="fas fa-chart-line"></i> Theo dõi Tiến độ & Nhật ký</h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="feature-content">
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <span>Điều kiện</span>
+                                <p>Đơn hàng ở trạng thái **"Đang thực hiện"**.</p>
+                            </div>
+                        </div>
+                        <div class="flow-container">
+                            <div class="flow-step">
+                                <div class="flow-dot">1</div>
+                                <h4>Xem Progress Ring</h4>
+                                <p>Theo dõi phần trăm hoàn thành đơn hàng dựa trên tổng số ngày làm việc đã qua.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">2</div>
+                                <h4>Nhật ký làm việc hàng ngày</h4>
+                                <p>Xem chi tiết từng ngày (Ngày 1, Ngày 2...): Giờ bắt đầu/kết thúc thực tế và ghi chú công việc từ nhân viên.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">3</div>
+                                <h4>Minh chứng hình ảnh</h4>
+                                <p>Xem các ảnh chụp báo cáo được nhân viên đính kèm trong ca làm việc.</p>
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Thông tin minh bạch giúp gia đình an tâm tuyệt đối về chất lượng chăm sóc.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KH: Đánh giá -->
+                <div class="feature-card" id="kh-danh-gia">
+                    <div class="feature-header">
+                        <h3><i class="fas fa-comment-dots"></i> Gửi Đánh giá & Phản hồi</h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="feature-content">
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <span>Điều kiện</span>
+                                <p>Đơn hàng đã chuyển sang trạng thái **"Hoàn thành"**.</p>
+                            </div>
+                        </div>
+                        <div class="flow-container">
+                            <div class="flow-step">
+                                <div class="flow-dot">1</div>
+                                <h4>Mở Đơn hàng đã xong</h4>
+                                <p>Vào mục "Đơn hàng của tôi", chọn đơn đã hoàn thành.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">2</div>
+                                <h4>Nhập nội dung đánh giá</h4>
+                                <p>Viết nhận xét về thái độ và kỹ năng của nhân viên, có thể đính kèm ảnh minh chứng hài lòng.</p>
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Đánh giá của khách hàng là cơ sở để hệ thống cải thiện chất lượng và xếp hạng nhân viên.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROVIDER SECTION -->
+            <section id="nha-cung-cap">
+                <h2 class="section-title">Dành cho Nhân viên (NCC)</h2>
+
+                <!-- NCC: Thực hiện việc -->
+                <div class="feature-card" id="ncc-thuc-hien">
+                    <div class="feature-header">
+                        <h3><i class="fas fa-user-nurse"></i> Quy trình Thực hiện Công việc</h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="feature-content">
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <span>Điều kiện</span>
+                                <p>Đơn hàng đã được Admin phê duyệt và nhân viên tiếp nhận.</p>
+                            </div>
+                        </div>
+                        <div class="flow-container">
+                            <div class="flow-step">
+                                <div class="flow-dot">1</div>
+                                <h4>Bắt đầu ca (Check-in)</h4>
+                                <p>Khi đến nơi làm việc, nhấn nút **"Bắt đầu làm việc"** để hệ thống ghi nhận thời gian thực tế.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">2</div>
+                                <h4>Hoàn thành Checklist</h4>
+                                <p>Tích chọn các công việc trong danh mục đã thực hiện (Vệ sinh, cho ăn, tập vật lý trị liệu...).</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">3</div>
+                                <h4>Kết thúc ca (Check-out)</h4>
+                                <p>Nhấn **"Kết thúc ca làm"**, nhập ghi chú về tình trạng bệnh nhân và tải lên ảnh báo cáo.</p>
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Hệ thống tự động tính toán tiến độ hoàn thành dựa trên mỗi ca làm việc thành công.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN SECTION -->
+            <section id="quan-tri-vien">
+                <h2 class="section-title">Dành cho Quản trị viên (Admin)</h2>
+
+                <!-- ADMIN: Quản lý dịch vụ -->
+                <div class="feature-card" id="admin-dich-vu">
+                    <div class="feature-header">
+                        <h3><i class="fas fa-tools"></i> Quản lý Gói dịch vụ & Bảng giá</h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="feature-content">
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <span>Điều kiện</span>
+                                <p>Quyền truy cập quản trị hệ thống.</p>
+                            </div>
+                        </div>
+                        <div class="flow-container">
+                            <div class="flow-step">
+                                <div class="flow-dot">1</div>
+                                <h4>Cấu hình nội dung</h4>
+                                <p>Nhập tên dịch vụ, mô tả chi tiết và **ID hình ảnh từ Google Drive** để hiển thị trên ứng dụng.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">2</div>
+                                <h4>Thiết lập Checklist công việc</h4>
+                                <p>Soạn thảo danh sách các đầu việc mà nhân viên bắt buộc phải báo cáo hàng ngày (mỗi dòng 1 đầu việc).</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">3</div>
+                                <h4>Quản lý Pricing</h4>
+                                <p>Cấu hình các loại phí: Giá cơ bản theo giờ/ngày và các loại phụ phí khác.</p>
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Các thay đổi được áp dụng ngay lập tức cho các đơn đặt lịch mới.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADMIN: Duyệt đơn -->
+                <div class="feature-card" id="admin-don-hang">
+                    <div class="feature-header">
+                        <h3><i class="fas fa-tasks"></i> Phê duyệt & Giám sát đơn hàng</h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="feature-content">
+                        <div class="flow-container">
+                            <div class="flow-step">
+                                <div class="flow-dot">1</div>
+                                <h4>Tiếp nhận Đơn chờ</h4>
+                                <p>Kiểm tra thông tin khách hàng, bệnh nhân và thời gian yêu cầu.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">2</div>
+                                <h4>Duyệt & Phân bổ</h4>
+                                <p>Nhấn "Duyệt" để kích hoạt đơn hàng. Admin có thể chỉ định nhân viên phụ trách phù hợp nhất.</p>
+                            </div>
+                            <div class="flow-step">
+                                <div class="flow-dot">3</div>
+                                <h4>Giám sát thực tế</h4>
+                                <p>Xem nhật ký ca làm của nhân viên để đảm bảo công việc được thực hiện đúng cam kết.</p>
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Đảm bảo quy trình vận hành khép kín và xử lý kịp thời các phát sinh.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer style="background: #fff; border-top: 1px solid var(--border-color); padding: 40px 0; text-align: center; margin-top: 50px;">
+        <div class="container" style="display: block;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">© 2026 Patient Care System. Được thiết kế cho Quy trình Chăm sóc Chuyên nghiệp.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Accordion Logic
+        document.querySelectorAll('.feature-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                card.classList.toggle('open');
+            });
+        });
+
+        // Simple Search
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.feature-card').forEach(card => {
+                const title = card.querySelector('h3').innerText.toLowerCase();
+                const content = card.querySelector('.feature-content').innerText.toLowerCase();
+                if (title.includes(term) || content.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Sidebar active state on scroll
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section, .feature-card');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar li a').forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href') === `#${current}`) {
+                    a.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
