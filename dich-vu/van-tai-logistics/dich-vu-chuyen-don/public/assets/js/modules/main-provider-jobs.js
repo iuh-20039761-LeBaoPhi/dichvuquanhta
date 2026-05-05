@@ -274,7 +274,7 @@ const providerJobsModule = (function (window, document) {
         rows.push(
           ...pageRows.filter(
             (row) =>
-              store.isRowAssignedToProvider?.(row, providerActor) &&
+              store.canProviderAccessBookingRow?.(row, providerActor) &&
               !store.isRowOwnedByProviderActor?.(row, providerActor),
           ),
         );

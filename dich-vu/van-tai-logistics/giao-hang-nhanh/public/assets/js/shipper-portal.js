@@ -920,26 +920,44 @@
     return normalizeText(order?.krud_id || order?.id || order?.order_code || "");
   }
 
+  function normalizeAssignmentValue(value) {
+    const normalized = normalizeText(value).toLowerCase();
+    if (!normalized) return "";
+    return ["0", "null", "undefined", "false", "none", "n/a", "na"].includes(normalized)
+      ? ""
+      : normalized;
+  }
+
   function isProviderAssignedToOrder(row, session) {
     const sessionId = normalizeText(session?.id || "");
     const sessionUsername = normalizeText(session?.username || "").toLowerCase();
-    const shipperId = normalizeText(row?.ncc_id || row?.shipper_id || "");
-    const shipperName = normalizeText(
+    const shipperId = normalizeAssignmentValue(row?.ncc_id || row?.shipper_id || "");
+    const shipperName = normalizeAssignmentValue(
       row?.nha_cung_cap_ho_ten || row?.shipper_name || "",
-    ).toLowerCase();
+    );
+    const shipperPhone = normalizePhone(
+      row?.nha_cung_cap_so_dien_thoai || row?.shipper_phone || "",
+    );
+    const sessionPhone = normalizePhone(
+      session?.phone || session?.so_dien_thoai || "",
+    );
 
     return (
-      (sessionId && shipperId === sessionId) ||
-      (sessionUsername && shipperName.includes(sessionUsername))
+      (sessionId && shipperId === sessionId.toLowerCase()) ||
+      (sessionUsername && shipperName.includes(sessionUsername)) ||
+      (sessionPhone && shipperPhone === sessionPhone)
     );
   }
 
   function isOrderUnassigned(row) {
-    const shipperId = normalizeText(row?.ncc_id || row?.shipper_id || "");
-    const shipperName = normalizeText(
+    const shipperId = normalizeAssignmentValue(row?.ncc_id || row?.shipper_id || "");
+    const shipperName = normalizeAssignmentValue(
       row?.nha_cung_cap_ho_ten || row?.shipper_name || "",
     );
-    return !shipperId && !shipperName;
+    const shipperPhone = normalizePhone(
+      row?.nha_cung_cap_so_dien_thoai || row?.shipper_phone || "",
+    );
+    return !shipperId && !shipperName && !shipperPhone;
   }
 
   function isOrderCancelled(row) {
@@ -975,7 +993,10 @@
   function shouldProviderSeeOrder(row, session) {
     if (!session) return false;
     if (isOrderPlacedByCurrentUser(row, session)) return false;
-    return isProviderAssignedToOrder(row, session);
+    return (
+      isOrderUnassigned(row) ||
+      isProviderAssignedToOrder(row, session)
+    );
   }
 
   async function getAllOrderDetails(session) {

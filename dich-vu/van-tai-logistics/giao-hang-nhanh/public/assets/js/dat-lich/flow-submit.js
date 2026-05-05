@@ -676,18 +676,21 @@ async function uploadBookingMedia(orderCode) {
 
   try {
     const uploaded = await uploadFn(files, uploadOptions);
-    const links = uploaded
-      .map((item) => item?.url || item?.download_url || "")
-      .filter(Boolean);
-
-    if (links.length > 0) {
-      await GiaoHangNhanhCore.apiRequest("giao_hang_nhanh_dat_lich", "PATCH", {
-        id: orderCode,
-        anh_dinh_kem: links.join(" | "),
-      });
-    }
-
-    return links;
+    const normalizedUploaded = (Array.isArray(uploaded) ? uploaded : [])
+      .filter((item) => item && typeof item === "object")
+      .map((item) => ({
+        id: String(item.id || item.fileId || "").trim(),
+        name: String(item.name || "Tệp đính kèm").trim(),
+        extension: String(item.extension || "").trim(),
+        url: String(item.url || item.download_url || item.view_url || "").trim(),
+        download_url: String(item.download_url || "").trim(),
+        view_url: String(item.view_url || "").trim(),
+        thumbnail_url: String(item.thumbnail_url || "").trim(),
+        type: String(item.type || "").trim(),
+        created_at: String(item.created_at || new Date().toISOString()).trim(),
+      }))
+      .filter((item) => item.url);
+    return normalizedUploaded;
   } catch (error) {
     console.error("Lỗi upload media đặt lịch:", error);
     throw error;

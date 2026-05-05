@@ -152,6 +152,97 @@ const orderDetailManager = (function() {
     }
 
     // --- Helpers (Copy từ hệ thống gốc để chuẩn CSS) ---
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function normalizeText(value) {
+        return String(value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function getDriveFileIdFromUrl(value) {
+        const normalizedValue = normalizeText(value);
+        if (!normalizedValue) return '';
+
+        const idParamMatch = normalizedValue.match(/[?&]id=([^&#]+)/i);
+        if (idParamMatch?.[1]) {
+            return decodeURIComponent(idParamMatch[1]);
+        }
+
+        const filePathMatch = normalizedValue.match(/\/file\/d\/([^/?#]+)/i);
+        if (filePathMatch?.[1]) {
+            return decodeURIComponent(filePathMatch[1]);
+        }
+
+        const directPathMatch = normalizedValue.match(/\/(?:u\/\d+\/)?d\/([^/?#]+)/i);
+        if (directPathMatch?.[1]) {
+            return decodeURIComponent(directPathMatch[1]);
+        }
+
+        return '';
+    }
+
+    function isDriveFileId(value) {
+        return /^[A-Za-z0-9_-]{20,}$/.test(normalizeText(value));
+    }
+
+    function getDriveResolvedUrls(value) {
+        const normalizedValue = normalizeText(value);
+        const fileId = getDriveFileIdFromUrl(normalizedValue) || (isDriveFileId(normalizedValue) ? normalizedValue : '');
+        if (!fileId) {
+            return {
+                fileId: '',
+                url: normalizedValue,
+                viewUrl: normalizedValue,
+                thumbnailUrl: normalizedValue,
+            };
+        }
+
+        const encodedId = encodeURIComponent(fileId);
+        return {
+            fileId,
+            url: `https://drive.google.com/uc?export=view&id=${encodedId}`,
+            viewUrl: `https://drive.google.com/file/d/${encodedId}/view`,
+            thumbnailUrl: `https://drive.google.com/thumbnail?id=${encodedId}&sz=w1600`,
+        };
+    }
+
+    function getAttachmentHref(value) {
+        const normalizedValue = normalizeText(value);
+        if (!normalizedValue) return '';
+
+        const resolved = getDriveResolvedUrls(normalizedValue);
+        return resolved.viewUrl || resolved.url || normalizedValue;
+    }
+
+    function getAttachmentPreviewUrl(value, type) {
+        const resolved = getDriveResolvedUrls(value);
+        if (!resolved.url) return '';
+        if (type === 'image') {
+            return resolved.thumbnailUrl || resolved.url;
+        }
+        return resolved.url;
+    }
+
+    function getAttachmentFileName(value) {
+        const normalizedValue = normalizeText(value);
+        if (!normalizedValue) return '';
+
+        const driveFileId = getDriveFileIdFromUrl(normalizedValue);
+        if (driveFileId) {
+            return `Google Drive • ${driveFileId}`;
+        }
+
+        const sanitized = normalizedValue.split('?')[0].split('#')[0];
+        const segments = sanitized.split(/[\\/]/).filter(Boolean);
+        return segments[segments.length - 1] || normalizedValue;
+    }
     
     function renderHeroMetric(icon, label, value, hint) {
         return `
@@ -178,28 +269,41 @@ const orderDetailManager = (function() {
     }
 
     function renderMediaGallery(order) {
-        const images = String(order.anh_dinh_kem || '').split('|').filter(Boolean);
-        const videos = String(order.video_dinh_kem || '').split('|').filter(Boolean);
-        const total = images.length + videos.length;
+        const mediaItems = [
+            ...String(order.anh_dinh_kem || '').split('|').map(item => normalizeText(item)).filter(Boolean).map((value, index) => ({
+                type: 'image',
+                label: `Ảnh đính kèm ${index + 1}`,
+                value,
+            })),
+            ...String(order.video_dinh_kem || '').split('|').map(item => normalizeText(item)).filter(Boolean).map((value, index) => ({
+                type: 'video',
+                label: `Video đính kèm ${index + 1}`,
+                value,
+            })),
+        ];
 
-        if (total === 0) return '<div class="standalone-order-note-panel"><p>Không có tài liệu đính kèm.</p></div>';
+        if (mediaItems.length === 0) return '<div class="standalone-order-note-panel"><p>Không có tài liệu đính kèm.</p></div>';
 
         return `
             <div class="standalone-order-media-grid">
-                ${images.map(img => `
-                    <div class="standalone-order-media-item">
-                        <div class="standalone-order-item-icon"><i class="fa-solid fa-image"></i></div>
-                        <strong>Ảnh đính kèm</strong>
-                        <span>${img}</span>
-                    </div>
-                `).join('')}
-                ${videos.map(vid => `
-                    <div class="standalone-order-media-item">
-                        <div class="standalone-order-item-icon"><i class="fa-solid fa-video"></i></div>
-                        <strong>Video đính kèm</strong>
-                        <span>${vid}</span>
-                    </div>
-                `).join('')}
+                ${mediaItems.map(item => {
+                    const attachmentHref = getAttachmentHref(item.value);
+                    const previewUrl = getAttachmentPreviewUrl(item.value, item.type);
+                    const attachmentName = getAttachmentFileName(item.value) || item.value;
+                    const mediaPreview = item.type === 'image' && previewUrl
+                        ? `<img src="${escapeHtml(previewUrl)}" alt="${escapeHtml(item.label)}" />`
+                        : item.type === 'video' && previewUrl
+                            ? `<video src="${escapeHtml(previewUrl)}" controls preload="metadata"></video>`
+                            : `<div class="standalone-order-item-icon"><i class="fa-solid ${item.type === 'video' ? 'fa-video' : 'fa-image'}"></i></div>`;
+
+                    return `
+                        <a class="standalone-order-media-item" href="${escapeHtml(attachmentHref || '#')}" target="_blank" rel="noreferrer">
+                            ${mediaPreview}
+                            <strong>${escapeHtml(item.label)}</strong>
+                            <span class="standalone-order-media-value">${escapeHtml(attachmentName)}</span>
+                        </a>
+                    `;
+                }).join('')}
             </div>
         `;
     }

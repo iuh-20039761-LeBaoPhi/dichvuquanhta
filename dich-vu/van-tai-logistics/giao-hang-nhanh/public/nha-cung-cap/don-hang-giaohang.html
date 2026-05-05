@@ -252,6 +252,13 @@
         return isNaN(d) ? esc(v) : d.toLocaleDateString('vi-VN');
       }
       function normalizeText(v) { return String(v || '').replace(/\s+/g,' ').trim(); }
+      function normalizeAssignmentValue(v) {
+        const normalized = normalizeText(v).toLowerCase();
+        if (!normalized) return '';
+        return ['0', 'null', 'undefined', 'false', 'none', 'n/a', 'na'].includes(normalized)
+          ? ''
+          : normalized;
+      }
       function setText(id, value) {
         const el = document.getElementById(id);
         if (el) el.textContent = value;
@@ -537,25 +544,33 @@
           }
           if (!Array.isArray(rows)) rows = [];
 
-          const sessionId    = String(session.id || '');
+          const sessionId    = String(session.id || '').trim();
+          const sessionUsername = String(session.username || '').trim().toLowerCase();
           const sessionPhone = String(session.phone || session.so_dien_thoai || '').replace(/\D/g,'');
           const sessionName  = String(session.fullname || session.ho_ten || '').trim().toLowerCase();
 
-          /* Lọc: đơn được gán cho shipper này, KHÔNG lấy đơn tự đặt */
+          /* Lọc: đơn chưa gán hoặc đã gán cho shipper này, KHÔNG lấy đơn tự đặt */
           allOrders = rows.filter(o => {
             /* Kiểm tra có phải đơn tự đặt không → loại */
             const custId    = String(o.customer_id || o.id_nguoidung || '');
+            const custUsername = String(o.customer_username || '').trim().toLowerCase();
             const custPhone = String(o.so_dien_thoai_nguoi_gui || o.nguoi_gui_so_dien_thoai || '').replace(/\D/g,'');
-            const selfOrder = (sessionId && custId === sessionId) || (sessionPhone && custPhone === sessionPhone);
+            const selfOrder =
+              (sessionId && custId === sessionId) ||
+              (sessionUsername && custUsername === sessionUsername) ||
+              (sessionPhone && custPhone === sessionPhone);
             if (selfOrder) return false;
 
-            /* Kiểm tra đơn có gán cho mình */
-            const nccId    = String(o.ncc_id || o.shipper_id || '');
-            const nccName  = String(o.nha_cung_cap_ho_ten || o.shipper_name || '').toLowerCase();
+            /* Kiểm tra đơn chưa gán hoặc đã gán cho mình */
+            const nccId    = normalizeAssignmentValue(o.ncc_id || o.shipper_id || '');
+            const nccName  = normalizeAssignmentValue(o.nha_cung_cap_ho_ten || o.shipper_name || '');
             const nccPhone = String(o.nha_cung_cap_so_dien_thoai || o.shipper_phone || '').replace(/\D/g,'');
-            return (sessionId && nccId === sessionId)
-                || (sessionPhone && nccPhone === sessionPhone)
-                || (sessionName && nccName.includes(sessionName));
+            const isUnassigned = !nccId && !nccName && !nccPhone;
+            const isAssignedToCurrentShipper =
+              (sessionId && nccId === sessionId.toLowerCase()) ||
+              (sessionPhone && nccPhone === sessionPhone) ||
+              (sessionName && nccName.includes(sessionName));
+            return isUnassigned || isAssignedToCurrentShipper;
           }).reverse();
 
           filterOrders();

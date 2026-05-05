@@ -148,6 +148,11 @@ function getDriveFileIdFromUrl(value) {
     return decodeURIComponent(filePathMatch[1]);
   }
 
+  const directPathMatch = normalizedValue.match(/\/(?:u\/\d+\/)?d\/([^/?#]+)/i);
+  if (directPathMatch?.[1]) {
+    return decodeURIComponent(directPathMatch[1]);
+  }
+
   return "";
 }
 
@@ -167,13 +172,14 @@ function getDriveFileUrls(fileId) {
   }
 
   const encodedId = encodeURIComponent(normalizedId);
-  const directUrl = `https://lh3.googleusercontent.com/u/0/d/${encodedId}`;
+  const previewUrl = `https://drive.google.com/uc?export=view&id=${encodedId}`;
+  const thumbnailUrl = `https://drive.google.com/thumbnail?id=${encodedId}&sz=w1600`;
 
   return {
-    url: directUrl,
-    downloadUrl: directUrl,
+    url: previewUrl,
+    downloadUrl: previewUrl,
     viewUrl: `https://drive.google.com/file/d/${encodedId}/view`,
-    thumbnailUrl: directUrl,
+    thumbnailUrl,
   };
 }
 
