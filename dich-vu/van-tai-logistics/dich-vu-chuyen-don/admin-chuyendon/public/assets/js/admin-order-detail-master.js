@@ -69,6 +69,86 @@ const adminOrderMasterModule = (function (window, document) {
     return `${distance.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} km`;
   }
 
+  function getProjectUrl(path) {
+    return typeof core.toProjectUrl === "function"
+      ? core.toProjectUrl(path)
+      : path;
+  }
+
+  function resolveAttachmentUrls(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) {
+      return {
+        fileId: "",
+        url: "",
+        viewUrl: "",
+        thumbnailUrl: "",
+      };
+    }
+
+    if (typeof core.getDriveResolvedUrls === "function") {
+      const resolved = core.getDriveResolvedUrls(normalized);
+      return {
+        fileId: normalizeText(resolved?.fileId || ""),
+        url: normalizeText(resolved?.downloadUrl || resolved?.url || normalized),
+        viewUrl: normalizeText(resolved?.viewUrl || resolved?.url || normalized),
+        thumbnailUrl: normalizeText(resolved?.thumbnailUrl || resolved?.url || normalized),
+      };
+    }
+
+    return {
+      fileId: "",
+      url: normalized,
+      viewUrl: normalized,
+      thumbnailUrl: normalized,
+    };
+  }
+
+  function resolveProjectAttachmentUrl(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) return "";
+    if (/^(?:https?:)?\/\//i.test(normalized) || normalized.startsWith("/")) {
+      return normalized;
+    }
+    if (normalized.startsWith("public/")) {
+      return getProjectUrl(normalized);
+    }
+    if (normalized.startsWith("assets/")) {
+      return getProjectUrl(`public/${normalized}`);
+    }
+    return getProjectUrl(normalized);
+  }
+
+  function getAttachmentHref(value) {
+    const resolved = resolveAttachmentUrls(value);
+    return resolveProjectAttachmentUrl(resolved.viewUrl || resolved.url);
+  }
+
+  function getAttachmentPreviewUrl(value, type) {
+    const resolved = resolveAttachmentUrls(value);
+    const candidate = type === "image"
+      ? (resolved.thumbnailUrl || resolved.url)
+      : resolved.url;
+    return resolveProjectAttachmentUrl(candidate);
+  }
+
+  function getAttachmentFileName(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) return "";
+
+    const driveFileId =
+      typeof core.getDriveFileIdFromUrl === "function"
+        ? core.getDriveFileIdFromUrl(normalized)
+        : "";
+    if (driveFileId) {
+      return `Google Drive • ${driveFileId}`;
+    }
+
+    const sanitized = normalized.split("?")[0].split("#")[0];
+    const segments = sanitized.split(/[\\/]/).filter(Boolean);
+    return segments[segments.length - 1] || normalized;
+  }
+
   function getMilestones(detail) {
     const order = detail?.order || {};
     return {
@@ -163,27 +243,68 @@ const adminOrderMasterModule = (function (window, document) {
 
   function renderAttachmentGallery(order) {
     const media = [
-      ...order.image_attachments.map(v => ({ type: "image", val: v, icon: "fa-image" })),
-      ...order.video_attachments.map(v => ({ type: "video", val: v, icon: "fa-video" }))
+      ...order.image_attachments.map((value, index) => ({
+        type: "image",
+        label: `Ảnh hiện trường ${index + 1}`,
+        value,
+      })),
+      ...order.video_attachments.map((value, index) => ({
+        type: "video",
+        label: `Video hiện trường ${index + 1}`,
+        value,
+      })),
     ];
     if (!media.length) return '<div class="standalone-order-note-panel"><p>Không có tài liệu gửi kèm.</p></div>';
-    return `<div class="standalone-order-media-grid">${media.map(m => `
-      <div class="standalone-order-media-item">
-        <div class="standalone-order-item-icon"><i class="fa-solid ${m.icon}"></i></div>
-        <strong>Tệp đính kèm</strong>
-      </div>
-    `).join("")}</div>`;
+    return `<div class="standalone-order-media-grid">${media.map((item) => {
+      const attachmentValue = normalizeText(item.value);
+      const attachmentHref = getAttachmentHref(attachmentValue);
+      const previewUrl = getAttachmentPreviewUrl(attachmentValue, item.type);
+      const attachmentName = getAttachmentFileName(attachmentValue) || attachmentValue;
+      const mediaPreview =
+        item.type === "image" && previewUrl
+          ? `<img src="${escapeHtml(previewUrl)}" alt="${escapeHtml(item.label)}" />`
+          : item.type === "video" && previewUrl
+            ? `<video src="${escapeHtml(previewUrl)}" controls preload="metadata"></video>`
+            : `<div class="standalone-order-item-icon">
+                <i class="${escapeHtml(item.type === "video" ? "fa-solid fa-video" : "fa-solid fa-image")}"></i>
+              </div>`;
+
+      return `
+        <a class="standalone-order-media-item" href="${escapeHtml(attachmentHref || "#")}" target="_blank" rel="noreferrer">
+          ${mediaPreview}
+          <strong>${escapeHtml(item.label)}</strong>
+          <span class="standalone-order-media-value">${escapeHtml(attachmentName)}</span>
+        </a>
+      `;
+    }).join("")}</div>`;
   }
 
   function renderMediaGallery(items, emptyText) {
     const media = Array.isArray(items) ? items.filter((item) => String(item?.val || "").trim()) : [];
     if (!media.length) return `<div class="standalone-order-note-panel"><p>${escapeHtml(emptyText)}</p></div>`;
-    return `<div class="standalone-order-media-grid">${media.map((item) => `
-      <div class="standalone-order-media-item">
-        <div class="standalone-order-item-icon"><i class="fa-solid ${escapeHtml(item.icon)}"></i></div>
-        <strong>${escapeHtml(item.label)}</strong>
-      </div>
-    `).join("")}</div>`;
+    return `<div class="standalone-order-media-grid">${media.map((item) => {
+      const type = normalizeText(item.icon) === "fa-video" ? "video" : "image";
+      const attachmentValue = normalizeText(item.val);
+      const attachmentHref = getAttachmentHref(attachmentValue);
+      const previewUrl = getAttachmentPreviewUrl(attachmentValue, type);
+      const attachmentName = getAttachmentFileName(attachmentValue) || attachmentValue;
+      const mediaPreview =
+        type === "image" && previewUrl
+          ? `<img src="${escapeHtml(previewUrl)}" alt="${escapeHtml(item.label)}" />`
+          : type === "video" && previewUrl
+            ? `<video src="${escapeHtml(previewUrl)}" controls preload="metadata"></video>`
+            : `<div class="standalone-order-item-icon">
+                <i class="fa-solid ${escapeHtml(item.icon)}"></i>
+              </div>`;
+
+      return `
+        <a class="standalone-order-media-item" href="${escapeHtml(attachmentHref || "#")}" target="_blank" rel="noreferrer">
+          ${mediaPreview}
+          <strong>${escapeHtml(item.label)}</strong>
+          <span class="standalone-order-media-value">${escapeHtml(attachmentName)}</span>
+        </a>
+      `;
+    }).join("")}</div>`;
   }
 
   function renderTimeline(detail) {

@@ -206,6 +206,45 @@
     }
   }
 
+  function splitPipeValues(value) {
+    if (Array.isArray(value)) {
+      return value.map((item) => normalizeText(item)).filter(Boolean);
+    }
+    return String(value || "")
+      .split("|")
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
+  }
+
+  function buildLegacyAttachmentItems(...sources) {
+    const items = [];
+    const seen = new Set();
+
+    sources.forEach((source) => {
+      splitPipeValues(source).forEach((rawUrl, index) => {
+        const normalizedUrl = normalizeText(rawUrl);
+        if (!normalizedUrl || seen.has(normalizedUrl)) return;
+        seen.add(normalizedUrl);
+        const cleanUrl = normalizedUrl.split("?")[0].split("#")[0];
+        const extension = cleanUrl.includes(".")
+          ? cleanUrl.split(".").pop().toLowerCase()
+          : "";
+        items.push({
+          id: "",
+          name: `Tệp đính kèm ${index + 1}`,
+          extension,
+          url: normalizedUrl,
+          view_url: normalizedUrl,
+          download_url: normalizedUrl,
+          thumbnail_url: normalizedUrl,
+          created_at: "",
+        });
+      });
+    });
+
+    return items;
+  }
+
   const showToast =
     core && typeof core.showToast === "function"
       ? (message, type = "info") => core.showToast(message, type)
@@ -1181,6 +1220,17 @@
   }
 
   function buildDetailFromKrudRecord(record) {
+    const parsedAttachments = parseJsonSafe(
+      record.attachments_json || record.attachments || [],
+      [],
+    );
+    const attachments = Array.isArray(parsedAttachments)
+      ? parsedAttachments
+      : buildLegacyAttachmentItems(
+          record.anh_dinh_kem,
+          record.video_dinh_kem,
+        );
+
     const shippingFee = Number(
       record.tong_cuoc ??
         record.shipping_fee ??
@@ -1398,10 +1448,7 @@
         vehicle_type: record.shipper_vehicle || record.vehicle_type || "",
         shipper_vehicle: record.shipper_vehicle || record.vehicle_type || "",
         bien_so: record.bien_so || "",
-        attachments: parseJsonSafe(
-          record.attachments_json || record.attachments || [],
-          [],
-        ),
+        attachments,
         shipper_reports: parseJsonSafe(
           record.shipper_reports_json || record.shipper_reports || [],
           [],
@@ -1463,15 +1510,22 @@
       }
     })();
 
-    if (explicitViewer === "customer" || explicitViewer === "shipper" || explicitViewer === "public") {
+    if (
+      explicitViewer === "customer" ||
+      explicitViewer === "shipper" ||
+      explicitViewer === "public" ||
+      explicitViewer === "admin"
+    ) {
       return explicitViewer;
     }
 
     if (currentPath.includes("/public/khach-hang/")) return "customer";
     if (currentPath.includes("/public/nha-cung-cap/")) return "shipper";
+    if (currentPath.includes("/admin-giaohang/public/")) return "admin";
 
     if (referrerPath.includes("/public/khach-hang/")) return "customer";
     if (referrerPath.includes("/public/nha-cung-cap/")) return "shipper";
+    if (referrerPath.includes("/admin-giaohang/public/")) return "admin";
 
     const sessionRole = normalizeText(
       session?.role || session?.vai_tro || "",
@@ -1481,6 +1535,23 @@
 
     if (session) return "customer";
     return "public";
+  }
+
+  function getAdminReturnUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const rawReturn = normalizeText(params.get("admin_return") || "");
+    if (rawReturn) {
+      try {
+        return new URL(rawReturn, window.location.href).toString();
+      } catch (error) {
+        // Fall through to the default admin order list.
+      }
+    }
+
+    return new URL(
+      `${projectBase}admin-giaohang/public/orders_manage.php`,
+      window.location.href,
+    ).toString();
   }
 
   function syncDisplayUrl(identifier, viewer) {
@@ -1499,12 +1570,23 @@
         `${projectBase}public/nha-cung-cap/chi-tiet-don-hang-giaohang.html`,
         window.location.href,
       );
+    } else if (viewer === "admin") {
+      targetUrl = new URL(
+        `${projectBase}chi-tiet-don-hang-giaohang.html`,
+        window.location.href,
+      );
     } else {
       targetUrl = new URL("chi-tiet-don-hang-giaohang.html", window.location.href);
     }
 
     targetUrl.searchParams.set("madonhang", identifier);
-    targetUrl.searchParams.delete("viewer");
+    if (viewer === "admin") {
+      targetUrl.searchParams.set("viewer", "admin");
+      targetUrl.searchParams.set("admin_return", getAdminReturnUrl());
+    } else {
+      targetUrl.searchParams.delete("viewer");
+      targetUrl.searchParams.delete("admin_return");
+    }
     targetUrl.searchParams.delete("code");
     targetUrl.searchParams.delete("id");
     const access = getAccessCredentials();
@@ -1557,6 +1639,8 @@
         `${projectBase}public/nha-cung-cap/don-hang-giaohang.html`,
         window.location.href,
       );
+    } else if (viewer === "admin") {
+      return getAdminReturnUrl();
     } else {
       targetUrl = new URL("tra-don-hang-giaohang.html", window.location.href);
     }
@@ -1605,6 +1689,8 @@
         ? "Về danh sách đơn"
         : viewer === "shipper"
           ? "Về danh sách đơn"
+          : viewer === "admin"
+            ? "Về danh sách đơn"
           : "Về tra đơn hàng";
     buttons.push(
       `<a class="customer-btn customer-btn-ghost" href="${escapeHtml(
@@ -1743,33 +1829,68 @@
     };
   }
 
+  function createDetailMediaItem(item, fallbackName, source, index) {
+    const href = normalizeText(
+      item?.view_url || item?.url || item?.download_url || "",
+    );
+    const previewUrl = normalizeText(
+      item?.thumbnail_url || item?.view_url || item?.url || item?.download_url || "",
+    );
+    const extension = getMediaExtension(item) || href.split(".").pop() || "";
+    if (!hasPreviewableUrl(href) && !hasPreviewableUrl(previewUrl)) return null;
+
+    return {
+      href: href || previewUrl,
+      previewUrl: previewUrl || href,
+      name:
+        normalizeText(item?.name || "") ||
+        `${fallbackName} ${Number(index || 0) + 1}`,
+      extension,
+      source,
+    };
+  }
+
   function getMediaItems(detail) {
     const order = detail.order || {};
+    const attachments = Array.isArray(detail.provider?.attachments)
+      ? detail.provider.attachments
+      : [];
     const reports = Array.isArray(detail.provider?.shipper_reports)
       ? detail.provider.shipper_reports
       : [];
     const seenUrls = new Set();
-    const items = reports
-      .map((item, index) => {
-        const url = normalizeText(
-          item?.view_url || item?.url || item?.download_url || "",
-        );
-        if (!hasPreviewableUrl(url) || seenUrls.has(url)) return null;
-        seenUrls.add(url);
-        return {
-          url,
-          name: normalizeText(item?.name || "") || `Bằng chứng giao hàng ${index + 1}`,
-          extension: getMediaExtension(item) || url.split(".").pop() || "",
-        };
-      })
-      .filter(Boolean);
+    const items = [];
+
+    const pushUniqueItem = (mediaItem) => {
+      if (!mediaItem) return;
+      const key = normalizeText(
+        mediaItem.href || mediaItem.previewUrl || mediaItem.name || "",
+      );
+      if (!key || seenUrls.has(key)) return;
+      seenUrls.add(key);
+      items.push(mediaItem);
+    };
+
+    attachments.forEach((item, index) => {
+      pushUniqueItem(
+        createDetailMediaItem(item, "Khách đính kèm", "customer", index),
+      );
+    });
+
+    reports.forEach((item, index) => {
+      pushUniqueItem(
+        createDetailMediaItem(item, "Bằng chứng giao hàng", "shipper", index),
+      );
+    });
 
     const legacyPodUrl = normalizeText(order.pod_image);
     if (legacyPodUrl && !seenUrls.has(legacyPodUrl)) {
       items.push({
-        url: legacyPodUrl,
+        href: legacyPodUrl,
+        previewUrl: legacyPodUrl,
         name: "Bằng chứng giao hàng",
         extension: legacyPodUrl.split(".").pop() || "jpg",
+        source: "pod",
       });
     }
 
@@ -1784,37 +1905,44 @@
 
     return `<div class="standalone-order-media-grid">${items
       .map((item) => {
-        const url = escapeHtml(item.url);
+        const href = escapeHtml(item.href || item.previewUrl || "");
+        const previewUrl = escapeHtml(item.previewUrl || item.href || "");
         const name = escapeHtml(item.name);
         const extension = String(item.extension || "").toLowerCase();
+        const label =
+          item.source === "customer"
+            ? "Khách đính kèm"
+            : item.source === "shipper" || item.source === "pod"
+              ? "Bằng chứng giao hàng"
+              : "Tệp đính kèm";
 
         if (isImageExtension(extension)) {
           return `
-            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <img src="${url}" alt="${name}" />
+            <a class="standalone-order-media-item" href="${href}" target="_blank" rel="noreferrer">
+              <img src="${previewUrl}" alt="${name}" />
 
-              <span>Ảnh đính kèm</span>
+              <span>${escapeHtml(label)}</span>
             </a>
           `;
         }
 
         if (isVideoExtension(extension)) {
           return `
-            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <video src="${url}" controls preload="metadata"></video>
+            <a class="standalone-order-media-item" href="${href}" target="_blank" rel="noreferrer">
+              <video src="${previewUrl}" controls preload="metadata"></video>
 
-              <span>Video đính kèm</span>
+              <span>${escapeHtml(label)}</span>
             </a>
           `;
         }
 
         return `
-          <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
+          <a class="standalone-order-media-item" href="${href}" target="_blank" rel="noreferrer">
             <div class="standalone-order-item-icon">
               <i class="fa-solid fa-file-lines"></i>
             </div>
 
-            <span>Tệp đính kèm</span>
+            <span>${escapeHtml(label)}</span>
           </a>
         `;
       })

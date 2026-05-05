@@ -572,6 +572,12 @@ const customerPortalStoreModule = (function (window) {
     return !!(providerId && actor?.id && providerId === actor.id);
   }
 
+  function canProviderAccessBookingRow(row, actor = getCurrentProviderActor()) {
+    const providerId = normalizeText(row?.provider_id || "");
+    if (!providerId) return true;
+    return !!(actor?.id && providerId === actor.id);
+  }
+
   function isRowOwnedByProviderActor(row, actor = getCurrentProviderActor()) {
     const customerOwner = resolveCustomerBookingOwnership(row);
     const providerActor =
@@ -2178,6 +2184,7 @@ const customerPortalStoreModule = (function (window) {
     resolveCustomerBookingOwnership,
     getCurrentProviderActor,
     isRowAssignedToProvider,
+    canProviderAccessBookingRow,
     isRowOwnedByProviderActor,
     getDisplayName,
     getBookingDisplayStatus,
@@ -2230,6 +2237,7 @@ export const {
   hasProviderCapability,
   isExpiredPendingBookingRow,
   isRowAssignedToProvider,
+  canProviderAccessBookingRow,
   isRowOwnedByProviderActor,
   matchesBookingCode,
   readIdentity,

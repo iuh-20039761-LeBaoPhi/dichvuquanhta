@@ -246,7 +246,9 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     (function () {
         'use strict';
         const TABLE = 'giaohangnhanh_dat_lich';
-        const DETAIL_URL = '../../chi-tiet-don-hang-giaohang.html?viewer=admin&madonhang=';
+        const DETAIL_URL = '../../chi-tiet-don-hang-giaohang.html?viewer=admin&admin_return='
+            + encodeURIComponent('admin-giaohang/public/orders_manage.php')
+            + '&madonhang=';
         const PAGE_SIZE = 20;
         let allOrders = [];
         let currentTab = 'all';

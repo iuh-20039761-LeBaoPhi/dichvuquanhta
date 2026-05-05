@@ -551,6 +551,36 @@ async function syncCrudBookingAttachments(
       created_at: String(item.created_at || "").trim(),
     }))
     .filter((item) => item.url);
+  const imageExtensions = new Set([
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "gif",
+    "bmp",
+    "svg",
+    "heic",
+  ]);
+  const videoExtensions = new Set([
+    "mp4",
+    "mov",
+    "webm",
+    "m4v",
+    "avi",
+    "mkv",
+  ]);
+  const imageLinks = safeAttachments
+    .filter((item) =>
+      imageExtensions.has(String(item.extension || "").toLowerCase()),
+    )
+    .map((item) => item.view_url || item.url || item.download_url || "")
+    .filter(Boolean);
+  const videoLinks = safeAttachments
+    .filter((item) =>
+      videoExtensions.has(String(item.extension || "").toLowerCase()),
+    )
+    .map((item) => item.view_url || item.url || item.download_url || "")
+    .filter(Boolean);
 
   try {
     await updateFn(
@@ -559,6 +589,8 @@ async function syncCrudBookingAttachments(
         id: normalizedId,
         attachments_json: JSON.stringify(safeAttachments),
         attachments: JSON.stringify(safeAttachments),
+        anh_dinh_kem: imageLinks.join(" | "),
+        video_dinh_kem: videoLinks.join(" | "),
         updated_at:
           updatedAt instanceof Date
             ? updatedAt.toISOString()
