@@ -23,7 +23,7 @@ if ($file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($tmpPath)) {
 // Encode base64 và gửi lên Google Drive qua Apps Script
 $fileContent = base64_encode(file_get_contents($tmpPath));
 // thay đổi $folderKey sao cho lưu đúng vào thư mục 
-$folderKey = 21;
+$folderKey = 24;
 $data = json_encode([
     'name' => $name,
     'file' => $fileContent,

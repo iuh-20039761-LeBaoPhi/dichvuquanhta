@@ -18,7 +18,7 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
             const contentArea = document.getElementById('main-content');
             const pageTitle = document.getElementById('page-title');
 
-            contentArea.innerHTML = '<div class="text-center mt-5"><div class="spinner-border text-danger"></div></div>';
+            contentArea.innerHTML = '<div class="text-center mt-5"><div class="spinner-border text-primary"></div></div>';
 
             try {
                 if (updateHistory) {

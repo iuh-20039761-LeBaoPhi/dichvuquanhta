@@ -1,9 +1,9 @@
 <?php
-// get-don-hang.php
+// get-hoa-don.php
 require_once __DIR__ . '/../session_user.php';
 
 /**
- * Hàm kiểm tra và lấy danh sách hóa đơn dựa theo session người dùng
+ * Hàm kiểm tra và lấy danh sách đơn hàng dựa theo session người dùng
  */
 function get_filtered_invoices() {
     $user = $_SESSION['user'] ?? null;
@@ -15,7 +15,7 @@ function get_filtered_invoices() {
     $userPhone = preg_replace('/\D/', '', $user['sodienthoai'] ?? '');
 
     $url = 'https://api.dvqt.vn/list/';
-    $payload = json_encode(['table' => 'datlich_mevabe'], JSON_UNESCAPED_UNICODE);
+    $payload = json_encode(['table' => 'datlich_chamsocvuon', 'limit' => 10000], JSON_UNESCAPED_UNICODE);
     
     $opts = [
         'http' => [
@@ -29,17 +29,25 @@ function get_filtered_invoices() {
     $raw = @file_get_contents($url, false, $context);
 
     if (!$raw) {
-        return ['error' => 'Không thể kết nối API', 'data' => []];
+        return ['error' => '', 'data' => []]; // Bảng chưa có dữ liệu → trả rỗng
     }
 
     $json = json_decode($raw, true);
+
+    // Bảng chưa tồn tại (chưa có đơn nào) → trả rỗng, không báo lỗi
+    if (!empty($json['error']) && (
+        stripos((string)$json['error'], "doesn't exist") !== false ||
+        stripos((string)$json['error'], 'not found') !== false
+    )) {
+        return ['error' => '', 'data' => []];
+    }
     $allData = $json['data'] ?? $json['rows'] ?? $json['list'] ?? [];
     $filtered = [];
 
     foreach ($allData as $item) {
         $isMatch = false;
         if ($id_dichvu === 1) {
-            // Nhà cung cấp: lấy hóa đơn trạng thái null OR khớp số điện thoại NCC
+            // Nhà cung cấp: lấy đơn hàng trạng thái null OR khớp số điện thoại NCC
             $trangthai = $item['trangthai'] ?? null;
             $phoneNCC = preg_replace('/\D/', '', $item['sodienthoaincc'] ?? '');
             if ($trangthai === null || $trangthai === '' || $phoneNCC === $userPhone) {

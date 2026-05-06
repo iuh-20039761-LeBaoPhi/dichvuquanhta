@@ -15,8 +15,8 @@
             --accent-green: #4f6f52;
             --soft-lime: #e8f3d6;
             --nature-white: #f9fbf9;
-            --glass: rgba(255, 255, 255, 0.85);
-            --shadow-sm: 0 10px 30px rgba(26, 77, 46, 0.05);
+            --glass: rgba(255, 255, 255, 0.92);
+            --shadow-sm: 0 4px 20px rgba(26, 77, 46, 0.06);
             --shadow-lg: 0 20px 50px rgba(26, 77, 46, 0.12);
             --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
@@ -24,18 +24,18 @@
         body {
             font-family: "Quicksand", sans-serif;
             background-color: var(--nature-white);
-            color: #333;
+            color: #2d3436;
             overflow-x: hidden;
             padding-top: 80px;
         }
 
-        /* --- HERO BANNER --- */
+        /* ── HERO BANNER ── */
         .page-banner {
             background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-            padding: 100px 0 60px;
+            padding: 90px 0 55px;
             position: relative;
             overflow: hidden;
-            border-bottom: 1px solid rgba(26, 77, 46, 0.05);
+            border-bottom: 1px solid rgba(26, 77, 46, 0.06);
         }
 
         .page-banner::before {
@@ -58,81 +58,70 @@
             font-family: 'Playfair Display', serif;
             font-style: italic;
             color: var(--primary-green);
-            font-size: 3.5rem;
+            font-size: 3.2rem;
             position: relative;
             z-index: 1;
             margin: 0;
-            text-shadow: 0 2px 10px rgba(255,255,255,0.5);
         }
 
-        /* --- NỘI DUNG --- */
+        .breadcrumb-item a { color: var(--accent-green) !important; font-weight: 600; }
+        .breadcrumb-item.active { color: var(--primary-green); font-weight: 700; }
+
+        /* ── ẢNH DỊCH VỤ ── */
         .img-wrapper {
             position: relative;
-            border-radius: 40px;
+            border-radius: 32px;
             overflow: hidden;
             box-shadow: var(--shadow-lg);
-            margin-bottom: 35px;
-            background: #eee;
+            margin-bottom: 32px;
+            background: #e8f3d6;
         }
 
         .service-header-img {
             width: 100%;
-            height: 500px;
+            height: 460px;
             object-fit: cover;
             transition: var(--transition);
             display: block;
         }
 
         .img-wrapper:hover .service-header-img {
-            transform: scale(1.05);
+            transform: scale(1.04);
         }
 
-        .info-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 35px;
-            padding: 35px;
-            box-shadow: var(--shadow-lg);
-            position: sticky;
-            top: 110px;
-        }
-
-        .price-display {
-            background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
-            color: white;
-            padding: 25px;
-            border-radius: 25px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .price-display h3 { font-size: 1.7rem; font-weight: 700; margin: 0; }
-
+        /* ── META BADGES ── */
         .meta-badge {
-            background: white;
-            padding: 8px 18px;
+            background: #fff;
+            padding: 8px 16px;
             border-radius: 50px;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             box-shadow: var(--shadow-sm);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            border: 1px solid #f0f0f0;
+            gap: 7px;
+            border: 1px solid rgba(26, 77, 46, 0.1);
+            color: var(--primary-green);
         }
 
+        .meta-badge i.fa-star { color: #f59e0b; }
+        .meta-badge i.fa-clock { color: var(--accent-green); }
+        .meta-badge i.fa-shield-alt { color: var(--primary-green); }
+
+        /* ── TAGS ── */
         .tag-item {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 5px 14px;
             background: var(--soft-lime);
             color: var(--primary-green);
-            border-radius: 8px;
+            border-radius: 20px;
             font-weight: 700;
-            font-size: 0.75rem;
-            margin: 0 5px 8px 0;
+            font-size: 0.78rem;
+            margin: 0 6px 8px 0;
+            border: 1px solid rgba(26, 77, 46, 0.12);
         }
 
+        /* ── SECTION TITLE ── */
         .section-title {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
@@ -140,68 +129,178 @@
             padding-bottom: 12px;
             margin-bottom: 20px;
             color: var(--primary-green);
+            font-size: 1.3rem;
         }
 
         .section-title::after {
             content: "";
             position: absolute;
             bottom: 0; left: 0;
-            width: 40px; height: 3px;
+            width: 36px; height: 3px;
             background: var(--accent-green);
             border-radius: 2px;
         }
 
+        /* ── INFO CARD (cột phải) ── */
+        .info-card {
+            background: #fff;
+            border: 1px solid rgba(26, 77, 46, 0.1);
+            border-radius: 32px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 110px;
+        }
+
+        /* ── PRICE DISPLAY ── */
+        .price-display {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+            color: white;
+            padding: 24px 20px;
+            border-radius: 22px;
+            margin-bottom: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-display::before {
+            content: "₫";
+            position: absolute;
+            right: -10px; top: -10px;
+            font-size: 6rem;
+            font-weight: 900;
+            opacity: 0.06;
+            line-height: 1;
+        }
+
+        .price-display h3 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        /* ── SPEC LIST ── */
+        .spec-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(26, 77, 46, 0.07);
+            font-size: 0.9rem;
+        }
+
+        .spec-list li:last-child { border-bottom: none; }
+        .spec-list .spec-label { color: #636e72; font-weight: 600; }
+        .spec-list .spec-val { font-weight: 700; color: var(--primary-green); }
+
+        /* ── PRICE NOTE ── */
+        .price-note-box {
+            background: var(--soft-lime);
+            border: 1px solid rgba(26, 77, 46, 0.12);
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: var(--primary-green);
+            margin-bottom: 20px;
+        }
+
+        /* ── BOOK BUTTON ── */
         .btn-book-now {
-            background: var(--primary-green);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
             color: white !important;
             border: none;
             padding: 16px;
-            border-radius: 20px;
-            font-weight: 700;
+            border-radius: 18px;
+            font-weight: 800;
+            font-size: 1rem;
             width: 100%;
             transition: var(--transition);
-            box-shadow: 0 8px 20px rgba(26, 77, 46, 0.15);
+            box-shadow: 0 8px 24px rgba(26, 77, 46, 0.25);
+            letter-spacing: 0.5px;
         }
 
         .btn-book-now:hover {
-            background: #0e2b1a;
             transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(26, 77, 46, 0.25);
+            box-shadow: 0 14px 32px rgba(26, 77, 46, 0.35);
         }
 
-        /* --- MODAL --- */
-        .modal-content { border-radius: 40px; border: none; overflow: hidden; }
-        .modal-header {
-            border-bottom: 1px solid #f0f0f0;
-            padding: 20px 30px;
+        /* ── HOTLINE BOX ── */
+        .hotline-box {
+            background: var(--nature-white);
+            border: 1px solid rgba(26, 77, 46, 0.08);
+            border-radius: 16px;
+            padding: 14px 16px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        /* ── INFO BOXES (khu vực / phân loại) ── */
+        .info-box {
             background: #fff;
+            border: 1px solid rgba(26, 77, 46, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            height: 100%;
+            transition: var(--transition);
+        }
+
+        .info-box:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .info-box h5 {
+            color: var(--primary-green);
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        /* ── MODAL ── */
+        .modal-content {
+            border-radius: 32px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(26, 77, 46, 0.2);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(26, 77, 46, 0.08);
+            padding: 18px 28px;
+            background: linear-gradient(135deg, var(--soft-lime) 0%, #fff 100%);
             position: relative;
         }
-        
-        /* Căn giữa toàn bộ nội dung trong header */
-        .modal-title-custom { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 15px; 
+
+        .modal-title-custom {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
             width: 100%;
         }
 
-        .modal-logo { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-        
+        .modal-logo {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(26, 77, 46, 0.15);
+        }
+
         .modal-title-text {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
             color: var(--primary-green);
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin: 0;
-            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Đảm bảo nút đóng không làm lệch tâm tiêu đề */
         .modal-header .btn-close {
             position: absolute;
-            right: 30px;
+            right: 28px;
             top: 50%;
             transform: translateY(-50%);
             margin: 0;
@@ -214,7 +313,25 @@
             display: block;
         }
 
-        .spinner-grow { width: 3rem; height: 3rem; color: var(--primary-green) !important; }
+        /* ── SPINNER ── */
+        .spinner-grow {
+            width: 2.5rem; height: 2.5rem;
+            color: var(--primary-green) !important;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 991.98px) {
+            .page-banner h2 { font-size: 2.2rem; }
+            .page-banner { padding: 70px 0 40px; }
+            .info-card { position: static; border-radius: 24px; padding: 24px; }
+            .service-header-img { height: 300px; }
+        }
+
+        @media (max-width: 575.98px) {
+            .page-banner h2 { font-size: 1.8rem; }
+            .img-wrapper { border-radius: 20px; }
+            .service-header-img { height: 240px; }
+        }
     </style>
 </head>
 
@@ -250,7 +367,7 @@
             <div class="modal-content shadow-lg">
                 <div class="modal-header">
                     <div class="modal-title-custom">
-                        <img src="assets/images/logo2.jpg" alt="Logo" class="modal-logo">
+                        <img src="assets/images/logo1.png" alt="Logo" class="modal-logo">
                         <h5 class="modal-title-text">ĐẶT LỊCH DỊCH VỤ</h5>
                         <img src="assets/images/logo2.jpg" alt="Logo" class="modal-logo">
                     </div>
@@ -299,31 +416,31 @@
                                 <img src="assets/images/${item.image}" class="service-header-img" alt="${item.name}" onerror="this.src='assets/images/vuon-nha-dep.png'">
                             </div>
 
-                            <div class="d-flex flex-wrap gap-3 mb-4">
-                                <div class="meta-badge"><i class="fas fa-star text-warning"></i> ${item.rating} (${item.total_reviews} đánh giá)</div>
-                                <div class="meta-badge"><i class="fas fa-clock text-success"></i> ${item.duration_estimate}</div>
-                                <div class="meta-badge"><i class="fas fa-shield-alt text-primary"></i> Bảo hành 7 ngày</div>
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <div class="meta-badge"><i class="fas fa-star"></i> ${item.rating} <span class="text-muted fw-normal">(${item.total_reviews} đánh giá)</span></div>
+                                <div class="meta-badge"><i class="fas fa-clock"></i> ${item.duration_estimate}</div>
+                                <div class="meta-badge"><i class="fas fa-shield-alt"></i> Bảo hành 7 ngày</div>
                             </div>
 
-                            <h1 class="display-5 fw-bold mb-4" style="font-family: 'Playfair Display', serif; color: var(--primary-green);">${item.name}</h1>
-                            
+                            <h1 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif; color: var(--primary-green); font-size: clamp(1.6rem, 3vw, 2.4rem);">${item.name}</h1>
+
                             <div class="service-description mb-5">
                                 <h4 class="section-title">Chi tiết dịch vụ</h4>
-                                <div class="lh-lg text-secondary" style="font-size: 1.1rem; text-align: justify;">
+                                <div class="lh-lg" style="font-size: 1.05rem; color: #4a5568; text-align: justify;">
                                     ${item.description}
                                 </div>
                             </div>
 
-                            <div class="row g-4">
+                            <div class="row g-3">
                                 <div class="col-md-6">
-                                    <div class="p-4 rounded-4 border bg-white shadow-sm h-100">
-                                        <h5 class="fw-bold text-success mb-3"><i class="fas fa-map-marked-alt me-2"></i>Khu vực</h5>
-                                        <p class="text-muted mb-0">${item.service_area || 'Toàn thành phố'}</p>
+                                    <div class="info-box">
+                                        <h5><i class="fas fa-map-marked-alt me-2" style="color:var(--accent-green)"></i>Khu vực phục vụ</h5>
+                                        <p class="text-muted mb-0 small">${item.service_area || 'Toàn thành phố'}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="p-4 rounded-4 border bg-white shadow-sm h-100">
-                                        <h5 class="fw-bold text-success mb-3"><i class="fas fa-tags me-2"></i>Phân loại</h5>
+                                    <div class="info-box">
+                                        <h5><i class="fas fa-tags me-2" style="color:var(--accent-green)"></i>Phân loại dịch vụ</h5>
                                         <div>${tagsHTML}</div>
                                     </div>
                                 </div>
@@ -332,36 +449,44 @@
 
                         <div class="col-lg-4">
                             <div class="info-card">
-                                <h5 class="fw-bold mb-4 text-center" style="font-family: 'Playfair Display', serif;">Báo Giá Dự Kiến</h5>
-                                
+                                <h5 class="fw-bold mb-4 text-center" style="font-family: 'Playfair Display', serif; color: var(--primary-green); font-size: 1.2rem;">
+                                    <i class="fas fa-leaf me-2" style="color:var(--accent-green)"></i>Báo Giá Dự Kiến
+                                </h5>
+
                                 <div class="price-display shadow-sm">
-                                    <p class="small mb-1 opacity-75">Đơn giá tham khảo</p>
-                                    <h3>${item.price_m2_min.toLocaleString()}đ - ${item.price_m2_max.toLocaleString()}đ</h3>
-                                    <p class="small mt-2 mb-0 fw-bold">Đơn vị: ${item.area_unit}</p>
+                                    <p class="small mb-1 opacity-80">Đơn giá tham khảo</p>
+                                    <h3>${item.price_m2_min.toLocaleString()}đ – ${item.price_m2_max.toLocaleString()}đ</h3>
+                                    <p class="small mt-2 mb-0 opacity-80">Đơn vị: ${item.area_unit}</p>
                                 </div>
 
-                                <ul class="list-unstyled mb-4">
-                                    <li class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                                        <span class="text-muted">Độ khó</span>
-                                        <span class="fw-bold text-success">${item.difficulty_level || 'Cơ bản'}</span>
+                                <ul class="list-unstyled spec-list mb-4">
+                                    <li>
+                                        <span class="spec-label"><i class="fas fa-layer-group me-1"></i>Độ khó</span>
+                                        <span class="spec-val">${item.difficulty_level || 'Cơ bản'}</span>
                                     </li>
-                                    <li class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                                        <span class="text-muted">Thời gian</span>
-                                        <span class="fw-bold">${item.duration_estimate}</span>
+                                    <li>
+                                        <span class="spec-label"><i class="fas fa-clock me-1"></i>Thời gian</span>
+                                        <span class="spec-val">${item.duration_estimate}</span>
+                                    </li>
+                                    <li>
+                                        <span class="spec-label"><i class="fas fa-star me-1"></i>Đánh giá</span>
+                                        <span class="spec-val">${item.rating}/5 ⭐</span>
                                     </li>
                                 </ul>
 
-                                <div class="alert alert-success border-0 small mb-4" style="background: #f0f7f0; color: var(--primary-green);">
-                                    <i class="fas fa-info-circle me-2"></i> ${item.price_note || 'Giá thực tế dựa trên khảo sát hiện trạng.'}
+                                <div class="price-note-box">
+                                    <i class="fas fa-info-circle me-2"></i>${item.price_note || 'Giá thực tế dựa trên khảo sát hiện trạng.'}
                                 </div>
 
-                                <button class="btn btn-book-now fs-5 py-3" id="openBooking">
-                                    ĐẶT LỊCH NGAY
+                                <button class="btn btn-book-now" id="openBooking">
+                                    <i class="fas fa-calendar-check me-2"></i>ĐẶT LỊCH NGAY
                                 </button>
-                                
-                                <div class="text-center mt-4 p-3 rounded-4" style="background: #f8faf8;">
+
+                                <div class="hotline-box">
                                     <p class="small text-muted mb-1">Hỗ trợ kỹ thuật 24/7</p>
-                                    <p class="fw-bold text-success mb-0" style="font-size: 1.2rem;">1900 6789</p>
+                                    <p class="fw-bold mb-0" style="color: var(--primary-green); font-size: 1.15rem;">
+                                        <i class="fas fa-phone-alt me-1"></i>1900 6789
+                                    </p>
                                 </div>
                             </div>
                         </div>

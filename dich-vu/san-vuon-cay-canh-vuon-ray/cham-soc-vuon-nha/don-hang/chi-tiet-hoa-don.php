@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Chi tiết đơn hàng mẹ và bé";
+$pageTitle = "Chi tiết đơn hàng lau dọn vệ sinh";
 include 'layout-header.php';
 ?>
 <style>
@@ -23,916 +23,8 @@ include 'layout-header.php';
 		animation: none !important;
 		opacity: 1 !important;
 	}
-</style>
-<style>
-	:root {
-		--bg: #fff6fb;
-		--surface: #ffffff;
-		--surface-soft: #fff1f8;
-		--text: #3d2333;
-		--muted: #8b5f74;
-		--primary: #e45a97;
-		--success: #d94a8a;
-		--warning: #f08ab6;
-		--danger: #c93b78;
-		--border: #f0d4e3;
-		--shadow: 0 20px 45px rgba(196, 83, 138, 0.18);
-		--shadow-lg: 0 24px 48px rgba(196, 83, 138, 0.18), 0 6px 20px rgba(138, 170, 209, 0.12);
-		--radius-md: 10px;
-		--radius-lg: 16px;
-		--radius-xl: 24px;
-		--anim: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		--accent-peach: #ffd6b9;
-		--accent-lavender: #e5d8ff;
-		--accent-mint: #cff5e8;
-		--accent-rose: #f7a7c8;
-	}
 
-	* {
-		box-sizing: border-box;
-	}
-
-	html,
-	body,
-	button,
-	input,
-	select,
-	textarea,
-	.h1,
-	.h2,
-	.h3,
-	.h4,
-	.h5,
-	.h6,
-	h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
-		font-family: "Be Vietnam Pro", sans-serif !important;
-	}
-
-	html,
-	body {
-		margin: 0;
-		padding: 0;
-		min-height: 100%;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		text-rendering: optimizeLegibility;
-		color: var(--text);
-		background:
-			radial-gradient(circle at 20% -10%, #ffdceb 0, transparent 42%),
-			radial-gradient(circle at 95% 120%, #ffe8f5 0, transparent 38%),
-			radial-gradient(circle at 85% 15%, rgb(248, 248, 248) 0, transparent 35%),
-			radial-gradient(circle at 8% 88%, rgb(255, 255, 255) 0, transparent 30%),
-			var(--bg);
-	}
-
-	.page {
-		min-height: 100vh;
-		display: grid;
-		place-items: center;
-		padding: 24px;
-	}
-
-	.modal-card {
-		width: min(1240px, 100%);
-		border-radius: var(--radius-xl);
-		background: linear-gradient(180deg, #ffffff 0%, #fff8fc 62%, #fff3f9 100%);
-		box-shadow: var(--shadow-lg);
-		border: 1px solid rgba(200, 88, 143, 0.2);
-		overflow: visible;
-		transform: translateY(8px);
-		opacity: 0;
-		animation: showCard 520ms var(--anim) forwards;
-	}
-
-	@keyframes showCard {
-		to {
-			transform: translateY(0);
-			opacity: 1;
-		}
-	}
-
-	/* --- Topbar --- */
-	.topbar {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto;
-		gap: 14px;
-		align-items: center;
-		padding: 20px 24px;
-		background: linear-gradient(102deg, #f369a7 0%, #ef86b4 58%, #ffa9d4 100%);
-		color: #fff;
-		position: sticky;
-		top: 0;
-		z-index: 50;
-		box-shadow: 0 10px 24px rgba(169, 63, 114, 0.3);
-	}
-
-	.topbar-logo {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 98px;
-		height: 66px;
-		padding: 6px;
-		border-radius: 14px;
-		border: 1px solid rgba(255, 255, 255, 0.42);
-		background: rgba(255, 255, 255, 0.2);
-		box-shadow: 0 10px 22px rgba(166, 58, 110, 0.24);
-		backdrop-filter: blur(4px);
-		transition: transform var(--anim), background var(--anim), border-color var(--anim);
-	}
-
-	.topbar-logo:hover {
-		transform: translateY(-2px);
-		background: rgba(255, 255, 255, 0.3);
-		border-color: rgba(255, 255, 255, 0.56);
-	}
-
-	.topbar-logo img {
-		width: 74px;
-		height: 50px;
-		object-fit: contain;
-		filter: drop-shadow(0 4px 8px rgba(5, 39, 72, 0.35));
-	}
-
-	.topbar-title {
-		margin: 0;
-		font-size: clamp(1.05rem, 1.5vw, 1.5rem);
-		font-weight: 700;
-		letter-spacing: .2px;
-		text-align: center;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.chip {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 7px 12px;
-		border-radius: 999px;
-		border: 1px solid rgba(255, 255, 255, 0.45);
-		font-size: 12px;
-		font-weight: 700;
-		background: rgba(255, 255, 255, 0.24);
-		color: #fff;
-		backdrop-filter: blur(4px);
-	}
-
-	/* --- Content & State --- */
-	.content {
-		padding: 18px;
-	}
-
-	.state {
-		border-radius: 8px;
-		padding: 14px 16px;
-		margin: 0 0 16px;
-		font-weight: 500;
-		border: 1px solid;
-		display: none;
-	}
-
-	.state.show {
-		display: block;
-	}
-
-	.state.info {
-		background: #edf6ff;
-		border-color: #c5e0ff;
-		color: #0f4b91;
-	}
-
-	.state.error {
-		background: #fff3f3;
-		border-color: #ffcaca;
-		color: #9a2525;
-	}
-
-	/* --- Grid & Panel --- */
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 14px;
-	}
-
-	.panel {
-		border: 1px solid #f1d5e4;
-		border-radius: var(--radius-lg);
-		background: var(--surface);
-		box-shadow: 0 12px 26px rgba(226, 113, 168, 0.12), 0 2px 8px rgba(191, 200, 219, 0.1);
-		padding: 14px;
-		min-height: 205px;
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.panel-wide {
-		grid-column: 1 / -1;
-	}
-
-	.panel-head {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 10px;
-	}
-
-	.panel-title {
-		margin: 0;
-		font-size: 16px;
-		font-weight: 700;
-		color: #6f2d52;
-	}
-
-	.badge {
-		padding: 5px 10px;
-		border-radius: 999px;
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: .2px;
-		background: #ffe6f2;
-		color: #a83f72;
-		border: 1px solid #f7c8de;
-		white-space: nowrap;
-	}
-
-	.badge.success {
-		background: linear-gradient(135deg, #ffe3f1, #dff8ef);
-		color: #8a3462;
-	}
-
-	.badge.warning {
-		background: linear-gradient(135deg, #ffe9f4, #ffe9d5);
-		color: #ad4f7e;
-	}
-
-	.badge.danger {
-		background: #ffd7e8;
-		color: #9e2f61;
-	}
-
-	/* --- Info Grid & Fields --- */
-	.info-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 8px 12px;
-	}
-
-	.field {
-		border: 1px dashed #d9e6f3;
-		border-radius: 10px;
-		padding: 8px 10px;
-		background: var(--surface-soft);
-	}
-
-	.field-label {
-		font-size: 11px;
-		font-weight: 500;
-		color: var(--muted);
-		margin: 0 0 4px;
-		text-transform: uppercase;
-		letter-spacing: .5px;
-	}
-
-	.field-value {
-		margin: 0;
-		font-size: 14px;
-		font-weight: 500;
-		word-break: break-word;
-	}
-
-	/* --- Invoice Specifics --- */
-	#panelInvoice {
-		padding: 0;
-		min-height: auto;
-		border: 0;
-		box-shadow: none;
-		background: transparent;
-	}
-
-	.invoice-hero {
-		border-radius: 16px;
-		padding: 16px;
-		color: #000000;
-		background: linear-gradient(118deg, #f99bbd 0%, #f9c7dc 48%, #f9dbe7 72%, #ffe9d4 100%);
-	}
-
-	.invoice-main {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 14px;
-		margin-bottom: 14px;
-	}
-
-	.invoice-headline {
-		display: grid;
-		gap: 10px;
-		flex: 1;
-	}
-
-	.invoice-title-line {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		flex-wrap: wrap;
-	}
-
-	.invoice-order-title {
-		margin: 0;
-		font-size: clamp(1.1rem, 2vw, 1.7rem);
-		font-weight: 700;
-	}
-
-	.invoice-status-badge {
-		display: inline-flex;
-		align-items: center;
-		padding: 5px 10px;
-		border-radius: 999px;
-		font-size: 11px;
-		font-weight: 700;
-		background: rgba(255, 255, 255, 0.25);
-		border: 1px solid rgba(255, 255, 255, 0.35);
-		color: #020202;
-	}
-
-	.invoice-status-badge.success {
-		background: rgb(27, 192, 131);
-	}
-
-	.invoice-status-badge.warning {
-		background: rgba(217, 228, 16, 0.996);
-	}
-
-	.invoice-status-badge.danger {
-		background: rgb(209, 66, 66);
-	}
-
-	.invoice-subtitle {
-		margin: 0;
-		font-size: 19px;
-		font-weight: 500;
-		opacity: .95;
-	}
-
-	.invoice-progress-ring {
-		--p: 0;
-		width: 122px;
-		height: 122px;
-		border-radius: 50%;
-		background: conic-gradient(from -90deg, #5eb4f2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.34) 0);
-		padding: 7px;
-		flex: 0 0 auto;
-		border: 2px solid rgb(0, 0, 0);
-		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(122, 34, 82, 0.28);
-	}
-
-	.invoice-progress-core {
-		width: 100%;
-		height: 100%;
-		border-radius: 50%;
-		background:
-			radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0) 44%),
-			linear-gradient(150deg, rgba(245, 179, 179, 0.94) 0%, rgba(241, 138, 138, 0.93) 100%);
-		display: grid;
-		place-content: center;
-		text-align: center;
-		backdrop-filter: blur(4px);
-		border: 2px solid rgb(0, 0, 0);
-		box-shadow: inset 0 8px 14px rgba(255, 255, 255, 0.12);
-		color: #ffffff;
-	}
-
-	.invoice-progress-core strong {
-		font-size: 34px;
-		line-height: 1;
-		color: #383cb0;
-		font-weight: 700;
-	}
-
-	.invoice-progress-core small {
-		font-size: 12px;
-		font-weight: 700;
-		color: #f9f3ff;
-	}
-
-	.invoice-summary {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 12px;
-	}
-
-	.invoice-item {
-		display: flex;
-		gap: 9px;
-		align-items: flex-start;
-		border: 1px solid rgba(255, 227, 239, 0.6);
-		background: rgba(195, 19, 107, 0.22);
-		border-radius: 12px;
-		padding: 10px 12px;
-		min-height: 96px;
-	}
-
-	.invoice-item-icon {
-		width: 27px;
-		height: 27px;
-		border-radius: 999px;
-		border: 1px solid rgba(91, 4, 4, 0.4);
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 11px;
-		font-weight: 700;
-		background: rgba(255, 255, 255, 0.576);
-		color: #060606;
-		flex: 0 0 27px;
-		margin-top: 2px;
-	}
-
-	.invoice-item-content {
-		display: grid;
-		gap: 2px;
-		min-width: 0;
-	}
-
-	.invoice-item-content p {
-		margin: 0;
-		font-size: 11px;
-		font-weight: 500;
-		opacity: .85;
-	}
-
-	.invoice-item-content h4 {
-		margin: 0;
-		font-size: clamp(1.05rem, 1.6vw, 1.9rem);
-		font-weight: 700;
-		line-height: 1.15;
-		word-break: break-word;
-	}
-
-	.invoice-item-content span {
-		font-size: 11px;
-		font-weight: 500;
-		opacity: .9;
-	}
-
-	#invoicePrice {
-		font-size: clamp(1.45rem, 2vw, 2.25rem);
-		line-height: 1.08;
-	}
-
-	#invoiceTimeRange {
-		font-size: clamp(1.2rem, 1.5vw, 1.75rem);
-	}
-
-	#invoiceDate {
-		display: inline-block;
-		margin-top: 2px;
-	}
-
-	.invoice-item.address #invoiceAddress {
-		font-size: clamp(0.9rem, 1.05vw, 1.1rem);
-		line-height: 1.35;
-		display: block;
-		white-space: normal;
-		overflow: visible;
-		word-break: break-word;
-	}
-
-	/* --- Jobs --- */
-	#panelJobs {
-		padding: 0;
-		overflow: hidden;
-		gap: 0;
-		border-color: #ec3d95;
-	}
-
-	.jobs-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 10px;
-		padding: 12px 14px;
-		background: linear-gradient(135deg, #ee7cb9 0%, #ffe9f5 65%, #ffd8fc 100%);
-		border-bottom: 1px solid #f2d7e5;
-	}
-
-	.jobs-title {
-		margin: 0;
-		font-size: 27px;
-		font-weight: 700;
-		color: #6f2d52;
-	}
-
-	.jobs-body {
-		padding: 12px;
-		background: linear-gradient(180deg, #fcfcfc 0%, #fff4fb 70%, #fceeff 100%);
-	}
-
-	#invoiceJob {
-		list-style: none;
-		margin: 0;
-		padding: 8px;
-		border-radius: 10px;
-		background: linear-gradient(145deg, #fafafa 0%, #d8b4f1 100%);
-		display: grid;
-		gap: 8px;
-		counter-reset: job-item;
-	}
-
-	#invoiceJob li {
-		counter-increment: job-item;
-		display: flex;
-		align-items: flex-start;
-		gap: 8px;
-		font-size: 13px;
-		font-weight: 500;
-		line-height: 1.45;
-		color: #6d2f50;
-		background: #fff;
-		border: 1px solid #c21178;
-		border-radius: 10px;
-		padding: 10px;
-	}
-
-	#invoiceJob li::before {
-		content: counter(job-item);
-		flex: 0 0 22px;
-		height: 22px;
-		border-radius: 999px;
-		background: #de4f90;
-		color: #fff;
-		font-size: 12px;
-		font-weight: 700;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		margin-top: 1px;
-	}
-
-	.jobs-meta {
-		padding: 10px;
-		border-top: 1px solid #ffffff;
-		background: #fff;
-	}
-
-	/* --- Media & Extras --- */
-	.invoice-extra {
-		border: 1px solid #f1d5e4;
-		border-top: 0;
-		border-radius: 0 0 14px 14px;
-		background: linear-gradient(180deg, #ffffff 0%, #faf5fa 100%);
-		padding: 12px;
-		display: grid;
-		gap: 10px;
-	}
-
-	.invoice-extra-grid,
-	.invoice-media-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 8px;
-	}
-
-	.invoice-media-grid {
-		margin: 4px;
-	}
-
-	.invoice-extra-item,
-	.invoice-media-item {
-		border: 1px solid #e665a9;
-		background: #ffeef7;
-		border-radius: 8px;
-		padding: 8px 10px;
-		min-height: 72px;
-	}
-
-	.invoice-extra-item.full-width {
-		grid-column: 1 / -1;
-	}
-
-	.invoice-media-item {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-		overflow: hidden;
-	}
-
-	.invoice-extra-item .field-label,
-	.invoice-media-item .field-label {
-		color: #8c2f63;
-		font-size: 10px;
-		margin: 0;
-		font-weight: 500;
-	}
-
-	.invoice-extra .field-value {
-		font-size: 13px;
-		font-weight: 700;
-		color: #531f2f;
-	}
-
-	.invoice-media-item img,
-	.invoice-media-item video {
-		width: 100%;
-		flex: 1;
-		object-fit: cover;
-		border-radius: 5px;
-		background: rgba(0, 0, 0, 0.04);
-		display: block;
-	}
-
-	.media-empty-label {
-		color: #8d9fb3;
-		font-size: 11px;
-		text-align: center;
-		padding: 8px 0;
-		flex: 1;
-	}
-
-	/* --- Profile --- */
-	#panelCustomer,
-	#panelStaff {
-		padding: 0;
-		overflow: hidden;
-		gap: 0;
-		border-color: #c75b94;
-	}
-
-	.profile-head {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 10px;
-		padding: 12px 14px;
-		border-bottom: 1px solid #f2dbe7;
-		background: linear-gradient(135deg, #e496c1 0%, #fff1f8 55%, #f0b3d8 100%);
-	}
-
-	.profile-title {
-		margin: 0;
-		font-size: 18px;
-		font-weight: 700;
-		color: #6f2d52;
-	}
-
-	.profile-status {
-		border-radius: 999px;
-		padding: 5px 10px;
-		font-size: 11px;
-		font-weight: 700;
-	}
-
-	.profile-body {
-		padding: 14px;
-		display: grid;
-		grid-template-columns: 88px 1fr;
-		gap: 14px;
-		align-items: start;
-	}
-
-	.profile-avatar {
-		width: 88px;
-		height: 88px;
-		border-radius: 50%;
-		object-fit: cover;
-		border: 3px solid #f6d6e6;
-		background: #fdeaf4;
-	}
-
-	.profile-main {
-		display: grid;
-		gap: 7px;
-	}
-
-	.profile-name {
-		margin: 0;
-		font-size: 22px;
-		font-weight: 700;
-		line-height: 1.25;
-		color: #633148;
-	}
-
-	.profile-contact,
-	.profile-row {
-		margin: 0;
-		font-size: 14px;
-		font-weight: 700;
-		color: #633148;
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		word-break: break-word;
-	}
-
-	.profile-row::before,
-	.profile-contact::before {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 18px;
-		height: 18px;
-		border-radius: 999px;
-		background: #ffe7f3;
-		color: #d24f8f;
-		font-size: 11px;
-		line-height: 1;
-		font-weight: 700;
-		flex: 0 0 18px;
-		margin-top: 1px;
-	}
-
-	.contact-email::before {
-		content: '✉';
-	}
-
-	.contact-phone::before {
-		content: '✆';
-	}
-
-	.contact-address::before {
-		content: '⌂';
-	}
-
-	.profile-foot {
-		padding: 0 14px 14px;
-	}
-
-	.profile-pill {
-		display: inline-flex;
-		align-items: center;
-		padding: 8px 12px;
-		border-radius: 10px;
-		background: linear-gradient(135deg, #fff0f7 0%, #ffeef8 65%, #eaf8f3 100%);
-		font-size: 13px;
-		font-weight: 700;
-		color: #8e4467;
-		border: 1px solid #f0d0e0;
-	}
-
-	/* --- Progress & Time --- */
-	#panelTime {
-		border-color: #d45e9d;
-		background: linear-gradient(180deg, #f5cfe6 0%, #f0f0f0 58%, #fbf0f8 100%);
-	}
-
-	.progress-inner {
-		height: 100%;
-		width: 0;
-		transition: width 420ms ease, background 300ms ease;
-		background: linear-gradient(90deg, #d94688 0%, #ea6fa5 55%, #e277b2 100%);
-		box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(165, 53, 113, 0.26);
-	}
-
-	.progress-inner.warn {
-		background: linear-gradient(90deg, #ec6aa2, #f4a9c9, #ffd9b1);
-	}
-
-	.progress-inner.danger {
-		background: linear-gradient(90deg, #cc3f79, #e06799);
-	}
-
-	#progressText {
-		color: #8c2f63;
-		font-weight: 900;
-		letter-spacing: 0.2px;
-	}
-
-	#progressHint {
-		color: #7f3f60;
-		font-weight: 700;
-	}
-
-	.hint {
-		margin: 0;
-		color: #7c4760;
-		font-size: 13px;
-	}
-
-	/* --- Reviews --- */
-	.review-split {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 12px;
-	}
-
-	.review-box {
-		border: 1px solid #efd1e1;
-		border-radius: 12px;
-		padding: 10px;
-		background: linear-gradient(180deg, #fff7fc 0%, #fff7fe 68%, #f6f1ff 100%);
-		display: grid;
-		gap: 10px;
-	}
-
-	.review-head {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.review-title {
-		margin: 0;
-		font-size: 14px;
-		font-weight: 700;
-		color: #6f2d52;
-	}
-
-	.review-display {
-		display: grid;
-		gap: 6px;
-		padding: 8px;
-		border-radius: 10px;
-		border: 1px dashed #f1d4e3;
-		background: #fff;
-	}
-
-	.review-text,
-	.review-time {
-		margin: 0;
-		font-size: 13px;
-		font-weight: 500;
-		color: #7c4760;
-		word-break: break-word;
-	}
-
-	.review-media-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 8px;
-	}
-
-	.review-media-grid img,
-	.review-media-grid video {
-		width: 100%;
-		height: 120px;
-		object-fit: cover;
-		border-radius: 10px;
-		border: 1px solid #dbe7f2;
-		background: #f4f8fc;
-	}
-
-	.media-empty {
-		grid-column: 1 / -1;
-		font-size: 12px;
-		font-weight: 700;
-		color: #8d4d6b;
-		background: linear-gradient(135deg, #fff0f8 0%, #ecfbf5 100%);
-		border: 1px solid #f2d4e3;
-		padding: 8px 10px;
-		border-radius: 8px;
-	}
-
-	/* --- Buttons --- */
-	.btn {
-		border-radius: 8px;
-		font-weight: 700;
-		transition: filter 0.2s;
-	}
-
-	.btn.btn-primary,
-	.btn.btn-success,
-	.btn.btn-warning,
-	.btn.btn-danger {
-		border: 0;
-		box-shadow: 0 8px 18px rgba(193, 71, 130, 0.2);
-		color: #000 !important;
-	}
-
-	.btn.btn-primary {
-		border: 1px solid rgb(15, 15, 15);
-	}
-
-	.btn.btn-success {
-		border: 1px solid rgb(14, 14, 14);
-	}
-
-	.btn.btn-warning {
-		border: 1px solid red;
-	}
-
-	.btn.btn-danger {
-		background: linear-gradient(135deg, #c93b78, #e774a5) !important;
-		color: #fff !important;
-	}
-
-	.btn:hover {
-		filter: brightness(0.96);
-	}
-
-	.hidden {
-		display: none !important;
-	}
-
-	/* --- Dialog --- */
+	/* Custom Dialog Styles */
 	#appDialogOverlay {
 		position: fixed;
 		top: 0;
@@ -972,9 +64,9 @@ include 'layout-header.php';
 
 	#appDialogTitle {
 		font-size: 18px;
-		font-weight: 700;
+		font-weight: 800;
 		margin-bottom: 12px;
-		color: #c21178;
+		color: #1158c2;
 	}
 
 	#appDialogMessage {
@@ -1002,9 +94,9 @@ include 'layout-header.php';
 	}
 
 	.appDialogBtnPrimary {
-		background: linear-gradient(135deg, #e779c1, #c21178);
+		background: linear-gradient(135deg, #2e7d32, var(--primary));
 		color: white;
-		box-shadow: 0 4px 12px rgba(194, 17, 120, 0.2);
+		box-shadow: 0 4px 12px rgba(26, 77, 46, 0.25);
 	}
 
 	.appDialogBtnPrimary:hover {
@@ -1020,6 +112,1112 @@ include 'layout-header.php';
 
 	.appDialogBtnSecondary:hover {
 		background: #edf2f7;
+	}
+</style>
+<style>
+	:root {
+		/* ── Palette xanh vườn nhà ── */
+		--bg: #f4fff6;
+		--surface: #ffffff;
+		--surface-soft: #f0fff4;
+		--text: #1b3a1f;
+		--muted: #4a7c59;
+		--primary: #1a4d2e;
+		--primary-dark: #0e2b1a;
+		--success: #2e7d32;
+		--warning: #f9a825;
+		--danger: #c62828;
+		--border: #c8e6c9;
+		--shadow: 0 12px 26px rgba(26, 77, 46, 0.10), 0 2px 8px rgba(100, 180, 120, 0.08);
+		--radius-xl: 24px;
+		--radius-lg: 18px;
+		--radius-md: 12px;
+		--anim: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	* {
+		box-sizing: border-box;
+		font-family: 'Be Vietnam Pro', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, oxygen, ubuntu, cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	}
+
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+		min-height: 100%;
+		color: var(--text);
+		background:
+			radial-gradient(circle at 20% -10%, #c8e6c9 0, transparent 42%),
+			radial-gradient(circle at 95% 120%, #e8f3d6 0, transparent 38%),
+			radial-gradient(circle at 85% 15%, #f8fcf8 0, transparent 35%),
+			radial-gradient(circle at 8% 88%, #ffffff 0, transparent 30%),
+			var(--bg);
+		font-style: normal;
+	}
+
+	.page {
+		min-height: 100vh;
+		display: grid;
+		place-items: center;
+		padding: 24px;
+	}
+
+	.modal-card {
+		width: min(1240px, 100%);
+		border-radius: var(--radius-xl);
+		background: linear-gradient(180deg, #ffffff 0%, #f8fff9 62%, #f0fff4 100%);
+		box-shadow: 0 20px 48px rgba(26, 77, 46, 0.13), 0 4px 16px rgba(100, 180, 120, 0.08);
+		border: 1px solid rgba(26, 77, 46, 0.12);
+		overflow: visible;
+		transform: translateY(8px);
+		opacity: 0;
+		animation: showCard 520ms var(--anim) forwards;
+	}
+
+	@keyframes showCard {
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
+	/* --- Header & Topbar --- */
+	.topbar {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		gap: 14px;
+		align-items: center;
+		padding: 18px 24px;
+		background: linear-gradient(102deg, var(--primary) 0%, #2e7d32 55%, #43a047 100%) !important;
+		color: #fff;
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		box-shadow: 0 8px 24px rgba(26, 77, 46, 0.25);
+	}
+
+	.topbar-logo {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 98px;
+		height: 66px;
+		padding: 6px;
+		border-radius: 14px;
+		border: 1px solid rgba(255, 255, 255, 0.42);
+		background: rgba(255, 255, 255, 0.2);
+		box-shadow: 0 8px 20px rgba(26, 77, 46, 0.2);
+		backdrop-filter: blur(4px);
+		transition: all var(--anim);
+	}
+
+	.topbar-logo:hover {
+		transform: translateY(-2px);
+		background: rgba(255, 255, 255, 0.3);
+		border-color: rgba(255, 255, 255, 0.56);
+	}
+
+	.topbar-logo img {
+		width: 74px;
+		height: 50px;
+		object-fit: contain;
+		filter: drop-shadow(0 4px 8px rgba(5, 39, 72, 0.35));
+	}
+
+	.topbar-title {
+		margin: 0;
+		font-size: clamp(1.05rem, 1.5vw, 1.5rem);
+		font-weight: 800;
+		letter-spacing: .2px;
+		text-align: center;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		color: #fff;
+	}
+
+	.topbar-meta {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 7px 12px;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.45);
+		font-size: 12px;
+		font-weight: 700;
+		background: rgba(255, 255, 255, 0.24);
+		color: #fff;
+		backdrop-filter: blur(4px);
+	}
+
+	/* --- Content & Layout --- */
+	.content {
+		padding: 18px;
+	}
+
+	.state {
+		border-radius: var(--radius-md);
+		padding: 14px 16px;
+		margin: 0 0 16px;
+		font-weight: 700;
+		border: 1px solid;
+		display: none;
+	}
+
+	.state.show {
+		display: block;
+	}
+
+	.state.info {
+		background: #eef5ff;
+		border-color: #d1dfef;
+		color: #3b5ca4;
+	}
+
+	.state.error {
+		background: #fff3f3;
+		border-color: #ffcaca;
+		color: #9a2525;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.panel {
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		background: var(--surface);
+		box-shadow: var(--shadow);
+		padding: 14px;
+		min-height: 205px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.panel-wide {
+		grid-column: 1 / -1;
+	}
+
+	.panel-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+	}
+
+	.panel-title,
+	.jobs-title,
+	.profile-title,
+	.review-title {
+		margin: 0;
+		font-size: 18px;
+		font-weight: 800;
+		color: #15314f;
+	}
+
+	.badge {
+		padding: 5px 10px;
+		border-radius: 999px;
+		font-size: 11px;
+		font-weight: 800;
+		letter-spacing: .2px;
+		background: #e6eeff;
+		color: #3f69a8;
+		border: 1px solid #d1dfef;
+		white-space: nowrap;
+	}
+
+	.badge.success {
+		background: linear-gradient(135deg, #e6fffa, #b2f5ea);
+		color: #2c7a7b;
+	}
+
+	.badge.warning {
+		background: linear-gradient(135deg, #fffaf0, #feebc8);
+		color: #9c4221;
+	}
+
+	.badge.danger {
+		background: #fed7d7;
+		color: #9b2c2c;
+	}
+
+	/* --- Fields --- */
+	.info-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px 12px;
+	}
+
+	.field {
+		border: 1px dashed #d9e6f3;
+		border-radius: 10px;
+		padding: 8px 10px;
+		background: var(--surface-soft);
+	}
+
+	.field-label {
+		font-size: 11px;
+		font-weight: 800;
+		color: var(--primary);
+		margin: 0 0 4px;
+		text-transform: uppercase;
+		letter-spacing: .5px;
+	}
+
+	.field-value {
+		margin: 0;
+		font-size: 14px;
+		font-weight: 700;
+		word-break: break-word;
+		color: #1f3853;
+	}
+
+	/* --- Invoice Specific --- */
+	#panelInvoice {
+		padding: 0;
+		min-height: auto;
+		border: 0;
+		box-shadow: none;
+		background: transparent;
+	}
+
+	.invoice-hero {
+		border-radius: var(--radius-lg);
+		padding: 20px;
+		color: #1b3a1f;
+		background: linear-gradient(118deg, #e8f5e9 0%, #c8e6c9 45%, #dcedc8 72%, #f1f8e9 100%);
+		border: 1px solid rgba(26, 77, 46, 0.12);
+	}
+
+	.invoice-main {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 14px;
+	}
+
+	.invoice-headline {
+		display: grid;
+		gap: 10px;
+		flex: 1;
+	}
+
+	.invoice-title-line {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
+	}
+
+	.invoice-order-title {
+		margin: 0;
+		font-size: clamp(1.1rem, 2vw, 1.7rem);
+		font-weight: 800;
+		color: var(--text);
+	}
+
+	.invoice-status-badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 5px 12px;
+		border-radius: 999px;
+		font-size: 11px;
+		font-weight: 700;
+		background: rgba(255, 255, 255, 0.4);
+		border: 1px solid rgba(26, 77, 46, 0.2);
+		color: var(--text);
+	}
+
+	.invoice-status-badge.success {
+		background: #43a047;
+		color: #fff;
+		border-color: transparent;
+	}
+
+	.invoice-status-badge.warning {
+		background: #f9a825;
+		color: #fff;
+		border-color: transparent;
+	}
+
+	.invoice-status-badge.danger {
+		background: #c62828;
+		color: #fff;
+		border-color: transparent;
+	}
+
+	.invoice-subtitle {
+		margin: 0;
+		font-size: 17px;
+		font-weight: 600;
+		color: var(--muted);
+	}
+
+	.invoice-progress-ring {
+		--p: 0;
+		width: 122px;
+		height: 122px;
+		border-radius: 50%;
+		background: conic-gradient(from -90deg, #43a047 calc(var(--p) * 1%), rgba(255, 255, 255, 0.3) 0);
+		border: 2px solid rgba(26, 77, 46, 0.25);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 8px 20px rgba(26, 77, 46, 0.18);
+		padding: 7px;
+		flex: 0 0 auto;
+	}
+
+	.invoice-progress-core {
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		background: linear-gradient(150deg, #e8f5e9 0%, #c8e6c9 100%);
+		box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.5);
+		display: grid;
+		place-content: center;
+		text-align: center;
+		color: var(--primary);
+		border: 2px solid rgba(26, 77, 46, 0.15);
+	}
+
+	.invoice-progress-core strong {
+		font-size: 30px;
+		line-height: 1;
+		color: var(--primary);
+		font-weight: 800;
+	}
+
+	.invoice-progress-core small {
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--muted);
+	}
+
+	.invoice-summary {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.invoice-item {
+		display: flex;
+		gap: 9px;
+		align-items: flex-start;
+		border: 1px solid rgba(26, 77, 46, 0.15);
+		background: rgba(26, 77, 46, 0.06);
+		border-radius: 12px;
+		padding: 10px 12px;
+		min-height: 96px;
+	}
+
+	.invoice-item-icon {
+		width: 27px;
+		height: 27px;
+		border-radius: 999px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 11px;
+		font-weight: 800;
+		background: rgba(255, 255, 255, 0.4);
+		color: #fff;
+		flex: 0 0 27px;
+		margin-top: 2px;
+	}
+
+	.invoice-item-content {
+		display: grid;
+		gap: 2px;
+		min-width: 0;
+		color: #fff;
+	}
+
+	.invoice-item-content p {
+		margin: 0;
+		font-size: 11px;
+		font-weight: 700;
+		opacity: .85;
+	}
+
+	.invoice-item-content h4 {
+		margin: 0;
+		font-size: clamp(1.05rem, 1.6vw, 1.9rem);
+		font-weight: 800;
+		line-height: 1.15;
+		word-break: break-word;
+	}
+
+	.invoice-item-content span {
+		font-size: 11px;
+		font-weight: 700;
+		opacity: .9;
+	}
+
+	#invoicePrice {
+		font-size: clamp(1.45rem, 2vw, 2.25rem);
+	}
+
+	#invoiceTimeRange {
+		font-size: clamp(1.2rem, 1.5vw, 1.75rem);
+	}
+
+	/* --- Jobs & Media --- */
+	#panelJobs {
+		padding: 0;
+		overflow: hidden;
+		gap: 0;
+		border-color: var(--primary);
+	}
+
+	.jobs-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		padding: 12px 14px;
+		background: linear-gradient(135deg, #e8f3d6 0%, #f0fff4 65%, #c8e6c9 100%);
+		border-bottom: 1px solid var(--border);
+	}
+
+	.jobs-title {
+		font-size: 20px;
+		color: var(--primary);
+		font-weight: 700;
+	}
+
+	.job-count {
+		display: inline-flex;
+		align-items: center;
+		padding: 6px 10px;
+		border-radius: 999px;
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--primary);
+		background: #e8f5e9;
+		border: 1px solid var(--border);
+		white-space: nowrap;
+	}
+
+	.jobs-body {
+		padding: 12px;
+		background: linear-gradient(180deg, #fcfcfc 0%, #f4f8ff 70%, #eef4ff 100%);
+	}
+
+	#invoiceJob {
+		list-style: none;
+		margin: 0;
+		padding: 8px;
+		border-radius: 10px;
+		background: linear-gradient(145deg, #fafafa 0%, #b4d0f1 100%);
+		display: grid;
+		gap: 8px;
+		counter-reset: job-item;
+	}
+
+	#invoiceJob li {
+		counter-increment: job-item;
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+		font-size: 14px;
+		font-weight: 700;
+		line-height: 1.45;
+		color: #2f546d;
+		background: #fff;
+		border: 1px solid #4f92de;
+		border-radius: 10px;
+		padding: 10px;
+	}
+
+	#invoiceJob li::before {
+		content: counter(job-item);
+		flex: 0 0 22px;
+		height: 22px;
+		border-radius: 999px;
+		background: #4f92de;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 800;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		margin-top: 1px;
+	}
+
+	.jobs-meta {
+		padding: 10px;
+		border-top: 1px solid #ffffff;
+		background: #ffffff;
+	}
+
+	.invoice-extra {
+		border: 1px solid var(--border);
+		border-top: 0;
+		border-radius: 0 0 14px 14px;
+		background: linear-gradient(180deg, #ffffff 0%, #f5f6fa 100%);
+		padding: 12px;
+		display: grid;
+		gap: 10px;
+	}
+
+	.invoice-extra-grid,
+	.invoice-media-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+	}
+
+	.invoice-extra-item,
+	.invoice-media-item {
+		border: 1px solid var(--primary);
+		background: var(--surface-soft);
+		border-radius: 8px;
+		padding: 8px 10px;
+		min-height: 72px;
+	}
+
+	.invoice-media-item .field-label {
+		color: var(--primary);
+	}
+
+	.invoice-media-frame {
+		display: none;
+		width: 100%;
+		flex: 1;
+		min-height: 90px;
+		border: 0;
+		border-radius: 5px;
+	}
+
+	.media-empty-label {
+		color: #8d9fb3;
+		font-size: 11px;
+		text-align: center;
+		padding: 8px 0;
+		font-weight: 700;
+	}
+
+	/* --- Profiles --- */
+	#panelCustomer,
+	#panelStaff {
+		padding: 0;
+		overflow: hidden;
+		gap: 0;
+		border-color: var(--primary);
+	}
+
+	.profile-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 14px;
+		border-bottom: 1px solid var(--border);
+		background: linear-gradient(135deg, #e8f3d6 0%, #f0fff4 55%, #c8e6c9 100%);
+	}
+
+	.profile-body {
+		padding: 14px;
+		display: grid;
+		grid-template-columns: 88px 1fr;
+		gap: 14px;
+		align-items: start;
+	}
+
+	.profile-avatar {
+		width: 88px;
+		height: 88px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 3px solid var(--border);
+		background: #e8f5e9;
+	}
+
+	.profile-main {
+		display: grid;
+		gap: 7px;
+	}
+
+	.profile-name {
+		margin: 0;
+		font-size: 22px;
+		font-weight: 800;
+		line-height: 1.25;
+		color: #1d3650;
+	}
+
+	.profile-contact,
+	.profile-row {
+		margin: 0;
+		font-size: 14px;
+		font-weight: 700;
+		color: #2f4961;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		word-break: break-word;
+	}
+
+	.profile-row i,
+	.profile-contact i {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 18px;
+		height: 18px;
+		border-radius: 999px;
+		background: #e7f1ff;
+		color: #4f7dd2;
+		font-size: 11px;
+		line-height: 1;
+		font-weight: 800;
+		flex: 0 0 18px;
+	}
+
+	.profile-foot {
+		padding: 0 14px 14px;
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.profile-pill {
+		display: inline-flex;
+		align-items: center;
+		padding: 8px 12px;
+		border-radius: 10px;
+		background: linear-gradient(135deg, #e8f5e9 0%, #f0fff4 65%, #e8f3d6 100%);
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--primary);
+		border: 1px solid var(--border);
+	}
+
+	/* --- Progress & Time --- */
+	#panelTime {
+		background: linear-gradient(180deg, #e8f3d6 0%, #f0fff4 58%, #e8f5e9 100%) !important;
+		border-color: var(--primary) !important;
+	}
+
+	.progress-section {
+		display: grid;
+		gap: 6px;
+		margin-bottom: 12px;
+	}
+
+	.progress-label-wrap {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-weight: 700;
+		font-size: 12px;
+		color: #000;
+	}
+
+	.progress-bar-container {
+		width: 100%;
+		height: 21px;
+		border-radius: 999px;
+		overflow: hidden;
+		background: linear-gradient(180deg, #dce6f8 0%, #ffffff 100%);
+		border: 1px solid #0e2f75;
+		box-shadow: inset 0 1px 2px rgb(255, 255, 255);
+	}
+
+	.progress-inner {
+		height: 100%;
+		width: 0;
+		transition: width 420ms ease, background 300ms ease;
+		background: linear-gradient(90deg, var(--primary) 0%, #2e7d32 55%, #43a047 100%);
+		box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(26, 77, 46, 0.26);
+	}
+
+	.progress-inner.warn {
+		background: linear-gradient(90deg, #f9a825, #fbc02d, #ffd54f);
+	}
+
+	.progress-inner.danger {
+		background: linear-gradient(90deg, #c62828, #e53935);
+	}
+
+	#progressText {
+		color: var(--primary);
+		font-weight: 900;
+	}
+
+	#progressHint {
+		color: var(--success);
+		font-weight: 700;
+		margin: 0;
+		font-size: 12px;
+	}
+
+	.time-summary-grid {
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		overflow: hidden;
+		background: #f8fff9;
+		margin-bottom: 12px;
+	}
+
+	.time-summary-header {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		background: var(--primary);
+		color: #fff;
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.time-summary-header span {
+		padding: 7px 10px;
+		border-right: 1px solid rgba(255, 255, 255, 0.15);
+	}
+
+	.time-summary-body {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		font-size: 12px;
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	.time-summary-body span {
+		padding: 7px 10px;
+		border-right: 1px solid var(--border);
+	}
+
+	.time-controls {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 12px;
+	}
+
+	.label-sm {
+		font-size: 12px;
+		font-weight: 800;
+		color: #000;
+	}
+
+	.time-range-table {
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		overflow: hidden;
+		background: #f8fff9;
+		margin-bottom: 16px;
+	}
+
+	.time-range-header {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		background: var(--primary);
+		color: #fff;
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.time-range-header span {
+		padding: 7px 10px;
+	}
+
+	.time-range-body {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.time-range-col {
+		display: grid;
+		grid-template-rows: repeat(2, 1fr);
+	}
+
+	.time-range-col:first-child {
+		border-right: 1px solid var(--border);
+	}
+
+	.time-entry {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 8px;
+		padding: 7px 10px;
+		font-size: 12px;
+	}
+
+	.time-entry.bottom {
+		border-top: 1px solid var(--border);
+	}
+
+	.entry-label {
+		color: var(--muted);
+		font-weight: 600;
+	}
+
+	.entry-val {
+		color: var(--text);
+		font-weight: 700;
+	}
+
+	.staff-note-area {
+		min-height: 84px;
+		resize: vertical;
+	}
+
+	.history-section {
+		margin-top: 4px;
+	}
+
+	.history-title {
+		font-size: 12px;
+		font-weight: 800;
+		color: #000;
+	}
+
+	.history-table-wrap {
+		overflow-x: auto;
+		margin-top: 4px;
+	}
+
+	.history-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 12px;
+	}
+
+	.history-table th {
+		background: var(--primary);
+		color: #fff;
+		padding: 6px 8px;
+		text-align: left;
+		font-weight: 700;
+	}
+
+	.history-table td {
+		padding: 6px 8px;
+		border-bottom: 1px solid var(--border);
+		font-weight: 600;
+		color: var(--text);
+	}
+
+	.history-empty {
+		font-size: 12px;
+		color: var(--muted);
+		margin: 0;
+	}
+
+	/* --- Reviews --- */
+	.review-split {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.review-box {
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 10px;
+		background: linear-gradient(180deg, #f8fff9 0%, #f0fff4 68%, #e8f5e9 100%);
+		display: grid;
+		gap: 10px;
+	}
+
+	.review-display {
+		display: grid;
+		gap: 6px;
+		padding: 8px;
+		border-radius: 10px;
+		border: 1px solid var(--border);
+		background: #fff;
+	}
+
+	.review-text,
+	.review-time {
+		margin: 0;
+		font-size: 13px;
+		font-weight: 700;
+		color: #475c7c;
+		word-break: break-word;
+	}
+
+	.review-media-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px;
+	}
+
+	.review-media-grid img,
+	.review-media-grid video {
+		width: 100%;
+		height: 120px;
+		object-fit: cover;
+		border-radius: 10px;
+		border: 1px solid #dbe7f2;
+		background: #f4f8fc;
+	}
+
+	.media-empty {
+		grid-column: 1 / -1;
+		font-size: 12px;
+		font-weight: 800;
+		color: #4d638d;
+		background: linear-gradient(135deg, #f0f6ff 0%, #ecf3fb 100%);
+		border: 1px solid #d4e0f2;
+		padding: 8px 10px;
+		border-radius: 8px;
+	}
+
+	/* --- Buttons & Helpers --- */
+	.btn {
+		border-radius: 8px;
+		font-weight: 800;
+		transition: all var(--anim);
+		border: none;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		cursor: pointer;
+	}
+
+	.btn-sm {
+		padding: 6px 14px;
+		font-size: 13px;
+		min-height: 34px;
+	}
+
+	/* Bootstrap Overrides */
+	.btn.btn-primary {
+		background: linear-gradient(135deg, var(--primary), #2e7d32) !important;
+		color: #fff !important;
+		border: none !important;
+	}
+
+	.btn.btn-success {
+		background: linear-gradient(135deg, #2e7d32, #43a047) !important;
+		color: #fff !important;
+		border: none !important;
+	}
+
+	.btn.btn-warning {
+		background: linear-gradient(135deg, #f9a825, #e65100) !important;
+		color: #fff !important;
+		border: none !important;
+	}
+
+	.btn.btn-danger {
+		background: linear-gradient(135deg, #c62828, #e53935) !important;
+		color: #fff !important;
+		border: none !important;
+	}
+
+	.btn.btn-light {
+		background: #f0fff4;
+		color: var(--primary);
+		border: 1px solid var(--border);
+	}
+
+	.btn:hover {
+		filter: brightness(0.94);
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(26, 77, 46, 0.15);
+	}
+
+	.btn:active {
+		transform: translateY(0);
+	}
+
+	.hidden {
+		display: none !important;
+	}
+
+	/* --- Dialog --- */
+	#appDialogOverlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		display: none;
+		align-items: center;
+		justify-content: center;
+		z-index: 10000;
+		backdrop-filter: blur(4px);
+		padding: 20px;
+	}
+
+	#appDialogBox {
+		background: white;
+		border-radius: 12px;
+		padding: 24px;
+		max-width: 400px;
+		width: 100%;
+		box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+		animation: dialogShow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	@keyframes dialogShow {
+		from {
+			opacity: 0;
+			transform: scale(0.9) translateY(20px);
+		}
+
+		to {
+			opacity: 1;
+			transform: scale(1) translateY(0);
+		}
+	}
+
+	#appDialogTitle {
+		font-size: 18px;
+		font-weight: 800;
+		margin-bottom: 12px;
+		color: #1158c2;
+	}
+
+	#appDialogMessage {
+		font-size: 14px;
+		margin-bottom: 24px;
+		color: #4a5568;
+		line-height: 1.6;
+		font-weight: 700;
+	}
+
+	.appDialogButtons {
+		display: flex;
+		justify-content: flex-end;
+		gap: 12px;
+	}
+
+	.appDialogBtn {
+		padding: 10px 20px;
+		border-radius: 10px;
+		border: none;
+		font-weight: 700;
+		cursor: pointer;
+		font-size: 13px;
+		transition: all 0.2s;
+	}
+
+	.appDialogBtnPrimary {
+		background: linear-gradient(135deg, #2e7d32, var(--primary)) !important;
+		color: white;
+		box-shadow: 0 4px 12px rgba(26, 77, 46, 0.25);
+	}
+
+	.appDialogBtnSecondary {
+		background: #f7fafc;
+		color: #4a5568;
+		border: 1px solid #e2e8f0;
 	}
 
 	/* --- Responsive --- */
@@ -1041,7 +1239,6 @@ include 'layout-header.php';
 		.invoice-item {
 			width: 100%;
 			min-height: auto;
-			padding: 8px 12px;
 		}
 
 		.profile-body {
@@ -1060,7 +1257,6 @@ include 'layout-header.php';
 		.profile-main {
 			grid-column: 1;
 			grid-row: 1;
-			text-align: left;
 		}
 
 		.invoice-main {
@@ -1081,28 +1277,21 @@ include 'layout-header.php';
 			order: 1;
 		}
 
-		.invoice-item-content h4 {
-			font-size: 18px;
-		}
-
 		.panel {
 			min-height: auto;
 		}
 	}
 
 	@media (max-width: 640px) {
-		.page {
-			padding: 10px;
-		}
 
+		.page,
 		.content {
 			padding: 10px;
 		}
 
 		.topbar {
-			grid-template-columns: auto minmax(0, 1fr) auto;
-			gap: 8px;
 			padding: 12px 10px;
+			gap: 8px;
 		}
 
 		.topbar-title {
@@ -1112,7 +1301,6 @@ include 'layout-header.php';
 		.topbar-logo {
 			width: 72px;
 			height: 48px;
-			padding: 4px;
 		}
 
 		.topbar-logo img {
@@ -1122,9 +1310,9 @@ include 'layout-header.php';
 
 		#invoiceProgressRing,
 		.invoice-progress-ring {
-			margin-inline: auto;
 			width: 140px !important;
 			height: 140px !important;
+			margin-inline: auto;
 		}
 	}
 
@@ -1132,32 +1320,18 @@ include 'layout-header.php';
 		.invoice-main {
 			display: grid !important;
 			grid-template-columns: 1fr auto 1fr !important;
-			align-items: center !important;
-			text-align: left !important;
 			gap: 20px !important;
-		}
-
-		.invoice-headline {
-			width: auto !important;
-		}
-
-		.invoice-title-line {
-			justify-content: flex-start !important;
 		}
 
 		.invoice-main .actions {
 			margin: 0 !important;
-			justify-content: center !important;
 			width: auto !important;
 		}
 
 		#invoiceProgressRing {
 			justify-self: end;
-			margin: 0 !important;
 			width: 120px !important;
 			height: 120px !important;
-			border-radius: 50% !important;
-			aspect-ratio: 1 / 1 !important;
 		}
 
 		.invoice-summary {
@@ -1170,6 +1344,7 @@ include 'layout-header.php';
 		}
 	}
 </style>
+
 <main class="page">
 	<section class="modal-card">
 
@@ -1187,16 +1362,22 @@ include 'layout-header.php';
 										<span id="badgeInvoiceStatus" class="invoice-status-badge">---</span>
 									</div>
 									<p id="invoiceService" class="invoice-subtitle">---</p>
+									<div class="invoice-title-line" style="margin-top: 5px; gap: 8px;">
+										<span id="invoiceLoaiNoiDon" class="invoice-status-badge"
+											style="background: rgba(255, 255, 255, 0.45); color: #000; border: 1px solid rgba(0,0,0,0.1);">---</span>
+										<span id="invoiceGoiDichVu" class="invoice-status-badge"
+											style="background: rgba(255, 255, 255, 0.45); color: #000; border: 1px solid rgba(0,0,0,0.1);">---</span>
+									</div>
 								</div>
 							</div>
 							<div class="actions d-flex flex-wrap align-items-center"
 								style="gap:8px; margin-left: auto;">
-								<button id="btnCancelService" class="btn btn-danger btn-sm hidden" type="button">Hủy
-									dịch vụ</button>
-								<button id="btnHdrClaim" class="btn btn-primary btn-sm hidden" type="button">Nhận
-									việc</button>
-								<button id="btnHdrStart" class="btn btn-success btn-sm hidden" type="button">Bắt đầu
-									dịch vụ</button>
+								<button id="btnCancelService" class="btn btn-danger btn-sm hidden" type="button">
+									Hủy dịch vụ</button>
+								<button id="btnHdrClaim" class="btn btn-primary btn-sm hidden" type="button">
+									Nhận việc</button>
+								<button id="btnHdrStart" class="btn btn-success btn-sm hidden" type="button">
+									Bắt đầu dịch vụ</button>
 								<button id="btnHdrEnd" class="btn btn-warning btn-sm hidden" style="color:#fff;"
 									type="button">Hoàn thành dịch vụ</button>
 							</div>
@@ -1247,7 +1428,6 @@ include 'layout-header.php';
 						</ol>
 					</div>
 					<div class="jobs-meta invoice-extra-grid">
-						<!-- <div class="invoice-extra-item"><p class="field-label">Gói dịch vụ</p><p id="invoicePackage" class="field-value">---</p></div> -->
 						<div class="invoice-extra-item">
 							<p class="field-label">Yêu cầu</p>
 							<p id="invoiceRequest" class="field-value">---</p>
@@ -1275,7 +1455,8 @@ include 'layout-header.php';
 					</div>
 				</article>
 
-				<article class="panel" id="panelTime">
+				<article class="panel" id="panelTime"
+					style="background:linear-gradient(180deg,#5e88af 0%,#fdf2fd 100%);border-color:#5089d3;">
 					<div class="panel-head" style="margin-bottom:2px;">
 						<h2 class="panel-title" style="font-size:15px;">Trạng thái, thời gian và tiến độ</h2>
 					</div>
@@ -1287,7 +1468,7 @@ include 'layout-header.php';
 							<span id="progressText">0%</span>
 						</div>
 						<div
-							style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#f8dce9 0%,#ffffff 100%);border:1px solid #ad3f74;box-shadow:inset 0 1px 2px rgb(255, 255, 255);">
+							style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#dce6f8 0%,#ffffff 100%);border:1px solid #0e2f75;box-shadow:inset 0 1px 2px rgb(255, 255, 255);">
 							<div id="progressBar" class="progress-inner"></div>
 						</div>
 						<p id="progressHint" class="hint" style="font-size:12px;margin-top:-2px;">Dữ liệu tiến độ sẽ
@@ -1295,9 +1476,9 @@ include 'layout-header.php';
 					</div>
 
 					<div
-						style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;margin-bottom:8px;">
+						style="border:1px solid #d3ddef;border-radius:8px;overflow:hidden;background:#f7faff;margin-bottom:8px;">
 						<div
-							style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:700;">
+							style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#79a9e7;color:#000000;font-size:12px;font-weight:800;">
 							<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày bắt đầu dự
 								kiến</span>
 							<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày kết thúc dự
@@ -1307,15 +1488,15 @@ include 'layout-header.php';
 						<div
 							style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));font-size:12px;font-weight:700;">
 							<span id="dateStartPlan"
-								style="padding:7px 10px;border-right:1px solid #efd3e9;color:#1f3853;">---</span>
+								style="padding:7px 10px;border-right:1px solid #d3daef;color:#1f3853;">---</span>
 							<span id="dateEndPlan"
-								style="padding:7px 10px;border-right:1px solid #efd3e9;color:#1f3853;">---</span>
+								style="padding:7px 10px;border-right:1px solid #d3daef;color:#1f3853;">---</span>
 							<span id="invoicePlanDays" style="padding:7px 10px;color:#1f3853;">---</span>
 						</div>
 					</div>
 
 					<div class="d-flex align-items-center flex-wrap" style="gap:8px;">
-						<span style="font-size:12px;font-weight:700;color:#000000;">Trạng thái:</span>
+						<span style="font-size:12px;font-weight:800;color:#000000;">Trạng thái:</span>
 						<span id="badgeTimeState" class="badge">---</span>
 						<span id="timeCurrentState" class="hidden">---</span>
 
@@ -1331,9 +1512,9 @@ include 'layout-header.php';
 						</div>
 					</div>
 
-					<div style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;">
+					<div style="border:1px solid #d3daef;border-radius:8px;overflow:hidden;background:#f7faff;">
 						<div
-							style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:700;">
+							style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#799ce7;color:#000000;font-size:12px;font-weight:800;">
 							<span style="padding:7px 10px;">Thời gian dự kiến</span>
 							<span style="padding:7px 10px;">Thời gian thực tế</span>
 						</div>
@@ -1343,26 +1524,27 @@ include 'layout-header.php';
 								<div class="d-flex justify-content-between align-items-center"
 									style="gap:8px;padding:7px 10px;font-size:12px;"><span
 										style="color:#000000;font-weight:700;">Bắt đầu</span><span id="timeStartPlan"
-										style="color:#1f3853;font-weight:700;">---</span></div>
+										style="color:#1f3853;font-weight:800;">---</span></div>
 								<div class="d-flex justify-content-between align-items-center"
 									style="gap:8px;padding:7px 10px;border-top:1px solid #e3ecf7;font-size:12px;">
 									<span style="color:#000000;font-weight:700;">Kết thúc</span><span id="timeEndPlan"
-										style="color:#1f3853;font-weight:700;">---</span>
+										style="color:#1f3853;font-weight:800;">---</span>
 								</div>
 							</div>
 							<div style="display: grid; grid-template-rows: repeat(2, 1fr);">
 								<div class="d-flex justify-content-between align-items-center"
 									style="gap:8px;padding:7px 10px;font-size:12px;"><span
 										style="color:#000000;font-weight:700;">Bắt đầu</span><span id="timeStartReal"
-										style="color:#1f3853;font-weight:700;">---</span></div>
+										style="color:#1f3853;font-weight:800;">---</span></div>
 								<div class="d-flex justify-content-between align-items-center"
 									style="gap:8px;padding:7px 10px;border-top:1px solid #e3ecf7;font-size:12px;">
 									<span style="color:#000000;font-weight:700;">Kết thúc</span><span id="timeEndReal"
-										style="color:#1f3853;font-weight:700;">---</span>
+										style="color:#1f3853;font-weight:800;">---</span>
 								</div>
 							</div>
 						</div>
 					</div>
+
 
 
 					<div id="staffWorkForm" class="forms d-grid gap-2 hidden">
@@ -1373,11 +1555,11 @@ include 'layout-header.php';
 					</div>
 
 					<div id="workHistoryTable" style="margin-top:4px;">
-						<span style="font-size:12px;font-weight:700;color:#000000;">Lịch sử làm việc</span>
+						<span style="font-size:12px;font-weight:800;color:#000000;">Lịch sử làm việc</span>
 						<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px;" class="hidden">
 							<table style="width:100%;border-collapse:collapse;font-size:12px;">
 								<thead>
-									<tr style="background:#e779c1;color:#000;">
+									<tr style="background:#79a0e7;color:#000;">
 										<th style="padding:6px 8px;text-align:left;">Ngày thứ</th>
 										<th style="padding:6px 8px;text-align:left;">Ngày làm</th>
 										<th style="padding:6px 8px;text-align:left;">Bắt đầu</th>
@@ -1388,7 +1570,7 @@ include 'layout-header.php';
 								<tbody id="workHistoryBody"></tbody>
 							</table>
 						</div>
-						<p id="workHistoryEmpty" style="font-size:12px;color:#8b5f74;margin:0;">Chưa có lịch sử làm
+						<p id="workHistoryEmpty" style="font-size:12px;color:#000000;margin:0;">Chưa có lịch sử làm
 							việc.</p>
 					</div>
 
@@ -1402,7 +1584,7 @@ include 'layout-header.php';
 						<span class="profile-status badge success">Khách hàng</span>
 					</div>
 					<div class="profile-body">
-						<img id="customerAvatarImg" class="profile-avatar" src="assets/logomvb.png" alt="Khách hàng">
+						<img id="customerAvatarImg" class="profile-avatar" src="assets/images/logo2.jpg" alt="Khách hàng">
 						<iframe id="customerAvatar" class="profile-avatar" src="" frameborder="0"
 							style="display:none;"></iframe>
 						<div class="profile-main">
@@ -1424,11 +1606,12 @@ include 'layout-header.php';
 						<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
 					</div>
 					<div class="profile-body">
-						<img id="staffAvatarImg" class="profile-avatar" src="assets/logomvb.png" alt="Nhà Cung Cấp">
+						<img id="staffAvatarImg" class="profile-avatar" src="assets/images/logo2.jpg" alt="Nhà Cung Cấp">
 						<iframe id="staffAvatar" class="profile-avatar" src="" frameborder="0"
 							style="display:none;"></iframe>
 						<div class="profile-main">
 							<h3 id="staffCardName" class="profile-name">---</h3>
+							<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
 							<p class="profile-row"><i class="fa fa-envelope"></i> <span id="staffCardEmail">---</span>
 							</p>
 							<p class="profile-row"><i class="fa fa-phone"></i> <span id="staffCardPhone">---</span></p>
@@ -1510,7 +1693,6 @@ include 'layout-header.php';
 		</div>
 	</section>
 </main>
-
 <div id="appDialogOverlay">
 	<div id="appDialogBox">
 		<div id="appDialogTitle">Thông báo</div>
@@ -1521,19 +1703,19 @@ include 'layout-header.php';
 		</div>
 	</div>
 </div>
+
 <script>
 	(() => {
 		const TABLE_USER = 'nguoidung'; // Bảng duy nhất chứa cả khách hàng lẫn nhà cung cấp
-		const TABLE_ORDER = 'datlich_mevabe';
-		const TABLE_HISTORY = 'lich_su_lam_viec_mvb';
-		const REVIEW_UPLOAD_API = 'upload-review-media.php';
+		const TABLE_ORDER = 'datlich_chamsocvuon';
+		const TABLE_HISTORY = 'lich_su_lam_viec_donvesinh';
 
 		const app = {
 			params: {},
 			role: '',
 			$user: null,
 			$nguoidung: [], // Danh sách tất cả người dùng từ bảng nguoidung
-			$datlich_mevabe: null,
+			$datlich_chamsocvuon: null,
 			stateTimer: null,
 			// id của record lich_su_lam_viec_mvb đang mở trong ngày (sau khi nhấn btnStart)
 			currentWorkLogId: null
@@ -1598,7 +1780,7 @@ include 'layout-header.php';
 			const el = $(id);
 			if (el) el.textContent = value || '---';
 		};
-		const setAvatar = (id, src, fallback = '../assets/logomvb.png') => {
+		const setAvatar = (id, src, fallback = '../assets/images/logo2.jpg') => {
 			const el = $(id);
 			if (!el) return;
 			el.onerror = () => {
@@ -1775,29 +1957,40 @@ include 'layout-header.php';
 			));
 			if (!matched) return null;
 
-			// Xác định role dựa vào id_dichvu:
-			// Nếu id_dichvu chứa '1' → nhà cung cấp (staff), ngược lại → khách hàng (customer)
-			const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
-			const isProvider = idDichvuList.includes('1');
-			const role = isProvider ? 'staff' : 'customer';
 
-			// Bổ sung: Nếu là khách hàng, phải khớp SĐT trong đơn hàng
-			if (role === 'customer' && app.$datlich_mevabe) {
-				const customerPhone = String(app.$datlich_mevabe.sdtkhachhang || '').trim();
-				if (customerPhone !== sodienthoai.trim()) {
-					return null;
-				}
+			// Cần có đơn hàng để xác định role
+			if (!app.$datlich_chamsocvuon) return null;
+
+			const sdt = sodienthoai.trim();
+			const customerPhone = String(app.$datlich_chamsocvuon.sdtkhachhang || '').trim();
+			const sdtncc = String(app.$datlich_chamsocvuon.sdtncc || '').trim();
+
+			// Ưu tiên 1: Nếu SĐT đăng nhập trùng với SĐT khách hàng trong đơn → khách hàng
+			if (sdt === customerPhone) {
+				return { role: 'customer', $user: matched };
 			}
 
-			return { role: role, $user: matched };
+			// Ưu tiên 2: Nếu SĐT đăng nhập khác SĐT khách hàng → kiểm tra nhà cung cấp
+			// Điều kiện: tài khoản phải có id_dichvu chứa '1'
+			//           VÀ (sdtncc trong đơn hàng trùng SĐT đăng nhập HOẶC sdtncc trong đơn hàng rỗng/null)
+			const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
+			const isProviderAccount = idDichvuList.includes('5');
+			const sdtnccMatchOrEmpty = !sdtncc || sdtncc === sdt;
+
+			if (isProviderAccount && sdtnccMatchOrEmpty) {
+				return { role: 'staff', $user: matched };
+			}
+
+			// Không thỏa điều kiện nào → không cho xem đơn hàng
+			return null;
 		}
 
 
-		async function applyAutoOrderStatusRules($datlich_mevabe) {
-			const status = String($datlich_mevabe.trangthai || '').toLowerCase();
-			const hasStaff = toNum($datlich_mevabe.id_nhacungcap) > 0;
-			const startPlanAt = buildPlanDateTime($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.gio_bat_dau_kehoach);
-			const endPlanAt = buildPlanDateTime($datlich_mevabe.ngay_ket_thuc_kehoach, $datlich_mevabe.gio_ket_thuc_kehoach, true);
+		async function applyAutoOrderStatusRules($datlich_chamsocvuon) {
+			const status = String($datlich_chamsocvuon.trangthai || '').toLowerCase();
+			const hasStaff = toNum($datlich_chamsocvuon.id_nhacungcap) > 0;
+			const startPlanAt = buildPlanDateTime($datlich_chamsocvuon.ngay_bat_dau_kehoach, $datlich_chamsocvuon.gio_bat_dau_kehoach);
+			const endPlanAt = buildPlanDateTime($datlich_chamsocvuon.ngay_ket_thuc_kehoach, $datlich_chamsocvuon.gio_ket_thuc_kehoach, true);
 			const isCanceled = status.includes('hủy');
 			const isOverdue = status.includes('quá hạn');
 			const isCompleted = status.includes('hoàn thành');
@@ -1810,36 +2003,37 @@ include 'layout-header.php';
 			const needComplete = hasStaff
 				&& !!endPlanAt
 				&& now().getTime() > endPlanAt.getTime()
+				&& status.includes('đang')
 				&& !isCanceled
 				&& !isOverdue
 				&& !isCompleted;
 
 			if (needOverdue) {
-				await updateById(TABLE_ORDER, $datlich_mevabe.id, { trangthai: 'quá hạn' });
-				return { ...$datlich_mevabe, trangthai: 'quá hạn' };
+				await updateById(TABLE_ORDER, $datlich_chamsocvuon.id, { trangthai: 'quá hạn' });
+				return { ...$datlich_chamsocvuon, trangthai: 'quá hạn' };
 			}
 
 			if (needComplete) {
-				await updateById(TABLE_ORDER, $datlich_mevabe.id, { trangthai: 'hoàn thành' });
-				return { ...$datlich_mevabe, trangthai: 'hoàn thành' };
+				await updateById(TABLE_ORDER, $datlich_chamsocvuon.id, { trangthai: 'hoàn thành' });
+				return { ...$datlich_chamsocvuon, trangthai: 'hoàn thành' };
 			}
 
-			return $datlich_mevabe;
+			return $datlich_chamsocvuon;
 		}
 
 		async function loadOrderById() {
-			const $datlich_mevabe_rows = await listTableRows(TABLE_ORDER);
-			const $datlich_mevabe = $datlich_mevabe_rows.find((row) => String(row.id) === String(app.params.mahd));
-			if (!$datlich_mevabe) throw new Error('Không tìm thấy đơn hàng');
+			const $datlich_chamsocvuon_rows = await listTableRows(TABLE_ORDER);
+			const $datlich_chamsocvuon = $datlich_chamsocvuon_rows.find((row) => String(row.id) === String(app.params.mahd));
+			if (!$datlich_chamsocvuon) throw new Error('Không tìm thấy đơn hàng');
 
-			app.$datlich_mevabe = await applyAutoOrderStatusRules($datlich_mevabe);
+			app.$datlich_chamsocvuon = await applyAutoOrderStatusRules($datlich_chamsocvuon);
 		}
 
 		function getAssignedStaffRow() {
-			if (!app.$datlich_mevabe) return null;
-			const idStaff = toNum(app.$datlich_mevabe.id_nhacungcap);
+			if (!app.$datlich_chamsocvuon) return null;
+			const idStaff = toNum(app.$datlich_chamsocvuon.id_nhacungcap);
 			if (idStaff <= 0) return null;
-			// Tìm trong bảng nguoidung (thay thế cho nhacungcap_mevabe cũ)
+			// Tìm trong bảng nguoidung (thay thế cho nhacungcap_donvesinh cũ)
 			return app.$nguoidung.find((row) => toNum(row.id) === idStaff) || null;
 		}
 
@@ -1861,12 +2055,12 @@ include 'layout-header.php';
 			return Math.max(1, Math.round(ms / 86400000));
 		}
 
-		function calcProgressDay($datlich_mevabe) {
-			const plan = parseTimeToHour($datlich_mevabe.gio_ket_thuc_kehoach) - parseTimeToHour($datlich_mevabe.gio_bat_dau_kehoach);
-			const realStart = new Date($datlich_mevabe.thoigian_batdau_thucte || '').getTime();
-			const realEnd = new Date($datlich_mevabe.thoigian_ketthuc_thucte || '').getTime();
+		function calcProgressDay($datlich_chamsocvuon) {
+			const plan = parseTimeToHour($datlich_chamsocvuon.gio_ket_thuc_kehoach) - parseTimeToHour($datlich_chamsocvuon.gio_bat_dau_kehoach);
+			const realStart = new Date($datlich_chamsocvuon.thoigian_batdau_thucte || '').getTime();
+			const realEnd = new Date($datlich_chamsocvuon.thoigian_ketthuc_thucte || '').getTime();
 			const real = (realEnd - realStart) / 3600000;
-			const days = diffDays($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.ngay_ket_thuc_kehoach);
+			const days = diffDays($datlich_chamsocvuon.ngay_bat_dau_kehoach, $datlich_chamsocvuon.ngay_ket_thuc_kehoach);
 			if (plan <= 0 || real <= 0) return 0;
 			const value = (real / plan) * (100 / days);
 			return Math.max(0, Math.min(100, value));
@@ -1880,32 +2074,32 @@ include 'layout-header.php';
 			return 'badge';
 		}
 
-		function isReviewLockedByDeadline($datlich_mevabe) {
-			if (!$datlich_mevabe) return true;
-			const status = String($datlich_mevabe.trangthai || '').toLowerCase();
-			const endPlanAt = buildPlanDateTime($datlich_mevabe.ngay_ket_thuc_kehoach, $datlich_mevabe.gio_ket_thuc_kehoach, true);
+		function isReviewLockedByDeadline($datlich_chamsocvuon) {
+			if (!$datlich_chamsocvuon) return true;
+			const status = String($datlich_chamsocvuon.trangthai || '').toLowerCase();
+			const endPlanAt = buildPlanDateTime($datlich_chamsocvuon.ngay_ket_thuc_kehoach, $datlich_chamsocvuon.gio_ket_thuc_kehoach, true);
 			if (!endPlanAt) return false;
 
 			const isCanceled = status.includes('hủy');
 			const isOverdue = status.includes('quá hạn');
-			const noStaff = toNum($datlich_mevabe.id_nhacungcap) <= 0;
+			const noStaff = toNum($datlich_chamsocvuon.id_nhacungcap) <= 0;
 			return now().getTime() > endPlanAt.getTime() && (isCanceled || isOverdue || noStaff);
 		}
 
 		function canSubmitCustomerReview() {
-			const $datlich_mevabe = app.$datlich_mevabe;
-			if (!$datlich_mevabe) return false;
-			const isCompleted = String($datlich_mevabe.trangthai || '').toLowerCase().includes('hoàn thành');
-			return isCompleted && !isReviewLockedByDeadline($datlich_mevabe);
+			const $datlich_chamsocvuon = app.$datlich_chamsocvuon;
+			if (!$datlich_chamsocvuon) return false;
+			const isCompleted = String($datlich_chamsocvuon.trangthai || '').toLowerCase().includes('hoàn thành');
+			return isCompleted && !isReviewLockedByDeadline($datlich_chamsocvuon);
 		}
 
 		function canSubmitStaffReview() {
-			const $datlich_mevabe = app.$datlich_mevabe;
-			if (!$datlich_mevabe) return false;
-			const isCompleted = String($datlich_mevabe.trangthai || '').toLowerCase().includes('hoàn thành');
-			const isAssignedStaff = toNum($datlich_mevabe.id_nhacungcap) > 0
-				&& toNum($datlich_mevabe.id_nhacungcap) === toNum(app.$user?.id);
-			return isCompleted && isAssignedStaff && !isReviewLockedByDeadline($datlich_mevabe);
+			const $datlich_chamsocvuon = app.$datlich_chamsocvuon;
+			if (!$datlich_chamsocvuon) return false;
+			const isCompleted = String($datlich_chamsocvuon.trangthai || '').toLowerCase().includes('hoàn thành');
+			const isAssignedStaff = toNum($datlich_chamsocvuon.id_nhacungcap) > 0
+				&& toNum($datlich_chamsocvuon.id_nhacungcap) === toNum(app.$user?.id);
+			return isCompleted && isAssignedStaff && !isReviewLockedByDeadline($datlich_chamsocvuon);
 		}
 
 		function renderJobList(value) {
@@ -2001,22 +2195,22 @@ include 'layout-header.php';
 					renderLocalMedia(gridId, input.files);
 					return;
 				}
-				renderMedia(gridId, (app.$datlich_mevabe || {})[mediaColumn]);
+				renderMedia(gridId, (app.$datlich_chamsocvuon || {})[mediaColumn]);
 			});
 		}
 
 		function renderReview() {
-			const $datlich_mevabe = app.$datlich_mevabe;
-			if (!$datlich_mevabe) return;
-			const customerDone = !!$datlich_mevabe.danhgia_khachhang;
-			const staffDone = !!$datlich_mevabe.danhgia_nhanvien;
+			const $datlich_chamsocvuon = app.$datlich_chamsocvuon;
+			if (!$datlich_chamsocvuon) return;
+			const customerDone = !!$datlich_chamsocvuon.danhgia_khachhang;
+			const staffDone = !!$datlich_chamsocvuon.danhgia_nhanvien;
 
-			setText('customerReviewText', $datlich_mevabe.danhgia_khachhang || 'Chưa có đánh giá');
-			setText('customerReviewTime', formatDateTimeDisplay($datlich_mevabe.thoigian_danhgia_khachhang));
-			setText('staffReviewText', $datlich_mevabe.danhgia_nhanvien || 'Chưa có đánh giá');
-			setText('staffReviewTime', formatDateTimeDisplay($datlich_mevabe.thoigian_danhgia_nhanvien));
-			renderMedia('customerReviewMediaGrid', $datlich_mevabe.media_danhgia_khachhang);
-			renderMedia('staffReviewMediaGrid', $datlich_mevabe.media_danhgia_nhanvien);
+			setText('customerReviewText', $datlich_chamsocvuon.danhgia_khachhang || 'Chưa có đánh giá');
+			setText('customerReviewTime', formatDateTimeDisplay($datlich_chamsocvuon.thoigian_danhgia_khachhang));
+			setText('staffReviewText', $datlich_chamsocvuon.danhgia_nhanvien || 'Chưa có đánh giá');
+			setText('staffReviewTime', formatDateTimeDisplay($datlich_chamsocvuon.thoigian_danhgia_nhanvien));
+			renderMedia('customerReviewMediaGrid', $datlich_chamsocvuon.media_danhgia_khachhang);
+			renderMedia('staffReviewMediaGrid', $datlich_chamsocvuon.media_danhgia_nhanvien);
 
 			$('badgeCustomerReview').textContent = customerDone ? 'Đã gửi' : 'Chưa có';
 			$('badgeCustomerReview').className = customerDone ? 'badge success' : 'badge warning';
@@ -2029,7 +2223,7 @@ include 'layout-header.php';
 
 		function renderActionButtons() {
 			const el = id => document.getElementById(id);
-			const $ = app.$datlich_mevabe;
+			const $ = app.$datlich_chamsocvuon;
 			if (!$) return;
 			const isStaff = app.role === 'staff', isCust = app.role === 'customer';
 			const assigned = toNum($.id_nhacungcap) > 0;
@@ -2082,19 +2276,21 @@ include 'layout-header.php';
 		}
 
 		function renderUI() {
-			const $datlich_mevabe = app.$datlich_mevabe || {};
-			const $nhacungcap_mevabe = getAssignedStaffRow() || {};
-			const invoiceCode = formatInvoiceCode($datlich_mevabe.id || app.params.mahd);
+			const $datlich_chamsocvuon = app.$datlich_chamsocvuon || {};
+			const $nhacungcap_donvesinh = getAssignedStaffRow() || {};
+			const invoiceCode = formatInvoiceCode($datlich_chamsocvuon.id || app.params.mahd);
 
 			setText('invoiceId', invoiceCode);
-			setText('invoicePrice', formatMoney($datlich_mevabe.tong_tien || 0));
-			setText('invoiceService', $datlich_mevabe.dich_vu || '---');
-			setText('invoiceAddress', $datlich_mevabe.diachikhachhang || '---');
-			setText('invoiceTimeRange', `${formatTimeDisplay($datlich_mevabe.gio_bat_dau_kehoach)} - ${formatTimeDisplay($datlich_mevabe.gio_ket_thuc_kehoach)}`);
-			setText('invoiceDate', `${formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach)}${$datlich_mevabe.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach)}` : ''}`);
-			setText('invoiceRequest', $datlich_mevabe.yeu_cau_khac || '---');
-			setText('invoiceNote', $datlich_mevabe.ghi_chu || '---');
-			renderJobList($datlich_mevabe.cong_viec || '');
+			setText('invoicePrice', formatMoney($datlich_chamsocvuon.tong_tien || 0));
+			setText('invoiceService', $datlich_chamsocvuon.dich_vu || '---');
+			setText('invoiceLoaiNoiDon', $datlich_chamsocvuon.loai_noi_don || '---');
+			setText('invoiceGoiDichVu', $datlich_chamsocvuon.goi_dich_vu || '---');
+			setText('invoiceAddress', $datlich_chamsocvuon.diachikhachhang || '---');
+			setText('invoiceTimeRange', `${formatTimeDisplay($datlich_chamsocvuon.gio_bat_dau_kehoach)} - ${formatTimeDisplay($datlich_chamsocvuon.gio_ket_thuc_kehoach)}`);
+			setText('invoiceDate', `${formatDateDisplay($datlich_chamsocvuon.ngay_bat_dau_kehoach)}${$datlich_chamsocvuon.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay($datlich_chamsocvuon.ngay_ket_thuc_kehoach)}` : ''}`);
+			setText('invoiceRequest', $datlich_chamsocvuon.yeu_cau_khac || '---');
+			setText('invoiceNote', $datlich_chamsocvuon.ghi_chu || '---');
+			renderJobList($datlich_chamsocvuon.cong_viec || '');
 
 			// --- Hiển thị ảnh & video từ Drive fileId (theo ok.html) ---
 			function renderDriveFrame(rawId, frameId, emptyId) {
@@ -2115,13 +2311,13 @@ include 'layout-header.php';
 				frame.style.display = 'block';
 			}
 
-			renderDriveFrame($datlich_mevabe.anh_id || '', 'invoiceMediaImageEl', 'invoiceMediaImageEmpty');
-			renderDriveFrame($datlich_mevabe.video_id || '', 'invoiceMediaVideoEl', 'invoiceMediaVideoEmpty');
+			renderDriveFrame($datlich_chamsocvuon.anh_id || '', 'invoiceMediaImageEl', 'invoiceMediaImageEmpty');
+			renderDriveFrame($datlich_chamsocvuon.video_id || '', 'invoiceMediaVideoEl', 'invoiceMediaVideoEmpty');
 
-			setText('customerCardName', $datlich_mevabe.tenkhachhang || '---');
-			setText('customerCardPhone', $datlich_mevabe.sdtkhachhang || '---');
-			setText('customerCardEmail', $datlich_mevabe.emailkhachhang || '---');
-			setText('customerCardAddress', $datlich_mevabe.diachikhachhang || '---');
+			setText('customerCardName', $datlich_chamsocvuon.tenkhachhang || '---');
+			setText('customerCardPhone', $datlich_chamsocvuon.sdtkhachhang || '---');
+			setText('customerCardEmail', $datlich_chamsocvuon.emailkhachhang || '---');
+			setText('customerCardAddress', $datlich_chamsocvuon.diachikhachhang || '---');
 			const updateAvatarIframe = (id, fileId) => {
 				const el = $(id);
 				const img = $(id + 'Img');
@@ -2136,16 +2332,16 @@ include 'layout-header.php';
 					img.style.display = 'block';
 				}
 			};
-			updateAvatarIframe('customerAvatar', $datlich_mevabe.avatar_khachhang);
+			updateAvatarIframe('customerAvatar', $datlich_chamsocvuon.avatar_khachhang);
 
-			setText('staffCardName', $datlich_mevabe.tenncc || '---');
-			setText('staffCardEmail', $datlich_mevabe.emailncc || '---');
-			setText('staffCardPhone', $datlich_mevabe.sdtncc || '---');
-			setText('staffCardAddress', $datlich_mevabe.diachincc || '---');
-			setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_mevabe.ngaynhan)}`);
-			updateAvatarIframe('staffAvatar', $datlich_mevabe.avatar_ncc);
+			setText('staffCardName', $datlich_chamsocvuon.tenncc || '---');
+			setText('staffCardEmail', $datlich_chamsocvuon.emailncc || '---');
+			setText('staffCardPhone', $datlich_chamsocvuon.sdtncc || '---');
+			setText('staffCardAddress', $datlich_chamsocvuon.diachincc || '---');
+			setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_chamsocvuon.ngaynhan)}`);
+			updateAvatarIframe('staffAvatar', $datlich_chamsocvuon.avatar_ncc);
 
-			const status = $datlich_mevabe.trangthai || '---';
+			const status = $datlich_chamsocvuon.trangthai || '---';
 			const invoiceStatusEl = $('badgeInvoiceStatus');
 			if (invoiceStatusEl) {
 				invoiceStatusEl.textContent = status;
@@ -2157,28 +2353,28 @@ include 'layout-header.php';
 			$('badgeTimeState').textContent = status;
 			$('badgeTimeState').className = statusBadgeClass(status);
 
-			setText('timeStartPlan', `${formatTimeDisplay($datlich_mevabe.gio_bat_dau_kehoach)}`.trim());
-			setText('timeEndPlan', `${formatTimeDisplay($datlich_mevabe.gio_ket_thuc_kehoach)}`.trim());
-			setText('timeStartReal', formatDateTimeDisplay($datlich_mevabe.thoigian_batdau_thucte));
-			setText('timeEndReal', formatDateTimeDisplay($datlich_mevabe.thoigian_ketthuc_thucte));
+			setText('timeStartPlan', `${formatTimeDisplay($datlich_chamsocvuon.gio_bat_dau_kehoach)}`.trim());
+			setText('timeEndPlan', `${formatTimeDisplay($datlich_chamsocvuon.gio_ket_thuc_kehoach)}`.trim());
+			setText('timeStartReal', formatDateTimeDisplay($datlich_chamsocvuon.thoigian_batdau_thucte));
+			setText('timeEndReal', formatDateTimeDisplay($datlich_chamsocvuon.thoigian_ketthuc_thucte));
 
-			const progress = Math.max(0, Math.min(100, toNum($datlich_mevabe.tien_do || 0)));
+			const progress = Math.max(0, Math.min(100, toNum($datlich_chamsocvuon.tien_do || 0)));
 			$('progressBar').style.width = `${progress}%`;
 			setText('progressText', `${progress.toFixed(2)}%`);
 			setText('invoiceProgressHero', `${Math.round(progress)}%`);
 			const ring = $('invoiceProgressRing');
 			if (ring) ring.style.setProperty('--p', progress.toFixed(2));
-			const totalDayCount = Math.max(1, diffDays($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.ngay_ket_thuc_kehoach) + 1);
+			const totalDayCount = Math.max(1, diffDays($datlich_chamsocvuon.ngay_bat_dau_kehoach, $datlich_chamsocvuon.ngay_ket_thuc_kehoach) + 1);
 			const perDayPct = (100 / totalDayCount).toFixed(2);
 			setText('progressHint', `Mỗi ngày cộng ${perDayPct}% (tổng ${totalDayCount} ngày). Tiến độ cộng dồn theo từng ngày làm việc.`);
-			setText('dateStartPlan', formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach));
-			setText('dateEndPlan', formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach));
+			setText('dateStartPlan', formatDateDisplay($datlich_chamsocvuon.ngay_bat_dau_kehoach));
+			setText('dateEndPlan', formatDateDisplay($datlich_chamsocvuon.ngay_ket_thuc_kehoach));
 			setText('invoicePlanDays', `${totalDayCount} ngày`);
 			// Render bảng lịch sử làm việc (cho cả staff và khách hàng xem)
 			renderWorkHistoryTable();
 
-			$('badgeStaff').textContent = toNum($datlich_mevabe.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
-			$('badgeStaff').className = toNum($datlich_mevabe.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
+			$('badgeStaff').textContent = toNum($datlich_chamsocvuon.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
+			$('badgeStaff').className = toNum($datlich_chamsocvuon.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
 
 			renderActionButtons();
 			renderReview();
@@ -2194,7 +2390,7 @@ include 'layout-header.php';
 			if (!body) return;
 
 			const rawRows = app.$workHistory || [];
-			const endPlanTime = app.$datlich_mevabe ? app.$datlich_mevabe.gio_ket_thuc_kehoach : '';
+			const endPlanTime = app.$datlich_chamsocvuon ? app.$datlich_chamsocvuon.gio_ket_thuc_kehoach : '';
 
 			// Gộp các row theo ngày
 			const groups = {};
@@ -2228,7 +2424,7 @@ include 'layout-header.php';
 				tr.style.borderBottom = '1px solid #f0d4e3';
 				const dayIdx = rows.length - rows.indexOf(r);
 				tr.innerHTML = `
-						<td style="padding:5px 8px;font-weight:800;color:#c21178;">Ngày ${dayIdx}</td>
+						<td style="padding:5px 8px;font-weight:800;color:#1a4d2e;">Ngày ${dayIdx}</td>
 						<td style="padding:5px 8px;">${formatDateDisplay(r.ngay_lam)}</td>
 						<td style="padding:5px 8px;">${formatTimeDisplay(r.start)}</td>
 						<td style="padding:5px 8px;">${endCell}</td>
@@ -2238,7 +2434,7 @@ include 'layout-header.php';
 			});
 		}
 		async function updateCustomerAvatarIfNeeded() {
-			const order = app.$datlich_mevabe;
+			const order = app.$datlich_chamsocvuon;
 			const user = app.$user;
 			if (app.role === 'customer' && order && user && String(app.params.sodienthoai) === String(order.sdtkhachhang)) {
 				if (user.link_avatar && user.link_avatar !== order.avatar_khachhang) {
@@ -2253,22 +2449,22 @@ include 'layout-header.php';
 		}
 
 		async function handleClaim() {
-			const $datlich_mevabe = app.$datlich_mevabe || {};
-			const statusText = String($datlich_mevabe.trangthai || '').toLowerCase();
+			const $datlich_chamsocvuon = app.$datlich_chamsocvuon || {};
+			const statusText = String($datlich_chamsocvuon.trangthai || '').toLowerCase();
 			if (statusText.includes('quá hạn')) {
 				throw new Error('Đơn hàng quá hạn, không thể nhận việc');
 			}
 
-			const startPlanAt = buildPlanDateTime($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.gio_bat_dau_kehoach);
+			const startPlanAt = buildPlanDateTime($datlich_chamsocvuon.ngay_bat_dau_kehoach, $datlich_chamsocvuon.gio_bat_dau_kehoach);
 			if (startPlanAt && now().getTime() >= startPlanAt.getTime()) {
-				if (toNum($datlich_mevabe.id_nhacungcap) <= 0 && !statusText.includes('hủy') && !statusText.includes('hoàn thành')) {
-					await updateById(TABLE_ORDER, $datlich_mevabe.id, { trangthai: 'quá hạn' });
+				if (toNum($datlich_chamsocvuon.id_nhacungcap) <= 0 && !statusText.includes('hủy') && !statusText.includes('hoàn thành')) {
+					await updateById(TABLE_ORDER, $datlich_chamsocvuon.id, { trangthai: 'quá hạn' });
 					await reloadOrder();
 				}
 				throw new Error('Đơn hàng quá hạn, không thể nhận việc');
 			}
 
-			await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
+			await updateById(TABLE_ORDER, app.$datlich_chamsocvuon.id, {
 				id_nhacungcap: app.$user.id,
 				ngaynhan: nowSql(),
 				tenncc: app.$user.hovaten || '',
@@ -2281,8 +2477,8 @@ include 'layout-header.php';
 		}
 
 		async function handleCancel() {
-			const $datlich_mevabe = app.$datlich_mevabe || {};
-			const statusText = String($datlich_mevabe.trangthai || '').toLowerCase();
+			const $datlich_chamsocvuon = app.$datlich_chamsocvuon || {};
+			const statusText = String($datlich_chamsocvuon.trangthai || '').toLowerCase();
 			if (statusText.includes('hủy')) {
 				setState('Đơn đã được hủy trước đó', 'info');
 				return;
@@ -2292,11 +2488,11 @@ include 'layout-header.php';
 				return;
 			}
 
-			const hasStaff = toNum($datlich_mevabe.id_nhacungcap) > 0;
-			const startPlanAt = buildPlanDateTime($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.gio_bat_dau_kehoach);
+			const hasStaff = toNum($datlich_chamsocvuon.id_nhacungcap) > 0;
+			const startPlanAt = buildPlanDateTime($datlich_chamsocvuon.ngay_bat_dau_kehoach, $datlich_chamsocvuon.gio_bat_dau_kehoach);
 			if (startPlanAt && now().getTime() >= startPlanAt.getTime()) {
 				if (!hasStaff && !statusText.includes('hoàn thành')) {
-					await updateById(TABLE_ORDER, app.$datlich_mevabe.id, { trangthai: 'quá hạn' });
+					await updateById(TABLE_ORDER, app.$datlich_chamsocvuon.id, { trangthai: 'quá hạn' });
 					await reloadOrder();
 					setState('Đã qua giờ bắt đầu, đơn tự động chuyển quá hạn', 'info');
 					return;
@@ -2304,12 +2500,12 @@ include 'layout-header.php';
 				throw new Error('Đã qua giờ bắt đầu kế hoạch nên không thể hủy đơn');
 			}
 
-			if (statusText.includes('hoàn thành') || $datlich_mevabe.thoigian_batdau_thucte || $datlich_mevabe.thoigian_ketthuc_thucte) {
+			if (statusText.includes('hoàn thành') || $datlich_chamsocvuon.thoigian_batdau_thucte || $datlich_chamsocvuon.thoigian_ketthuc_thucte) {
 				throw new Error('Đơn đã bắt đầu hoặc hoàn thành nên không thể hủy');
 			}
 
 			const cancelAt = nowSql();
-			await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
+			await updateById(TABLE_ORDER, app.$datlich_chamsocvuon.id, {
 				trangthai: 'đã hủy',
 				ngayhuy: cancelAt
 			});
@@ -2318,7 +2514,7 @@ include 'layout-header.php';
 
 		// handleHdrStart: bắt đầu tổng thể dịch vụ (lần duy nhất)
 		async function handleHdrStart() {
-			await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
+			await updateById(TABLE_ORDER, app.$datlich_chamsocvuon.id, {
 				trangthai: 'đang thực hiện',
 				thoigian_batdau_thucte: nowSql(),
 				thoigian_ketthuc_thucte: ''
@@ -2329,7 +2525,7 @@ include 'layout-header.php';
 		// handleHdrEnd: kết thúc tổng thể dịch vụ, chuyển trạng thái "hoàn thành"
 		async function handleHdrEnd() {
 			if (!await jsDialog.confirm('Bạn có chắc chắn muốn hoàn thành dịch vụ?')) return;
-			await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
+			await updateById(TABLE_ORDER, app.$datlich_chamsocvuon.id, {
 				trangthai: 'hoàn thành',
 				thoigian_ketthuc_thucte: nowSql(),
 				tien_do: 100
@@ -2339,7 +2535,7 @@ include 'layout-header.php';
 
 		// handleStart: bắt đầu làm trong ngày - insert mới vào lich_su_lam_viec_mvb
 		async function handleStart() {
-			const idDv = app.$datlich_mevabe.id;
+			const idDv = app.$datlich_chamsocvuon.id;
 			const todayStr = (() => {
 				const d = now();
 				const p = n => String(n).padStart(2, '0');
@@ -2353,9 +2549,9 @@ include 'layout-header.php';
 			});
 			app.currentWorkLogId = newId;
 			// Tính tiến độ: percentPerDay = 100 / totalDay
-			const totalDay = Math.max(1, diffDays(app.$datlich_mevabe.ngay_bat_dau_kehoach, app.$datlich_mevabe.ngay_ket_thuc_kehoach) + 1);
+			const totalDay = Math.max(1, diffDays(app.$datlich_chamsocvuon.ngay_bat_dau_kehoach, app.$datlich_chamsocvuon.ngay_ket_thuc_kehoach) + 1);
 			const percentPerDay = 100 / totalDay;
-			const nextProgress = Math.min(100, toNum(app.$datlich_mevabe.tien_do || 0) + percentPerDay);
+			const nextProgress = Math.min(100, toNum(app.$datlich_chamsocvuon.tien_do || 0) + percentPerDay);
 			await updateById(TABLE_ORDER, idDv, { tien_do: Number(nextProgress.toFixed(2)) });
 			// Làm mới lịch sử và UI
 			app.$workHistory = await listHistoryByOrder(idDv);
@@ -2392,7 +2588,7 @@ include 'layout-header.php';
 
 			app.currentWorkLogId = null;
 			app.todayWorkLog = null;
-			app.$workHistory = await listHistoryByOrder(app.$datlich_mevabe.id);
+			app.$workHistory = await listHistoryByOrder(app.$datlich_chamsocvuon.id);
 
 			const btnE = document.getElementById('btnEnd');
 			if (btnE) btnE.classList.add('hidden');
@@ -2415,25 +2611,24 @@ include 'layout-header.php';
 			})();
 
 			await insertRow(TABLE_HISTORY, {
-				id_dv: app.$datlich_mevabe.id,
+				id_dv: app.$datlich_chamsocvuon.id,
 				ngay_lam: todayStr,
 				ghichu_cv_ngay: note ? note.value.trim() : ''
 			});
 
 			if (note) note.value = '';
 			if (form) form.classList.add('hidden');
-			app.$workHistory = await listHistoryByOrder(app.$datlich_mevabe.id);
+			app.$workHistory = await listHistoryByOrder(app.$datlich_chamsocvuon.id);
 			renderWorkHistoryTable();
 			setState('Đã lưu ghi chú công việc', 'info');
 		}
 
 		// checkAutoEndPreviousWorkDay: nếu có record chưa kết thúc từ ngày trước
 		async function checkAutoEndPreviousWorkDay() {
-			if (!app.$datlich_mevabe) return;
-			const idDv = app.$datlich_mevabe.id;
+			if (!app.$datlich_chamsocvuon) return;
+			const idDv = app.$datlich_chamsocvuon.id;
 			const history = await listHistoryByOrder(idDv);
 			app.$workHistory = history;
-
 			// Chỉ NCC mới thực hiện tự động kết thúc ngày làm việc nếu quên
 			if (app.role !== 'staff') return;
 			const todayStr = (() => {
@@ -2447,7 +2642,7 @@ include 'layout-header.php';
 				&& !history.some(h => (h.ngay_lam || '').slice(0, 10) === (r.ngay_lam || '').slice(0, 10) && h.gio_ket_thuc_trong_ngay)
 				&& (r.ngay_lam || '').slice(0, 10) < todayStr
 			);
-			const autoEndTime = app.$datlich_mevabe.gio_ket_thuc_kehoach || '23:59:59';
+			const autoEndTime = app.$datlich_chamsocvuon.gio_ket_thuc_kehoach || '23:59:59';
 			for (const r of incompleteOld) {
 				// UPDATE dòng cũ
 				await updateById(TABLE_HISTORY, r.id, {
@@ -2472,7 +2667,7 @@ include 'layout-header.php';
 			for (const file of files) {
 				const fd = new FormData();
 				fd.append('file', file, file.name);
-				const res = await fetch('upload.php', { method: 'POST', body: fd });
+				const res = await fetch('../upload.php', { method: 'POST', body: fd });
 				const json = await res.json();
 				if (!json?.success) throw new Error(json?.message || 'Upload ảnh/video thất bại');
 				ids.push(json.fileId);
@@ -2495,8 +2690,8 @@ include 'layout-header.php';
 				const text = $('customerReview').value.trim();
 				const mediaInput = $('customerMediaInput');
 				const uploaded = await uploadReviewMedia('khachhang', mediaInput.files);
-				const media = uploaded.length ? uploaded : parseMedia(app.$datlich_mevabe.media_danhgia_khachhang);
-				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
+				const media = uploaded.length ? uploaded : parseMedia(app.$datlich_chamsocvuon.media_danhgia_khachhang);
+				await updateById(TABLE_ORDER, app.$datlich_chamsocvuon.id, {
 					danhgia_khachhang: text,
 					media_danhgia_khachhang: JSON.stringify(media),
 					thoigian_danhgia_khachhang: nowSql()
@@ -2512,7 +2707,7 @@ include 'layout-header.php';
 		}
 
 		async function handleSaveStaffReview() {
-			if (toNum(app.$datlich_mevabe?.id_nhacungcap) !== toNum(app.$user?.id)) {
+			if (toNum(app.$datlich_chamsocvuon?.id_nhacungcap) !== toNum(app.$user?.id)) {
 				throw new Error('Chỉ nhân viên đã nhận công việc mới được đánh giá');
 			}
 			if (!canSubmitStaffReview()) {
@@ -2529,8 +2724,8 @@ include 'layout-header.php';
 				const text = $('staffReview').value.trim();
 				const mediaInput = $('staffReviewMediaInput');
 				const uploaded = await uploadReviewMedia('nhacungcap', mediaInput.files);
-				const media = uploaded.length ? uploaded : parseMedia(app.$datlich_mevabe.media_danhgia_nhanvien);
-				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
+				const media = uploaded.length ? uploaded : parseMedia(app.$datlich_chamsocvuon.media_danhgia_nhanvien);
+				await updateById(TABLE_ORDER, app.$datlich_chamsocvuon.id, {
 					danhgia_nhanvien: text,
 					media_danhgia_nhanvien: JSON.stringify(media),
 					thoigian_danhgia_nhanvien: nowSql()
@@ -2591,8 +2786,8 @@ include 'layout-header.php';
 
 				renderUI();
 				show($('mainGrid'), true);
-				const statusText = String(app.$datlich_mevabe?.trangthai || '').toLowerCase();
-				const noStaff = toNum(app.$datlich_mevabe?.id_nhacungcap) <= 0;
+				const statusText = String(app.$datlich_chamsocvuon?.trangthai || '').toLowerCase();
+				const noStaff = toNum(app.$datlich_chamsocvuon?.id_nhacungcap) <= 0;
 				const showOverdueForStaff = app.role === 'staff' && noStaff && statusText.includes('quá hạn');
 				setState(showOverdueForStaff ? 'Đơn hàng quá hạn' : 'Tải dữ liệu thành công', 'info');
 			} catch (e) {

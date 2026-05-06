@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Chi tiết đơn hàng mẹ và bé</title>
+	<title>Chi tiết đơn hàng - Chăm Sóc Vườn Nhà</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
@@ -14,26 +14,29 @@
 	<script src="https://api.dvqt.vn/js/krud.js"></script>
 	<style>
 		:root {
-			--bg: #fff6fb;
+			/* ── Palette xanh vườn nhà ── */
+			--bg: #f4fff6;
 			--surface: #ffffff;
-			--surface-soft: #fff1f8;
-			--text: #3d2333;
-			--muted: #8b5f74;
-			--primary: #e45a97;
-			--success: #d94a8a;
-			--warning: #f08ab6;
-			--danger: #c93b78;
-			--border: #f0d4e3;
-			--shadow: 0 20px 45px rgba(196, 83, 138, 0.18);
-			--shadow-lg: 0 24px 48px rgba(196, 83, 138, 0.18), 0 6px 20px rgba(138, 170, 209, 0.12);
-			--radius-md: 10px;
-			--radius-lg: 16px;
-			--radius-xl: 24px;
+			--surface-soft: #f0fff4;
+			--text: #1b3a1f;
+			--muted: #4a7c59;
+			--primary: #1a4d2e;
+			--success: #2e7d32;
+			--warning: #66bb6a;
+			--danger: #c62828;
+			--border: #c8e6c9;
+			--shadow: 0 12px 32px rgba(26, 77, 46, 0.10);
+			--shadow-lg: 0 20px 48px rgba(26, 77, 46, 0.13), 0 4px 16px rgba(100, 180, 120, 0.08);
+			--radius-md: 12px;
+			--radius-lg: 18px;
+			--radius-xl: 26px;
 			--anim: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-			--accent-peach: #ffd6b9;
-			--accent-lavender: #e5d8ff;
-			--accent-mint: #cff5e8;
-			--accent-rose: #f7a7c8;
+			--accent-mint: #c8e6c9;
+			--accent-lime: #e8f3d6;
+			--accent-sage: #e8f5e9;
+			--accent-forest: #a5d6a7;
+			--pg: #1a4d2e;
+			--ag: #4f6f52;
 		}
 
 		* {
@@ -71,10 +74,10 @@
 			text-rendering: optimizeLegibility;
 			color: var(--text);
 			background:
-				radial-gradient(circle at 20% -10%, #ffdceb 0, transparent 42%),
-				radial-gradient(circle at 95% 120%, #ffe8f5 0, transparent 38%),
-				radial-gradient(circle at 85% 15%, rgb(248, 248, 248) 0, transparent 35%),
-				radial-gradient(circle at 8% 88%, rgb(255, 255, 255) 0, transparent 30%),
+				radial-gradient(circle at 20% -10%, #c8e6c9 0, transparent 42%),
+				radial-gradient(circle at 95% 120%, #e8f3d6 0, transparent 38%),
+				radial-gradient(circle at 85% 15%, #f8fcf8 0, transparent 35%),
+				radial-gradient(circle at 8% 88%, #ffffff 0, transparent 30%),
 				var(--bg);
 		}
 
@@ -88,9 +91,9 @@
 		.modal-card {
 			width: min(1240px, 100%);
 			border-radius: var(--radius-xl);
-			background: linear-gradient(180deg, #ffffff 0%, #fff8fc 62%, #fff3f9 100%);
+			background: linear-gradient(180deg, #ffffff 0%, #f8fff9 62%, #f0fff4 100%);
 			box-shadow: var(--shadow-lg);
-			border: 1px solid rgba(200, 88, 143, 0.2);
+			border: 1px solid rgba(26, 77, 46, 0.15);
 			overflow: visible;
 			transform: translateY(8px);
 			opacity: 0;
@@ -110,13 +113,13 @@
 			grid-template-columns: auto minmax(0, 1fr) auto;
 			gap: 14px;
 			align-items: center;
-			padding: 20px 24px;
-			background: linear-gradient(102deg, #f369a7 0%, #ef86b4 58%, #ffa9d4 100%);
+			padding: 18px 24px;
+			background: linear-gradient(102deg, var(--primary) 0%, #2e7d32 55%, #43a047 100%);
 			color: #fff;
 			position: sticky;
 			top: 0;
 			z-index: 50;
-			box-shadow: 0 10px 24px rgba(169, 63, 114, 0.3);
+			box-shadow: 0 8px 24px rgba(26, 77, 46, 0.25);
 		}
 
 		.topbar-logo {
@@ -129,7 +132,7 @@
 			border-radius: 14px;
 			border: 1px solid rgba(255, 255, 255, 0.42);
 			background: rgba(255, 255, 255, 0.2);
-			box-shadow: 0 10px 22px rgba(166, 58, 110, 0.24);
+			box-shadow: 0 10px 22px rgba(27, 94, 32, 0.24);
 			backdrop-filter: blur(4px);
 			transition: transform var(--anim), background var(--anim), border-color var(--anim);
 		}
@@ -210,10 +213,10 @@
 		}
 
 		.panel {
-			border: 1px solid #f1d5e4;
+			border: 1px solid #c8e6c9;
 			border-radius: var(--radius-lg);
 			background: var(--surface);
-			box-shadow: 0 12px 26px rgba(226, 113, 168, 0.12), 0 2px 8px rgba(191, 200, 219, 0.1);
+			box-shadow: 0 12px 26px rgba(46, 125, 50, 0.10), 0 2px 8px rgba(100, 180, 120, 0.08);
 			padding: 14px;
 			min-height: 205px;
 			display: flex;
@@ -236,7 +239,7 @@
 			margin: 0;
 			font-size: 16px;
 			font-weight: 700;
-			color: #6f2d52;
+			color: #1a4d2e;
 		}
 
 		.badge {
@@ -245,25 +248,25 @@
 			font-size: 11px;
 			font-weight: 700;
 			letter-spacing: .2px;
-			background: #ffe6f2;
-			color: #a83f72;
-			border: 1px solid #f7c8de;
+			background: #e8f5e9;
+			color: #1a4d2e;
+			border: 1px solid #c8e6c9;
 			white-space: nowrap;
 		}
 
 		.badge.success {
-			background: linear-gradient(135deg, #ffe3f1, #dff8ef);
-			color: #8a3462;
+			background: linear-gradient(135deg, #e8f5e9, #dff8ef);
+			color: #1a4d2e;
 		}
 
 		.badge.warning {
-			background: linear-gradient(135deg, #ffe9f4, #ffe9d5);
-			color: #ad4f7e;
+			background: linear-gradient(135deg, #fff8e1, #fff3cd);
+			color: #7c5c00;
 		}
 
 		.badge.danger {
-			background: #ffd7e8;
-			color: #9e2f61;
+			background: #ffebee;
+			color: #c62828;
 		}
 
 		/* --- Info Grid & Fields --- */
@@ -306,10 +309,11 @@
 		}
 
 		.invoice-hero {
-			border-radius: 16px;
-			padding: 16px;
-			color: #000000;
-			background: linear-gradient(118deg, #f99bbd 0%, #f9c7dc 48%, #f9dbe7 72%, #ffe9d4 100%);
+			border-radius: var(--radius-lg);
+			padding: 20px;
+			color: #1b3a1f;
+			background: linear-gradient(118deg, #e8f5e9 0%, #c8e6c9 45%, #dcedc8 72%, #f1f8e9 100%);
+			border: 1px solid rgba(26, 77, 46, 0.12);
 		}
 
 		.invoice-main {
@@ -342,25 +346,31 @@
 		.invoice-status-badge {
 			display: inline-flex;
 			align-items: center;
-			padding: 5px 10px;
+			padding: 5px 12px;
 			border-radius: 999px;
 			font-size: 11px;
 			font-weight: 700;
-			background: rgba(255, 255, 255, 0.25);
-			border: 1px solid rgba(255, 255, 255, 0.35);
-			color: #020202;
+			background: rgba(255, 255, 255, 0.3);
+			border: 1px solid rgba(255, 255, 255, 0.4);
+			color: var(--text);
 		}
 
 		.invoice-status-badge.success {
-			background: rgb(27, 192, 131);
+			background: #43a047;
+			color: #fff;
+			border-color: transparent;
 		}
 
 		.invoice-status-badge.warning {
-			background: rgba(217, 228, 16, 0.996);
+			background: #f9a825;
+			color: #fff;
+			border-color: transparent;
 		}
 
 		.invoice-status-badge.danger {
-			background: rgb(209, 66, 66);
+			background: #c62828;
+			color: #fff;
+			border-color: transparent;
 		}
 
 		.invoice-subtitle {
@@ -375,40 +385,37 @@
 			width: 122px;
 			height: 122px;
 			border-radius: 50%;
-			background: conic-gradient(from -90deg, #5eb4f2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.34) 0);
+			background: conic-gradient(from -90deg, #43a047 calc(var(--p) * 1%), rgba(255, 255, 255, 0.3) 0);
 			padding: 7px;
 			flex: 0 0 auto;
-			border: 2px solid rgb(0, 0, 0);
-			box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(122, 34, 82, 0.28);
+			border: 2px solid rgba(26, 77, 46, 0.3);
+			box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 8px 20px rgba(26, 77, 46, 0.2);
 		}
 
 		.invoice-progress-core {
 			width: 100%;
 			height: 100%;
 			border-radius: 50%;
-			background:
-				radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0) 44%),
-				linear-gradient(150deg, rgba(245, 179, 179, 0.94) 0%, rgba(241, 138, 138, 0.93) 100%);
+			background: linear-gradient(150deg, #e8f5e9 0%, #c8e6c9 100%);
 			display: grid;
 			place-content: center;
 			text-align: center;
-			backdrop-filter: blur(4px);
-			border: 2px solid rgb(0, 0, 0);
-			box-shadow: inset 0 8px 14px rgba(255, 255, 255, 0.12);
-			color: #ffffff;
+			border: 2px solid rgba(26, 77, 46, 0.2);
+			box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.5);
+			color: var(--primary);
 		}
 
 		.invoice-progress-core strong {
-			font-size: 34px;
+			font-size: 30px;
 			line-height: 1;
-			color: #383cb0;
-			font-weight: 700;
+			color: var(--primary);
+			font-weight: 800;
 		}
 
 		.invoice-progress-core small {
-			font-size: 12px;
+			font-size: 11px;
 			font-weight: 700;
-			color: #f9f3ff;
+			color: var(--muted);
 		}
 
 		.invoice-summary {
@@ -421,8 +428,8 @@
 			display: flex;
 			gap: 9px;
 			align-items: flex-start;
-			border: 1px solid rgba(255, 227, 239, 0.6);
-			background: rgba(195, 19, 107, 0.22);
+			border: 1px solid rgba(26, 77, 46, 0.15);
+			background: rgba(26, 77, 46, 0.06);
 			border-radius: 12px;
 			padding: 10px 12px;
 			min-height: 96px;
@@ -432,14 +439,14 @@
 			width: 27px;
 			height: 27px;
 			border-radius: 999px;
-			border: 1px solid rgba(91, 4, 4, 0.4);
+			border: 1px solid rgba(26, 77, 46, 0.3);
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
 			font-size: 11px;
 			font-weight: 700;
-			background: rgba(255, 255, 255, 0.576);
-			color: #060606;
+			background: rgba(255, 255, 255, 0.7);
+			color: var(--primary);
 			flex: 0 0 27px;
 			margin-top: 2px;
 		}
@@ -454,7 +461,8 @@
 			margin: 0;
 			font-size: 11px;
 			font-weight: 500;
-			opacity: .85;
+			opacity: .75;
+			color: var(--text);
 		}
 
 		.invoice-item-content h4 {
@@ -463,12 +471,14 @@
 			font-weight: 700;
 			line-height: 1.15;
 			word-break: break-word;
+			color: var(--text);
 		}
 
 		.invoice-item-content span {
 			font-size: 11px;
 			font-weight: 500;
-			opacity: .9;
+			opacity: .8;
+			color: var(--text);
 		}
 
 		#invoicePrice {
@@ -499,7 +509,7 @@
 			padding: 0;
 			overflow: hidden;
 			gap: 0;
-			border-color: #ec3d95;
+			border-color: #2e7d32;
 		}
 
 		.jobs-header {
@@ -508,20 +518,20 @@
 			justify-content: space-between;
 			gap: 10px;
 			padding: 12px 14px;
-			background: linear-gradient(135deg, #ee7cb9 0%, #ffe9f5 65%, #ffd8fc 100%);
-			border-bottom: 1px solid #f2d7e5;
+			background: linear-gradient(135deg, var(--accent-lime) 0%, #f0fff4 65%, var(--accent-mint) 100%);
+			border-bottom: 1px solid var(--border);
 		}
 
 		.jobs-title {
 			margin: 0;
-			font-size: 27px;
+			font-size: 22px;
 			font-weight: 700;
-			color: #6f2d52;
+			color: var(--primary);
 		}
 
 		.jobs-body {
 			padding: 12px;
-			background: linear-gradient(180deg, #fcfcfc 0%, #fff4fb 70%, #fceeff 100%);
+			background: linear-gradient(180deg, #fcfcfc 0%, #f4fff6 70%, #edfff1 100%);
 		}
 
 		#invoiceJob {
@@ -529,7 +539,7 @@
 			margin: 0;
 			padding: 8px;
 			border-radius: 10px;
-			background: linear-gradient(145deg, #fafafa 0%, #d8b4f1 100%);
+			background: linear-gradient(145deg, #fafafa 0%, #e8f5e9 100%);
 			display: grid;
 			gap: 8px;
 			counter-reset: job-item;
@@ -543,9 +553,9 @@
 			font-size: 13px;
 			font-weight: 500;
 			line-height: 1.45;
-			color: #6d2f50;
+			color: var(--text);
 			background: #fff;
-			border: 1px solid #c21178;
+			border: 1px solid var(--border);
 			border-radius: 10px;
 			padding: 10px;
 		}
@@ -555,9 +565,9 @@
 			flex: 0 0 22px;
 			height: 22px;
 			border-radius: 999px;
-			background: #de4f90;
+			background: var(--primary);
 			color: #fff;
-			font-size: 12px;
+			font-size: 11px;
 			font-weight: 700;
 			display: inline-flex;
 			align-items: center;
@@ -573,10 +583,10 @@
 
 		/* --- Media & Extras --- */
 		.invoice-extra {
-			border: 1px solid #f1d5e4;
+			border: 1px solid #c8e6c9;
 			border-top: 0;
 			border-radius: 0 0 14px 14px;
-			background: linear-gradient(180deg, #ffffff 0%, #faf5fa 100%);
+			background: linear-gradient(180deg, #ffffff 0%, #f8fff9 100%);
 			padding: 12px;
 			display: grid;
 			gap: 10px;
@@ -595,8 +605,8 @@
 
 		.invoice-extra-item,
 		.invoice-media-item {
-			border: 1px solid #e665a9;
-			background: #ffeef7;
+			border: 1px solid #66bb6a;
+			background: #f0fff4;
 			border-radius: 8px;
 			padding: 8px 10px;
 			min-height: 72px;
@@ -615,7 +625,7 @@
 
 		.invoice-extra-item .field-label,
 		.invoice-media-item .field-label {
-			color: #8c2f63;
+			color: #1a4d2e;
 			font-size: 10px;
 			margin: 0;
 			font-weight: 500;
@@ -624,7 +634,7 @@
 		.invoice-extra .field-value {
 			font-size: 13px;
 			font-weight: 700;
-			color: #531f2f;
+			color: #1b3a1f;
 		}
 
 		.invoice-media-item img,
@@ -651,7 +661,7 @@
 			padding: 0;
 			overflow: hidden;
 			gap: 0;
-			border-color: #c75b94;
+			border-color: #2e7d32;
 		}
 
 		.profile-head {
@@ -660,15 +670,15 @@
 			align-items: center;
 			gap: 10px;
 			padding: 12px 14px;
-			border-bottom: 1px solid #f2dbe7;
-			background: linear-gradient(135deg, #e496c1 0%, #fff1f8 55%, #f0b3d8 100%);
+			border-bottom: 1px solid var(--border);
+			background: linear-gradient(135deg, var(--accent-lime) 0%, #f0fff4 55%, var(--accent-mint) 100%);
 		}
 
 		.profile-title {
 			margin: 0;
-			font-size: 18px;
+			font-size: 16px;
 			font-weight: 700;
-			color: #6f2d52;
+			color: var(--primary);
 		}
 
 		.profile-status {
@@ -691,8 +701,8 @@
 			height: 88px;
 			border-radius: 50%;
 			object-fit: cover;
-			border: 3px solid #f6d6e6;
-			background: #fdeaf4;
+			border: 3px solid var(--accent-mint);
+			background: var(--accent-sage);
 		}
 
 		.profile-main {
@@ -705,7 +715,7 @@
 			font-size: 22px;
 			font-weight: 700;
 			line-height: 1.25;
-			color: #633148;
+			color: #1a4d2e;
 		}
 
 		.profile-contact,
@@ -713,7 +723,7 @@
 			margin: 0;
 			font-size: 14px;
 			font-weight: 700;
-			color: #633148;
+			color: #1a4d2e;
 			display: flex;
 			align-items: center;
 			gap: 8px;
@@ -728,8 +738,8 @@
 			width: 18px;
 			height: 18px;
 			border-radius: 999px;
-			background: #ffe7f3;
-			color: #d24f8f;
+			background: #e8f5e9;
+			color: #2e7d32;
 			font-size: 11px;
 			line-height: 1;
 			font-weight: 700;
@@ -758,49 +768,49 @@
 			align-items: center;
 			padding: 8px 12px;
 			border-radius: 10px;
-			background: linear-gradient(135deg, #fff0f7 0%, #ffeef8 65%, #eaf8f3 100%);
+			background: linear-gradient(135deg, #e8f5e9 0%, #f0fff4 65%, #eafff2 100%);
 			font-size: 13px;
 			font-weight: 700;
-			color: #8e4467;
-			border: 1px solid #f0d0e0;
+			color: #1a4d2e;
+			border: 1px solid #c8e6c9;
 		}
 
 		/* --- Progress & Time --- */
 		#panelTime {
-			border-color: #d45e9d;
-			background: linear-gradient(180deg, #f5cfe6 0%, #f0f0f0 58%, #fbf0f8 100%);
+			border-color: var(--primary);
+			background: linear-gradient(180deg, var(--accent-lime) 0%, #f0fff4 58%, var(--accent-sage) 100%) !important;
 		}
 
 		.progress-inner {
 			height: 100%;
 			width: 0;
 			transition: width 420ms ease, background 300ms ease;
-			background: linear-gradient(90deg, #d94688 0%, #ea6fa5 55%, #e277b2 100%);
-			box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(165, 53, 113, 0.26);
+			background: linear-gradient(90deg, var(--primary) 0%, #2e7d32 55%, #43a047 100%);
+			box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(26, 77, 46, 0.26);
 		}
 
 		.progress-inner.warn {
-			background: linear-gradient(90deg, #ec6aa2, #f4a9c9, #ffd9b1);
+			background: linear-gradient(90deg, #f9a825, #fbc02d, #ffd54f);
 		}
 
 		.progress-inner.danger {
-			background: linear-gradient(90deg, #cc3f79, #e06799);
+			background: linear-gradient(90deg, #c62828, #e53935);
 		}
 
 		#progressText {
-			color: #8c2f63;
+			color: var(--primary);
 			font-weight: 900;
 			letter-spacing: 0.2px;
 		}
 
 		#progressHint {
-			color: #7f3f60;
+			color: var(--success);
 			font-weight: 700;
 		}
 
 		.hint {
 			margin: 0;
-			color: #7c4760;
+			color: #388e3c;
 			font-size: 13px;
 		}
 
@@ -815,7 +825,7 @@
 			border: 1px solid #efd1e1;
 			border-radius: 12px;
 			padding: 10px;
-			background: linear-gradient(180deg, #fff7fc 0%, #fff7fe 68%, #f6f1ff 100%);
+			background: linear-gradient(180deg, #f0fff4 0%, #f4fff6 68%, #edfff1 100%);
 			display: grid;
 			gap: 10px;
 		}
@@ -831,7 +841,7 @@
 			margin: 0;
 			font-size: 14px;
 			font-weight: 700;
-			color: #6f2d52;
+			color: #1a4d2e;
 		}
 
 		.review-display {
@@ -839,7 +849,7 @@
 			gap: 6px;
 			padding: 8px;
 			border-radius: 10px;
-			border: 1px dashed #f1d4e3;
+			border: 1px dashed #c8e6c9;
 			background: #fff;
 		}
 
@@ -848,7 +858,7 @@
 			margin: 0;
 			font-size: 13px;
 			font-weight: 500;
-			color: #7c4760;
+			color: #2e7d32;
 			word-break: break-word;
 		}
 
@@ -864,7 +874,7 @@
 			height: 120px;
 			object-fit: cover;
 			border-radius: 10px;
-			border: 1px solid #dbe7f2;
+			border: 1px solid #c8e6c9;
 			background: #f4f8fc;
 		}
 
@@ -872,18 +882,18 @@
 			grid-column: 1 / -1;
 			font-size: 12px;
 			font-weight: 700;
-			color: #8d4d6b;
-			background: linear-gradient(135deg, #fff0f8 0%, #ecfbf5 100%);
-			border: 1px solid #f2d4e3;
+			color: #388e3c;
+			background: linear-gradient(135deg, #e8f5e9 0%, #ecfbf5 100%);
+			border: 1px solid #c8e6c9;
 			padding: 8px 10px;
 			border-radius: 8px;
 		}
 
 		/* --- Buttons --- */
 		.btn {
-			border-radius: 8px;
+			border-radius: 10px;
 			font-weight: 700;
-			transition: filter 0.2s;
+			transition: filter 0.2s, transform 0.2s;
 		}
 
 		.btn.btn-primary,
@@ -891,29 +901,30 @@
 		.btn.btn-warning,
 		.btn.btn-danger {
 			border: 0;
-			box-shadow: 0 8px 18px rgba(193, 71, 130, 0.2);
-			color: #000 !important;
+			box-shadow: 0 4px 14px rgba(26, 77, 46, 0.15);
+			color: #fff !important;
 		}
 
 		.btn.btn-primary {
-			border: 1px solid rgb(15, 15, 15);
+			background: linear-gradient(135deg, var(--primary), #2e7d32) !important;
 		}
 
 		.btn.btn-success {
-			border: 1px solid rgb(14, 14, 14);
+			background: linear-gradient(135deg, #2e7d32, #43a047) !important;
 		}
 
 		.btn.btn-warning {
-			border: 1px solid red;
+			background: linear-gradient(135deg, #f9a825, #e65100) !important;
 		}
 
 		.btn.btn-danger {
-			background: linear-gradient(135deg, #c93b78, #e774a5) !important;
+			background: linear-gradient(135deg, #c62828, #e53935) !important;
 			color: #fff !important;
 		}
 
 		.btn:hover {
-			filter: brightness(0.96);
+			filter: brightness(0.94);
+			transform: translateY(-1px);
 		}
 
 		.hidden {
@@ -962,7 +973,7 @@
 			font-size: 18px;
 			font-weight: 700;
 			margin-bottom: 12px;
-			color: #c21178;
+			color: var(--primary);
 		}
 
 		#appDialogMessage {
@@ -981,7 +992,7 @@
 
 		.appDialogBtn {
 			padding: 10px 20px;
-			border-radius: 8px;
+			border-radius: 10px;
 			border: none;
 			font-weight: 700;
 			cursor: pointer;
@@ -990,9 +1001,9 @@
 		}
 
 		.appDialogBtnPrimary {
-			background: linear-gradient(135deg, #e779c1, #c21178);
+			background: linear-gradient(135deg, #2e7d32, var(--primary));
 			color: white;
-			box-shadow: 0 4px 12px rgba(194, 17, 120, 0.2);
+			box-shadow: 0 4px 12px rgba(26, 77, 46, 0.25);
 		}
 
 		.appDialogBtnPrimary:hover {
@@ -1164,12 +1175,12 @@
 	<main class="page">
 		<section class="modal-card">
 			<header class="topbar">
-				<a class="topbar-logo" href="#" aria-label="Trang chủ">
-					<img src="assets/logo.png" alt="Logo dịch vụ" />
+				<a class="topbar-logo" href="index.html" aria-label="Trang chủ">
+					<img src="assets/images/logo2.jpg" alt="Logo chăm sóc vườn" />
 				</a>
-				<h1 class="topbar-title">Chi tiết đơn hàng mẹ và bé</h1>
-				<a class="topbar-logo" href="#" aria-label="Trang dịch vụ mẹ và bé">
-					<img src="assets/logomvb1.png" alt="Logo mẹ và bé" />
+				<h1 class="topbar-title">Chi tiết đơn hàng - Chăm Sóc Vườn Nhà</h1>
+				<a class="topbar-logo" href="dat-lich.html" aria-label="Đặt lịch">
+					<img src="assets/images/logo2.jpg" alt="Logo chăm sóc vườn" />
 				</a>
 			</header>
 
@@ -1288,7 +1299,7 @@
 								<span id="progressText">0%</span>
 							</div>
 							<div
-								style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#f8dce9 0%,#ffffff 100%);border:1px solid #ad3f74;box-shadow:inset 0 1px 2px rgb(255, 255, 255);">
+								style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#c8e6c9 0%,#ffffff 100%);border:1px solid #2e7d32;box-shadow:inset 0 1px 2px rgb(255, 255, 255);">
 								<div id="progressBar" class="progress-inner"></div>
 							</div>
 							<p id="progressHint" class="hint" style="font-size:12px;margin-top:-2px;">Dữ liệu tiến độ sẽ
@@ -1296,22 +1307,22 @@
 						</div>
 
 						<div
-							style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;margin-bottom:8px;">
+							style="border:1px solid #c8e6c9;border-radius:8px;overflow:hidden;background:#f0fff4;margin-bottom:8px;">
 							<div
-								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:700;">
-								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày bắt đầu dự
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#2e7d32;color:#ffffff;font-size:12px;font-weight:700;">
+								<span style="padding:7px 10px;border-right:1px solid rgba(255,255,255,0.2);">Ngày bắt đầu dự
 									kiến</span>
-								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày kết thúc dự
+								<span style="padding:7px 10px;border-right:1px solid rgba(255,255,255,0.2);">Ngày kết thúc dự
 									kiến</span>
 								<span style="padding:7px 10px;">Số ngày</span>
 							</div>
 							<div
 								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));font-size:12px;font-weight:700;">
 								<span id="dateStartPlan"
-									style="padding:7px 10px;border-right:1px solid #efd3e9;color:#1f3853;">---</span>
+									style="padding:7px 10px;border-right:1px solid #c8e6c9;color:#1a4d2e;">---</span>
 								<span id="dateEndPlan"
-									style="padding:7px 10px;border-right:1px solid #efd3e9;color:#1f3853;">---</span>
-								<span id="invoicePlanDays" style="padding:7px 10px;color:#1f3853;">---</span>
+									style="padding:7px 10px;border-right:1px solid #c8e6c9;color:#1a4d2e;">---</span>
+								<span id="invoicePlanDays" style="padding:7px 10px;color:#1a4d2e;">---</span>
 							</div>
 						</div>
 
@@ -1331,9 +1342,9 @@
 							</div>
 						</div>
 
-						<div style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;">
+						<div style="border:1px solid #c8e6c9;border-radius:8px;overflow:hidden;background:#f0fff4;">
 							<div
-								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:700;">
+								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#2e7d32;color:#ffffff;font-size:12px;font-weight:700;">
 								<span style="padding:7px 10px;">Thời gian dự kiến</span>
 								<span style="padding:7px 10px;">Thời gian thực tế</span>
 							</div>
@@ -1377,7 +1388,7 @@
 							<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px;" class="hidden">
 								<table style="width:100%;border-collapse:collapse;font-size:12px;">
 									<thead>
-										<tr style="background:#e779c1;color:#000;">
+										<tr style="background:#2e7d32;color:#fff;">
 											<th style="padding:6px 8px;text-align:left;">Ngày thứ</th>
 											<th style="padding:6px 8px;text-align:left;">Ngày làm</th>
 											<th style="padding:6px 8px;text-align:left;">Bắt đầu</th>
@@ -1388,7 +1399,7 @@
 									<tbody id="workHistoryBody"></tbody>
 								</table>
 							</div>
-							<p id="workHistoryEmpty" style="font-size:12px;color:#8b5f74;margin:0;">Chưa có lịch sử làm
+							<p id="workHistoryEmpty" style="font-size:12px;color:#388e3c;margin:0;">Chưa có lịch sử làm
 								việc.</p>
 						</div>
 
@@ -1403,7 +1414,7 @@
 							<span class="profile-status badge success">Khách hàng</span>
 						</div>
 						<div class="profile-body">
-							<img id="customerAvatarImg" class="profile-avatar" src="assets/logomvb.png"
+							<img id="customerAvatarImg" class="profile-avatar" src="assets/images/logo2.jpg"
 								alt="Khách hàng">
 							<iframe id="customerAvatar" class="profile-avatar" src="" frameborder="0"
 								style="display:none;"></iframe>
@@ -1426,7 +1437,7 @@
 							<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
 						</div>
 						<div class="profile-body">
-							<img id="staffAvatarImg" class="profile-avatar" src="assets/logomvb.png" alt="Nhà Cung Cấp">
+							<img id="staffAvatarImg" class="profile-avatar" src="assets/images/logo2.jpg" alt="Nhà Cung Cấp">
 							<iframe id="staffAvatar" class="profile-avatar" src="" frameborder="0"
 								style="display:none;"></iframe>
 							<div class="profile-main">
@@ -1601,7 +1612,7 @@
 				const el = $(id);
 				if (el) el.textContent = value || '---';
 			};
-			const setAvatar = (id, src, fallback = 'assets/logomvb.png') => {
+			const setAvatar = (id, src, fallback = 'assets/images/logo2.jpg') => {
 				const el = $(id);
 				if (!el) return;
 				el.onerror = () => {
@@ -2222,7 +2233,7 @@
 					tr.style.borderBottom = '1px solid #f0d4e3';
 					const dayIdx = rows.length - rows.indexOf(r);
 					tr.innerHTML = `
-						<td style="padding:5px 8px;font-weight:700;color:#c21178;">Ngày ${dayIdx}</td>
+						<td style="padding:5px 8px;font-weight:700;color:#1a4d2e;">Ngày ${dayIdx}</td>
 						<td style="padding:5px 8px;">${formatDateDisplay(r.ngay_lam)}</td>
 						<td style="padding:5px 8px;">${formatTimeDisplay(r.start)}</td>
 						<td style="padding:5px 8px;">${endCell}</td>

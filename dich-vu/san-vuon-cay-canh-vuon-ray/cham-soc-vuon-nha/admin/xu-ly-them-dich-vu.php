@@ -13,12 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $payloadResult = dichvu_build_payload_from_post($_POST);
 if (!($payloadResult['success'] ?? false)) {
-    $msg = rawurlencode((string)($payloadResult['message'] ?? 'Du lieu khong hop le.'));
+    $msg = rawurlencode((string) ($payloadResult['message'] ?? 'Du lieu khong hop le.'));
     header('Location: them-dich-vu.php?ok=0&msg=' . $msg);
     exit;
 }
 
-$payloadData = (array)($payloadResult['data'] ?? []);
+$payloadData = (array) ($payloadResult['data'] ?? []);
 $hasFile = isset($_FILES['image_file']) && is_array($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK;
 
 if (!$hasFile) {
@@ -39,7 +39,7 @@ $uploadUrl = $protocol . "://" . $_SERVER['HTTP_HOST'] . $baseUrl . "/upload.php
 $cfile = new CURLFile($_FILES['image_file']['tmp_name'], $_FILES['image_file']['type'], $_FILES['image_file']['name']);
 $postData = [
     'file' => $cfile,
-    'name' => (string)($payloadData['name'] ?? '')
+    'name' => (string) ($payloadData['name'] ?? '')
 ];
 
 $ch = curl_init($uploadUrl);
@@ -56,22 +56,22 @@ if ($response === false) {
     exit;
 }
 
-$res = json_decode((string)$response, true);
+$res = json_decode((string) $response, true);
 if (!($res['success'] ?? false)) {
-    $msg = rawurlencode((string)($res['message'] ?? 'Tai anh that bai.'));
+    $msg = rawurlencode((string) ($res['message'] ?? 'Tai anh that bai.'));
     header('Location: them-dich-vu.php?ok=0&msg=' . $msg);
     exit;
 }
 
-$payloadData['image'] = (string)($res['fileId'] ?? '');
+$payloadData['image'] = (string) ($res['fileId'] ?? '');
 
-$result = admin_api_insert_table('dichvu_mevabe', $payloadData);
+$result = admin_api_insert_table('dichvu_donvesinh', $payloadData);
 if (!($result['success'] ?? false)) {
-    $msg = rawurlencode((string)($result['message'] ?? 'Them dich vu that bai.'));
+    $msg = rawurlencode((string) ($result['message'] ?? 'Them dich vu that bai.'));
     header('Location: them-dich-vu.php?ok=0&msg=' . $msg);
     exit;
 }
 
-$msg = rawurlencode((string)($result['message'] ?? 'Them dich vu thanh cong.'));
+$msg = rawurlencode((string) ($result['message'] ?? 'Them dich vu thanh cong.'));
 header('Location: quan-ly-dich-vu.php?ok=1&msg=' . $msg);
 exit;
