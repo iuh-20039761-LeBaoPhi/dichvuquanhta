@@ -1912,6 +1912,16 @@
       });
     }
 
+    var statusFilterTrigger = document.getElementById("statusFilterTrigger");
+    if (statusFilterTrigger) {
+      statusFilterTrigger.addEventListener("click", function () {
+        var container = document.getElementById("statusFilterContainer");
+        if (container) {
+          container.classList.toggle("is-open");
+        }
+      });
+    }
+
     function applyAssignedStatusFilter(status) {
       var statusNode = document.getElementById("providerFilterStatus");
       if (statusNode) {
