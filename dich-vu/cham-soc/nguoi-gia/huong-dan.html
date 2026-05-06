@@ -1,753 +1,954 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hướng Dẫn Sử Dụng - Chăm Sóc Người Cao Tuổi</title>
+    <meta name="description"
+        content="Hướng dẫn sử dụng dịch vụ chăm sóc người cao tuổi: đăng nhập, đặt lịch, theo dõi tiến độ/nhật ký, đánh giá và thao tác quản trị.">
+    <title>Hướng dẫn sử dụng - Dịch vụ Chăm sóc Người Cao Tuổi</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        :root {
-            --primary-color: #2e7d32;
-            --secondary-color: #64748b;
-            --bg-color: #f1f8e9;
-            --card-bg: #ffffff;
-            --text-main: #1b5e20;
-            --text-muted: #4e7d50;
-            --border-color: #c8e6c9;
-            --accent-soft: #e8f5e9;
-            --success: #388e3c;
-            --warning: #f59e0b;
-            --transition: all 0.3s ease;
+        /* Hide carousel indicators (gạch ngang dưới slide) */
+        .carousel-indicators {
+            display: none;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            /* Giữ tên biến theo file mẫu để đồng bộ layout */
+            --pink-primary: #2e7d32;
+            --pink-light: #e8f5e9;
+            --pink-dark: #1b5e20;
+            --bg-gradient: linear-gradient(135deg, #f1f8e9 0%, #ffffff 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
         }
 
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            scroll-behavior: smooth;
+            background: var(--bg-gradient);
+            color: #1f2937;
         }
 
-        /* Layout */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 40px;
-        }
-
-        @media (max-width: 992px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-            .sidebar {
-                display: none;
-            }
-        }
-
-        /* Header */
-        header {
-            background: var(--card-bg);
-            border-bottom: 2px solid var(--primary-color);
-            padding: 20px 0;
+        /* Hero Header */
+        .hero-section {
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+                url('https://www.transparenttextures.com/patterns/cubes.png'),
+                linear-gradient(45deg, var(--pink-light), #ffffff);
+            padding: 15px 0;
+            border-bottom: 3px solid var(--pink-light);
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         }
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
+        .hero-title {
+            color: var(--pink-dark);
             font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 0;
         }
 
-        .logo img {
-            width: 45px;
-            height: 45px;
-            object-fit: contain;
+        .hero-section p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
         }
 
         /* Sidebar Navigation */
-        .sidebar {
+        .sidebar-menu {
             position: sticky;
             top: 100px;
-            height: calc(100vh - 120px);
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .sidebar h4 {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            margin-top: 30px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar li a {
-            display: block;
-            padding: 10px 15px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            margin-bottom: 5px;
-            transition: var(--transition);
-        }
-
-        .sidebar li a:hover, .sidebar li a.active {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-
-        /* Main Content Area */
-        main {
-            padding: 40px 0;
-        }
-
-        section {
-            margin-bottom: 60px;
-            background: #fff;
-            padding: 30px;
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.05);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.12);
+            border: 1px solid var(--pink-light);
         }
 
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--primary-color);
+        .sidebar-menu .nav-link {
+            color: #64748b;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 15px;
         }
 
-        .section-intro {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+        .sidebar-menu .nav-link i {
+            width: 30px;
+            color: var(--pink-primary);
+        }
+
+        .sidebar-menu .nav-link:hover,
+        .sidebar-menu .nav-link.active {
+            background-color: var(--pink-primary);
+            color: white !important;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu .nav-link:hover i,
+        .sidebar-menu .nav-link.active i {
+            color: white;
+        }
+
+        /* Content Area */
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
             margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border-left: 5px solid var(--pink-primary);
         }
 
-        /* Feature Card & Accordion */
-        .feature-card {
-            background: #fff;
-            border: 1px solid var(--border-color);
+        .section-header {
+            color: var(--pink-dark);
+            margin-bottom: 25px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--pink-primary);
+            border-radius: 2px;
+        }
+
+        /* Placeholder Content */
+        .placeholder-box {
+            background: #fdfdfd;
+            border: 2px dashed var(--pink-light);
             border-radius: 15px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            transition: var(--transition);
+            padding: 28px;
+            text-align: center;
+            color: #6b7280;
         }
 
-        .feature-header {
-            padding: 22px;
+        /* Footer */
+        footer {
+            background: var(--pink-light);
+            padding: 30px 0;
+            margin-top: 50px;
+            text-align: center;
+            border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+        }
+
+        .text-pink {
+            color: var(--pink-dark) !important;
+        }
+
+        .bg-pink {
+            background-color: var(--pink-primary) !important;
+            color: white;
+        }
+
+        .border-pink {
+            border-color: var(--pink-primary) !important;
+        }
+
+        .border-bottom-3 {
+            border-bottom-width: 3px !important;
+        }
+
+        /* Accordion Style */
+        .section-content {
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .content-card.active {
+            border-left: 5px solid var(--pink-dark);
+            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.12);
+        }
+
+        .content-card.active .section-content {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header[role="button"] {
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            user-select: none;
         }
 
-        .feature-header:hover {
-            background-color: var(--accent-soft);
+        .section-header[role="button"]::after {
+            content: '\f078';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 1rem;
+            color: var(--pink-primary);
+            transition: transform 0.3s ease;
         }
 
-        .feature-header h3 {
-            font-size: 1.15rem;
-            font-weight: 700;
+        .content-card.active .section-header::after {
+            transform: rotate(180deg);
+            color: var(--pink-dark);
+        }
+
+        /* Guide Accordion Styles */
+        .guide-large-header,
+        .guide-small-header {
+            cursor: pointer;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            font-weight: 600;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 15px;
+            transition: all 0.3s ease;
         }
 
-        .feature-header h3 i {
-            color: var(--primary-color);
+        .guide-large-header {
+            background-color: var(--pink-light);
+            color: var(--pink-dark);
         }
 
-        .feature-header .toggle-icon {
-            font-size: 0.8rem;
-            transition: var(--transition);
-            color: var(--primary-color);
+        .guide-small-header {
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            color: #374151;
+            font-size: 0.95rem;
         }
 
-        .feature-content {
-            display: none;
-            padding: 0 22px 30px;
-            border-top: 1px solid var(--border-color);
+        .guide-large-header:hover,
+        .guide-small-header:hover {
+            filter: brightness(0.98);
         }
 
-        .feature-card.open .feature-content {
-            display: block;
+        .guide-large-header[aria-expanded="true"] {
+            background-color: var(--pink-primary);
+            color: white;
         }
 
-        .feature-card.open .toggle-icon {
+        .guide-small-header[aria-expanded="true"] {
+            border-color: var(--pink-primary);
+            color: var(--pink-dark);
+            background-color: #fff;
+        }
+
+        .guide-large-header::after,
+        .guide-small-header::after {
+            content: '\f107';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .guide-large-header[aria-expanded="true"]::after,
+        .guide-small-header[aria-expanded="true"]::after {
             transform: rotate(180deg);
         }
 
-        /* Flow Visuals */
-        .flow-container {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: var(--accent-soft);
-            border-radius: 12px;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .flow-step {
+        /* Step Diagram (no images) */
+        .stepper {
             position: relative;
-            padding-left: 40px;
-            margin-bottom: 25px;
+            padding-left: 44px;
         }
 
-        .flow-step:last-child {
-            margin-bottom: 0;
+        .stepper-step {
+            position: relative;
+            padding-bottom: 18px;
         }
 
-        .flow-step::before {
+        .stepper-step:last-child {
+            padding-bottom: 0;
+        }
+
+        .stepper-step::before {
             content: '';
             position: absolute;
-            left: 12px;
-            top: 28px;
-            bottom: -15px;
+            left: -24px;
+            top: 26px;
+            bottom: -8px;
             width: 2px;
-            background-color: var(--border-color);
+            background: #e5e7eb;
         }
 
-        .flow-step:last-child::before {
+        .stepper-step:last-child::before {
             display: none;
         }
 
-        .flow-dot {
+        .stepper-dot {
             position: absolute;
-            left: 0;
-            top: 0;
-            width: 26px;
-            height: 26px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
+            left: -35px;
+            top: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            background: var(--pink-primary);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 800;
             z-index: 1;
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.22);
         }
 
-        .flow-step h4 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--text-main);
+        .stepper-title {
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 2px;
         }
 
-        .flow-step p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+        .stepper-desc {
+            margin: 0;
+            color: #4b5563;
+            font-size: 0.95rem;
         }
 
-        /* Info blocks */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
+        .stepper-meta {
+            margin-top: 10px;
+            background: #f9fafb;
+            border: 1px solid #eef2f7;
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #374151;
+            font-size: 0.92rem;
         }
 
-        @media (max-width: 600px) {
-            .info-grid {
-                grid-template-columns: 1fr;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 18px 12px !important;
+            }
+
+            .section-header {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+
+            .stepper {
+                padding-left: 40px;
             }
         }
 
-        .info-box {
-            padding: 18px;
-            border-radius: 12px;
-            background: var(--accent-soft);
-            border: 1px solid var(--border-color);
+        @media (min-width: 992px) {
+            #sidebarMenu {
+                position: sticky;
+                top: 100px;
+                z-index: 900;
+                height: fit-content;
+            }
+
+            .offcanvas-body {
+                overflow: visible !important;
+            }
         }
 
-        .info-box span {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            margin-bottom: 10px;
+        @media (max-width: 991.98px) {
+            .sidebar-menu {
+                position: relative;
+                top: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+
+            .offcanvas-body .sidebar-menu {
+                margin-top: 20px;
+            }
         }
-
-        .info-box p {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            font-weight: 500;
-        }
-
-        .result-box {
-            padding: 18px;
-            background-color: #e8f5e9;
-            border: 1px solid var(--primary-color);
-            border-radius: 12px;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .result-box i {
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            margin-top: 2px;
-        }
-
-        .result-box p {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        /* Role Badge */
-        .role-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 25px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .role-customer { background: #c8e6c9; color: #1b5e20; }
-        .role-provider { background: #ffe0b2; color: #e65100; }
-        .role-admin { background: #bbdefb; color: #0d47a1; }
-
-        /* Search bar */
-        .search-container {
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .search-container input {
-            width: 100%;
-            padding: 18px 25px 18px 60px;
-            border: 2px solid var(--border-color);
-            border-radius: 15px;
-            font-size: 1rem;
-            font-family: inherit;
-            outline: none;
-            transition: var(--transition);
-            background: #fff;
-        }
-
-        .search-container input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 5px rgba(46, 125, 50, 0.1);
-        }
-
-        .search-container i {
-            position: absolute;
-            left: 25px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary-color);
-            font-size: 1.2rem;
-        }
-
-        .mb-4 { margin-bottom: 2rem; }
-        .fw-bold { font-weight: 700; }
-
     </style>
 </head>
+
 <body>
 
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <img src="assets/logong.png" alt="Logo">
-                <span>Hướng Dẫn Sử Dụng • Chăm Sóc Người Già</span>
+    <!-- Header Section -->
+    <header class="hero-section">
+        <div class="container-fluid d-flex align-items-center justify-content-between"
+            style="padding-left: 3px; padding-right: 3px;">
+            <div class="d-lg-none" style="width: 32px"></div>
+
+            <div class="text-center flex-grow-1">
+                <h1 class="hero-title">Hướng dẫn</h1>
+                <p class="text-muted d-none d-md-block mb-0">Dịch vụ Chăm sóc Người Cao Tuổi tận tâm</p>
             </div>
+
+            <button class="btn d-lg-none text-pink p-0" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#sidebarMenu">
+                <i class="fas fa-bars fs-3"></i>
+            </button>
         </div>
     </header>
 
-    <div class="container">
-        <aside class="sidebar">
-            <h4>Hệ thống</h4>
-            <ul>
-                <li><a href="#tong-quan" class="active">Tổng quan dịch vụ</a></li>
-            </ul>
-
-            <h4>Cho Khách hàng</h4>
-            <ul>
-                <li><a href="#kh-dang-ky">Đăng ký & Đăng nhập</a></li>
-                <li><a href="#kh-dat-lich">Quy trình đặt lịch</a></li>
-                <li><a href="#kh-theo-doi">Theo dõi & Tiến độ</a></li>
-                <li><a href="#kh-danh-gia">Đánh giá chất lượng</a></li>
-            </ul>
-
-            <h4>Cho Nhân viên</h4>
-            <ul>
-                <li><a href="#ncc-cong-viec">Thực hiện ca làm</a></li>
-                <li><a href="#ncc-bao-cao">Báo cáo & Minh chứng</a></li>
-            </ul>
-
-            <h4>Cho Quản trị viên</h4>
-            <ul>
-                <li><a href="#admin-dich-vu">Thiết lập dịch vụ</a></li>
-                <li><a href="#admin-don-hang">Điều hành đơn hàng</a></li>
-            </ul>
-        </aside>
-
-        <main>
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Bạn cần hướng dẫn về chức năng nào?" id="searchInput">
+    <main class="container-fluid my-4" style="padding-left: 3px; padding-right: 3px;">
+        <div class="row g-2">
+            <!-- Navigation Sidebar -->
+            <div class="col-lg-3">
+                <div class="offcanvas-lg offcanvas-end" id="sidebarMenu" tabindex="-1">
+                    <div class="offcanvas-header bg-pink text-white">
+                        <h5 class="offcanvas-title fw-bold">Danh mục hướng dẫn</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                            data-bs-target="#sidebarMenu"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <nav class="sidebar-menu shadow-sm">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#gioi-thieu">
+                                        <i class="fas fa-info-circle"></i> 1. Giới thiệu
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#giao-dien">
+                                        <i class="fas fa-desktop"></i> 2. Giao diện
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#huong-dan">
+                                        <i class="fas fa-book-open"></i> 3. Hướng dẫn chi tiết
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#lien-he">
+                                        <i class="fas fa-envelope"></i> 4. Liên hệ
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
 
-            <!-- Overview -->
-            <section id="tong-quan">
-                <h1 class="section-title"><i class="fas fa-info-circle"></i> Tổng quan dịch vụ</h1>
-                <p class="section-intro">
-                    Hệ thống **Chăm Sóc Người Cao Tuổi** là giải pháp kết nối gia đình với những người chăm sóc tận tâm, chuyên nghiệp. Chúng tôi tập trung vào việc cải thiện chất lượng sống cho người già thông qua quy trình chăm sóc khoa học, minh bạch và đầy tình thương.
-                </p>
+            <!-- Content Area -->
+            <div class="col-lg-9 col-12">
 
-                <div class="info-grid">
-                    <div class="info-box">
-                        <span>Giá trị mang lại</span>
-                        <p>An tâm cho gia đình, hạnh phúc cho người già. Theo dõi tiến độ thời gian thực và nhật ký chăm sóc chi tiết từng ngày.</p>
-                    </div>
-                    <div class="info-box">
-                        <span>Gói dịch vụ chính</span>
-                        <p>Hỗ trợ sinh hoạt hằng ngày, chăm sóc người già suy yếu/khó đi lại và các gói chăm sóc toàn diện 24/7.</p>
-                    </div>
-                </div>
+                <!-- 1. Giới thiệu -->
+                <section id="gioi-thieu" class="content-card active">
+                    <h2 class="section-header" role="button">1. Giới thiệu</h2>
+                    <div class="section-content">
+                        <p class="lead mb-4">Hệ thống <strong>Chăm sóc Người Cao Tuổi</strong> giúp gia đình đặt lịch dịch vụ,
+                            theo dõi quá trình chăm sóc minh bạch và quản lý lịch sử đơn hàng một cách thuận tiện.</p>
 
-                <div class="mb-4">
-                    <h3 class="mb-3">Phân quyền người dùng</h3>
-                    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                        <div class="info-box">
-                            <div class="role-badge role-customer">Gia đình</div>
-                            <p style="font-size: 0.85rem;">Tìm kiếm, đặt lịch, giám sát tiến độ thực tế và gửi phản hồi về chất lượng phục vụ.</p>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <h5 class="fw-bold text-pink"><i class="fas fa-bullseye me-2"></i>Mục đích</h5>
+                                <p>Chuẩn hóa quy trình đặt lịch, xác nhận, thực hiện ca chăm sóc; hỗ trợ theo dõi
+                                    <strong>nhật ký hằng ngày</strong> và <strong>tiến độ</strong> dịch vụ.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="fw-bold text-pink"><i class="fas fa-users me-2"></i>Đối tượng</h5>
+                                <p>Người cao tuổi và gia đình; nhân viên chăm sóc; quản trị viên vận hành hệ thống.</p>
+                            </div>
                         </div>
-                        <div class="info-box">
-                            <div class="role-badge role-provider">Nhân viên (NCC)</div>
-                            <p style="font-size: 0.85rem;">Thực hiện ca làm việc, cập nhật checklist công việc hàng ngày và báo cáo tình hình sức khỏe.</p>
-                        </div>
-                        <div class="info-box">
-                            <div class="role-badge role-admin">Quản trị</div>
-                            <p style="font-size: 0.85rem;">Quản lý danh mục gói dịch vụ, duyệt đơn hàng và điều phối nhân viên phù hợp.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <!-- CUSTOMER -->
-            <section id="khach-hang">
-                <h2 class="section-title"><i class="fas fa-users"></i> Dành cho Khách hàng</h2>
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-pink"><i class="fas fa-star me-2"></i>Chức năng chính</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Đăng ký/Đăng nhập</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Đặt lịch chăm sóc</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Theo dõi nhật ký & tiến độ</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Quản lý đơn hàng & hóa đơn</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Đánh giá & phản hồi</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Quản trị dịch vụ & phê duyệt</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Đăng ký -->
-                <div class="feature-card" id="kh-dang-ky">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-id-card"></i> Tài khoản & Đăng nhập</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="info-grid">
-                            <div class="info-box">
-                                <span>Điều kiện</span>
-                                <p>Sử dụng Số điện thoại hoặc Email để định danh duy nhất trên hệ thống.</p>
-                            </div>
+                        <div class="workflow-box p-3 border-start border-4 border-pink bg-light">
+                            <h5 class="fw-bold text-pink small text-uppercase mb-2">Quy trình tổng quan</h5>
+                            <p class="small mb-0">
+                                Đăng nhập &rarr; Chọn <strong>Dịch vụ</strong> &rarr; <strong>Đặt lịch</strong> &rarr;
+                                Admin <strong>phê duyệt</strong> &rarr; Nhân viên <strong>check-in/check-out</strong> &rarr;
+                                Gia đình theo dõi <strong>nhật ký</strong> &rarr; <strong>hoàn thành</strong> &amp; đánh giá.
+                            </p>
                         </div>
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Đăng ký thông tin</h4>
-                                <p>Cung cấp Họ tên, SĐT, Email và địa chỉ thường trú để thuận tiện cho việc đặt lịch sau này.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Đăng nhập bảo mật</h4>
-                                <p>Sử dụng mật khẩu cá nhân để truy cập vào lịch sử đơn hàng và thông tin cá nhân.</p>
-                            </div>
-                        </div>
-                        <div class="result-box">
-                            <i class="fas fa-check-double"></i>
-                            <p>Tài khoản được kích hoạt, khách hàng có thể bắt đầu sử dụng toàn bộ tính năng đặt lịch và theo dõi.</p>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Quy trình đặt lịch -->
-                <div class="feature-card" id="kh-dat-lich">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-calendar-alt"></i> Quy trình Đặt lịch Chăm sóc</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="info-grid">
-                            <div class="info-box">
-                                <span>Tính năng đặc biệt</span>
-                                <p>**Map Picker**: Chọn vị trí phục vụ chính xác trên bản đồ để nhân viên dễ dàng tìm đến.</p>
-                            </div>
-                        </div>
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Thông tin Người cần chăm sóc</h4>
-                                <p>Nhập tên, tình trạng sức khỏe hiện tại và các lưu ý đặc biệt khi chăm sóc người già.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Chọn gói & Checklist</h4>
-                                <p>Chọn gói phù hợp (Nhẹ/TB/Nặng). Hệ thống tự động liệt kê các **đầu việc checklist** đi kèm.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">3</div>
-                                <h4>Thời gian & Lịch trình</h4>
-                                <p>Chọn ngày bắt đầu, ngày kết thúc và khung giờ nhân viên sẽ có mặt tại nhà.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">4</div>
-                                <h4>Xem chi tiết Bảng giá</h4>
-                                <p>Hệ thống tính toán phí: Giá gói + Phí đi lại (theo khoảng cách) + Phí đêm/lễ (nếu có).</p>
-                            </div>
-                        </div>
-                        <div class="result-box">
-                            <i class="fas fa-check-double"></i>
-                            <p>Đơn hàng được gửi tới Admin ở trạng thái **"Chờ duyệt"**. Bạn sẽ nhận được thông báo khi có người nhận việc.</p>
-                        </div>
-                    </div>
-                </div>
+                        <hr class="my-4 opacity-25">
 
-                <!-- Theo dõi tiến độ -->
-                <div class="feature-card" id="kh-theo-doi">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-spinner"></i> Theo dõi Tiến độ & Nhật ký ca làm</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="info-grid">
-                            <div class="info-box">
-                                <span>Công cụ giám sát</span>
-                                <p>**Progress Ring**: Hiển thị trực quan tỷ lệ % hoàn thành đơn hàng dựa trên số ca đã thực hiện.</p>
-                            </div>
-                        </div>
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Xem giờ làm thực tế</h4>
-                                <p>Kiểm tra thời gian nhân viên bắt đầu (Check-in) và kết thúc (Check-out) thực tế mỗi ngày.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Nhật ký công việc</h4>
-                                <p>Đọc ghi chú của nhân viên về tình hình sức khỏe, ăn uống và các hoạt động của người già trong ca làm.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">3</div>
-                                <h4>Báo cáo hình ảnh</h4>
-                                <p>Xem các ảnh minh chứng (được tải lên từ Google Drive) về các hoạt động chăm sóc trong ngày.</p>
-                            </div>
-                        </div>
-                        <div class="result-box">
-                            <i class="fas fa-check-double"></i>
-                            <p>Gia đình hoàn toàn yên tâm khi biết rõ người thân được chăm sóc như thế nào dù đang ở xa.</p>
-                        </div>
-                    </div>
-                </div>
+                        <div class="admin-overview">
+                            <h5 class="fw-bold text-pink mb-3"><i class="fas fa-user-shield me-2"></i>Quản trị hệ thống (Admin)</h5>
+                            <p class="small text-muted mb-4">Mô-đun <code>admin_nguoigia</code> giúp quản trị viên quản lý gói dịch vụ,
+                                duyệt đơn, phân công nhân viên và giám sát chất lượng thực hiện.</p>
 
-                <!-- Đánh giá -->
-                <div class="feature-card" id="kh-danh-gia">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-award"></i> Đánh giá chất lượng phục vụ</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Phản hồi sau khi hoàn thành</h4>
-                                <p>Khi đơn hàng kết thúc, hãy để lại nhận xét về thái độ và chuyên môn của người chăm sóc.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Gửi minh chứng hài lòng</h4>
-                                <p>Có thể tải lên hình ảnh để khen ngợi hoặc góp ý xây dựng cho nhân viên.</p>
-                            </div>
-                        </div>
-                        <div class="result-box">
-                            <i class="fas fa-check-double"></i>
-                            <p>Ý kiến của bạn giúp hệ thống nâng cao tiêu chuẩn dịch vụ và khen thưởng nhân viên xuất sắc.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- STAFF -->
-            <section id="nhan-vien">
-                <h2 class="section-title"><i class="fas fa-user-nurse"></i> Dành cho Nhân viên (NCC)</h2>
-
-                <div class="feature-card" id="ncc-cong-viec">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-clipboard-check"></i> Thực hiện ca làm việc hàng ngày</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Bắt đầu làm (Check-in)</h4>
-                                <p>Khi đến nhà khách hàng, nhấn nút **"Bắt đầu làm việc"** để ghi nhận tọa độ và thời gian thực tế.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Thực hiện Checklist</h4>
-                                <p>Hoàn thành các đầu việc (vệ sinh, uống thuốc, tập thể dục...) và tích chọn vào danh sách báo cáo.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">3</div>
-                                <h4>Kết thúc ca (Check-out)</h4>
-                                <p>Nhấn **"Kết thúc ca làm"**, nhập tóm tắt tình hình trong ngày và tải lên ảnh minh chứng.</p>
-                            </div>
-                        </div>
-                        <div class="result-box">
-                            <i class="fas fa-history"></i>
-                            <p>Dữ liệu được lưu vào **Lịch sử làm việc** và cộng dồn vào tiến độ hoàn thành đơn hàng.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ADMIN -->
-            <section id="quan-tri">
-                <h2 class="section-title"><i class="fas fa-user-shield"></i> Dành cho Quản trị viên</h2>
-
-                <div class="feature-card" id="admin-dich-vu">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-cog"></i> Thiết lập Gói dịch vụ & Checklist</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Cấu hình Gói chăm sóc</h4>
-                                <p>Thiết lập tên gói, mô tả chi tiết và tải lên ảnh minh họa thông qua Google Drive ID.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Định nghĩa Checklist</h4>
-                                <p>Soạn thảo danh sách các công việc mà nhân viên phải thực hiện cho mỗi gói cụ thể.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">3</div>
-                                <h4>Bảng giá & Phụ phí</h4>
-                                <p>Cài đặt mức giá cơ sở và các phí phụ thu linh hoạt theo tình hình thực tế.</p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-concierge-bell text-pink me-2"></i>Quản lý gói dịch vụ</h6>
+                                        <p class="small mb-0 text-secondary">Cập nhật gói chăm sóc, mô tả, checklist công việc và bảng giá.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-file-invoice-dollar text-pink me-2"></i>Quản lý đơn hàng</h6>
+                                        <p class="small mb-0 text-secondary">Duyệt đơn, cập nhật trạng thái, theo dõi nhật ký & xử lý phát sinh.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-id-card-alt text-pink me-2"></i>Quản lý nhân viên</h6>
+                                        <p class="small mb-0 text-secondary">Theo dõi nhân sự, lịch làm việc và chất lượng báo cáo từng ca.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-headset text-pink me-2"></i>Hỗ trợ gia đình</h6>
+                                        <p class="small mb-0 text-secondary">Tiếp nhận phản hồi/đánh giá và xử lý yêu cầu hỗ trợ nhanh.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="feature-card" id="admin-don-hang">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-tasks"></i> Điều hành & Duyệt đơn hàng</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Duyệt đơn hàng mới</h4>
-                                <p>Kiểm tra tính hợp lệ của yêu cầu từ khách hàng và nhấn "Phê duyệt" để nhân viên có thể nhận việc.</p>
+                <!-- 2. Giao diện -->
+                <section id="giao-dien" class="content-card">
+                    <h2 class="section-header" role="button">2. Giao diện</h2>
+                    <div class="section-content">
+                        <p class="text-muted mb-4">Giao diện được thiết kế tối giản, chữ rõ và thao tác dễ dàng.
+                            Bên dưới là mô tả các khu vực chính để bạn định vị chức năng nhanh (không dùng ảnh).</p>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-4 shadow-sm h-100 bg-white">
+                                    <h5 class="fw-bold text-pink mb-2"><i class="fas fa-user me-2"></i>Gia đình/Khách hàng</h5>
+                                    <ul class="mb-0">
+                                        <li><strong>Trang dịch vụ</strong>: xem gói chăm sóc, nội dung và chi phí.</li>
+                                        <li><strong>Đặt lịch</strong>: nhập thông tin người cao tuổi, địa chỉ, thời gian.</li>
+                                        <li><strong>Đơn hàng</strong>: theo dõi trạng thái, nhật ký hằng ngày, hóa đơn.</li>
+                                        <li><strong>Đánh giá</strong>: phản hồi sau khi hoàn thành.</li>
+                                    </ul>
+                                    <div class="stepper-meta mt-3">
+                                        Gợi ý: bắt đầu từ <a href="dich-vu.html">Dịch vụ</a> &rarr; <a href="dat-lich.html">Đặt lịch</a>.
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Giám sát nhật ký ca làm</h4>
-                                <p>Kiểm soát thời gian Check-in/out và chất lượng báo cáo của nhân viên để đảm bảo cam kết dịch vụ.</p>
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-4 shadow-sm h-100 bg-white">
+                                    <h5 class="fw-bold text-pink mb-2"><i class="fas fa-user-nurse me-2"></i>Nhân viên (NCC)</h5>
+                                    <ul class="mb-0">
+                                        <li><strong>Danh sách ca</strong>: xem lịch/đơn được phân công.</li>
+                                        <li><strong>Check-in/Check-out</strong>: ghi nhận thời gian thực tế.</li>
+                                        <li><strong>Checklist</strong>: tích chọn việc đã làm (ăn uống, vệ sinh, vận động...).</li>
+                                        <li><strong>Nhật ký</strong>: ghi chú tình trạng và cập nhật ca làm.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="p-3 border rounded-4 shadow-sm bg-white">
+                                    <h5 class="fw-bold text-pink mb-2"><i class="fas fa-user-shield me-2"></i>Admin</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="placeholder-box h-100">
+                                                <div class="fw-bold mb-2"><i class="fas fa-sitemap me-2"></i>Quản lý dịch vụ</div>
+                                                Thêm/sửa gói dịch vụ, checklist công việc, cấu hình bảng giá.
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="placeholder-box h-100">
+                                                <div class="fw-bold mb-2"><i class="fas fa-clipboard-check me-2"></i>Duyệt & giám sát</div>
+                                                Duyệt đơn, phân công nhân viên, theo dõi nhật ký ca làm.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-        </main>
-    </div>
+                </section>
 
-    <footer style="background: #fff; border-top: 1px solid var(--border-color); padding: 50px 0; text-align: center; margin-top: 60px;">
-        <div class="container" style="display: block;">
-            <p style="color: var(--text-muted); font-size: 1rem; font-weight: 600;">© 2026 Chăm Sóc Người Cao Tuổi. Giải pháp chăm sóc sức khỏe toàn diện.</p>
+                <!-- 3. Hướng dẫn chi tiết -->
+                <section id="huong-dan" class="content-card">
+                    <h2 class="section-header" role="button">3. Hướng dẫn chi tiết</h2>
+                    <div class="section-content">
+
+                        <div class="accordion" id="guideAccordionMain">
+
+                            <!-- I. KHÁCH HÀNG -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header" data-bs-toggle="collapse" data-bs-target="#guideCustomer"
+                                    aria-expanded="true">
+                                    <span><i class="fas fa-user me-2"></i>I. KHÁCH HÀNG</span>
+                                </div>
+                                <div id="guideCustomer" class="collapse show" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subCustomer">
+
+                                        <!-- 1.1 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#cust1"
+                                                aria-expanded="true">
+                                                1.1 Đăng nhập & chuẩn bị thông tin
+                                            </div>
+                                            <div id="cust1" class="collapse show" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Mở trang &rarr; Đăng nhập &rarr; Kiểm tra hồ sơ &rarr; Chuẩn bị thông tin người cao tuổi</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Đăng nhập hệ thống</div>
+                                                            <p class="stepper-desc">Đăng nhập để lưu lịch sử đơn hàng và theo dõi nhật ký chăm sóc.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Kiểm tra thông tin liên hệ</div>
+                                                            <p class="stepper-desc">Đảm bảo số điện thoại và địa chỉ chính xác để xác nhận lịch nhanh.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Chuẩn bị thông tin cần chăm sóc</div>
+                                                            <p class="stepper-desc">Ghi lại nhu cầu hỗ trợ (ăn uống, vệ sinh, vận động, đồng hành...) và ghi chú đặc biệt.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 1.2 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust2"
+                                                aria-expanded="false">
+                                                1.2 Đặt lịch chăm sóc người cao tuổi
+                                            </div>
+                                            <div id="cust2" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Chọn gói &rarr; Nhập thông tin &rarr; Chọn thời gian &rarr; Xem lại &rarr; Xác nhận</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Vào trang “Dịch vụ”</div>
+                                                            <p class="stepper-desc">Chọn gói phù hợp (hỗ trợ sinh hoạt, chăm sóc nâng cao, 24/7...).</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Mở trang “Đặt lịch”</div>
+                                                            <p class="stepper-desc">Vào form đặt lịch để nhập thông tin chi tiết.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Nhập thông tin & địa chỉ</div>
+                                                            <p class="stepper-desc">Điền thông tin người cao tuổi, địa chỉ phục vụ và yêu cầu hỗ trợ cụ thể.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">4</div>
+                                                            <div class="stepper-title">Chọn thời gian & khung giờ</div>
+                                                            <p class="stepper-desc">Chọn ngày bắt đầu/kết thúc và khung giờ phù hợp với sinh hoạt gia đình.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">5</div>
+                                                            <div class="stepper-title">Xác nhận đặt lịch</div>
+                                                            <p class="stepper-desc">Kiểm tra tổng chi phí và xác nhận gửi yêu cầu để admin duyệt.</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="alert alert-info mt-3 mb-0" role="alert">
+                                                        <i class="fas fa-circle-info me-2"></i>
+                                                        Mẹo: ghi chú các thói quen sinh hoạt (giờ ăn, vận động, nghỉ ngơi) giúp nhân viên chăm sóc sát nhu cầu.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 1.3 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust3"
+                                                aria-expanded="false">
+                                                1.3 Theo dõi nhật ký & tiến độ
+                                            </div>
+                                            <div id="cust3" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Mở “Đơn hàng của tôi” &rarr; Chọn đơn &rarr; Xem tiến độ &rarr; Xem nhật ký &rarr; Theo dõi ghi chú</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Mở chi tiết đơn hàng</div>
+                                                            <p class="stepper-desc">Chọn đơn đang thực hiện để xem tiến độ tổng quan.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Xem % tiến độ</div>
+                                                            <p class="stepper-desc">Theo dõi mức hoàn thành theo số ca/ngày đã thực hiện.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Xem nhật ký theo ngày</div>
+                                                            <p class="stepper-desc">Xem check-in/check-out, checklist công việc và ghi chú chi tiết của nhân viên.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 1.4 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust4"
+                                                aria-expanded="false">
+                                                1.4 Đánh giá & phản hồi
+                                            </div>
+                                            <div id="cust4" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Hoàn thành &rarr; Mở đơn &rarr; Viết đánh giá &rarr; Gửi phản hồi</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Chọn đơn đã hoàn thành</div>
+                                                            <p class="stepper-desc">Vào danh sách đơn và chọn đơn trạng thái “Hoàn thành”.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Gửi đánh giá</div>
+                                                            <p class="stepper-desc">Nhận xét thái độ, đúng giờ, chất lượng chăm sóc để cải thiện dịch vụ.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- II. NHÂN VIÊN -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse" data-bs-target="#guideProvider"
+                                    aria-expanded="false">
+                                    <span><i class="fas fa-user-nurse me-2"></i>II. NHÂN VIÊN (NCC)</span>
+                                </div>
+                                <div id="guideProvider" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subProvider">
+
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#ncc1"
+                                                aria-expanded="true">
+                                                2.1 Thực hiện ca (Check-in &rarr; Checklist &rarr; Check-out)
+                                            </div>
+                                            <div id="ncc1" class="collapse show" data-bs-parent="#subProvider">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Đến nơi &rarr; Check-in &rarr; Thực hiện &rarr; Ghi chú &rarr; Check-out</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Bắt đầu ca (Check-in)</div>
+                                                            <p class="stepper-desc">Nhấn “Bắt đầu làm việc” để ghi nhận thời gian thực tế.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Thực hiện checklist</div>
+                                                            <p class="stepper-desc">Tích chọn đầu việc đã làm: hỗ trợ ăn uống, vệ sinh, vận động, đồng hành tinh thần...</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Ghi chú ca làm</div>
+                                                            <p class="stepper-desc">Cập nhật tình trạng, lưu ý và đề xuất theo dõi cho gia đình.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">4</div>
+                                                            <div class="stepper-title">Kết thúc ca (Check-out)</div>
+                                                            <p class="stepper-desc">Nhấn “Kết thúc ca” để chốt thời gian và cập nhật tiến độ.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- III. ADMIN -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse" data-bs-target="#guideAdmin"
+                                    aria-expanded="false">
+                                    <span><i class="fas fa-user-shield me-2"></i>III. QUẢN TRỊ VIÊN (ADMIN)</span>
+                                </div>
+                                <div id="guideAdmin" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subAdmin">
+
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#ad1"
+                                                aria-expanded="true">
+                                                3.1 Duyệt đơn & phân công nhân viên
+                                            </div>
+                                            <div id="ad1" class="collapse show" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Đơn chờ duyệt &rarr; Kiểm tra &rarr; Duyệt &rarr; Phân công &rarr; Giám sát nhật ký</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Kiểm tra đơn</div>
+                                                            <p class="stepper-desc">Xem thời gian, địa chỉ, yêu cầu hỗ trợ và ghi chú của khách hàng.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Duyệt & phân công</div>
+                                                            <p class="stepper-desc">Duyệt đơn và phân công nhân viên phù hợp theo lịch và kỹ năng.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Giám sát thực hiện</div>
+                                                            <p class="stepper-desc">Theo dõi check-in/check-out, checklist và nhật ký ca làm để đảm bảo chất lượng.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Liên hệ -->
+                <section id="lien-he" class="content-card">
+                    <h2 class="section-header" role="button">4. Liên hệ</h2>
+                    <div class="section-content">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light h-100">
+                                    <h5 class="fw-bold text-pink"><i class="fas fa-life-ring me-2"></i>Hỗ trợ sử dụng</h5>
+                                    <p class="mb-2 text-muted">Nếu bạn gặp lỗi thao tác hoặc cần điều chỉnh lịch:</p>
+                                    <ul class="mb-0">
+                                        <li>Truy cập trang <a href="lien-he.html">Liên hệ</a> để gửi yêu cầu.</li>
+                                        <li>Chuẩn bị: mã đơn hàng, số điện thoại, nội dung cần hỗ trợ.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light h-100">
+                                    <h5 class="fw-bold text-pink"><i class="fas fa-shield-heart me-2"></i>Lưu ý</h5>
+                                    <p class="mb-0 text-muted">Trang này hướng dẫn thao tác hệ thống. Trong tình huống khẩn cấp,
+                                        hãy liên hệ cơ sở y tế/đường dây nóng phù hợp theo khu vực của bạn.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container-fluid" style="padding-left: 3px; padding-right: 3px;">
+            <p class="mb-0 text-muted">Dịch vụ Chăm sóc Người Cao Tuổi</p>
         </div>
     </footer>
 
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Accordion Logic
-        document.querySelectorAll('.feature-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const card = header.parentElement;
-                card.classList.toggle('open');
-            });
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.content-card');
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu .nav-link');
 
-        // Simple Search
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            document.querySelectorAll('.feature-card').forEach(card => {
-                const title = card.querySelector('h3').innerText.toLowerCase();
-                const content = card.querySelector('.feature-content').innerText.toLowerCase();
-                if (title.includes(term) || content.includes(term)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
+            function activateSection(id) {
+                if (!id) return;
+                const targetId = id.startsWith('#') ? id : `#${id}`;
 
-        // Sidebar active state on scroll
-        window.addEventListener('scroll', () => {
-            let current = '';
-            const sections = document.querySelectorAll('section, .feature-card');
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= (sectionTop - 150)) {
-                    current = section.getAttribute('id');
+                sections.forEach(s => s.classList.remove('active'));
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+
+                const targetSection = document.querySelector(targetId);
+                const targetLink = document.querySelector(`.sidebar-menu .nav-link[href="${targetId}"]`);
+
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 110,
+                        behavior: 'smooth'
+                    });
                 }
+                if (targetLink) targetLink.classList.add('active');
+
+                const offcanvasElement = document.getElementById('sidebarMenu');
+                if (offcanvasElement) {
+                    const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+                    if (window.innerWidth < 992) {
+                        bsOffcanvas.hide();
+                    }
+                }
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const id = link.getAttribute('href');
+                    if (id && id.startsWith('#')) {
+                        e.preventDefault();
+                        activateSection(id);
+                    }
+                });
             });
 
-            document.querySelectorAll('.sidebar li a').forEach(a => {
-                a.classList.remove('active');
-                if (a.getAttribute('href') === `#${current}`) {
-                    a.classList.add('active');
-                }
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const id = header.parentElement.id;
+                    if (id) activateSection(id);
+                });
             });
         });
     </script>
 </body>
+
 </html>
