@@ -1398,6 +1398,86 @@
     return window.ProviderOrderAccept.handleAcceptOrder(orderId);
   }
 
+  function syncProviderLocation(order) {
+    return new Promise(function (resolve) {
+      if (!navigator.geolocation || typeof window.krud !== "function") {
+        return resolve();
+      }
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          var lat = pos.coords.latitude;
+          var lng = pos.coords.longitude;
+          fetch(
+            "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng + "&addressdetails=1&zoom=18&namedetails=1",
+            { headers: { "Accept-Language": "vi" } }
+          )
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              var address = data && data.display_name ? data.display_name : "";
+              if (!address) return resolve();
+
+              var providerId = null;
+              if (order && order.raw && order.raw.idnhacungcap) {
+                providerId = order.raw.idnhacungcap;
+              } else if (order && order.idnhacungcap) {
+                providerId = order.idnhacungcap;
+              } else if (order && order.raw && order.raw.nhacungcap && (order.raw.nhacungcap.id || order.raw.nhacungcap.idnhacungcap)) {
+                providerId = order.raw.nhacungcap.id || order.raw.nhacungcap.idnhacungcap;
+              } else if (order && order.nhacungcap && (order.nhacungcap.id || order.nhacungcap.idnhacungcap)) {
+                providerId = order.nhacungcap.id || order.nhacungcap.idnhacungcap;
+              }
+
+              if (providerId) {
+                window.krud("update", USER_TABLE, { diachihientai: address, lat_hientai: lat, lng_hientai: lng }, providerId).finally(resolve);
+                return;
+              }
+
+              var phone = "";
+              try {
+                phone = String(typeof getCookie === "function" ? getCookie("dvqt_u") : (window.getCookie ? window.getCookie("dvqt_u") : "")).trim();
+              } catch (e) {}
+              if (!phone && window.DVQTApp && typeof window.DVQTApp.checkSession === "function") {
+                return window.DVQTApp.checkSession()
+                  .then(function (res) { return (res && res.id) ? res.id : null; })
+                  .then(function (id) {
+                    if (id) {
+                      window.krud("update", USER_TABLE, { diachihientai: address, lat_hientai: lat, lng_hientai: lng }, id).finally(resolve);
+                    } else { resolve(); }
+                  })
+                  .catch(resolve);
+              }
+
+              if (!phone) return resolve();
+
+              var phoneQuery = phone;
+              if (phoneQuery.indexOf("0") === 0) phoneQuery = phoneQuery.slice(1);
+
+              if (typeof window.krudList === "function") {
+                window.krudList({
+                  table: USER_TABLE,
+                  where: [{ field: "sodienthoai", operator: "LIKE", value: "%" + phoneQuery }],
+                  limit: 1,
+                })
+                  .then(function (res) {
+                    var rows = typeof extractRows === "function" ? extractRows(res) : (window.extractRows ? window.extractRows(res) : (res && res.data ? res.data : []));
+                    if (rows && rows.length > 0) {
+                      var userId = rows[0].id || rows[0].user_id || rows[0].makhachhang;
+                      if (userId) {
+                        window.krud("update", USER_TABLE, { diachihientai: address, lat_hientai: lat, lng_hientai: lng }, userId).finally(resolve);
+                      } else resolve();
+                    } else resolve();
+                  })
+                  .catch(resolve);
+              } else resolve();
+            })
+            .catch(function () { resolve(); });
+        },
+        function () { resolve(); },
+        { timeout: 10000, enableHighAccuracy: true }
+      );
+    });
+  }
+
   function handleCompleteOrder(orderId, order) {
     var sh = getShared();
     if (typeof sh.updateOrder === "function") {
@@ -1407,6 +1487,8 @@
         phikhaosat: 0,
         tiendichuyen: 0,
         // tongtien: transportFee,
+      }).then(function () {
+        return syncProviderLocation(order);
       });
     }
     return Promise.reject(
@@ -1441,6 +1523,8 @@
       ngayhoanthanh: new Date().toISOString(),
       tongtien: surveyFee + transportFee,
       trangthaithanhtoan: "Paid",
+    }).then(function () {
+      return syncProviderLocation(order);
     });
   }
 
