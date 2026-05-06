@@ -1,720 +1,984 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hướng Dẫn Sử Dụng - Dịch Vụ Dọn Vệ Sinh Nhà Cửa</title>
+    <meta name="description"
+        content="Hướng dẫn sử dụng dịch vụ tạp vụ lau dọn vệ sinh: đăng nhập, đặt lịch, theo dõi tiến độ/nhật ký, đánh giá và thao tác quản trị.">
+    <title>Hướng dẫn sử dụng - Dịch vụ Tạp vụ lau dọn vệ sinh</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #64748b;
-            --bg-color: #f3faff;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #475569;
-            --border-color: #d1e9ff;
-            --accent-soft: #e7f3ff;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --transition: all 0.3s ease;
+            /* Giữ tên biến theo file mẫu để đồng bộ layout */
+            --pink-primary: #0d6efd;
+            --pink-light: #e7f1ff;
+            --pink-dark: #084298;
+            --bg-gradient: linear-gradient(135deg, #eef6ff 0%, #ffffff 100%);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
         }
 
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            scroll-behavior: smooth;
+            background: var(--bg-gradient);
+            color: #1f2937;
         }
 
-        /* Layout */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 40px;
-        }
-
-        @media (max-width: 992px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-            .sidebar {
-                display: none;
-            }
-        }
-
-        /* Header */
-        header {
-            background: var(--card-bg);
-            border-bottom: 2px solid var(--primary-color);
-            padding: 20px 0;
+        /* Hero Header */
+        .hero-section {
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+                url('https://www.transparenttextures.com/patterns/cubes.png'),
+                linear-gradient(45deg, var(--pink-light), #ffffff);
+            padding: 15px 0;
+            border-bottom: 3px solid var(--pink-light);
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         }
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
+        .hero-title {
+            color: var(--pink-dark);
             font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 0;
         }
 
-        .logo img {
-            width: 45px;
-            height: 45px;
-            object-fit: contain;
+        .hero-section p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
         }
 
         /* Sidebar Navigation */
-        .sidebar {
+        .sidebar-menu {
             position: sticky;
             top: 100px;
-            height: calc(100vh - 120px);
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .sidebar h4 {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            margin-top: 30px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar li a {
-            display: block;
-            padding: 10px 15px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            margin-bottom: 5px;
-            transition: var(--transition);
-        }
-
-        .sidebar li a:hover, .sidebar li a.active {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-
-        /* Main Content Area */
-        main {
-            padding: 40px 0;
-        }
-
-        section {
-            margin-bottom: 60px;
-            background: #fff;
-            padding: 30px;
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.05);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(13, 110, 253, 0.12);
+            border: 1px solid var(--pink-light);
         }
 
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--primary-color);
+        .sidebar-menu .nav-link {
+            color: #64748b;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 15px;
         }
 
-        .section-intro {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+        .sidebar-menu .nav-link i {
+            width: 30px;
+            color: var(--pink-primary);
+        }
+
+        .sidebar-menu .nav-link:hover,
+        .sidebar-menu .nav-link.active {
+            background-color: var(--pink-primary);
+            color: white !important;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu .nav-link:hover i,
+        .sidebar-menu .nav-link.active i {
+            color: white;
+        }
+
+        /* Content Area */
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
             margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border-left: 5px solid var(--pink-primary);
         }
 
-        /* Feature Card & Accordion */
-        .feature-card {
-            background: #fff;
-            border: 1px solid var(--border-color);
+        .section-header {
+            color: var(--pink-dark);
+            margin-bottom: 25px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--pink-primary);
+            border-radius: 2px;
+        }
+
+        /* Placeholder Content */
+        .placeholder-box {
+            background: #fdfdfd;
+            border: 2px dashed var(--pink-light);
             border-radius: 15px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            transition: var(--transition);
+            padding: 28px;
+            text-align: center;
+            color: #6b7280;
         }
 
-        .feature-header {
-            padding: 22px;
+        /* Footer */
+        footer {
+            background: var(--pink-light);
+            padding: 30px 0;
+            margin-top: 50px;
+            text-align: center;
+            border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+        }
+
+        .text-pink {
+            color: var(--pink-dark) !important;
+        }
+
+        .bg-pink {
+            background-color: var(--pink-primary) !important;
+            color: white;
+        }
+
+        .border-pink {
+            border-color: var(--pink-primary) !important;
+        }
+
+        .border-bottom-3 {
+            border-bottom-width: 3px !important;
+        }
+
+        /* Accordion Style */
+        .section-content {
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .content-card.active {
+            border-left: 5px solid var(--pink-dark);
+            box-shadow: 0 10px 30px rgba(13, 110, 253, 0.12);
+        }
+
+        .content-card.active .section-content {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header[role="button"] {
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            user-select: none;
         }
 
-        .feature-header:hover {
-            background-color: var(--accent-soft);
+        .section-header[role="button"]::after {
+            content: '\f078';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 1rem;
+            color: var(--pink-primary);
+            transition: transform 0.3s ease;
         }
 
-        .feature-header h3 {
-            font-size: 1.15rem;
-            font-weight: 700;
+        .content-card.active .section-header::after {
+            transform: rotate(180deg);
+            color: var(--pink-dark);
+        }
+
+        /* Guide Accordion Styles */
+        .guide-large-header,
+        .guide-small-header {
+            cursor: pointer;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            font-weight: 600;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 15px;
+            transition: all 0.3s ease;
         }
 
-        .feature-header h3 i {
-            color: var(--primary-color);
+        .guide-large-header {
+            background-color: var(--pink-light);
+            color: var(--pink-dark);
         }
 
-        .feature-header .toggle-icon {
-            font-size: 0.8rem;
-            transition: var(--transition);
-            color: var(--primary-color);
+        .guide-small-header {
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            color: #374151;
+            font-size: 0.95rem;
         }
 
-        .feature-content {
-            display: none;
-            padding: 0 22px 30px;
-            border-top: 1px solid var(--border-color);
+        .guide-large-header:hover,
+        .guide-small-header:hover {
+            filter: brightness(0.98);
         }
 
-        .feature-card.open .feature-content {
-            display: block;
+        .guide-large-header[aria-expanded="true"] {
+            background-color: var(--pink-primary);
+            color: white;
         }
 
-        .feature-card.open .toggle-icon {
+        .guide-small-header[aria-expanded="true"] {
+            border-color: var(--pink-primary);
+            color: var(--pink-dark);
+            background-color: #fff;
+        }
+
+        .guide-large-header::after,
+        .guide-small-header::after {
+            content: '\f107';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .guide-large-header[aria-expanded="true"]::after,
+        .guide-small-header[aria-expanded="true"]::after {
             transform: rotate(180deg);
         }
 
-        /* Flow Visuals */
-        .flow-container {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: var(--accent-soft);
-            border-radius: 12px;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .flow-step {
+        /* Step Diagram (no images) */
+        .stepper {
             position: relative;
-            padding-left: 40px;
-            margin-bottom: 25px;
+            padding-left: 44px;
         }
 
-        .flow-step:last-child {
-            margin-bottom: 0;
+        .stepper-step {
+            position: relative;
+            padding-bottom: 18px;
         }
 
-        .flow-step::before {
+        .stepper-step:last-child {
+            padding-bottom: 0;
+        }
+
+        .stepper-step::before {
             content: '';
             position: absolute;
-            left: 12px;
-            top: 28px;
-            bottom: -15px;
+            left: -24px;
+            top: 26px;
+            bottom: -8px;
             width: 2px;
-            background-color: var(--border-color);
+            background: #e5e7eb;
         }
 
-        .flow-step:last-child::before {
+        .stepper-step:last-child::before {
             display: none;
         }
 
-        .flow-dot {
+        .stepper-dot {
             position: absolute;
-            left: 0;
-            top: 0;
-            width: 26px;
-            height: 26px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
+            left: -35px;
+            top: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            background: var(--pink-primary);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 800;
             z-index: 1;
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.22);
         }
 
-        .flow-step h4 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--text-main);
+        .stepper-title {
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 2px;
         }
 
-        .flow-step p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+        .stepper-desc {
+            margin: 0;
+            color: #4b5563;
+            font-size: 0.95rem;
         }
 
-        /* Info blocks */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
+        .stepper-meta {
+            margin-top: 10px;
+            background: #f9fafb;
+            border: 1px solid #eef2f7;
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #374151;
+            font-size: 0.92rem;
         }
 
-        @media (max-width: 600px) {
-            .info-grid {
-                grid-template-columns: 1fr;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 18px 12px !important;
+            }
+
+            .section-header {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+
+            .stepper {
+                padding-left: 40px;
             }
         }
 
-        .info-box {
-            padding: 18px;
-            border-radius: 12px;
-            background: var(--accent-soft);
-            border: 1px solid var(--border-color);
+        @media (min-width: 992px) {
+            #sidebarMenu {
+                position: sticky;
+                top: 100px;
+                z-index: 900;
+                height: fit-content;
+            }
+
+            .offcanvas-body {
+                overflow: visible !important;
+            }
         }
 
-        .info-box span {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            margin-bottom: 10px;
+        @media (max-width: 991.98px) {
+            .sidebar-menu {
+                position: relative;
+                top: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+
+            .offcanvas-body .sidebar-menu {
+                margin-top: 20px;
+            }
         }
-
-        .info-box p {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            font-weight: 500;
-        }
-
-        .result-box {
-            padding: 18px;
-            background-color: #ecfdf5;
-            border: 1px solid var(--primary-color);
-            border-radius: 12px;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .result-box i {
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            margin-top: 2px;
-        }
-
-        .result-box p {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        /* Role Badge */
-        .role-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 25px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .role-customer { background: #d1e9ff; color: #004a99; }
-        .role-provider { background: #ffe0b2; color: #e65100; }
-        .role-admin { background: #e0e7ff; color: #3730a3; }
-
-        /* Search bar */
-        .search-container {
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .search-container input {
-            width: 100%;
-            padding: 18px 25px 18px 60px;
-            border: 2px solid var(--border-color);
-            border-radius: 15px;
-            font-size: 1rem;
-            font-family: inherit;
-            outline: none;
-            transition: var(--transition);
-            background: #fff;
-        }
-
-        .search-container input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 5px rgba(0, 123, 255, 0.1);
-        }
-
-        .search-container i {
-            position: absolute;
-            left: 25px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary-color);
-            font-size: 1.2rem;
-        }
-
-        .mb-4 { margin-bottom: 2rem; }
-        .fw-bold { font-weight: 700; }
-
     </style>
 </head>
+
 <body>
 
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <img src="assets/logo_main.png" alt="Logo">
-                <span>Hướng Dẫn Sử Dụng • Dọn Vệ Sinh Nhà Cửa</span>
+    <!-- Header Section -->
+    <header class="hero-section">
+        <div class="container-fluid d-flex align-items-center justify-content-between"
+            style="padding-left: 3px; padding-right: 3px;">
+            <div class="d-lg-none" style="width: 32px"></div>
+
+            <div class="text-center flex-grow-1">
+                <h1 class="hero-title">Hướng dẫn</h1>
+                <p class="text-muted d-none d-md-block mb-0">Tạp vụ lau dọn vệ sinh nhanh gọn, sạch sẽ</p>
             </div>
+
+            <button class="btn d-lg-none text-pink p-0" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#sidebarMenu">
+                <i class="fas fa-bars fs-3"></i>
+            </button>
         </div>
     </header>
 
-    <div class="container">
-        <aside class="sidebar">
-            <h4>Khám phá</h4>
-            <ul>
-                <li><a href="#tong-quan" class="active">Tổng quan hệ thống</a></li>
-            </ul>
-
-            <h4>Cho Khách hàng</h4>
-            <ul>
-                <li><a href="#kh-dang-ky">Tài khoản cá nhân</a></li>
-                <li><a href="#kh-dat-lich">Đặt lịch dọn dẹp</a></li>
-                <li><a href="#kh-theo-doi">Tiến độ & Nhật ký</a></li>
-                <li><a href="#kh-danh-gia">Đánh giá dịch vụ</a></li>
-            </ul>
-
-            <h4>Cho Nhân viên</h4>
-            <ul>
-                <li><a href="#ncc-ca-lam">Quy trình thực hiện</a></li>
-            </ul>
-
-            <h4>Cho Quản trị viên</h4>
-            <ul>
-                <li><a href="#admin-dich-vu">Quản lý danh mục</a></li>
-                <li><a href="#admin-don-hang">Quản trị đơn hàng</a></li>
-            </ul>
-        </aside>
-
-        <main>
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Bạn muốn tìm hiểu chức năng nào?" id="searchInput">
+    <main class="container-fluid my-4" style="padding-left: 3px; padding-right: 3px;">
+        <div class="row g-2">
+            <!-- Navigation Sidebar -->
+            <div class="col-lg-3">
+                <div class="offcanvas-lg offcanvas-end" id="sidebarMenu" tabindex="-1">
+                    <div class="offcanvas-header bg-pink text-white">
+                        <h5 class="offcanvas-title fw-bold">Danh mục hướng dẫn</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                            data-bs-target="#sidebarMenu"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <nav class="sidebar-menu shadow-sm">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#gioi-thieu">
+                                        <i class="fas fa-info-circle"></i> 1. Giới thiệu
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#giao-dien">
+                                        <i class="fas fa-desktop"></i> 2. Giao diện
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#huong-dan">
+                                        <i class="fas fa-book-open"></i> 3. Hướng dẫn chi tiết
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#lien-he">
+                                        <i class="fas fa-envelope"></i> 4. Liên hệ
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
 
-            <!-- Overview -->
-            <section id="tong-quan">
-                <h1 class="section-title"><i class="fas fa-info-circle"></i> Tổng quan hệ thống</h1>
-                <p class="section-intro">
-                    Hệ thống **Dọn Vệ Sinh Nhà Cửa Chuyên Nghiệp** cung cấp giải pháp làm sạch toàn diện cho không gian sống của bạn. Từ dọn dẹp định kỳ theo giờ đến tổng vệ sinh sau xây dựng, chúng tôi mang đến sự sạch sẽ và tiện nghi tuyệt đối.
-                </p>
+            <!-- Content Area -->
+            <div class="col-lg-9 col-12">
 
-                <div class="info-grid">
-                    <div class="info-box">
-                        <span>Giá trị mang lại</span>
-                        <p>Tiết kiệm thời gian, không gian sống chuẩn sạch. Theo dõi ca làm việc minh bạch thông qua hệ thống Check-in/out thực tế.</p>
-                    </div>
-                    <div class="info-box">
-                        <span>Dịch vụ cốt lõi</span>
-                        <p>Dọn nhà theo giờ, Tổng vệ sinh định kỳ, Vệ sinh sau xây dựng, Lau kính tòa nhà, Vệ sinh chuyên sâu bếp và toilet.</p>
-                    </div>
-                </div>
+                <!-- 1. Giới thiệu -->
+                <section id="gioi-thieu" class="content-card active">
+                    <h2 class="section-header" role="button">1. Giới thiệu</h2>
+                    <div class="section-content">
+                        <p class="lead mb-4">Dịch vụ <strong>Tạp vụ lau dọn vệ sinh</strong> giúp bạn đặt lịch dọn dẹp theo nhu cầu,
+                            theo dõi tiến độ làm việc minh bạch và quản lý đơn hàng thuận tiện.</p>
 
-                <div class="mb-4">
-                    <h3 class="mb-3">Phân quyền sử dụng</h3>
-                    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                        <div class="info-box">
-                            <div class="role-badge role-customer">Khách hàng</div>
-                            <p style="font-size: 0.85rem;">Đặt lịch dọn dẹp, chọn địa chỉ qua bản đồ, theo dõi tiến độ và đánh giá nhân viên.</p>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <h5 class="fw-bold text-pink"><i class="fas fa-bullseye me-2"></i>Mục đích</h5>
+                                <p>Chuẩn hóa quy trình đặt lịch &rarr; duyệt đơn &rarr; thực hiện ca làm việc &rarr; hoàn thành,
+                                    giúp bạn theo dõi trạng thái và ghi chú công việc rõ ràng.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="fw-bold text-pink"><i class="fas fa-users me-2"></i>Đối tượng</h5>
+                                <p>Khách hàng; nhân viên vệ sinh; quản trị viên điều phối đơn hàng và gói dịch vụ.</p>
+                            </div>
                         </div>
-                        <div class="info-box">
-                            <div class="role-badge role-provider">Nhân viên (NCC)</div>
-                            <p style="font-size: 0.85rem;">Nhận đơn, thực hiện Checklist công việc làm sạch và báo cáo hình ảnh thực tế sau ca.</p>
-                        </div>
-                        <div class="info-box">
-                            <div class="role-badge role-admin">Quản trị viên</div>
-                            <p style="font-size: 0.85rem;">Quản lý danh mục gói vệ sinh, bảng giá và giám sát chất lượng thực hiện toàn hệ thống.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <!-- CUSTOMER -->
-            <section id="khach-hang">
-                <h2 class="section-title"><i class="fas fa-user"></i> Dành cho Khách hàng</h2>
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-pink"><i class="fas fa-star me-2"></i>Chức năng chính</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Đăng ký/Đăng nhập</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Đặt lịch dọn vệ sinh</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Theo dõi tiến độ</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Nhật ký/checklist ca làm</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Hóa đơn & lịch sử đơn</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Đánh giá & phản hồi</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Đăng ký -->
-                <div class="feature-card" id="kh-dang-ky">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-id-card-alt"></i> Tài khoản cá nhân</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Đăng ký tài khoản</h4>
-                                <p>Sử dụng Số điện thoại cá nhân để tạo tài khoản, giúp nhận thông báo đơn hàng nhanh chóng.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Đăng nhập & Quản lý</h4>
-                                <p>Truy cập "Đơn hàng của tôi" để xem lịch sử dọn dẹp và trạng thái các ca đang thực hiện.</p>
-                            </div>
+                        <div class="workflow-box p-3 border-start border-4 border-pink bg-light">
+                            <h5 class="fw-bold text-pink small text-uppercase mb-2">Quy trình tổng quan</h5>
+                            <p class="small mb-0">
+                                Đăng nhập &rarr; Chọn <strong>Dịch vụ</strong> &rarr; <strong>Đặt lịch</strong> &rarr;
+                                Admin <strong>duyệt</strong> &rarr; Nhân viên <strong>check-in/check-out</strong> &rarr;
+                                Cập nhật <strong>checklist</strong> &rarr; <strong>hoàn thành</strong> &amp; đánh giá.
+                            </p>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Đặt lịch -->
-                <div class="feature-card" id="kh-dat-lich">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-broom"></i> Quy trình Đặt lịch dọn dẹp</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="info-grid">
-                            <div class="info-box">
-                                <span>Tính năng</span>
-                                <p>**Map Picker**: Định vị chính xác địa chỉ nhà giúp nhân viên tìm đến nhanh chóng.</p>
-                            </div>
-                        </div>
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Chọn gói vệ sinh</h4>
-                                <p>Chọn loại hình (Theo giờ/Tổng vệ sinh/Sau xây dựng). Mỗi gói có danh sách **Checklist công việc** rõ ràng.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Thiết lập thời gian</h4>
-                                <p>Chọn ngày thực hiện, khung giờ bắt đầu và thời lượng (số giờ/số ca) cần thiết.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">3</div>
-                                <h4>Bảng giá & Xác nhận</h4>
-                                <p>Kiểm tra phí dịch vụ bao gồm: Phí cơ bản và **Phí đi lại** (tính theo khoảng cách thực tế).</p>
-                            </div>
-                        </div>
-                        <div class="result-box">
-                            <i class="fas fa-check-circle"></i>
-                            <p>Yêu cầu được gửi tới hệ thống. Admin sẽ duyệt và điều phối nhân viên dọn dẹp sớm nhất.</p>
-                        </div>
-                    </div>
-                </div>
+                        <hr class="my-4 opacity-25">
 
-                <!-- Theo dõi -->
-                <div class="feature-card" id="kh-theo-doi">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-history"></i> Theo dõi Tiến độ & Nhật ký làm việc</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="info-grid">
-                            <div class="info-box">
-                                <span>Giám sát</span>
-                                <p>**Tiến độ thực hiện**: Xem phần trăm hoàn thành đơn hàng dựa trên số ca đã thực hiện xong.</p>
-                            </div>
-                        </div>
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Kiểm tra ca làm hàng ngày</h4>
-                                <p>Xem giờ Check-in (bắt đầu dọn) và Check-out (hoàn tất) thực tế của nhân viên.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Báo cáo Checklist</h4>
-                                <p>Xem các hạng mục nhân viên đã hoàn thành (quét dọn, lau kính, vệ sinh toilet...) và ghi chú kèm theo.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">3</div>
-                                <h4>Hình ảnh minh chứng</h4>
-                                <p>Xem ảnh chụp không gian trước và sau khi dọn dẹp để đánh giá hiệu quả.</p>
+                        <div class="admin-overview">
+                            <h5 class="fw-bold text-pink mb-3"><i class="fas fa-user-shield me-2"></i>Quản trị hệ thống (Admin)</h5>
+                            <p class="small text-muted mb-4">Mô-đun <code>admin_donvesinh</code> giúp quản trị viên quản lý gói vệ sinh,
+                                duyệt đơn, điều phối nhân viên và giám sát chất lượng thực hiện.</p>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-list-check text-pink me-2"></i>Quản lý gói & checklist</h6>
+                                        <p class="small mb-0 text-secondary">Cập nhật gói vệ sinh, mô tả, đầu việc bắt buộc theo từng gói.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-file-invoice-dollar text-pink me-2"></i>Quản lý đơn hàng</h6>
+                                        <p class="small mb-0 text-secondary">Duyệt đơn, theo dõi tiến độ, xử lý phát sinh và hóa đơn.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-user-gear text-pink me-2"></i>Điều phối nhân viên</h6>
+                                        <p class="small mb-0 text-secondary">Phân công ca làm và đảm bảo đúng lịch/đúng yêu cầu.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-headset text-pink me-2"></i>Hỗ trợ khách hàng</h6>
+                                        <p class="small mb-0 text-secondary">Tiếp nhận đánh giá/phản hồi và xử lý yêu cầu nhanh.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Đánh giá -->
-                <div class="feature-card" id="kh-danh-gia">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-star"></i> Đánh giá chất lượng phục vụ</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Để lại nhận xét</h4>
-                                <p>Sau khi nhân viên hoàn tất, hãy chấm điểm và nhận xét về độ sạch sẽ, thái độ phục vụ.</p>
+                <!-- 2. Giao diện -->
+                <section id="giao-dien" class="content-card">
+                    <h2 class="section-header" role="button">2. Giao diện</h2>
+                    <div class="section-content">
+                        <p class="text-muted mb-4">Giao diện tối giản, tập trung vào thao tác nhanh.
+                            Bên dưới mô tả các khu vực chính để bạn định vị chức năng (không dùng ảnh).</p>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-4 shadow-sm h-100 bg-white">
+                                    <h5 class="fw-bold text-pink mb-2"><i class="fas fa-user me-2"></i>Khách hàng</h5>
+                                    <ul class="mb-0">
+                                        <li><strong>Trang dịch vụ</strong>: xem gói vệ sinh, checklist và chi phí.</li>
+                                        <li><strong>Đặt lịch</strong>: nhập địa chỉ, thời gian, yêu cầu chi tiết.</li>
+                                        <li><strong>Đơn hàng</strong>: theo dõi trạng thái, tiến độ và nhật ký ca làm.</li>
+                                        <li><strong>Hóa đơn</strong>: xem chi tiết thanh toán.</li>
+                                    </ul>
+                                    <div class="stepper-meta mt-3">
+                                        Gợi ý: bắt đầu từ <a href="dich-vu.html">Dịch vụ</a> &rarr; <a href="dat-lich-data.html">Đặt lịch</a>.
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Tải lên minh chứng</h4>
-                                <p>Chia sẻ hình ảnh không gian sạch đẹp để khích lệ nhân viên làm tốt.</p>
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-4 shadow-sm h-100 bg-white">
+                                    <h5 class="fw-bold text-pink mb-2"><i class="fas fa-id-badge me-2"></i>Nhân viên (NCC)</h5>
+                                    <ul class="mb-0">
+                                        <li><strong>Danh sách ca</strong>: xem các đơn/ca được phân công.</li>
+                                        <li><strong>Check-in/Check-out</strong>: ghi nhận giờ thực tế.</li>
+                                        <li><strong>Checklist</strong>: tích chọn đầu việc đã hoàn thành.</li>
+                                        <li><strong>Nhật ký</strong>: ghi chú tình trạng và cập nhật ca.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="p-3 border rounded-4 shadow-sm bg-white">
+                                    <h5 class="fw-bold text-pink mb-2"><i class="fas fa-user-shield me-2"></i>Admin</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="placeholder-box h-100">
+                                                <div class="fw-bold mb-2"><i class="fas fa-sitemap me-2"></i>Quản lý gói dịch vụ</div>
+                                                Thêm/sửa gói vệ sinh, checklist công việc và cấu hình giá.
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="placeholder-box h-100">
+                                                <div class="fw-bold mb-2"><i class="fas fa-clipboard-check me-2"></i>Duyệt & điều phối</div>
+                                                Duyệt đơn, phân công nhân viên, giám sát nhật ký ca làm.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- STAFF -->
-            <section id="nhan-vien">
-                <h2 class="section-title"><i class="fas fa-id-badge"></i> Dành cho Nhân viên (NCC)</h2>
+                <!-- 3. Hướng dẫn chi tiết -->
+                <section id="huong-dan" class="content-card">
+                    <h2 class="section-header" role="button">3. Hướng dẫn chi tiết</h2>
+                    <div class="section-content">
 
-                <div class="feature-card" id="ncc-ca-lam">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-tasks"></i> Quy trình thực hiện ca dọn dẹp</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
+                        <div class="accordion" id="guideAccordionMain">
+
+                            <!-- I. KHÁCH HÀNG -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header" data-bs-toggle="collapse" data-bs-target="#guideCustomer"
+                                    aria-expanded="true">
+                                    <span><i class="fas fa-user me-2"></i>I. KHÁCH HÀNG</span>
+                                </div>
+                                <div id="guideCustomer" class="collapse show" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subCustomer">
+
+                                        <!-- 1.1 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#cust1"
+                                                aria-expanded="true">
+                                                1.1 Đăng nhập & chuẩn bị thông tin
+                                            </div>
+                                            <div id="cust1" class="collapse show" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Mở trang &rarr; Đăng nhập &rarr; Kiểm tra liên hệ &rarr; Chuẩn bị địa chỉ/yêu cầu</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Đăng nhập hệ thống</div>
+                                                            <p class="stepper-desc">Đăng nhập để lưu lịch sử đơn hàng và theo dõi tiến độ minh bạch.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Kiểm tra thông tin liên hệ</div>
+                                                            <p class="stepper-desc">Đảm bảo số điện thoại và địa chỉ đúng để xác nhận lịch nhanh.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Ghi chú yêu cầu dọn dẹp</div>
+                                                            <p class="stepper-desc">Ghi rõ hạng mục cần làm: phòng nào, ưu tiên khu vực nào, yêu cầu dụng cụ/hóa chất (nếu có).</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 1.2 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust2"
+                                                aria-expanded="false">
+                                                1.2 Đặt lịch dọn vệ sinh
+                                            </div>
+                                            <div id="cust2" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Chọn gói &rarr; Nhập địa chỉ &rarr; Chọn thời gian &rarr; Xem giá &rarr; Xác nhận</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Vào trang “Dịch vụ”</div>
+                                                            <p class="stepper-desc">Chọn gói phù hợp: dọn theo giờ, tổng vệ sinh, vệ sinh định kỳ...</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Mở trang “Đặt lịch”</div>
+                                                            <p class="stepper-desc">Vào form đặt lịch để nhập chi tiết công việc và địa chỉ.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Nhập địa chỉ & yêu cầu</div>
+                                                            <p class="stepper-desc">Điền địa chỉ, ghi chú khu vực cần ưu tiên và yêu cầu đặc biệt (nếu có).</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">4</div>
+                                                            <div class="stepper-title">Chọn ngày/giờ & thời lượng</div>
+                                                            <p class="stepper-desc">Chọn ngày, giờ bắt đầu và thời lượng (số giờ/số ca) theo nhu cầu.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">5</div>
+                                                            <div class="stepper-title">Xem giá & xác nhận</div>
+                                                            <p class="stepper-desc">Kiểm tra chi phí (có thể bao gồm phí di chuyển theo khoảng cách) và xác nhận đặt lịch.</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="alert alert-info mt-3 mb-0" role="alert">
+                                                        <i class="fas fa-circle-info me-2"></i>
+                                                        Mẹo: ghi chú rõ “cần tổng vệ sinh/toilet/bếp/lau kính” giúp phân công đúng người và đúng thời lượng.
+                                                    </div>
+
+                                                    <div class="stepper-meta mt-3">Trang đặt lịch của module này: <a href="dat-lich-data.html">dat-lich-data.html</a>.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 1.3 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust3"
+                                                aria-expanded="false">
+                                                1.3 Theo dõi tiến độ & nhật ký ca làm
+                                            </div>
+                                            <div id="cust3" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Mở “Đơn hàng” &rarr; Chọn đơn &rarr; Xem trạng thái &rarr; Xem checklist/nhật ký</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Mở chi tiết đơn</div>
+                                                            <p class="stepper-desc">Chọn đơn đang thực hiện để xem thông tin và tiến độ tổng quan.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Xem check-in/check-out</div>
+                                                            <p class="stepper-desc">Theo dõi thời gian bắt đầu/kết thúc ca làm thực tế của nhân viên.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Xem checklist & ghi chú</div>
+                                                            <p class="stepper-desc">Xem các hạng mục đã làm (lau dọn, vệ sinh toilet/bếp, thu gom rác...) và ghi chú phát sinh.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 1.4 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust4"
+                                                aria-expanded="false">
+                                                1.4 Đánh giá dịch vụ
+                                            </div>
+                                            <div id="cust4" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Hoàn thành &rarr; Mở đơn &rarr; Chấm điểm &rarr; Gửi nhận xét</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Chọn đơn đã hoàn thành</div>
+                                                            <p class="stepper-desc">Mở đơn trạng thái “Hoàn thành” để đánh giá dịch vụ.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Gửi đánh giá</div>
+                                                            <p class="stepper-desc">Nhận xét mức độ sạch sẽ, đúng giờ và thái độ phục vụ để cải thiện chất lượng.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- II. NHÂN VIÊN -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse" data-bs-target="#guideProvider"
+                                    aria-expanded="false">
+                                    <span><i class="fas fa-id-badge me-2"></i>II. NHÂN VIÊN (NCC)</span>
+                                </div>
+                                <div id="guideProvider" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subProvider">
+
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#ncc1"
+                                                aria-expanded="true">
+                                                2.1 Thực hiện ca (Check-in &rarr; Checklist &rarr; Check-out)
+                                            </div>
+                                            <div id="ncc1" class="collapse show" data-bs-parent="#subProvider">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Đến nơi &rarr; Check-in &rarr; Làm theo checklist &rarr; Ghi chú &rarr; Check-out</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Bắt đầu ca (Check-in)</div>
+                                                            <p class="stepper-desc">Nhấn “Bắt đầu làm việc” để ghi nhận thời gian thực tế khi có mặt tại địa chỉ.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Thực hiện checklist công việc</div>
+                                                            <p class="stepper-desc">Thực hiện lần lượt các hạng mục: quét/lau sàn, vệ sinh bếp/toilet, thu gom rác, lau kính (nếu có)...</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Ghi chú ca làm</div>
+                                                            <p class="stepper-desc">Cập nhật tình trạng, phát sinh và đề xuất thời lượng/đầu việc cho lần sau (nếu cần).</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">4</div>
+                                                            <div class="stepper-title">Kết thúc ca (Check-out)</div>
+                                                            <p class="stepper-desc">Nhấn “Kết thúc ca” để chốt thời gian và cập nhật tiến độ đơn hàng.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- III. ADMIN -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse" data-bs-target="#guideAdmin"
+                                    aria-expanded="false">
+                                    <span><i class="fas fa-user-shield me-2"></i>III. QUẢN TRỊ VIÊN (ADMIN)</span>
+                                </div>
+                                <div id="guideAdmin" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subAdmin">
+
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#ad1"
+                                                aria-expanded="true">
+                                                3.1 Duyệt đơn & điều phối nhân viên
+                                            </div>
+                                            <div id="ad1" class="collapse show" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Đơn chờ duyệt &rarr; Kiểm tra &rarr; Duyệt &rarr; Phân công &rarr; Giám sát</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Kiểm tra thông tin đơn</div>
+                                                            <p class="stepper-desc">Xem địa chỉ, thời gian, gói dịch vụ, ghi chú và yêu cầu đặc biệt của khách hàng.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Duyệt đơn & phân công</div>
+                                                            <p class="stepper-desc">Duyệt đơn và phân công nhân viên phù hợp theo lịch/đầu việc.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Giám sát thực hiện</div>
+                                                            <p class="stepper-desc">Theo dõi check-in/check-out và checklist để đảm bảo chất lượng và đúng cam kết.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#ad2"
+                                                aria-expanded="false">
+                                                3.2 Quản lý gói dịch vụ & checklist
+                                            </div>
+                                            <div id="ad2" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="workflow-box p-3 border-start border-4 border-pink bg-light mb-3">
+                                                        <h6 class="fw-bold text-pink small text-uppercase mb-2">Sơ đồ</h6>
+                                                        <p class="small mb-0">Thêm gói &rarr; Cấu hình checklist &rarr; Cập nhật giá &rarr; Lưu &rarr; Áp dụng</p>
+                                                    </div>
+
+                                                    <div class="stepper">
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">1</div>
+                                                            <div class="stepper-title">Thêm/sửa gói vệ sinh</div>
+                                                            <p class="stepper-desc">Cập nhật mô tả và phạm vi công việc cho từng gói.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">2</div>
+                                                            <div class="stepper-title">Thiết lập checklist tiêu chuẩn</div>
+                                                            <p class="stepper-desc">Xác định các đầu việc bắt buộc để nhân viên thực hiện đúng quy trình.</p>
+                                                        </div>
+                                                        <div class="stepper-step">
+                                                            <div class="stepper-dot">3</div>
+                                                            <div class="stepper-title">Cập nhật giá</div>
+                                                            <p class="stepper-desc">Cập nhật giá theo giờ/gói, và quy tắc phí di chuyển (nếu áp dụng).</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Bắt đầu việc (Check-in)</h4>
-                                <p>Nhấn "Bắt đầu làm việc" khi có mặt tại địa chỉ nhà khách hàng.</p>
+                </section>
+
+                <!-- 4. Liên hệ -->
+                <section id="lien-he" class="content-card">
+                    <h2 class="section-header" role="button">4. Liên hệ</h2>
+                    <div class="section-content">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light h-100">
+                                    <h5 class="fw-bold text-pink"><i class="fas fa-life-ring me-2"></i>Hỗ trợ sử dụng</h5>
+                                    <p class="mb-2 text-muted">Nếu bạn gặp lỗi thao tác hoặc cần điều chỉnh lịch:</p>
+                                    <ul class="mb-0">
+                                        <li>Truy cập trang <a href="lien-he.html">Liên hệ</a> để gửi yêu cầu.</li>
+                                        <li>Chuẩn bị: mã đơn hàng, số điện thoại, nội dung cần hỗ trợ.</li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Làm việc theo Checklist</h4>
-                                <p>Thực hiện các công việc dọn dẹp và tích chọn vào danh mục trên ứng dụng.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">3</div>
-                                <h4>Hoàn tất & Báo cáo (Check-out)</h4>
-                                <p>Nhấn "Kết thúc ca làm", nhập ghi chú tình hình và tải lên hình ảnh minh chứng kết quả sạch sẽ.</p>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light h-100">
+                                    <h5 class="fw-bold text-pink"><i class="fas fa-circle-check me-2"></i>Lưu ý</h5>
+                                    <p class="mb-0 text-muted">Để dọn dẹp nhanh và đúng ý, hãy ghi rõ ưu tiên khu vực và các lưu ý đặc biệt
+                                        (đồ dễ vỡ, khu vực cấm, yêu cầu dụng cụ/hóa chất...).</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- ADMIN -->
-            <section id="quan-tri">
-                <h2 class="section-title"><i class="fas fa-user-cog"></i> Dành cho Quản trị viên</h2>
+            </div>
+        </div>
+    </main>
 
-                <div class="feature-card" id="admin-dich-vu">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-list-ul"></i> Quản lý Danh mục & Bảng giá</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Cấu hình gói vệ sinh</h4>
-                                <p>Thêm mới hoặc sửa các gói vệ sinh, đính kèm ID ảnh Google Drive minh họa.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Xây dựng Checklist chuẩn</h4>
-                                <p>Định nghĩa danh sách các công việc bắt buộc nhân viên phải thực hiện cho từng loại gói.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="feature-card" id="admin-don-hang">
-                    <div class="feature-header">
-                        <h3><i class="fas fa-file-signature"></i> Quản lý & Giám sát Đơn hàng</h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="feature-content">
-                        <div class="flow-container">
-                            <div class="flow-step">
-                                <div class="flow-dot">1</div>
-                                <h4>Phê duyệt yêu cầu</h4>
-                                <p>Kiểm tra đơn hàng mới, xác nhận thông tin và duyệt đơn để nhân viên nhận lịch.</p>
-                            </div>
-                            <div class="flow-step">
-                                <div class="flow-dot">2</div>
-                                <h4>Điều phối & Kiểm soát</h4>
-                                <p>Phân bổ nhân viên phù hợp và theo dõi nhật ký thực hiện để đảm bảo cam kết chất lượng.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <footer style="background: #fff; border-top: 1px solid var(--border-color); padding: 50px 0; text-align: center; margin-top: 60px;">
-        <div class="container" style="display: block;">
-            <p style="color: var(--text-muted); font-size: 1rem; font-weight: 600;">© 2026 Dọn Vệ Sinh Chuyên Nghiệp. Không gian sạch - Cuộc sống xanh.</p>
+    <footer>
+        <div class="container-fluid" style="padding-left: 3px; padding-right: 3px;">
+            <p class="mb-0 text-muted">Dịch vụ Tạp vụ lau dọn vệ sinh</p>
         </div>
     </footer>
 
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Accordion Logic
-        document.querySelectorAll('.feature-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const card = header.parentElement;
-                card.classList.toggle('open');
-            });
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.content-card');
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu .nav-link');
 
-        // Simple Search
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            document.querySelectorAll('.feature-card').forEach(card => {
-                const title = card.querySelector('h3').innerText.toLowerCase();
-                const content = card.querySelector('.feature-content').innerText.toLowerCase();
-                if (title.includes(term) || content.includes(term)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
+            function activateSection(id) {
+                if (!id) return;
+                const targetId = id.startsWith('#') ? id : `#${id}`;
 
-        // Sidebar active state on scroll
-        window.addEventListener('scroll', () => {
-            let current = '';
-            const sections = document.querySelectorAll('section, .feature-card');
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= (sectionTop - 150)) {
-                    current = section.getAttribute('id');
+                sections.forEach(s => s.classList.remove('active'));
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+
+                const targetSection = document.querySelector(targetId);
+                const targetLink = document.querySelector(`.sidebar-menu .nav-link[href="${targetId}"]`);
+
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 110,
+                        behavior: 'smooth'
+                    });
                 }
+                if (targetLink) targetLink.classList.add('active');
+
+                const offcanvasElement = document.getElementById('sidebarMenu');
+                if (offcanvasElement) {
+                    const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+                    if (window.innerWidth < 992) {
+                        bsOffcanvas.hide();
+                    }
+                }
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const id = link.getAttribute('href');
+                    if (id && id.startsWith('#')) {
+                        e.preventDefault();
+                        activateSection(id);
+                    }
+                });
             });
 
-            document.querySelectorAll('.sidebar li a').forEach(a => {
-                a.classList.remove('active');
-                if (a.getAttribute('href') === `#${current}`) {
-                    a.classList.add('active');
-                }
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const id = header.parentElement.id;
+                    if (id) activateSection(id);
+                });
             });
         });
     </script>
 </body>
+
 </html>
