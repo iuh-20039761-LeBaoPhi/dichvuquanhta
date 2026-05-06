@@ -49,9 +49,21 @@ if ($email !== '' && $password !== '') {
 $_SESSION['admin_logged_in'] = false;
 unset($_SESSION['admin_user']);
 
-// Tự động tính toán đường dẫn gốc của project để redirect chính xác
-$project_root = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], 5)), '/');
-header('Location: ' . $project_root . '/public/admin-login.html');
+// Redirect về đúng trang đăng nhập admin.
+// - Trên hosting (dichvuquanhta.vn): luôn dùng đường dẫn root để tránh lặp "/dichvuquanhta" trong URL.
+// - Trên local XAMPP: giữ hỗ trợ chạy trong thư mục con "/dichvuquanhta".
+$host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+$isProdHost = (bool) preg_match('/(^|\\.)dichvuquanhta\\.vn$/', $host);
+
+$basePath = '';
+if (!$isProdHost) {
+	$scriptName = str_replace('\\\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+	if (stripos($scriptName, '/dichvuquanhta/') === 0) {
+		$basePath = '/dichvuquanhta';
+	}
+}
+
+header('Location: ' . $basePath . '/public/admin-login.html');
 exit;
 
 
