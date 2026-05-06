@@ -50,7 +50,7 @@ $_SESSION['admin_logged_in'] = false;
 unset($_SESSION['admin_user']);
 
 // Tự động tính toán đường dẫn gốc của project để redirect chính xác
-$project_root = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], 5)), '/');
+$project_root = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], 4)), '/');
 header('Location: ' . $project_root . '/public/admin-login.html');
 exit;
 
