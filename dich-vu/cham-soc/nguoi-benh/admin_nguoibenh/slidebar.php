@@ -26,9 +26,10 @@ if (!function_exists('admin_require_login')) {
         $admin = $_SESSION['admin_user'] ?? null;
 
         if (!$isLogged || !is_array($admin)) {
-            header('Location: login.php');
+           header('Location: login.php');
             exit;
         }
+
 
         return $admin;
     }

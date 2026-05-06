@@ -48,8 +48,24 @@ if ($email !== '' && $password !== '') {
 // Nếu không hợp lệ, xóa session và chuyển về trang nhập lại
 $_SESSION['admin_logged_in'] = false;
 unset($_SESSION['admin_user']);
-header('Location: ../../../../public/admin-login.html');
+
+// Redirect về đúng trang đăng nhập admin.
+// - Trên hosting (dichvuquanhta.vn): luôn dùng đường dẫn root để tránh lặp "/dichvuquanhta" trong URL.
+// - Trên local XAMPP: giữ hỗ trợ chạy trong thư mục con "/dichvuquanhta".
+$host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+$isProdHost = (bool) preg_match('/(^|\\.)dichvuquanhta\\.vn$/', $host);
+
+$basePath = '';
+if (!$isProdHost) {
+	$scriptName = str_replace('\\\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+	if (stripos($scriptName, '/dichvuquanhta/') === 0) {
+		$basePath = '/dichvuquanhta';
+	}
+}
+
+header('Location: ' . $basePath . '/public/admin-login.html');
 exit;
+
 
 if (!function_exists('admin_login_h')) {
 	function admin_login_h(string $value): string

@@ -30,6 +30,7 @@ if (!function_exists('admin_require_login')) {
             exit;
         }
 
+
         return $admin;
     }
 }
