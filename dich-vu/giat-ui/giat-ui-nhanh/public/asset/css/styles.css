@@ -1326,7 +1326,7 @@ footer {
   }
 
   .nav-menu.active {
-    min-height: 400px;
+    min-height: 550px;
     opacity: 1;
     transform: translateY(0);
   }
@@ -1359,6 +1359,13 @@ footer {
   .nav-container .logo img {
     width: 65px;
     height: 48px;
+  }
+
+  .auth-user-dropdown {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(280px, calc(100vw - 32px));
   }
 
   /* Hero Tablet: 2 cột đẹp, text trái - ảnh phải */
