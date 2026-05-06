@@ -1518,7 +1518,9 @@
         var em = parseInt(end.split(':')[1], 10);
         var sMin = sh * 60 + sm;
         var eMin = eh * 60 + em;
-        var actualEnd = eMin < sMin ? eMin + 1440 : eMin;
+        var actualEnd;
+        if (type === 'day_full' && eMin === sMin) actualEnd = eMin + 1440;
+        else actualEnd = eMin < sMin ? eMin + 1440 : eMin;
 
         if (actualEnd <= sMin) {
           $('#timeError').removeClass('d-none').text('Giờ kết thúc phải sau giờ bắt đầu.');
@@ -1533,6 +1535,7 @@
 
       // Tính tổng số giờ làm.
       function getHours() {
+        var type = getShiftType();
         var start = $('#startTime').val();
         var end = $('#endTime').val();
         if (!start || !end) return 0;
@@ -1543,6 +1546,7 @@
         var em = parseInt(end.split(':')[1], 10);
         var sMin = sh * 60 + sm;
         var eMin = eh * 60 + em;
+        if (type === 'day_full' && eMin === sMin) eMin += 1440;
         if (eMin < sMin) eMin += 1440;
         var diff = eMin - sMin;
         return diff > 0 ? diff / 60 : 0;
@@ -1562,6 +1566,91 @@
         if (!t) return null;
         var p = t.split(':');
         return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+      }
+
+      // Chuẩn hoá giờ lưu dạng HH:mm:ss (vd: 1:2 -> 01:02:00)
+      function normalizeTimeHHMMSS(timeStr) {
+        var raw = (timeStr || '').toString().trim();
+        if (!raw) return '';
+
+        var parts = raw.split(':');
+        var h = parts.length > 0 ? parseInt(parts[0], 10) : NaN;
+        var m = parts.length > 1 ? parseInt(parts[1], 10) : NaN;
+        var s = parts.length > 2 ? parseInt(parts[2], 10) : 0;
+        if (!Number.isFinite(h) || !Number.isFinite(m)) return '';
+        if (!Number.isFinite(s)) s = 0;
+
+        var pad2 = function (n) { return String(n).padStart(2, '0'); };
+        h = Math.min(Math.max(h, 0), 23);
+        m = Math.min(Math.max(m, 0), 59);
+        s = Math.min(Math.max(s, 0), 59);
+        return pad2(h) + ':' + pad2(m) + ':' + pad2(s);
+      }
+
+      function parseYmdLocal(dateStr) {
+        var raw = (dateStr || '').toString().trim();
+        if (!raw) return null;
+        var p = raw.split('-');
+        if (p.length !== 3) return null;
+        var y = parseInt(p[0], 10);
+        var m = parseInt(p[1], 10);
+        var d = parseInt(p[2], 10);
+        if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return null;
+        return new Date(y, m - 1, d);
+      }
+
+      function formatDmy(dateObj) {
+        if (!(dateObj instanceof Date) || !Number.isFinite(dateObj.getTime())) return '';
+        var pad2 = function (n) { return String(n).padStart(2, '0'); };
+        return pad2(dateObj.getDate()) + '/' + pad2(dateObj.getMonth() + 1) + '/' + dateObj.getFullYear();
+      }
+
+      // Gói 24h (day_full): tự động set giờ kết thúc = giờ bắt đầu (+24h) và hiển thị kết thúc thực tế.
+      function applyDayFullAutoEnd() {
+        var type = getShiftType();
+        var isDayFull = type === 'day_full';
+
+        var $endTime = $('#endTime');
+        var $autoRow = $('#autoEndDateRow');
+        var wasLocked = !!$endTime.data('dayFullLocked');
+        var wasAuto = !!$autoRow.data('dayFullAuto');
+
+        // Không phải day_full: chỉ hoàn tác những gì day_full đã can thiệp.
+        if (!isDayFull) {
+          if (wasLocked) $endTime.prop('disabled', false).removeData('dayFullLocked');
+          if (wasAuto) {
+            $autoRow.addClass('d-none').removeData('dayFullAuto');
+            $('#autoEndDateText').text('');
+            $('#totalDaysText').text('');
+          }
+          return;
+        }
+
+        // Day_full: khoá endTime và tự tính theo startTime.
+        $endTime.data('dayFullLocked', true).prop('disabled', true);
+        var startTime = $('#startTime').val();
+        $endTime.val(startTime || '');
+
+        // Day_full sẽ quản lý autoEndDateRow.
+        $autoRow.data('dayFullAuto', true);
+
+        // Kết thúc thực tế = endDate + 1 ngày (ca 24h vắt qua ngày hôm sau).
+        var endDateVal = $('#endDate').val();
+        var endDateObj = parseYmdLocal(endDateVal);
+        if (!endDateObj) {
+          $autoRow.addClass('d-none');
+          $('#autoEndDateText').text('');
+          $('#totalDaysText').text('');
+          return;
+        }
+
+        endDateObj.setDate(endDateObj.getDate() + 1);
+        var endTimeVal = $('#endTime').val();
+        var display = formatDmy(endDateObj) + (endTimeVal ? (' ' + endTimeVal) : '');
+        $('#autoEndDateText').text(display);
+        var days = getDays();
+        $('#totalDaysText').text(days ? (' (Đặt: ' + days + ' ngày)') : '');
+        $autoRow.removeClass('d-none');
       }
 
       // Tính tổng phụ thu (%) và nhãn cho ngày+giờ hiện tại dựa trên PHU_THU_RULES.
@@ -1841,8 +1930,8 @@
           'Công việc': Array.isArray(formData.jobs) ? formData.jobs.join(', ') : '',
           'Ngày bắt đầu': formData.startDate || '',
           'Ngày kết thúc': formData.endDate || '',
-          'Giờ bắt đầu': formData.startTime || '',
-          'Giờ kết thúc': formData.endTime || '',
+          'Giờ bắt đầu': normalizeTimeHHMMSS(formData.startTime),
+          'Giờ kết thúc': normalizeTimeHHMMSS(formData.endTime),
           'Yêu cầu khác': formData.extraRequest || '',
           'Ghi chú': formData.note || '',
           'Tổng tiền': normalizeMoneyToNumber(formData.price)
@@ -2061,8 +2150,14 @@
         if ($(this).is(':checked')) $(this).closest('label').addClass('active');
         $('#startTime,#endTime').val('');
         applyShiftHints();
+        applyDayFullAutoEnd();
         updatePackageLockState();
         updateTotalPrice();
+      });
+
+      // Gói 24h: đồng bộ endTime (+24h) và hiển thị kết thúc thực tế.
+      $(document).on('change input', '#startTime, #startDate, #endDate', function () {
+        applyDayFullAutoEnd();
       });
 
       // Các thay đổi ảnh hưởng tổng tiền.
@@ -2167,8 +2262,8 @@
               cong_viec: (formData.jobs || []).join(', '),
               ngay_bat_dau_kehoach: formData.startDate || '',
               ngay_ket_thuc_kehoach: formData.endDate || '',
-              gio_bat_dau_kehoach: formData.startTime || '',
-              gio_ket_thuc_kehoach: formData.endTime || '',
+              gio_bat_dau_kehoach: normalizeTimeHHMMSS(formData.startTime),
+              gio_ket_thuc_kehoach: normalizeTimeHHMMSS(formData.endTime),
               tong_tien: normalizeMoneyToNumber(formData.price),
               yeu_cau_khac: formData.extraRequest || '',
               ghi_chu: formData.note || '',

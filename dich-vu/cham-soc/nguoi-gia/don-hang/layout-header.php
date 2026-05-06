@@ -305,7 +305,7 @@ $pageTitle = $pageTitle ?? '';
                 </a>
                 <a href="index.php" class="list-group-item <?php echo $current_page == 'index.php' ? 'active' : ''; ?>"
                     data-page="index.php">
-                    <i class="bi bi-receipt"></i> <span>Danh sách đơn hàng</span>
+                    <i class="bi bi-receipt"></i> <span>Đơn hàng của khách</span>
                 </a>
                 <?php if (in_array('3', explode(',', $_SESSION['user']['id_dichvu'] ?? ''))): ?>
                     <a href="don-hang-cua-toi.php"

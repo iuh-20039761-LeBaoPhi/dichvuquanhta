@@ -1402,7 +1402,7 @@ include 'layout-header.php';
 						<span class="profile-status badge success">Khách hàng</span>
 					</div>
 					<div class="profile-body">
-						<img id="customerAvatarImg" class="profile-avatar" src="assets/logomvb.png" alt="Khách hàng">
+						<img id="customerAvatarImg" class="profile-avatar" src="../assets/logomvb.png" alt="Khách hàng">
 						<iframe id="customerAvatar" class="profile-avatar" src="" frameborder="0"
 							style="display:none;"></iframe>
 						<div class="profile-main">
@@ -1424,7 +1424,7 @@ include 'layout-header.php';
 						<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
 					</div>
 					<div class="profile-body">
-						<img id="staffAvatarImg" class="profile-avatar" src="assets/logomvb.png" alt="Nhà Cung Cấp">
+						<img id="staffAvatarImg" class="profile-avatar" src="../assets/logomvb.png" alt="Nhà Cung Cấp">
 						<iframe id="staffAvatar" class="profile-avatar" src="" frameborder="0"
 							style="display:none;"></iframe>
 						<div class="profile-main">
