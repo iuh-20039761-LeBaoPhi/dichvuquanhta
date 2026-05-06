@@ -26,9 +26,7 @@ if (!function_exists('admin_require_login')) {
         $admin = $_SESSION['admin_user'] ?? null;
 
         if (!$isLogged || !is_array($admin)) {
-            // Đảm bảo luôn redirect đúng file login.php trong cùng thư mục
-            $currentDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
-            header('Location: ' . $currentDir . '/login.php');
+           header('Location: login.php');
             exit;
         }
 
