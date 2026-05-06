@@ -13,5 +13,8 @@ setcookie('admin_p', '', time() - 3600, '/');
 
 session_regenerate_id(true);
 
-header('Location: ../../../../public/admin-login.html');
+// Tự động tính toán đường dẫn gốc của project để redirect chính xác
+$project_root = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], 5)), '/');
+header('Location: ' . $project_root . '/public/admin-login.html');
 exit;
+

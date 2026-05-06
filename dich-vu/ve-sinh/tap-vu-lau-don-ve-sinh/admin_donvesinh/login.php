@@ -48,8 +48,12 @@ if ($email !== '' && $password !== '') {
 // Nếu không hợp lệ, xóa session và chuyển về trang nhập lại
 $_SESSION['admin_logged_in'] = false;
 unset($_SESSION['admin_user']);
-header('Location: ../../../../public/admin-login.html');
+
+// Tự động tính toán đường dẫn gốc của project để redirect chính xác
+$project_root = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], 5)), '/');
+header('Location: ' . $project_root . '/public/admin-login.html');
 exit;
+
 
 if (!function_exists('admin_login_h')) {
 	function admin_login_h(string $value): string
