@@ -9,7 +9,7 @@
   <meta name="keywords"
     content="dịch vụ quanh ta, chăm sóc mẹ và bé, chăm sóc người già, chăm sóc bệnh nhân, dịch vụ vệ sinh, chăm sóc vườn nhà, giặt ủi nhanh, giao hàng nhanh, thuê xe toàn quốc, sửa xe lưu động, thợ nhà" />
   <title>Dịch Vụ Quanh Ta - Nhanh, An toàn, Chất Lượng</title>
-  <link rel="shortcut icon" type="image/x-icon" href="public/asset/image/logo-dich-vu-quanh-ta.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="public/asset/image/icon-dvqt1.jpg" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
@@ -291,8 +291,7 @@
   <nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="./">
-        <img style="width: 80px; height: 60px" src="public/asset/image/logo-dich-vu-quanh-ta.png"
-          alt="Logo Dịch Vụ Quanh Ta" />
+        <img style="width: 80px; height: 60px; margin-right: 5px;" src="public/asset/image/icon-dvqt1.jpg" alt="Logo Dịch Vụ Quanh Ta" />
         <!-- <span class="logo-icon">D</span> -->
         <span class="logo-text">Dịch Vụ <span class="text-cyan">Quanh Ta</span></span>
       </a>
@@ -1183,8 +1182,8 @@
           <p class="lead text-light opacity-75 mb-5">
             Để lại thông tin, đội ngũ tư vấn viên của Dịch Vụ Quanh Ta sẽ liên
             hệ với bạn trong vòng 15 phút. <br />
-            CÔNG TY TNHH DỊCH VỤ QUANH TA KERI. <br />
-            MST: 0315609853
+            CÔNG TY CỔ PHẦN CÔNG NGHỆ DỊCH VỤ QUANH TA. <br />
+            MST: 0318957834
           </p>
 
           <div class="d-flex align-items-center mb-4">
@@ -1193,7 +1192,7 @@
             </div>
             <div>
               <div class="small text-light opacity-75">Hotline 24/7</div>
-              <div class="h5 fw-bold mb-0">0775 472 347</div>
+              <div class="h5 fw-bold mb-0">0337 099 459</div>
             </div>
           </div>
 
@@ -1214,9 +1213,7 @@
             <div>
               <div class="small text-light opacity-75">Địa chỉ</div>
               <div class="h5 fw-bold mb-0">
-                Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang
-                Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh,
-                Việt Nam
+                Biệt thự Liên Phương 2, Lô 28, Đường Số 3, Công viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành phố Hồ Chí Minh, Việt Nam
               </div>
             </div>
           </div>
@@ -1227,18 +1224,15 @@
             <h3 class="h4 fw-bold mb-4 text-dark">
               Gửi yêu cầu cho cúng tôi
             </h3>
-            <form onsubmit="
-                  event.preventDefault();
-                  alert('Cảm ơn! Chúng tôi sẽ liên hệ sớm.');
-                ">
+            <form id="contactForm" onsubmit="submitContactForm(event)">
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
                   <label class="form-label small fw-bold text-muted">Họ và Tên</label>
-                  <input type="text" class="form-control" required />
+                  <input type="text" id="contactName" class="form-control" required />
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold text-muted">Số Điện Thoại</label>
-                  <input type="tel" class="form-control" required />
+                  <input type="tel" id="contactPhone" class="form-control" required />
                 </div>
               </div>
               <div class="mb-3 position-relative">
@@ -1271,9 +1265,9 @@
               </div>
               <div class="mb-4">
                 <label class="form-label small fw-bold text-muted">Ghi Chú</label>
-                <textarea class="form-control" rows="4" placeholder="Nội dung yêu cầu..."></textarea>
+                <textarea class="form-control" id="contactNote" rows="4" placeholder="Nội dung yêu cầu..."></textarea>
               </div>
-              <button type="submit"
+              <button type="submit" id="contactSubmitBtn"
                 class="btn btn-gradient w-100 py-3 d-flex align-items-center justify-content-center gap-2">
                 Gửi Yêu Cầu <i data-lucide="send" style="width: 18px"></i>
               </button>
@@ -1290,7 +1284,7 @@
       <div class="row g-4 mb-5" style="justify-content: space-between">
         <div class="col-lg-4">
           <div class="d-flex align-items-center mb-3">
-            <img style="width: 80px; height: 60px" src="public/asset/image/logo-dich-vu-quanh-ta.png" alt="Logo" />
+            <img style="width: 80px; height: 60px; margin-right: 5px;" src="public/asset/image/icon-dvqt1.jpg" alt="Logo" />
             <span class="fw-bold fs-4">Dịch Vụ <span class="text-cyan">Quanh Ta</span></span>
           </div>
           <p class="text-muted small mb-6">
@@ -1306,7 +1300,7 @@
           <div class="d-flex gap-2">
             <a href="#" class="btn btn-primary d-flex align-items-center p-2 rounded-3 text-decoration-none"
               style="flex: 1">
-              <i data-lucide="apple" class="me-2" style="width: 24px; height: 24px"></i>
+              <i class="fab fa-apple me-2" style="font-size: 24px"></i>
               <div class="text-start lh-1">
                 <small class="d-block text-white-50" style="font-size: 10px">Download on</small>
                 <span class="fw-bold text-white" style="font-size: 12px">App Store</span>
@@ -1314,7 +1308,7 @@
             </a>
             <a href="#" class="btn btn-dark d-flex align-items-center p-2 rounded-3 text-decoration-none"
               style="flex: 1">
-              <i data-lucide="play" class="me-2" style="width: 24px; height: 24px; fill: white"></i>
+              <i class="fab fa-google-play me-2" style="font-size: 24px"></i>
               <div class="text-start lh-1">
                 <small class="d-block text-white-50" style="font-size: 10px">Get it on</small>
                 <span class="fw-bold text-white" style="font-size: 12px">Google Play</span>
@@ -1545,6 +1539,77 @@
   </script>
   <!-- Bootstrap JS Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="public/asset/js/driveUtil.js"></script>
+  <script>
+    /**
+     * submitContactForm – Lưu thông tin liên hệ vào Google Sheet qua driveUtil.js
+     */
+    async function submitContactForm(event) {
+      event.preventDefault();
+
+      const btn = document.getElementById("contactSubmitBtn");
+      const originalHTML = btn.innerHTML;
+
+      // Lấy dữ liệu form
+      const name  = document.getElementById("contactName").value.trim();
+      const phone = document.getElementById("contactPhone").value.trim();
+      const note  = document.getElementById("contactNote").value.trim();
+
+      // Lấy dịch vụ được chọn
+      const select = document.getElementById("serviceSelect");
+      const selectedServices = Array.from(select.selectedOptions)
+        .map(o => o.value)
+        .join(", ");
+
+      // Trạng thái loading
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+
+      try {
+        if (typeof saveToGoogleSheet !== "function") {
+          throw new Error("driveUtil.js chưa được nạp.");
+        }
+
+        await saveToGoogleSheet({
+          sheet_type : "lien_he",
+          ho_ten     : name,
+          so_dien_thoai: phone,
+          dich_vu    : selectedServices,
+          ghi_chu    : note,
+          thoi_gian  : new Date().toLocaleString("vi-VN"),
+        });
+
+        // Thành công
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Đã gửi thành công!';
+        btn.classList.remove("btn-gradient");
+        btn.classList.add("btn-success");
+        document.getElementById("contactForm").reset();
+        document.getElementById("serviceInput").value = "";
+
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.classList.add("btn-gradient");
+          btn.classList.remove("btn-success");
+          btn.disabled = false;
+          if (typeof lucide !== "undefined") lucide.createIcons();
+        }, 3000);
+
+      } catch (err) {
+        console.error("Lỗi gửi form liên hệ:", err);
+        btn.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Gửi thất bại, thử lại!';
+        btn.classList.remove("btn-gradient");
+        btn.classList.add("btn-danger");
+        btn.disabled = false;
+
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.classList.add("btn-gradient");
+          btn.classList.remove("btn-danger");
+          if (typeof lucide !== "undefined") lucide.createIcons();
+        }, 3000);
+      }
+    }
+  </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="public/asset/js/style.js"></script>
   <script src="public/asset/js/dvqt-krud.js"></script>
