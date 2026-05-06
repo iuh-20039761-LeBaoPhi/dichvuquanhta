@@ -791,6 +791,11 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  #serviceModal .modal-dialog {
+    max-width: 90vw;
+    width: 90vw;
+  }
 }
 
 /* PC: width >= 1024px */
