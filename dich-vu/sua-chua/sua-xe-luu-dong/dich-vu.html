@@ -516,8 +516,8 @@
                   container.innerHTML = services.map(s => `
                     <div class="col-lg-4 col-md-6">
                       <div class="service-card">
-                        <div class="service-media">
-                          <img class="service-thumb" src="${s.hinhanh && (s.hinhanh.includes('.') || s.hinhanh.includes('/')) ? 'public/asset/image/' + s.hinhanh : 'https://lh3.googleusercontent.com/d/' + s.hinhanh}" alt="${s.tendichvu}" loading="lazy" />
+                        <div class="service-media position-relative overflow-hidden">
+                          <iframe class="position-absolute w-100 h-100" src="${s.hinhanh && (s.hinhanh.includes('.') || s.hinhanh.includes('/')) ? 'public/asset/image/' + s.hinhanh : 'https://drive.google.com/file/d/' + s.hinhanh + '/preview'}" title="${s.tendichvu}" style="top:0; left:0; border:none; pointer-events:none; transform: scale(1.45); transform-origin: center;" scrolling="no" loading="lazy"></iframe>
                         </div>
                         <h5>${s.tendichvu}</h5>
                         <p>${s.mota}</p>

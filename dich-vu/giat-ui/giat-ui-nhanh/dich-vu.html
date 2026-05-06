@@ -690,8 +690,8 @@
           
           grid.innerHTML = services.map((s, i) => `
             <article class="svc-card${i % 2 !== 0 ? " is-reverse" : ""}">
-              <div class="svc-media">
-                <img src="${s.hinhanh && (s.hinhanh.includes('.') || s.hinhanh.includes('/')) ? 'public/asset/image/' + s.hinhanh : 'https://lh3.googleusercontent.com/d/' + s.hinhanh}" alt="${s.tendichvu}">
+              <div class="svc-media position-relative overflow-hidden">
+                <iframe src="${s.hinhanh && (s.hinhanh.includes('.') || s.hinhanh.includes('/')) ? 'public/asset/image/' + s.hinhanh : 'https://drive.google.com/file/d/' + s.hinhanh + '/preview'}" title="${s.tendichvu}" class="position-absolute w-100 h-100" style="top:0; left:0; border:none; pointer-events:none; transform: scale(1.45); transform-origin: center;" scrolling="no" loading="lazy"></iframe>
               </div>
               <div class="svc-body">
                 <h3 class="svc-title">${s.tendichvu}</h3>
