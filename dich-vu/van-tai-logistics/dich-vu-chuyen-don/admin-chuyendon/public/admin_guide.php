@@ -388,7 +388,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <li>Vào `Thông báo` nếu cần danh sách cảnh báo theo từng record, sau đó nhảy sang đơn hoặc contact tương ứng.</li>
                 <li>Mở `Đơn hàng`, lọc theo trạng thái và provider để xử lý các đơn mới, đơn cần gán nhà cung cấp, hoặc đơn có khảo sát trước.</li>
                 <li>Rà `Nhà cung cấp & người dùng` để xác minh các provider đang `pending` hoặc thiếu `avatar + CCCD`.</li>
-                <li>Nếu cần cập nhật trang dịch vụ chuyển dọn ngoài site, xử lý ở `Nội dung dịch vụ`, lưu xong rồi kiểm tra JSON public và giao diện thực tế.</li>
+                <li>Nếu cần cập nhật trang dịch vụ chuyển dọn ngoài site, xử lý ở `Nội dung dịch vụ`. Khi thay ảnh dịch vụ, hệ thống sẽ tải ảnh lên Drive và tự lưu luôn nhóm dịch vụ đó; sau khi hoàn tất vẫn cần kiểm tra JSON public và giao diện thực tế.</li>
                 <li>Nếu có thay đổi chính sách giá hoặc phụ phí, xử lý ở `Bảng giá`, xác nhận export JSON thành công rồi mới bàn giao.</li>
                 <li>Cuối ca, kiểm tra `Liên hệ` và `Cẩm nang` để tránh bỏ sót inbox mới hoặc bài viết đang cần cập nhật.</li>
             </ol>
@@ -617,10 +617,18 @@ require_once __DIR__ . '/../includes/header_admin.php';
                     </tbody>
                 </table>
             </div>
+            <h3>Upload ảnh ở màn Nội dung dịch vụ</h3>
+            <ul>
+                <li>Ảnh của các card dịch vụ trên trang public được thao tác ở `admin_service_content.php`.</li>
+                <li>Link ảnh trong màn này vẫn được hiển thị để admin đối chiếu với trang khách, nhưng ô link bị khóa chỉnh sửa trực tiếp. Muốn thay ảnh, admin phải dùng nút tải lên.</li>
+                <li>Khi admin chọn ảnh mới, hệ thống sẽ upload ảnh lên Google Drive theo route public và tự lưu luôn nhóm dịch vụ, không cần bấm thêm `Lưu nhóm dịch vụ` chỉ để ghi lại link ảnh.</li>
+                <li>Sau khi upload/lưu xong, admin nên mở trang public để kiểm tra lại ảnh, tiêu đề và nút CTA đã hiển thị đúng.</li>
+            </ul>
             <p>Admin cấu hình limit qua `admin_profile.php`, dữ liệu được ghi vào `admin-chuyendon/api/settings.php`, sau đó frontend đọc lại qua `public/upload_settings.php`.</p>
-            <div class="guide-note">Nếu người dùng báo không upload được, hãy kiểm tra theo thứ tự: dung lượng file, route upload đúng loại file, và response của `upload_settings.php`. Không sửa tay file public JSON hoặc Apps Script khi chưa xác minh nguyên nhân.</div>
+            <div class="guide-note">Nếu người dùng báo không upload được, hãy kiểm tra theo thứ tự: dung lượng file, route upload đúng loại file, response của `upload_settings.php`, rồi mới tới bước kiểm tra save/export ở màn `Nội dung dịch vụ`. Link ảnh có thể đối chiếu trực tiếp trên màn admin nhưng không nên sửa tay; cũng không sửa tay file public JSON hoặc Apps Script khi chưa xác minh nguyên nhân.</div>
             <div class="guide-link-row">
                 <a class="guide-link" href="admin_profile.php"><i class="fas fa-cloud-arrow-up"></i> Mở Cấu hình upload</a>
+                <a class="guide-link" href="admin_service_content.php"><i class="fas fa-panorama"></i> Mở Nội dung dịch vụ</a>
             </div>
         </article>
 

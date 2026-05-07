@@ -647,11 +647,15 @@
         }
 
         const serviceKey = normalizeText(form.dataset.serviceForm);
+        const sortOrder = Number(form.dataset.sortOrder || 0);
         const imageField = form.elements.namedItem("image");
+        const previousImage =
+            imageField instanceof HTMLInputElement ? normalizeText(imageField.value) : "";
         const previewWrap = form.querySelector("[data-image-preview-wrap]");
         const previewImage = form.querySelector("[data-image-preview]");
         const previewLink = form.querySelector("[data-image-preview-link]");
         const uploadButton = input.closest(".service-image-picker");
+        const submitButton = form.querySelector('button[type="submit"]');
 
         try {
             setButtonBusy(uploadButton, true, '<i class="fas fa-spinner fa-spin"></i>Đang tải...');
@@ -671,11 +675,36 @@
                 previewLink.href = uploaded.url;
             }
 
-            showRuntime("success", `Đã tải ảnh lên folder web của Chuyển Dọn. Nhớ bấm "Lưu nhóm dịch vụ" để ghi link vào KRUD.`);
+            const payload = buildServicePayload(form, serviceKey, sortOrder);
+            const errors = validateServicePayload(payload);
+            if (errors.length) {
+                throw new Error(`Ảnh đã tải lên nhưng chưa thể lưu: ${errors.join(" ")}`);
+            }
+
+            setButtonBusy(submitButton, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
+
+            const existing = getServiceRow(serviceKey);
+            await window.adminApi.saveMovingServicePageCard(payload, existing);
+            state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
+            renderServiceCards();
+            await finalizeSave(`Đã tải ảnh lên folder web của Chuyển Dọn và lưu nhóm dịch vụ ${serviceKey}.`);
         } catch (error) {
+            if (imageField instanceof HTMLInputElement) {
+                imageField.value = previousImage;
+            }
+            if (previewImage instanceof HTMLImageElement) {
+                previewImage.src = resolvePreviewImageUrl(previousImage);
+            }
+            if (previewWrap instanceof HTMLElement) {
+                previewWrap.hidden = !previousImage;
+            }
+            if (previewLink instanceof HTMLAnchorElement) {
+                previewLink.href = resolvePreviewImageUrl(previousImage);
+            }
             showRuntime("error", error.message || "Không thể tải ảnh lên Drive.");
         } finally {
             setButtonBusy(uploadButton, false, "");
+            setButtonBusy(submitButton, false, "");
             input.value = "";
         }
     }
