@@ -1031,7 +1031,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                                 <div class="invoice-item-content">
                                     <p>Thời gian</p>
                                     <h4 style="font-size: 16px;">
-                                        <?= ($t1 = strtotime($row['gio_bat_dau_kehoach'] ?? '')) ? date('H:i', $t1) : '--:--' ?> - <?= ($t2 = strtotime($row['gio_ket_thuc_kehoach'] ?? '')) ? date('H:i', $t2) : '--:--' ?>
+                                        <?= ($t1 = strtotime($row['gio_bat_dau_kehoach'] ?? '')) ? date('H:i:s', $t1) : '--:--:--' ?> - <?= ($t2 = strtotime($row['gio_ket_thuc_kehoach'] ?? '')) ? date('H:i:s', $t2) : '--:--:--' ?>
                                     </h4>
                                     <span><?= ($d1 = strtotime($row['ngay_bat_dau_kehoach'] ?? '')) ? date('d/m/Y', $d1) : '---' ?> -> <?= ($d2 = strtotime($row['ngay_ket_thuc_kehoach'] ?? '')) ? date('d/m/Y', $d2) : '---' ?></span>
                                 </div>
@@ -1150,13 +1150,13 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                                 <div class="time-line-row compact-mobile" style="display:flex; justify-content: space-between; align-items: center; gap:8px;padding:7px 10px;font-size:12px;">
                                     <span style="color:#000000;font-weight:700;">Bắt đầu</span>
                                     <span
-                                        style="color:#1f3853;font-weight:800;"><?= ($t1 = strtotime($row['gio_bat_dau_kehoach'] ?? '')) ? date('H:i', $t1) : '--:--' ?></span>
+                                        style="color:#1f3853;font-weight:800;"><?= ($t1 = strtotime($row['gio_bat_dau_kehoach'] ?? '')) ? date('H:i:s', $t1) : '--:--:--' ?></span>
                                 </div>
                                 <div class="time-line-row compact-mobile"
                                     style="display:flex; justify-content: space-between; align-items: center; gap:8px;padding:7px 10px;border-top:1px solid #efd3e9;font-size:12px;">
                                     <span style="color:#000000;font-weight:700;">Kết thúc</span>
                                     <span
-                                        style="color:#1f3853;font-weight:800;"><?= ($t2 = strtotime($row['gio_ket_thuc_kehoach'] ?? '')) ? date('H:i', $t2) : '--:--' ?></span>
+                                        style="color:#1f3853;font-weight:800;"><?= ($t2 = strtotime($row['gio_ket_thuc_kehoach'] ?? '')) ? date('H:i:s', $t2) : '--:--:--' ?></span>
                                 </div>
                             </div>
                             <div>
