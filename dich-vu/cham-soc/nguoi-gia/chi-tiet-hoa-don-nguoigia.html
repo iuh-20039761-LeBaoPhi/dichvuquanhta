@@ -1765,10 +1765,11 @@
 			}
 
 			function formatTimeDisplay(value) {
-				if (!value) return '--:--:--';
+				if (!value) return '00:00:00';
 				const p = parseDateTimeParts(value);
-				if (!p || !p.hasTime) return String(value || '--:--:--');
-				return `${p.h}:${p.min}:${p.s}`;
+				if (!p || !p.hasTime) return '00:00:00';
+				const pad = n => String(n).padStart(2, '0');
+				return `${pad(p.h)}:${pad(p.min)}:${pad(p.s)}`;
 			}
 
 			function formatDateTimeDisplay(value) {
