@@ -5,6 +5,7 @@
     const HCM = [10.7769, 106.7009];
     let map = null;
     let marker = null;
+    let currentPopup = null;
     let leafletPromise = null;
 
     function getFirstElementById(ids) {
@@ -168,8 +169,12 @@
 
           addr.value = buildDetailedAddress(data.address, data.display_name);
           addr.dispatchEvent(new Event("change", { bubbles: true }));
-          if (addr.value && marker) {
-            marker.bindPopup(`<small>${addr.value}</small>`).openPopup();
+          if (addr.value) {
+            if (currentPopup) map.closePopup(currentPopup);
+            currentPopup = L.popup({ autoClose: false })
+              .setLatLng([lat, lng])
+              .setContent(`<small>${addr.value}</small>`);
+            currentPopup.openOn(map);
           }
         })
         .catch(() => {
@@ -270,21 +275,122 @@
       init();
     }
 
-    function lookup(query) {
+    // Timer & AbortController dùng chung cho chế độ live
+    let _liveTimer = null;
+    let _liveAbort = null;
+
+    /**
+     * lookup(query, opts)
+     *   opts.live     = true  → debounce 700ms, chỉ chạy khi bản đồ đang mở, panTo mượt (real-time follow)
+     *   opts.autoOpen = true  → tự mở bản đồ nếu đang ẩn trước khi fetch (dùng khi điền tự động từ tài khoản)
+     *   (mặc định)           → fetch ngay, setView, hiện popup (dùng khi người dùng bấm/blur)
+     */
+    function lookup(query, { autoOpen = false, live = false } = {}) {
       if (!query || query.length < 5) return;
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
-        .then(r => r.json())
-        .then(data => {
-          if (data && data.length > 0) {
-            const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
-            init().then(() => {
-              if (!map) return;
-              map.setView([lat, lng], 16);
-              if (marker) map.removeLayer(marker);
-              marker = L.marker([lat, lng]).addTo(map);
-            });
+
+      // ── Hàm cập nhật marker & tọa độ sau khi có kết quả ──
+      function _applyLocation(lat, lng, showPopup) {
+        init().then(() => {
+          if (!map) return;
+          if (live) {
+            map.panTo([lat, lng], { animate: true, duration: 0.5 });
+          } else {
+            map.setView([lat, lng], 16, { animate: false });
+          }
+          if (marker) map.removeLayer(marker);
+          if (currentPopup) map.closePopup(currentPopup);
+          
+          marker = L.marker([lat, lng]).addTo(map);
+          if (showPopup) {
+            const popupContent = `<small>${query}</small>`;
+            currentPopup = L.popup({ autoClose: false })
+              .setLatLng([lat, lng])
+              .setContent(popupContent);
+            
+            currentPopup.openOn(map);
+
+            // Dự phòng lần 2: Đảm bảo popup mở sau khi modal ổn định hoàn toàn
+            setTimeout(() => {
+              if (map && currentPopup) currentPopup.openOn(map);
+            }, 800);
+          }
+
+          // Cập nhật tọa độ hiển thị
+          const latDisplay = document.getElementById('latDisplay');
+          const lngDisplay = document.getElementById('lngDisplay');
+          const toaDoHienThi = document.getElementById('toaDoHienThi');
+          if (latDisplay && lngDisplay && toaDoHienThi) {
+            latDisplay.innerText = `Lat: ${lat.toFixed(6)}`;
+            lngDisplay.innerText = `Lng: ${lng.toFixed(6)}`;
+            toaDoHienThi.style.setProperty('display', 'flex', 'important');
+          }
+
+          // Lưu tọa độ vào input địa chỉ
+          const addrEl = getAddressInput();
+          if (addrEl) {
+            addrEl.dataset.lat = lat;
+            addrEl.dataset.lng = lng;
           }
         });
+      }
+
+      // ── Hàm thực sự gọi Nominatim ──
+      function _doFetch(signal) {
+        return fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=vn`,
+          { headers: { 'Accept-Language': 'vi' }, ...(signal ? { signal } : {}) }
+        )
+          .then(r => r.json())
+          .then(data => {
+            if (!data || !data.length) return;
+            const lat = parseFloat(data[0].lat);
+            const lng = parseFloat(data[0].lon);
+            _applyLocation(lat, lng, !live);
+          })
+          .catch(err => {
+            if (err && err.name === 'AbortError') return; // bỏ qua huỷ request
+          });
+      }
+
+      // ── Chế độ LIVE: debounce + chỉ chạy khi bản đồ đang mở ──
+      if (live) {
+        if (_liveTimer) clearTimeout(_liveTimer);
+        _liveTimer = setTimeout(() => {
+          const box = getFirstElementById(['osmMapWrapper', 'mapPickerBox']);
+          const isOpen = box && box.style.display !== 'none' && box.style.display !== '';
+          if (!isOpen) return;
+
+          if (_liveAbort) _liveAbort.abort();
+          _liveAbort = new AbortController();
+          _doFetch(_liveAbort.signal);
+        }, 700);
+        return;
+      }
+
+      // ── Chế độ AUTO-OPEN: mở bản đồ trước, rồi fetch ──
+      if (autoOpen) {
+        const box = getFirstElementById(['osmMapWrapper', 'mapPickerBox']);
+        const btn = document.getElementById('nutmobando');
+        if (box && (box.style.display === 'none' || box.style.display === '')) {
+          box.style.display = 'block';
+          if (btn) {
+            btn.innerHTML = '<i class="fas fa-times me-1"></i> Đóng bản đồ';
+            btn.classList.add('active');
+          }
+          setTimeout(() => {
+            init().then(() => {
+              if (map) map.invalidateSize();
+              _doFetch();
+            });
+          }, 300);
+        } else {
+          _doFetch();
+        }
+        return;
+      }
+
+      // ── Chế độ THƯỜNG: fetch ngay ──
+      _doFetch();
     }
 
     return { toggle, gps, refresh, lookup };
@@ -324,15 +430,27 @@
     if (bookingModal && !bookingModal.dataset.mapSyncLoaded) {
       bookingModal.dataset.mapSyncLoaded = "true";
       bookingModal.addEventListener("shown.bs.modal", function () {
-        setTimeout(() => mapPicker.refresh(), 80);
+        setTimeout(() => mapPicker.refresh(), 300);
       });
     }
 
     const addrInput = document.getElementById("diachi") || document.getElementById("address");
     if (addrInput && !addrInput.dataset.lookupBound) {
       addrInput.dataset.lookupBound = "true";
+
+      // Khi người dùng đang gõ → pan bản đồ theo real-time (chỉ khi bản đồ đang mở)
+      addrInput.addEventListener("input", function () {
+        mapPicker.lookup(this.value, { live: true });
+      });
+
       addrInput.addEventListener("change", function (e) {
-        if (e.isTrusted) mapPicker.lookup(this.value);
+        if (e.isTrusted) {
+          // Người dùng tự nhập → chỉ lookup bình thường (không tự mở bản đồ)
+          mapPicker.lookup(this.value);
+        } else {
+          // Điền tự động từ tài khoản → mở bản đồ và hiển thị vị trí
+          mapPicker.lookup(this.value, { autoOpen: true });
+        }
       });
     }
   }
