@@ -76,54 +76,87 @@
 /* App Download Buttons */
 .app-btns {
   margin-top: 30px;
+}
+
+.dvqt-store-badges {
   display: flex;
-  gap: 15px;
-  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: fit-content;
+  max-width: 100%;
 }
 
-.btn-store {
-  background: rgba(0, 0, 0, 0.3);
-  color: #ffffff;
-  padding: 8px 16px;
+.dvqt-store-badge {
+  flex: 0 0 182px;
+  min-width: 182px;
+  padding: 8px;
   border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
   text-decoration: none;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(5px);
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.btn-store:hover {
-  background-color: #ffffff;
-  color: #0a2a66;
-  transform: translateY(-3px);
-  border-color: #ffffff;
+.dvqt-store-badge:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
-.store-icon svg {
+.dvqt-store-badge.is-app-store {
+  background: #1a4fb6;
+}
+
+.dvqt-store-badge.is-google-play {
+  background: #ff7a00;
+}
+
+.dvqt-store-badge.is-app-store:hover {
+  background: #2563d9;
+}
+
+.dvqt-store-badge.is-google-play:hover {
+  background: #e96f00;
+}
+
+.dvqt-store-badge i {
+  flex: 0 0 auto;
   width: 24px;
-  height: 24px;
-  fill: currentColor;
+  margin-right: 8px;
+  font-size: 24px;
+  text-align: center;
 }
 
-.store-text {
+.dvqt-store-badge__text {
   display: flex;
   flex-direction: column;
-  line-height: 1.2;
+  line-height: 1;
   text-align: left;
 }
 
-.store-subtitle {
+.dvqt-store-badge__subtitle {
   font-size: 10px;
-  opacity: 0.8;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
 }
 
-.store-title {
-  font-size: 14px;
+.dvqt-store-badge__title {
+  font-size: 12px;
   font-weight: 700;
+  color: #ffffff;
+}
+
+@media (max-width: 767px) {
+  .dvqt-store-badges {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .dvqt-store-badge {
+    width: 100%;
+    flex-basis: auto;
+    min-width: 0;
+  }
 }
 
 /* Back to Top Button */

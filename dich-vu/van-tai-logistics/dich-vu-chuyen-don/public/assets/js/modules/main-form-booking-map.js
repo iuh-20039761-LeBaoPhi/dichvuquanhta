@@ -71,6 +71,18 @@ const BOOKING_DEFAULT_SLOT_STARTS = [
     };
   }
 
+  async function fetchAddressSuggestions(address) {
+    const query = String(address || "").trim();
+    if (!query) return [];
+
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&countrycodes=vn&limit=6`,
+      { headers: { Accept: "application/json" } },
+    );
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  }
+
   async function fetchBookingWeatherForecast(lat, lng, dateValue) {
     const cacheKey = `${Number(lat).toFixed(4)}:${Number(lng).toFixed(4)}:${dateValue}`;
     if (!bookingWeatherCache.has(cacheKey)) {
@@ -422,6 +434,14 @@ const BOOKING_DEFAULT_SLOT_STARTS = [
     const currentButton = scope.querySelector(
       "[data-ban-do-dat-lich-hanh-dong='vi-tri-hien-tai']",
     );
+    const fromSuggestionBox = scope.querySelector(
+      "[data-goi-y-dia-chi-dat-lich='diem_di']",
+    );
+    const toSuggestionBox = scope.querySelector(
+      "[data-goi-y-dia-chi-dat-lich='diem_den']",
+    );
+    const fromSuggestionWrap = fromInput?.closest(".khung-goi-y-dia-chi-dat-lich");
+    const toSuggestionWrap = toInput?.closest(".khung-goi-y-dia-chi-dat-lich");
 
     if (
       !mapElement ||
@@ -574,6 +594,22 @@ const BOOKING_DEFAULT_SLOT_STARTS = [
       }
 
       map.setView(defaultCenter, 12);
+    }
+
+    function getSuggestionBox(point) {
+      return point === "diem_den" ? toSuggestionBox : fromSuggestionBox;
+    }
+
+    function hideSuggestionBox(point) {
+      const box = getSuggestionBox(point);
+      if (!box) return;
+      box.innerHTML = "";
+      box.classList.remove("is-visible");
+    }
+
+    function hideAllSuggestionBoxes() {
+      hideSuggestionBox("diem_di");
+      hideSuggestionBox("diem_den");
     }
 
     scope.__bookingMapState = { map, updateMapBounds };
@@ -735,22 +771,151 @@ const BOOKING_DEFAULT_SLOT_STARTS = [
       moveMarker(targetPoint, latlng.lat, latlng.lng, {
         shouldReverse: true,
       });
+      hideAllSuggestionBoxes();
     });
 
     let fromTimer = null;
     let toTimer = null;
+    let fromSuggestionTimer = null;
+    let toSuggestionTimer = null;
+    let fromSuggestionRequestId = 0;
+    let toSuggestionRequestId = 0;
+
+    function renderSuggestionItems(point, items) {
+      const box = getSuggestionBox(point);
+      if (!box) return;
+
+      box.innerHTML = "";
+      if (!Array.isArray(items) || !items.length) {
+        box.classList.remove("is-visible");
+        return;
+      }
+
+      items.forEach((item) => {
+        const lat = parseFloat(item?.lat);
+        const lng = parseFloat(item?.lon);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+        const parts = String(item?.display_name || "")
+          .split(",")
+          .map((part) => part.trim())
+          .filter(Boolean);
+        const mainLabel = parts[0] || String(item?.display_name || "").trim();
+        const subLabel = parts.slice(1).join(", ");
+
+        const itemNode = document.createElement("div");
+        itemNode.className = "muc-goi-y-dia-chi-dat-lich";
+
+        const dotNode = document.createElement("span");
+        dotNode.className = "muc-goi-y-dia-chi-dat-lich__dot";
+        dotNode.setAttribute("aria-hidden", "true");
+
+        const textWrapNode = document.createElement("span");
+        const mainNode = document.createElement("span");
+        mainNode.className = "muc-goi-y-dia-chi-dat-lich__chinh";
+        mainNode.textContent = mainLabel;
+        textWrapNode.appendChild(mainNode);
+
+        if (subLabel) {
+          const subNode = document.createElement("span");
+          subNode.className = "muc-goi-y-dia-chi-dat-lich__phu";
+          subNode.textContent = subLabel;
+          textWrapNode.appendChild(subNode);
+        }
+
+        itemNode.appendChild(dotNode);
+        itemNode.appendChild(textWrapNode);
+        itemNode.addEventListener("mousedown", function (event) {
+          event.preventDefault();
+        });
+        itemNode.addEventListener("click", async function () {
+          const config = getPointConfig(point);
+          config.input.value = String(item?.display_name || "").trim();
+          hideSuggestionBox(point);
+
+          try {
+            await moveMarker(point, lat, lng, {
+              shouldReverse: false,
+            });
+            renderBookingMapPreview(scope);
+            if (statusOutput) {
+              statusOutput.textContent =
+                point === "diem_den"
+                  ? "Đã chọn gợi ý điểm đến và cập nhật vị trí trên bản đồ."
+                  : "Đã chọn gợi ý điểm đi và cập nhật vị trí trên bản đồ.";
+            }
+          } catch (error) {
+            console.warn("Booking suggestion apply failed:", error);
+            if (statusOutput) {
+              statusOutput.textContent =
+                point === "diem_den"
+                  ? "Đã chọn gợi ý điểm đến, nhưng chưa thể cập nhật ghim trên bản đồ."
+                  : "Đã chọn gợi ý điểm đi, nhưng chưa thể cập nhật ghim trên bản đồ.";
+            }
+          }
+        });
+        box.appendChild(itemNode);
+      });
+
+      box.classList.toggle("is-visible", box.children.length > 0);
+    }
+
+    async function loadSuggestions(point, query, requestId) {
+      try {
+        const items = await fetchAddressSuggestions(query);
+        const latestRequestId =
+          point === "diem_den" ? toSuggestionRequestId : fromSuggestionRequestId;
+        const activeInput = point === "diem_den" ? toInput : fromInput;
+        const activeQuery = String(activeInput?.value || "").trim();
+
+        if (requestId !== latestRequestId || activeQuery !== query) return;
+        renderSuggestionItems(point, items);
+      } catch (error) {
+        console.warn("Booking suggestion fetch failed:", error);
+        hideSuggestionBox(point);
+      }
+    }
+
+    document.addEventListener("click", function (event) {
+      const target = event.target;
+      if (
+        fromSuggestionWrap &&
+        fromSuggestionWrap.contains(target)
+      ) {
+        return;
+      }
+      if (
+        toSuggestionWrap &&
+        toSuggestionWrap.contains(target)
+      ) {
+        return;
+      }
+      hideAllSuggestionBoxes();
+    });
 
     fromInput.addEventListener("input", function () {
       clearTimeout(fromTimer);
+      clearTimeout(fromSuggestionTimer);
       const query = String(fromInput.value || "").trim();
 
       if (!query) {
         clearPoint("diem_di");
+        hideSuggestionBox("diem_di");
         if (statusOutput) {
           statusOutput.textContent =
             "Bạn có thể nhập lại địa chỉ điểm đi hoặc kéo ghim xanh để xác định vị trí.";
         }
         return;
+      }
+
+      if (query.length < 3) {
+        hideSuggestionBox("diem_di");
+      } else {
+        fromSuggestionRequestId += 1;
+        const requestId = fromSuggestionRequestId;
+        fromSuggestionTimer = window.setTimeout(function () {
+          loadSuggestions("diem_di", query, requestId);
+        }, 250);
       }
 
       fromTimer = window.setTimeout(async function () {
@@ -789,15 +954,27 @@ const BOOKING_DEFAULT_SLOT_STARTS = [
 
     toInput.addEventListener("input", function () {
       clearTimeout(toTimer);
+      clearTimeout(toSuggestionTimer);
       const query = String(toInput.value || "").trim();
 
       if (!query) {
         clearPoint("diem_den");
+        hideSuggestionBox("diem_den");
         if (statusOutput) {
           statusOutput.textContent =
             "Bạn có thể nhập lại địa chỉ điểm đến hoặc kéo ghim đỏ để chỉnh vị trí.";
         }
         return;
+      }
+
+      if (query.length < 3) {
+        hideSuggestionBox("diem_den");
+      } else {
+        toSuggestionRequestId += 1;
+        const requestId = toSuggestionRequestId;
+        toSuggestionTimer = window.setTimeout(function () {
+          loadSuggestions("diem_den", query, requestId);
+        }, 250);
       }
 
       toTimer = window.setTimeout(async function () {
