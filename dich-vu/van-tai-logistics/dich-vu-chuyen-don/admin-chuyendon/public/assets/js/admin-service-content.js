@@ -1,6 +1,5 @@
 (function (window, document) {
     const PAGE_SLUG = "dich-vu-chuyen-don";
-    const EXPORT_API_URL = "../api/service_content_export.php";
     const SERVICE_IMAGE_UPLOAD_URL = "../../public/upload_to_drive.php";
     const PUBLIC_PAGE_URL = String(window.__MOVING_SERVICE_CONTENT_PAGE_URL__ || "../../dich-vu-chuyen-don.html");
     const FIXED_SERVICES = Object.freeze([
@@ -437,24 +436,6 @@
         }).join("");
     }
 
-    async function exportPublicJson(successMessage) {
-        const response = await fetch(EXPORT_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ page_slug: PAGE_SLUG }),
-        });
-
-        const payload = await response.json().catch(() => ({}));
-        if (!response.ok || payload.success === false) {
-            throw new Error(payload.message || "Không export được JSON public.");
-        }
-
-        if (successMessage) {
-            showRuntime("success", successMessage);
-        }
-        return payload;
-    }
-
     async function uploadServiceImage(file, serviceKey) {
         if (!(file instanceof File)) {
             throw new Error("Không có file ảnh hợp lệ để tải lên.");
@@ -484,14 +465,6 @@
         };
     }
 
-    async function finalizeSave(successMessage) {
-        try {
-            await exportPublicJson(successMessage);
-        } catch (error) {
-            showRuntime("error", `${successMessage} Tuy nhiên export JSON public thất bại: ${error.message}`);
-        }
-    }
-
     async function refreshData() {
         showRuntime("success", "Đang tải dữ liệu nội dung dịch vụ...");
 
@@ -503,7 +476,7 @@
         renderServiceCards();
 
         if (!state.sectionRows.length && !state.serviceRows.length) {
-            showRuntime("error", "KRUD chưa có dữ liệu nội dung cho trang chuyển dọn. Hãy tạo bản ghi trực tiếp trong admin rồi export lại JSON public.");
+            showRuntime("error", "KRUD chưa có dữ liệu nội dung cho trang chuyển dọn. Hãy tạo bản ghi trực tiếp trong admin để trang public có dữ liệu hiển thị.");
             return;
         }
 
@@ -518,7 +491,7 @@
             await window.adminApi.saveMovingServicePageSection(payload, existing);
             state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
             populateForms();
-            await finalizeSave("Đã lưu nội dung Hero.");
+            showRuntime("success", "Đã lưu nội dung Hero. Trang public sẽ đọc dữ liệu mới trực tiếp từ KRUD.");
         } catch (error) {
             showRuntime("error", error.message || "Không thể lưu Hero.");
         } finally {
@@ -534,7 +507,7 @@
             await window.adminApi.saveMovingServicePageSection(payload, existing);
             state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
             populateForms();
-            await finalizeSave("Đã lưu tiêu đề khối dịch vụ.");
+            showRuntime("success", "Đã lưu tiêu đề khối dịch vụ. Trang public sẽ đọc dữ liệu mới trực tiếp từ KRUD.");
         } catch (error) {
             showRuntime("error", error.message || "Không thể lưu tiêu đề khối dịch vụ.");
         } finally {
@@ -552,7 +525,7 @@
             await window.adminApi.saveMovingServicePageCard(payload, existing);
             state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
             renderServiceCards();
-            await finalizeSave(`Đã lưu nhóm dịch vụ ${serviceKey}.`);
+            showRuntime("success", `Đã lưu nhóm dịch vụ ${serviceKey}. Trang public sẽ đọc dữ liệu mới trực tiếp từ KRUD.`);
         } catch (error) {
             showRuntime("error", error.message || "Không thể lưu nhóm dịch vụ.");
         } finally {
@@ -666,7 +639,7 @@
             await window.adminApi.saveMovingServicePageCard(payload, existing);
             state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
             renderServiceCards();
-            await finalizeSave(`Đã tải ảnh lên folder web của Chuyển Dọn và lưu nhóm dịch vụ ${serviceKey}.`);
+            showRuntime("success", `Đã tải ảnh lên folder web của Chuyển Dọn và lưu nhóm dịch vụ ${serviceKey}. Trang public sẽ đọc ảnh mới trực tiếp từ KRUD.`);
         } catch (error) {
             if (imageField instanceof HTMLInputElement) {
                 imageField.value = previousImage;

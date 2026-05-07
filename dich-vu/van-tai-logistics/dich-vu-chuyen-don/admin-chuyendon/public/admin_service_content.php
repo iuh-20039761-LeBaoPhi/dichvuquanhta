@@ -286,7 +286,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
     <div>
         <h1>Quản lý nội dung trang dịch vụ chuyển dọn</h1>
         <p>Sửa Hero, tiêu đề khối dịch vụ và 3 nhóm dịch vụ của trang <code>dich-vu-chuyen-don.html</code>. Dữ liệu lưu
-            ở KRUD và export ra JSON public.</p>
+            ở KRUD và trang public đọc trực tiếp từ API.</p>
     </div>
     <div class="hero-actions">
         <a href="<?php echo moving_admin_escape($pageUrl); ?>" target="_blank" rel="noopener" class="btn btn-outline">

@@ -9,5 +9,5 @@ header('Content-Type: application/json; charset=utf-8');
 http_response_code(409);
 echo json_encode([
     'success' => false,
-    'message' => 'Endpoint này đã bị khóa. KRUD là nguồn dữ liệu chuẩn; hãy cập nhật ảnh trong admin để lưu vào KRUD rồi export lại JSON public.',
+    'message' => 'Endpoint này đã bị khóa. KRUD là nguồn dữ liệu chuẩn; hãy cập nhật ảnh trong admin để lưu vào KRUD. Trang public hiện đọc trực tiếp từ endpoint public/service_content.php.',
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
