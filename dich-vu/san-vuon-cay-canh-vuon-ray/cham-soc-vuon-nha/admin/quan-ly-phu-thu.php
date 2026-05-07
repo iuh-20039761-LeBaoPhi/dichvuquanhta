@@ -53,50 +53,50 @@ admin_render_layout_start('Quản Lý Phụ Thu', 'phu_thu', $admin);
 ?>
 
 <style>
-    .admin-main, .admin-main > main { background: var(--white) !important; }
-
     .pt-page-header {
         display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
         gap: 12px; margin-bottom: 20px;
-        background: #fff; padding: 20px 24px; border-radius: 20px;
-        border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(26,77,46,.05);
+        background: var(--white); padding: 18px 22px; border-radius: var(--r-xl);
+        border: 1px solid var(--border-soft); box-shadow: var(--shadow-sm);
     }
-    .pt-page-header h2 { font-family: 'Playfair Display', serif; color: var(--pg); font-size: 1.4rem; font-weight: 700; margin: 0; }
 
     table th { white-space: nowrap !important; vertical-align: middle !important; }
     table td { vertical-align: middle !important; }
     .action-buttons { display: flex; gap: .4rem; justify-content: flex-end; align-items: center; }
-    .action-buttons .btn { min-width: 34px; padding: .3rem .5rem; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+    .action-buttons .btn { min-width: 32px; padding: .3rem .5rem; display: flex; align-items: center; justify-content: center; border-radius: var(--r-sm); }
 
-    .pt-form-card { border-left: 4px solid var(--accent) !important; }
-    .pt-view-card { border-left: 4px solid var(--pg) !important; }
+    .pt-form-card { border-left: 4px solid var(--g400) !important; }
+    .pt-view-card { border-left: 4px solid var(--g800) !important; }
 
-    .form-label { font-weight: 700; color: var(--pg); font-size: .82rem; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
+    .form-label { font-weight: 700; color: var(--g800); font-size: .78rem; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
 
-    .loai-badge-le  { background: var(--lime); color: var(--pg); border-radius: 20px; padding: 3px 10px; font-size: .82rem; font-weight: 700; }
-    .loai-badge-dem { background: #f1f8e9; color: #33691e; border-radius: 20px; padding: 3px 10px; font-size: .82rem; font-weight: 700; }
+    .loai-badge-le  { background: var(--g50); color: var(--g700); border-radius: 99px; padding: 3px 10px; font-size: .78rem; font-weight: 700; }
+    .loai-badge-dem { background: #f1f8e9; color: #33691e; border-radius: 99px; padding: 3px 10px; font-size: .78rem; font-weight: 700; }
 
     .info-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 6px; }
-    .info-label { font-weight: 700; color: var(--pg); min-width: 130px; font-size: .85rem; }
-    .info-val { color: var(--text); font-size: .9rem; }
+    .info-label { font-weight: 700; color: var(--g800); min-width: 130px; font-size: .82rem; }
+    .info-val { color: var(--text); font-size: .875rem; }
 
-    .view-modal-header { background: linear-gradient(90deg, var(--sidebar-b), var(--pg)); color: #fff; border-radius: 14px 14px 0 0; padding: 14px 18px; }
+    .view-modal-header { background: linear-gradient(90deg, var(--g600), var(--g800)); color: #fff; border-radius: var(--r-md) var(--r-md) 0 0; padding: 14px 18px; }
 
-    .percent-badge { background: var(--lime); border: 1px solid var(--border); color: var(--pg); font-weight: 700; border-radius: 20px; padding: 3px 12px; font-size: .9rem; }
+    .percent-badge { background: var(--g50); border: 1px solid var(--g100); color: var(--g700); font-weight: 700; border-radius: 99px; padding: 3px 12px; font-size: .875rem; }
 
-    .table thead th { background: var(--lime); color: var(--pg); font-weight: 700; text-transform: uppercase; font-size: .72rem; letter-spacing: .8px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
-    .table tbody td { padding: 12px 14px; border-color: #f0f4f0; }
-    .table-hover tbody tr:hover { background: #f9fdf9; }
+    .table thead th { background: var(--g25); color: var(--muted); font-weight: 700; text-transform: uppercase; font-size: .7rem; letter-spacing: .8px; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+    .table tbody td { padding: 11px 14px; border-color: var(--border-soft); }
+    .table-hover tbody tr:hover { background: var(--g25); }
 
     @media(max-width: 767px) {
-        .pt-mobile-card { background: #fff; border-radius: 14px; border: 1px solid var(--border); padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(26,77,46,.06); }
+        .pt-mobile-card { background: var(--white); border-radius: var(--r-md); border: 1px solid var(--border-soft); padding: 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm); }
     }
 </style>
 
 <div class="pt-page-header">
-    <h2 class="h4 mb-0 fw-bold">Quản lý Phụ phí Đặc Biệt</h2>
+    <div>
+        <h2 class="h5 mb-0 fw-bold" style="color:var(--g800);">Phụ phí Đặc Biệt</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin:2px 0 0;">Quản lý phụ phí ngày lễ và ca đêm</p>
+    </div>
     <?php if (!$showForm): ?>
-        <a href="?them=1" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Thêm phụ thu</a>
+        <a href="?them=1" class="btn btn-primary btn-sm px-3 fw-bold" style="border-radius:var(--r-sm);"><i class="bi bi-plus-circle me-1"></i>Thêm phụ thu</a>
     <?php else: ?>
         <a href="quan-ly-phu-thu.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Quay lại</a>
     <?php endif; ?>

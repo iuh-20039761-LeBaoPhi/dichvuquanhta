@@ -73,6 +73,63 @@ if (!function_exists('dichvu_normalize_row')) {
 }
 
 /**
+ * Cập nhật một dịch vụ trong file JSON cục bộ theo ID
+ */
+if (!function_exists('dichvu_update_json')) {
+    function dichvu_update_json(int $id, array $newData): array
+    {
+        $filePath = __DIR__ . '/data_dichvu.json';
+
+        if (!file_exists($filePath)) {
+            return ['success' => false, 'message' => 'Không tìm thấy file dữ liệu.'];
+        }
+
+        $jsonRaw = file_get_contents($filePath);
+        $items   = json_decode($jsonRaw, true);
+
+        if (!is_array($items)) {
+            return ['success' => false, 'message' => 'File dữ liệu bị lỗi định dạng JSON.'];
+        }
+
+        // Hỗ trợ file JSON là object đơn lẻ
+        $isSingle = isset($items['id']);
+        if ($isSingle) {
+            $items = [$items];
+        }
+
+        $found = false;
+        foreach ($items as &$row) {
+            if ((int)($row['id'] ?? 0) === $id) {
+                // Giữ lại các trường gốc không có trong payload (vd: seo slug, related_services...)
+                // rồi ghi đè bằng dữ liệu mới
+                $row = array_merge($row, $newData);
+                $row['id'] = $id; // đảm bảo ID không bị thay đổi
+                $found = true;
+                break;
+            }
+        }
+        unset($row);
+
+        if (!$found) {
+            return ['success' => false, 'message' => 'Không tìm thấy dịch vụ ID #' . $id . ' trong file dữ liệu.'];
+        }
+
+        $output = $isSingle ? $items[0] : $items;
+        $encoded = json_encode($output, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+        if ($encoded === false) {
+            return ['success' => false, 'message' => 'Không thể mã hóa dữ liệu JSON.'];
+        }
+
+        if (file_put_contents($filePath, $encoded, LOCK_EX) === false) {
+            return ['success' => false, 'message' => 'Không thể ghi vào file dữ liệu. Kiểm tra quyền ghi thư mục.'];
+        }
+
+        return ['success' => true, 'message' => 'Cập nhật dịch vụ thành công.'];
+    }
+}
+
+/**
  * Lấy dữ liệu từ file JSON cục bộ thay vì API
  */
 if (!function_exists('get_dichvu_data')) {

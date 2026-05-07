@@ -105,6 +105,126 @@
       white-space: nowrap;
     }
 
+    /* ── USER CHIP sau đăng nhập ── */
+    .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: #fff;
+      border: 1.5px solid rgba(26,77,46,.15);
+      border-radius: 50px;
+      padding: 5px 14px 5px 5px;
+      cursor: pointer;
+      transition: all .25s ease;
+      box-shadow: 0 2px 8px rgba(26,77,46,.07);
+    }
+    .user-chip:hover {
+      border-color: var(--primary-green);
+      box-shadow: 0 4px 16px rgba(26,77,46,.14);
+      background: var(--soft-lime);
+    }
+    .user-chip-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--soft-lime);
+      flex-shrink: 0;
+    }
+    .user-chip-avatar-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--soft-lime);
+      border: 1.5px solid rgba(26,77,46,.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--primary-green);
+      font-size: .85rem;
+    }
+    .user-chip-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .user-chip-name {
+      font-size: .82rem;
+      font-weight: 800;
+      color: var(--primary-green);
+      max-width: 110px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-chip-status {
+      font-size: .68rem;
+      font-weight: 600;
+      color: #43a047;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .user-chip-status::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #43a047;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .user-chip-caret {
+      font-size: .7rem;
+      color: #aaa;
+      margin-left: 2px;
+      transition: transform .2s;
+    }
+    .dropdown.show .user-chip-caret { transform: rotate(180deg); }
+
+    /* Dropdown menu */
+    .user-dropdown-menu {
+      min-width: 220px;
+      border-radius: 18px !important;
+      padding: 8px !important;
+      margin-top: 10px !important;
+      box-shadow: 0 12px 36px rgba(26,77,46,.13) !important;
+      border: 1px solid rgba(26,77,46,.08) !important;
+    }
+    .user-dropdown-header {
+      padding: 10px 12px 12px;
+      border-bottom: 1px solid rgba(26,77,46,.07);
+      margin-bottom: 6px;
+    }
+    .user-dropdown-header .udh-name {
+      font-weight: 800;
+      font-size: .92rem;
+      color: var(--primary-green);
+    }
+    .user-dropdown-header .udh-email {
+      font-size: .75rem;
+      color: #888;
+      margin-top: 1px;
+    }
+    .user-dropdown-menu .dropdown-item {
+      border-radius: 10px !important;
+      padding: 9px 12px !important;
+      font-size: .875rem;
+      font-weight: 600;
+      color: #2d3436;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      transition: background .15s;
+    }
+    .user-dropdown-menu .dropdown-item i {
+      width: 18px;
+      text-align: center;
+      font-size: .85rem;
+      color: var(--primary-green);
+      opacity: .8;
+    }
+    .user-dropdown-menu .dropdown-item:hover {
+      background: var(--soft-lime);
+      color: var(--primary-green);
+    }
+    .user-dropdown-menu .dropdown-item:hover i { opacity: 1; }
+    .user-dropdown-menu .dropdown-item.text-danger { color: #e53935 !important; }
+    .user-dropdown-menu .dropdown-item.text-danger i { color: #e53935 !important; }
+    .user-dropdown-menu .dropdown-item.text-danger:hover { background: #ffebee; }
+
     /* --- SIÊU NÂNG CẤP MENU MOBILE HIỆN ĐẠI --- */
     @media (max-width: 991.98px) {
       .navbar-nav { 
@@ -216,7 +336,7 @@
   <div class="container-fluid container-lg">
     <div class="d-flex align-items-center">
       <div class="brand-wrapper">
-        <a href="index.html">
+        <a href="../../../index.html">
           <img style="width: 55px; height: auto;" src="assets/images/logo1.png" alt="Chăm Sóc Vườn Nhà" />
         </a>
         <span class="brand-text">Chăm Sóc Vườn Nhà</span>
@@ -261,15 +381,34 @@
         
         <li class="nav-item ms-lg-2 d-none" id="userMenuContainer">
           <div class="dropdown">
-            <button class="btn btn-user-nav rounded-pill px-2 py-1 d-inline-flex align-items-center gap-2 shadow-sm" 
-                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img id="navAvatar" src="assets/images/logo2.jpg" alt="avatar" width="35" height="35" class="rounded-circle border" />
-              <span id="navUserName" class="fw-bold text-dark d-none d-xl-inline">Tài khoản</span>
+            <button class="user-chip" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="user-chip-avatar-icon">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="user-chip-info d-none d-lg-flex">
+                <span id="navUserName" class="user-chip-name">Tài khoản</span>
+                <span class="user-chip-status">Đang hoạt động</span>
+              </div>
+              <i class="fas fa-chevron-down user-chip-caret"></i>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
-              <li><a class="dropdown-item" id="navInvoiceLink" href="don-hang/index.php">Hóa đơn</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="logout.php">Đăng xuất</a></li>
+            <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+              <li>
+                <div class="user-dropdown-header">
+                  <div class="udh-name" id="dropdownUserName">Tài khoản</div>
+                  <div class="udh-email" id="dropdownUserEmail"></div>
+                </div>
+              </li>
+              <li>
+                <a class="dropdown-item" id="navInvoiceLink" href="don-hang/index.php">
+                  <i class="fas fa-receipt"></i> Đơn hàng của tôi
+                </a>
+              </li>
+              <li><hr class="dropdown-divider mx-2 my-1"></li>
+              <li>
+                <a class="dropdown-item text-danger" href="logout.php">
+                  <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
+              </li>
             </ul>
           </div>
         </li>

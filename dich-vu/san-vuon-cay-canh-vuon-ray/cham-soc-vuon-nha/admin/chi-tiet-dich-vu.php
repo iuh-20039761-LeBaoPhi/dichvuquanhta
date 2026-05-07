@@ -18,45 +18,40 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 ?>
 
 <style>
-    :root {
-        --primary-green: #2e7d32;
-        --light-green: #f0fdf4;
-        --border-color: #e2e8f0;
-        --text-main: #1e293b;
-    }
-
     .admin-main, .admin-main > main {
-        background: #f8fafc !important;
+        background: var(--white) !important;
     }
 
     .page-header {
         background: #fff;
-        padding: 1.25rem;
+        padding: 1.25rem 1.5rem;
         border-radius: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 8px rgba(26,77,46,.04);
         margin-bottom: 1.5rem;
     }
 
     .card-custom {
         background: #fff;
-        border-radius: 20px;
-        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        border: 1px solid var(--border);
         overflow: hidden;
         height: 100%;
+        box-shadow: 0 2px 8px rgba(26,77,46,.04);
     }
 
     .card-header-green {
-        background: var(--light-green);
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--border-color);
+        background: var(--lime);
+        padding: .875rem 1.25rem;
+        border-bottom: 1px solid var(--border);
     }
 
     .card-header-green h6 {
-        color: var(--primary-green);
+        color: var(--pg);
         font-weight: 700;
         margin-bottom: 0;
         text-transform: uppercase;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         letter-spacing: 0.5px;
     }
 
@@ -64,38 +59,39 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
         position: relative;
         border-radius: 12px;
         overflow: hidden;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--border);
         background: #fff;
     }
 
     .badge-type {
-        background: var(--light-green);
-        color: var(--primary-green);
-        border: 1px solid #dcfce7;
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.85rem;
+        background: var(--lime);
+        color: var(--pg);
+        border: 1px solid var(--border);
+        padding: 0.4rem 0.875rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.82rem;
     }
 
     .pricing-box {
-        background: #fdfbf7;
-        border: 1px solid #fae8ff; 
+        background: var(--lime);
+        border: 1px solid var(--border);
         border-radius: 12px;
         padding: 1rem;
     }
 
     .table-pricing thead th {
-        background: #f1f5f9;
+        background: var(--lime);
         font-size: 0.7rem;
         text-transform: uppercase;
-        color: #64748b;
+        color: var(--pg);
         border: none;
+        font-weight: 700;
     }
 
     .list-work-item {
         padding: 0.75rem 0;
-        border-bottom: 1px dashed var(--border-color);
+        border-bottom: 1px dashed var(--border);
     }
 
     .list-work-item:last-child {
@@ -103,7 +99,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
     }
 
     .btn-action {
-        border-radius: 10px;
+        border-radius: 20px;
         padding: 0.5rem 1.25rem;
         font-weight: 600;
     }
@@ -124,7 +120,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
             <i class="bi bi-arrow-left me-2"></i>Thoát
         </a>
         <?php if (is_array($row)): ?>
-            <a href="sua-dich-vu.php?id=<?= urlencode((string) $id) ?>" class="btn btn-primary btn-action shadow-sm" style="background-color: var(--primary-green); border: none;">
+            <a href="sua-dich-vu.php?id=<?= urlencode((string) $id) ?>" class="btn btn-primary btn-action shadow-sm">
                 <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa nội dung
             </a>
         <?php endif; ?>
@@ -175,7 +171,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <h3 class="fw-bold mb-2" style="color: var(--primary-green);"><?= admin_h((string) ($row['name'] ?? '')) ?></h3>
+                            <h3 class="fw-bold mb-2" style="color: var(--pg);"><?= admin_h((string) ($row['name'] ?? '')) ?></h3>
                             <div class="text-muted small mb-4">Mã nhận diện SEO (Alt): <i><?= admin_h((string) ($row['alt'] ?? 'Chưa đặt')) ?></i></div>
                             
                             <div class="mb-4">
@@ -191,7 +187,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                             </div>
 
                             <div class="p-3 rounded-4 border-0 shadow-none" style="background-color: #f1f5f9;">
-                                <label class="fw-bold d-block mb-2 small text-primary"><i class="bi bi-quote me-1"></i>Mô tả ngắn</label>
+                                <label class="fw-bold d-block mb-2 small" style="color:var(--pg)"><i class="bi bi-quote me-1"></i>Mô tả ngắn</label>
                                 <div class="text-dark lh-base"><?= nl2br(admin_h((string) ($row['description'] ?? ''))) ?></div>
                             </div>
                         </div>
@@ -205,11 +201,12 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                 </div>
                 <div class="card-body p-4">
                     <?php
-                    // Lấy giá từ JSON mới hoặc cũ
-                    $basePrice = (float) ($row['price_m2_min'] ?? ($pricing['base_price'] ?? 0));
+                    // Ưu tiên base_price từ pricing (do form sửa lưu vào đây),
+                    // fallback về price_m2_min nếu chưa có pricing đầy đủ
+                    $basePrice = (float) ($pricing['base_price'] ?? $row['price_m2_min'] ?? 0);
                     ?>
-                    <div class="d-flex align-items-center mb-4 p-3 rounded-3 bg-light border border-white">
-                        <i class="bi bi-calculator fs-4 text-primary me-3"></i>
+                        <div class="d-flex align-items-center mb-4 p-3 rounded-3 bg-light border border-white">
+                        <i class="bi bi-calculator fs-4 me-3" style="color:var(--accent)"></i>
                         <div>
                             <span class="small text-muted d-block">Phương thức tính giá:</span>
                             <strong class="text-dark fs-5"><?= $pType === 'per_m2' ? 'Dựa trên Diện tích (m²)' : 'Dựa trên Gói cố định' ?></strong>
@@ -219,9 +216,9 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                     <?php if ($pType === 'per_m2'): ?>
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
-                                <div class="pricing-box text-center border-primary border-opacity-10">
+                                <div class="pricing-box text-center">
                                     <small class="text-muted d-block mb-1">Đơn giá sàn</small>
-                                    <h4 class="fw-bold mb-0 text-primary"><?= number_format($basePrice) ?>đ</h4>
+                                    <h4 class="fw-bold mb-0" style="color:var(--pg)"><?= number_format($basePrice) ?>đ</h4>
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -230,7 +227,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                                     <div class="d-flex justify-content-center align-items-center gap-3">
                                         <span class="badge bg-white border text-dark px-3 py-2 rounded-3 fw-bold"><?= (float) ($pricing['levels']['nhẹ'] ?? 1) ?>x</span>
                                         <i class="bi bi-chevron-right text-muted small"></i>
-                                        <span class="badge bg-white border text-dark px-3 py-2 rounded-3 fw-bold text-primary"><?= (float) ($pricing['levels']['tiêu chuẩn'] ?? 1) ?>x</span>
+                                        <span class="badge bg-white border px-3 py-2 rounded-3 fw-bold" style="color:var(--pg)"><?= (float) ($pricing['levels']['tiêu chuẩn'] ?? 1) ?>x</span>
                                         <i class="bi bi-chevron-right text-muted small"></i>
                                         <span class="badge bg-white border text-dark px-3 py-2 rounded-3 fw-bold"><?= (float) ($pricing['levels']['sâu'] ?? 1) ?>x</span>
                                     </div>
@@ -254,7 +251,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                                         <tr>
                                             <td class="fw-bold"><?= (int) $est['area'] ?> m²</td>
                                             <td><i class="bi bi-people me-2"></i><?= (int) $est['staff'] ?> người</td>
-                                            <td class="text-primary fw-medium"><?= (float) $est['hours'] ?> giờ thi công</td>
+                                            <td class="fw-medium" style="color:var(--accent)"><?= (float) $est['hours'] ?> giờ thi công</td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -277,7 +274,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                                         <tr>
                                             <td class="ps-4 fw-bold text-dark"><?= admin_h((string) $pkg['name']) ?></td>
                                             <td class="text-center">
-                                                <span class="text-primary fw-bold fs-5"><?= number_format((float) $pkg['price']) ?>đ</span>
+                                                <span class="fw-bold fs-5" style="color:var(--pg)"><?= number_format((float) $pkg['price']) ?>đ</span>
                                             </td>
                                             <td class="text-center small">
                                                 <div class="text-dark fw-medium"><?= (int) $pkg['staff'] ?> nhân sự</div>
@@ -328,7 +325,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                             <?php foreach ($row['time_slots'] as $ts): ?>
                                 <div class="d-flex justify-content-between align-items-center p-3 rounded-3 border bg-white shadow-sm-hover transition-all">
                                     <div class="d-flex align-items-center">
-                                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3" style="width:35px; height:35px; display:flex; align-items:center; justify-content:center;">
+                                        <div style="width:35px;height:35px;border-radius:50%;background:var(--lime);color:var(--pg);display:flex;align-items:center;justify-content:center;" class="me-3 p-2">
                                             <small class="fw-bold"><?= admin_h((string) $ts['value']) ?></small>
                                         </div>
                                         <span class="fw-bold text-dark"><?= admin_h((string) $ts['label']) ?></span>

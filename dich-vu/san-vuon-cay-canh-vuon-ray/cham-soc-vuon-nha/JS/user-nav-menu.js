@@ -125,6 +125,16 @@
     userMenuContainer.classList.remove('d-none');
 
     if (navUserName) navUserName.textContent = user && user.hovaten ? user.hovaten : 'Tài khoản';
+
+    // Cập nhật thông tin trong dropdown header
+    const dropdownUserName  = getEl('dropdownUserName');
+    const dropdownUserEmail = getEl('dropdownUserEmail');
+    const dropdownAvatar    = getEl('dropdownAvatar');
+    if (dropdownUserName)  dropdownUserName.textContent  = user && user.hovaten ? user.hovaten : 'Tài khoản';
+    if (dropdownUserEmail) dropdownUserEmail.textContent = user && user.email    ? user.email   : '';
+    if (dropdownAvatar && user && user.avatartenfile) {
+      dropdownAvatar.src = 'https://drive.google.com/file/d/' + user.avatartenfile + '/preview';
+    }
     if (navAvatar) {
       const img = getEl('navAvatarImg');
       const fileId = user && user.avatartenfile;

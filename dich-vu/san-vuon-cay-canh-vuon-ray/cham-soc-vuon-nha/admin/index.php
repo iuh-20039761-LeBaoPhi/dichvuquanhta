@@ -112,146 +112,147 @@ admin_render_layout_start('Quản Lý Đơn Chăm Sóc Vườn', 'orders', $admi
 ?>
 
 <style>
-    /* ── Page-level overrides (dùng biến từ slidebar) ── */
-    .admin-main, .admin-main > main { background: var(--white) !important; }
-
-    .page-title-box {
-        background: #fff; padding: 20px 24px; border-radius: 20px;
-        border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(26,77,46,.05);
-        display: flex; justify-content: space-between; align-items: center; gap: 12px;
-    }
-
+    /* ── Stat cards ── */
     .stat-card {
-        border-radius: 16px;
-        border: 1px solid var(--border);
-        background: #fff;
+        border-radius: var(--r-lg);
+        border: 1px solid var(--border-soft);
+        background: var(--white);
         padding: 18px 20px;
         display: flex;
         align-items: center;
         gap: 16px;
-        box-shadow: 0 2px 8px rgba(26,77,46,.06);
-        transition: transform .2s, box-shadow .2s;
+        box-shadow: var(--shadow-sm);
+        transition: transform .2s var(--ease), box-shadow .2s var(--ease);
     }
-    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,77,46,.10); }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .stat-icon {
-        width: 48px; height: 48px; border-radius: 14px;
+        width: 48px; height: 48px; border-radius: var(--r-md);
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.4rem; flex-shrink: 0;
+        font-size: 1.3rem; flex-shrink: 0;
     }
-    .stat-icon.green  { background: #e8f5e9; color: var(--sidebar-b); }
-    .stat-icon.lime   { background: #f1f8e9; color: #558b2f; }
-    .stat-icon.amber  { background: #fff8e1; color: #f57f17; }
-    .stat-icon.teal   { background: #e0f2f1; color: #00695c; }
-    .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--pg); line-height: 1; }
-    .stat-label { font-size: .8rem; color: #6b7280; font-weight: 500; margin-top: 2px; }
+    .stat-icon.green  { background: var(--g50);  color: var(--g600); }
+    .stat-icon.lime   { background: #f1f8e9;      color: #558b2f; }
+    .stat-icon.amber  { background: #fff8e1;      color: #f57f17; }
+    .stat-icon.teal   { background: #e0f2f1;      color: #00695c; }
+    .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--g800); line-height: 1; }
+    .stat-label { font-size: .78rem; color: var(--muted); font-weight: 500; margin-top: 3px; }
+
+    /* ── Page header ── */
+    .page-title-box {
+        background: var(--white);
+        padding: 18px 22px;
+        border-radius: var(--r-xl);
+        border: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-sm);
+        display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
 
     /* ── Filter bar ── */
     .filter-bar {
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid var(--border);
-        padding: 18px 20px;
-        box-shadow: 0 2px 8px rgba(26,77,46,.04);
+        background: var(--white);
+        border-radius: var(--r-lg);
+        border: 1px solid var(--border-soft);
+        padding: 16px 20px;
+        box-shadow: var(--shadow-sm);
     }
     .filter-bar input[type="text"],
     .filter-bar input[type="date"] {
         border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 8px 12px;
+        border-radius: var(--r-sm);
+        padding: 7px 12px;
         font-size: .875rem;
-        background: var(--white);
+        background: var(--bg);
         color: var(--text);
         transition: border-color .2s, box-shadow .2s;
+        font-family: inherit;
     }
     .filter-bar input:focus {
         outline: none;
-        border-color: var(--accent);
+        border-color: var(--g400);
         box-shadow: 0 0 0 3px rgba(67,160,71,.15);
-        background: #fff;
+        background: var(--white);
     }
     .btn-refresh-page {
-        width: 38px; height: 38px;
-        border-radius: 10px;
-        background: var(--accent);
+        width: 36px; height: 36px;
+        border-radius: var(--r-sm);
+        background: var(--g400);
         color: #fff; border: none;
         display: flex; align-items: center; justify-content: center;
-        transition: background .2s, transform .3s;
-        cursor: pointer;
+        transition: background .2s, transform .4s var(--ease);
+        cursor: pointer; flex-shrink: 0;
     }
-    .btn-refresh-page:hover { background: var(--sidebar-a); transform: rotate(180deg); }
+    .btn-refresh-page:hover { background: var(--g600); transform: rotate(180deg); }
 
     /* ── Status tabs ── */
-    .status-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .status-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
     .stab {
-        padding: 6px 14px; border-radius: 20px;
-        font-size: .82rem; font-weight: 600;
-        background: var(--white); color: #6b7280;
+        padding: 5px 13px; border-radius: 99px;
+        font-size: .78rem; font-weight: 600;
+        background: var(--bg); color: var(--muted);
         border: 1px solid var(--border);
-        cursor: pointer; transition: all .2s; text-decoration: none;
+        cursor: pointer; transition: all .18s; text-decoration: none;
         white-space: nowrap;
     }
-    .stab:hover { background: #e8f5e9; color: var(--sidebar-b); border-color: #a5d6a7; }
-    .stab.active { background: var(--sidebar-b); color: #fff; border-color: var(--sidebar-b); box-shadow: 0 3px 10px rgba(46,125,50,.25); }
+    .stab:hover { background: var(--g50); color: var(--g600); border-color: var(--g200); }
+    .stab.active { background: var(--g600); color: #fff; border-color: var(--g600); box-shadow: 0 3px 10px rgba(46,125,50,.25); }
     .stab .cnt {
         display: inline-flex; align-items: center; justify-content: center;
-        min-width: 20px; height: 20px; border-radius: 10px;
-        background: rgba(0,0,0,.1); font-size: .75rem; padding: 0 5px; margin-left: 5px;
+        min-width: 18px; height: 18px; border-radius: 99px;
+        background: rgba(0,0,0,.1); font-size: .7rem; padding: 0 4px; margin-left: 4px;
     }
     .stab.active .cnt { background: rgba(255,255,255,.25); }
 
-    /* ── Table ── */
+    /* ── Orders table ── */
     .orders-table { width: 100%; border-collapse: collapse; }
     .orders-table thead th {
-        background: var(--white);
-        color: #6b7280;
-        font-size: .72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .8px;
-        padding: 12px 16px;
+        background: var(--g25);
+        color: var(--muted);
+        font-size: .7rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .8px;
+        padding: 11px 16px;
         border-bottom: 1px solid var(--border);
         white-space: nowrap;
     }
-    .orders-table tbody tr { transition: background .15s; }
-    .orders-table tbody tr:hover { background: #f9fdf9; }
+    .orders-table tbody tr { transition: background .12s; }
+    .orders-table tbody tr:hover { background: var(--g25); }
     .orders-table tbody td {
-        padding: 14px 16px;
-        border-bottom: 1px solid #f0f4f0;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--border-soft);
         font-size: .875rem;
         vertical-align: middle;
     }
-    .order-id { font-weight: 800; color: var(--sidebar-b); font-size: .9rem; }
-    .cust-name { font-weight: 700; color: var(--pg); }
-    .cust-phone { font-size: .78rem; color: #6b7280; margin-top: 2px; }
+    .order-id { font-weight: 800; color: var(--g600); font-size: .875rem; }
+    .cust-name { font-weight: 700; color: var(--g800); }
+    .cust-phone { font-size: .75rem; color: var(--muted); margin-top: 2px; }
     .svc-tag {
         display: inline-block;
-        background: #e8f5e9; color: var(--pg);
-        padding: 3px 10px; border-radius: 6px;
-        font-size: .8rem; font-weight: 600;
+        background: var(--g50); color: var(--g800);
+        padding: 3px 10px; border-radius: var(--r-sm);
+        font-size: .78rem; font-weight: 600;
         max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .price-cell { font-weight: 700; color: var(--pg); white-space: nowrap; }
-    .date-cell { font-size: .8rem; color: #6b7280; white-space: nowrap; }
+    .price-cell { font-weight: 700; color: var(--g800); white-space: nowrap; }
+    .date-cell { font-size: .78rem; color: var(--muted); white-space: nowrap; }
 
     /* ── Status badges ── */
     .sbadge {
         display: inline-flex; align-items: center; gap: 5px;
-        padding: 4px 10px; border-radius: 20px;
-        font-size: .75rem; font-weight: 700; white-space: nowrap;
+        padding: 4px 10px; border-radius: 99px;
+        font-size: .72rem; font-weight: 700; white-space: nowrap;
     }
     .sbadge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .7; }
     .sbadge-pending  { background: #f1f5f9; color: #64748b; }
     .sbadge-progress { background: #fff8e1; color: #e65100; }
-    .sbadge-done     { background: #e8f5e9; color: #2e7d32; }
+    .sbadge-done     { background: var(--g50); color: var(--g700); }
     .sbadge-cancel   { background: #ffebee; color: #c62828; }
-    .sbadge-confirm  { background: #e8f5e9; color: #1a4d2e; }
+    .sbadge-confirm  { background: var(--g50); color: var(--g800); }
 
-    /* ── Mobile cards ── */
+    /* ── Mobile order cards ── */
     .order-card {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--accent);
-        border-radius: 14px;
+        background: var(--white);
+        border: 1px solid var(--border-soft);
+        border-left: 4px solid var(--g400);
+        border-radius: var(--r-md);
         padding: 14px;
         margin-bottom: 10px;
         text-decoration: none;
@@ -259,29 +260,31 @@ admin_render_layout_start('Quản Lý Đơn Chăm Sóc Vườn', 'orders', $admi
         color: inherit;
         transition: box-shadow .2s, transform .2s;
     }
-    .order-card:hover { box-shadow: 0 4px 16px rgba(26,77,46,.12); transform: translateY(-1px); }
+    .order-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
     /* ── Pagination ── */
     .pg-btn {
-        width: 34px; height: 34px; border-radius: 8px;
+        width: 34px; height: 34px; border-radius: var(--r-sm);
         display: inline-flex; align-items: center; justify-content: center;
-        font-size: .85rem; font-weight: 600;
+        font-size: .82rem; font-weight: 600;
         border: 1px solid var(--border);
-        background: #fff; color: var(--text);
+        background: var(--white); color: var(--text);
         text-decoration: none; transition: all .15s;
     }
-    .pg-btn:hover { background: #e8f5e9; border-color: #a5d6a7; color: var(--sidebar-b); }
-    .pg-btn.active { background: var(--sidebar-b); border-color: var(--sidebar-b); color: #fff; }
+    .pg-btn:hover { background: var(--g50); border-color: var(--g200); color: var(--g600); }
+    .pg-btn.active { background: var(--g600); border-color: var(--g600); color: #fff; }
     .pg-btn.disabled { opacity: .4; pointer-events: none; }
 </style>
 
 <!-- ── Tiêu đề trang ── -->
 <div class="page-title-box mb-4">
     <div>
-        <h2 style="font-family:'Playfair Display',serif;color:var(--pg);font-size:1.4rem;font-weight:700;margin:0">Quản Lý Đơn Chăm Sóc Vườn</h2>
-        <p class="small text-muted mb-0 mt-1">Theo dõi và xử lý tất cả đơn đặt lịch chăm sóc vườn nhà</p>
+        <h2 style="font-family:'Playfair Display',serif;color:var(--g800);font-size:1.35rem;font-weight:700;margin:0;">
+            Quản Lý Đơn Chăm Sóc Vườn
+        </h2>
+        <p class="mb-0 mt-1" style="font-size:.82rem;color:var(--muted);">Theo dõi và xử lý tất cả đơn đặt lịch chăm sóc vườn nhà</p>
     </div>
-    <a href="index.php" class="btn btn-sm" style="background:var(--lime);color:var(--pg);border:1px solid var(--border);border-radius:10px;font-weight:700">
+    <a href="index.php" class="btn btn-sm" style="background:var(--g50);color:var(--g700);border:1px solid var(--border);border-radius:var(--r-sm);font-weight:700;font-size:.8rem;">
         <i class="bi bi-arrow-clockwise me-1"></i>Làm mới
     </a>
 </div>
@@ -334,10 +337,10 @@ admin_render_layout_start('Quản Lý Đơn Chăm Sóc Vườn', 'orders', $admi
         <div class="d-flex flex-wrap align-items-center gap-2">
             <!-- Tiêu đề -->
             <div class="me-auto">
-                <div class="fw-bold" style="color:var(--pg);font-size:1rem">
-                    <i class="bi bi-tree-fill me-1" style="color:var(--accent)"></i>Lịch Chăm Sóc Vườn
+                <div class="fw-bold" style="color:var(--g800);font-size:.95rem;">
+                    Lịch Chăm Sóc Vườn
                 </div>
-                <div class="small text-muted">Tìm thấy <strong><?= $totalFiltered ?></strong> đơn</div>
+                <div style="font-size:.78rem;color:var(--muted);">Tìm thấy <strong><?= $totalFiltered ?></strong> đơn</div>
             </div>
 
             <!-- Từ ngày -->

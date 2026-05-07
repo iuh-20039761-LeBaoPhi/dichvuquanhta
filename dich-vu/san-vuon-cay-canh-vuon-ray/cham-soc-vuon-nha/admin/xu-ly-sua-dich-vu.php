@@ -72,7 +72,7 @@ if ($hasFile) {
     $payloadData['image'] = $currentImage;
 }
 
-$result = admin_api_update_table('dichvu_donvesinh', $id, $payloadData);
+$result = dichvu_update_json($id, $payloadData);
 if (!($result['success'] ?? false)) {
     $msg = rawurlencode((string) ($result['message'] ?? 'Cap nhat dich vu that bai.'));
     header('Location: sua-dich-vu.php?id=' . urlencode((string) $id) . '&ok=0&msg=' . $msg);
