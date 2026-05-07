@@ -2,10 +2,14 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/../includes/admin_api_common.php';
 moving_admin_require_login();
 
 header('Content-Type: application/json; charset=utf-8');
 
+$pageSlug = 'dich-vu-chuyen-don';
+$contentTable = 'noi_dung_trang_chuyen_don';
+$servicesTable = 'noi_dung_trang_chuyen_don_dich_vu';
 $targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'dich-vu-chuyen-don-page.json';
 
 function moving_service_content_response(bool $success, array $payload = [], int $status = 200): void
@@ -38,6 +42,17 @@ function moving_service_content_normalize_items($value): array
     }
 
     return array_values(array_unique($normalized));
+}
+
+function moving_service_content_find_section_row(array $rows, string $sectionKey): array
+{
+    foreach ($rows as $row) {
+        if (moving_service_content_normalize_text($row['section_key'] ?? '') === $sectionKey) {
+            return is_array($row) ? $row : [];
+        }
+    }
+
+    return [];
 }
 
 function moving_service_content_write_json(string $path, array $payload): void
@@ -73,17 +88,30 @@ try {
         moving_service_content_response(false, ['message' => 'Method không hợp lệ.'], 405);
     }
 
-    $body = json_decode(file_get_contents('php://input') ?: '{}', true);
-    if (!is_array($body)) {
-        throw new InvalidArgumentException('Payload không hợp lệ.');
+    $sectionResult = moving_admin_api_list_table($contentTable);
+    if ((string) ($sectionResult['error'] ?? '') !== '') {
+        throw new RuntimeException('Không lấy được dữ liệu KRUD cho nội dung trang: ' . $sectionResult['error']);
     }
 
-    $hero = is_array($body['hero'] ?? null) ? $body['hero'] : [];
-    $section = is_array($body['services_section'] ?? null) ? $body['services_section'] : [];
-    $services = is_array($body['services'] ?? null) ? $body['services'] : [];
+    $serviceResult = moving_admin_api_list_table($servicesTable);
+    if ((string) ($serviceResult['error'] ?? '') !== '') {
+        throw new RuntimeException('Không lấy được dữ liệu KRUD cho dịch vụ trang: ' . $serviceResult['error']);
+    }
+
+    $sectionRows = array_values(array_filter(
+        $sectionResult['rows'] ?? [],
+        static fn($row) => moving_service_content_normalize_text($row['page_slug'] ?? '') === $pageSlug
+    ));
+    $serviceRows = array_values(array_filter(
+        $serviceResult['rows'] ?? [],
+        static fn($row) => moving_service_content_normalize_text($row['page_slug'] ?? '') === $pageSlug
+    ));
+
+    $hero = moving_service_content_find_section_row($sectionRows, 'hero');
+    $section = moving_service_content_find_section_row($sectionRows, 'services_section');
 
     $normalizedServices = [];
-    foreach ($services as $service) {
+    foreach ($serviceRows as $service) {
         if (!is_array($service)) {
             continue;
         }
@@ -114,7 +142,12 @@ try {
     }
 
     usort($normalizedServices, static function (array $left, array $right): int {
-        return ((int) ($left['sort_order'] ?? 0)) <=> ((int) ($right['sort_order'] ?? 0));
+        $byOrder = ((int) ($left['sort_order'] ?? 0)) <=> ((int) ($right['sort_order'] ?? 0));
+        if ($byOrder !== 0) {
+            return $byOrder;
+        }
+
+        return strcmp((string) ($left['service_key'] ?? ''), (string) ($right['service_key'] ?? ''));
     });
 
     $payload = [

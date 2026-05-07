@@ -2,8 +2,12 @@
     const PAGE_SLUG = "dich-vu-chuyen-don";
     const EXPORT_API_URL = "../api/service_content_export.php";
     const SERVICE_IMAGE_UPLOAD_URL = "../../public/upload_to_drive.php";
-    const FALLBACK = window.__MOVING_SERVICE_CONTENT_BOOTSTRAP__ || {};
     const PUBLIC_PAGE_URL = String(window.__MOVING_SERVICE_CONTENT_PAGE_URL__ || "../../dich-vu-chuyen-don.html");
+    const FIXED_SERVICES = Object.freeze([
+        { service_key: "chuyen-nha", sort_order: 1 },
+        { service_key: "chuyen-van-phong", sort_order: 2 },
+        { service_key: "chuyen-kho-bai", sort_order: 3 },
+    ]);
 
     const refs = {
         runtime: document.getElementById("service-content-runtime"),
@@ -30,13 +34,6 @@
 
     function normalizeText(value) {
         return String(value || "").replace(/\s+/g, " ").trim();
-    }
-
-    function normalizeMultiline(value) {
-        return String(value || "")
-            .split(/\r\n|\r|\n/)
-            .map((item) => normalizeText(item))
-            .filter(Boolean);
     }
 
     function getProjectBaseUrl() {
@@ -76,18 +73,6 @@
         }
         button.disabled = isBusy;
         button.innerHTML = isBusy ? busyText : button.dataset.originalHtml;
-    }
-
-    function getFallbackHero() {
-        return FALLBACK.hero || {};
-    }
-
-    function getFallbackServicesSection() {
-        return FALLBACK.services_section || {};
-    }
-
-    function getFallbackServices() {
-        return Array.isArray(FALLBACK.services) ? FALLBACK.services : [];
     }
 
     function getSectionRow(sectionKey) {
@@ -201,46 +186,43 @@
 
     function getHeroData() {
         const row = getSectionRow("hero");
-        const fallback = getFallbackHero();
         return {
-            eyebrow: normalizeText(row?.eyebrow || fallback.eyebrow),
-            title: normalizeText(row?.title || fallback.title),
-            description: normalizeText(row?.description || fallback.description),
-            primary_cta_label: normalizeText(row?.primary_cta_label || fallback.primary_cta_label),
-            primary_cta_url: normalizeText(row?.primary_cta_url || fallback.primary_cta_url),
-            secondary_cta_label: normalizeText(row?.secondary_cta_label || fallback.secondary_cta_label),
-            secondary_cta_url: normalizeText(row?.secondary_cta_url || fallback.secondary_cta_url),
+            eyebrow: normalizeText(row?.eyebrow),
+            title: normalizeText(row?.title),
+            description: normalizeText(row?.description),
+            primary_cta_label: normalizeText(row?.primary_cta_label),
+            primary_cta_url: normalizeText(row?.primary_cta_url),
+            secondary_cta_label: normalizeText(row?.secondary_cta_label),
+            secondary_cta_url: normalizeText(row?.secondary_cta_url),
         };
     }
 
     function getServicesSectionData() {
         const row = getSectionRow("services_section");
-        const fallback = getFallbackServicesSection();
         return {
-            eyebrow: normalizeText(row?.eyebrow || fallback.eyebrow),
-            title: normalizeText(row?.title || fallback.title),
-            description: normalizeText(row?.description || fallback.description),
+            eyebrow: normalizeText(row?.eyebrow),
+            title: normalizeText(row?.title),
+            description: normalizeText(row?.description),
         };
     }
 
     function getServicesData() {
-        const fallbackServices = getFallbackServices();
-        return fallbackServices.map((fallback, index) => {
-            const row = getServiceRow(fallback.service_key);
+        return FIXED_SERVICES.map((baseService) => {
+            const row = getServiceRow(baseService.service_key);
             return {
-                service_key: fallback.service_key,
-                is_visible: normalizeText(row?.is_visible || fallback.is_visible || "1") !== "0",
-                label: normalizeText(row?.label || fallback.label),
-                title: normalizeText(row?.title || fallback.title),
-                summary: normalizeText(row?.summary || fallback.summary),
-                image: normalizeText(row?.image || fallback.image),
-                image_alt: normalizeText(row?.image_alt || fallback.image_alt),
-                service_items: row ? rowItemsToTextarea(row) : (Array.isArray(fallback.service_items) ? fallback.service_items.join("\n") : ""),
-                booking_label: normalizeText(row?.booking_label || fallback.booking_label),
-                booking_url: normalizeText(row?.booking_url || fallback.booking_url),
-                pricing_label: normalizeText(row?.pricing_label || fallback.pricing_label),
-                pricing_url: normalizeText(row?.pricing_url || fallback.pricing_url),
-                sort_order: Number(row?.sort_order || fallback.sort_order || index + 1),
+                service_key: baseService.service_key,
+                is_visible: normalizeText(row?.is_visible || "1") !== "0",
+                label: normalizeText(row?.label),
+                title: normalizeText(row?.title),
+                summary: normalizeText(row?.summary),
+                image: normalizeText(row?.image),
+                image_alt: normalizeText(row?.image_alt),
+                service_items: row ? rowItemsToTextarea(row) : "",
+                booking_label: normalizeText(row?.booking_label),
+                booking_url: normalizeText(row?.booking_url),
+                pricing_label: normalizeText(row?.pricing_label),
+                pricing_url: normalizeText(row?.pricing_url),
+                sort_order: Number(row?.sort_order || baseService.sort_order),
             };
         }).sort((left, right) => left.sort_order - right.sort_order);
     }
@@ -399,15 +381,7 @@
         const response = await fetch(EXPORT_API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                hero: getHeroData(),
-                services_section: getServicesSectionData(),
-                services: getServicesData().map((service) => ({
-                    ...service,
-                    is_visible: service.is_visible ? "1" : "0",
-                    service_items: normalizeMultiline(service.service_items),
-                })),
-            }),
+            body: JSON.stringify({ page_slug: PAGE_SLUG }),
         });
 
         const payload = await response.json().catch(() => ({}));
@@ -458,83 +432,22 @@
         }
     }
 
-    async function bootstrapIfNeeded() {
-        const sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
-        const serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
-        if (sectionRows.length || serviceRows.length) {
-            state.sectionRows = sectionRows;
-            state.serviceRows = serviceRows;
-            return false;
-        }
-
-        const now = new Date().toISOString();
-        const hero = getFallbackHero();
-        const servicesSection = getFallbackServicesSection();
-        const fallbackServices = getFallbackServices();
-
-        await window.adminApi.saveMovingServicePageSection({
-            page_slug: PAGE_SLUG,
-            section_key: "hero",
-            ...hero,
-            updated_at: now,
-        });
-
-        await window.adminApi.saveMovingServicePageSection({
-            page_slug: PAGE_SLUG,
-            section_key: "services_section",
-            eyebrow: servicesSection.eyebrow,
-            title: servicesSection.title,
-            description: servicesSection.description,
-            updated_at: now,
-        });
-
-        for (const service of fallbackServices) {
-            await window.adminApi.saveMovingServicePageCard({
-                page_slug: PAGE_SLUG,
-                service_key: service.service_key,
-                is_visible: service.is_visible,
-                label: service.label,
-                title: service.title,
-                summary: service.summary,
-                image: service.image,
-                image_alt: service.image_alt,
-                service_items_json: JSON.stringify(Array.isArray(service.service_items) ? service.service_items : []),
-                booking_label: service.booking_label,
-                booking_url: service.booking_url,
-                pricing_label: service.pricing_label,
-                pricing_url: service.pricing_url,
-                sort_order: service.sort_order,
-                updated_at: now,
-            });
-        }
-
-        state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
-        state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
-        await exportPublicJson();
-        return true;
-    }
-
-    async function refreshData(options = {}) {
-        const allowBootstrap = options.allowBootstrap !== false;
+    async function refreshData() {
         showRuntime("success", "Đang tải dữ liệu nội dung dịch vụ...");
 
         await window.adminApi.ensureMovingServiceContentTables();
         state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
         state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
 
-        let bootstrapped = false;
-        if (allowBootstrap && !state.sectionRows.length && !state.serviceRows.length) {
-            bootstrapped = await bootstrapIfNeeded();
-        }
-
         populateForms();
         renderServiceCards();
 
-        if (bootstrapped) {
-            showRuntime("success", "KRUD đang trống, đã bootstrap dữ liệu ban đầu từ HTML hiện tại và services-hub.json.");
-        } else {
-            hideRuntime();
+        if (!state.sectionRows.length && !state.serviceRows.length) {
+            showRuntime("error", "KRUD chưa có dữ liệu nội dung cho trang chuyển dọn. Hãy tạo bản ghi trực tiếp trong admin rồi export lại JSON public.");
+            return;
         }
+
+        hideRuntime();
     }
 
     async function handleHeroSubmit(event) {

@@ -503,8 +503,8 @@ require_once __DIR__ . '/../includes/header_admin.php';
             </ul>
             <h3>Nguồn dữ liệu và export</h3>
             <ul>
-                <li>Hero được bootstrap từ `dich-vu-chuyen-don.html` nếu KRUD chưa có dữ liệu.</li>
-                <li>Danh sách dịch vụ cũ được bootstrap từ `public/assets/js/data/services-hub.json` nếu cần.</li>
+                <li>KRUD là nguồn chuẩn duy nhất cho nội dung trang dịch vụ chuyển dọn.</li>
+                <li>Màn admin không còn bootstrap nội dung từ HTML cũ hoặc `public/assets/js/data/services-hub.json` nữa.</li>
                 <li>Sau khi lưu, hệ thống export lại `public/assets/js/data/dich-vu-chuyen-don-page.json` qua `api/service_content_export.php` để frontend public đọc.</li>
             </ul>
             <div class="guide-note">Nếu lưu thành công ở KRUD nhưng trang ngoài site chưa đổi, hãy ưu tiên kiểm tra bước export JSON và làm mới cứng trang public trước khi kết luận dữ liệu bị mất.</div>
@@ -665,6 +665,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
             <ul>
                 <li>Kiểm tra bước export `dich-vu-chuyen-don-page.json` có báo lỗi hay không.</li>
                 <li>Nếu KRUD đã lưu nhưng JSON chưa cập nhật, mở lại màn Nội dung dịch vụ và lưu lại một thay đổi hợp lệ để export lại.</li>
+                <li>Không dùng `sync_service_images.php` để sửa JSON trực tiếp vì endpoint này đã bị khóa để tránh lệch dữ liệu với KRUD.</li>
             </ul>
             <h3>5. Đơn đã hoàn tất nhưng trang chi tiết hiển thị lạ</h3>
             <ul>
