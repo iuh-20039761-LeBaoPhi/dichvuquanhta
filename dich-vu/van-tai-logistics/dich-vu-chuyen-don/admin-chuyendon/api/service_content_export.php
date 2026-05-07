@@ -62,9 +62,25 @@ function moving_service_content_write_json(string $path, array $payload): void
         throw new RuntimeException('Không mã hóa được JSON nội dung dịch vụ.');
     }
 
+    $directory = dirname($path);
+    if (!is_dir($directory)) {
+        if (!@mkdir($directory, 0775, true) && !is_dir($directory)) {
+            throw new RuntimeException('Không tạo được thư mục JSON public: ' . $directory);
+        }
+    }
+
+    if (!is_writable($directory)) {
+        throw new RuntimeException('Thư mục JSON public không có quyền ghi: ' . $directory);
+    }
+
     $handle = @fopen($path, 'cb+');
     if (!$handle) {
-        throw new RuntimeException('Không mở được file JSON public để ghi.');
+        $existsLabel = file_exists($path) ? 'có tồn tại' : 'chưa tồn tại';
+        throw new RuntimeException(
+            'Không mở được file JSON public để ghi: '
+            . $path
+            . ' (file ' . $existsLabel . ')'
+        );
     }
 
     $written = false;
@@ -177,5 +193,8 @@ try {
         'path' => $targetPath,
     ]);
 } catch (Throwable $error) {
-    moving_service_content_response(false, ['message' => $error->getMessage()], 500);
+    moving_service_content_response(false, [
+        'message' => $error->getMessage(),
+        'path' => $targetPath,
+    ], 500);
 }

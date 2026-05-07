@@ -20,6 +20,28 @@ require_once __DIR__ . '/../includes/header_admin.php';
 
     .service-content-runtime {
         display: none;
+        position: fixed;
+        top: 22px;
+        right: 22px;
+        width: min(420px, calc(100vw - 28px));
+        margin: 0;
+        z-index: 2400;
+        border-radius: 18px;
+        border: 1px solid rgba(194, 122, 77, 0.18);
+        background: rgba(255, 248, 242, 0.96);
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.18);
+        backdrop-filter: blur(12px);
+    }
+
+    .service-content-runtime.flash-error {
+        border-color: rgba(239, 68, 68, 0.22);
+        background: rgba(255, 245, 245, 0.97);
+        box-shadow: 0 18px 42px rgba(127, 29, 29, 0.16);
+    }
+
+    .service-content-runtime .btn {
+        min-width: 126px;
+        justify-content: center;
     }
 
     /* ── Tab navigation ── */
@@ -244,6 +266,13 @@ require_once __DIR__ . '/../includes/header_admin.php';
     }
 
     @media (max-width: 640px) {
+        .service-content-runtime {
+            top: 14px;
+            right: 14px;
+            left: 14px;
+            width: auto;
+        }
+
         .sc-tab-btn {
             font-size: 12px;
             padding: 10px 14px;

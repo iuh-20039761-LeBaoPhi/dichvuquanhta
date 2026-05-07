@@ -22,6 +22,7 @@
         sectionRows: [],
         serviceRows: [],
     };
+    let runtimeConfirmHandler = null;
 
     function escapeHtml(value) {
         return String(value ?? "")
@@ -55,15 +56,74 @@
         return new URL(`public/assets/${cleaned}`, getProjectBaseUrl()).toString();
     }
 
-    function showRuntime(type, message) {
+    function showRuntime(type, message, options = {}) {
+        const allowHtml = options.allowHtml === true;
         refs.runtime.className = `flash service-content-runtime ${type === "success" ? "" : "flash-error"}`;
-        refs.runtime.textContent = message;
+        if (allowHtml) {
+            refs.runtime.innerHTML = String(message || "");
+        } else {
+            refs.runtime.textContent = String(message || "");
+        }
         refs.runtime.style.display = "block";
     }
 
     function hideRuntime() {
         refs.runtime.style.display = "none";
         refs.runtime.textContent = "";
+        refs.runtime.innerHTML = "";
+        runtimeConfirmHandler = null;
+    }
+
+    function showInlineValidationError(title, errors = []) {
+        const normalizedErrors = Array.isArray(errors)
+            ? errors.map((item) => normalizeText(item)).filter(Boolean)
+            : [];
+        const detail = normalizedErrors.length ? ` ${normalizedErrors.join(" ")}` : "";
+        showRuntime("error", `${title}.${detail}`.trim());
+    }
+
+    function showInlineConfirm(message, onConfirm, options = {}) {
+        runtimeConfirmHandler = typeof onConfirm === "function" ? onConfirm : null;
+        const confirmLabel = escapeHtml(options.confirmLabel || "Xác nhận lưu");
+        const cancelLabel = escapeHtml(options.cancelLabel || "Hủy");
+        const html = `
+            <div style="display:grid; gap:12px;">
+                <div>${escapeHtml(message)}</div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn btn-primary" data-runtime-confirm>${confirmLabel}</button>
+                    <button type="button" class="btn btn-outline" data-runtime-cancel>${cancelLabel}</button>
+                </div>
+            </div>
+        `;
+        showRuntime("success", html, { allowHtml: true });
+
+        const confirmBtn = refs.runtime.querySelector("[data-runtime-confirm]");
+        const cancelBtn = refs.runtime.querySelector("[data-runtime-cancel]");
+
+        confirmBtn?.addEventListener("click", async () => {
+            const handler = runtimeConfirmHandler;
+            runtimeConfirmHandler = null;
+            if (!(confirmBtn instanceof HTMLButtonElement) || !(cancelBtn instanceof HTMLButtonElement)) {
+                return;
+            }
+
+            setButtonBusy(confirmBtn, true, '<i class="fas fa-spinner fa-spin"></i>Đang xác nhận...');
+            cancelBtn.disabled = true;
+
+            try {
+                await handler?.();
+            } catch (error) {
+                showRuntime("error", error?.message || "Không thể xử lý xác nhận lưu.");
+            } finally {
+                setButtonBusy(confirmBtn, false, "");
+                cancelBtn.disabled = false;
+            }
+        });
+
+        cancelBtn?.addEventListener("click", () => {
+            runtimeConfirmHandler = null;
+            showRuntime("error", "Đã hủy thao tác lưu.", { scroll: false });
+        });
     }
 
     function setButtonBusy(button, isBusy, busyText) {
@@ -450,21 +510,9 @@
         hideRuntime();
     }
 
-    async function handleHeroSubmit(event) {
-        event.preventDefault();
-        const payload = buildSectionPayload(refs.heroForm, "hero");
-        
-        const errors = validateSectionPayload(payload);
-        if (errors.length) {
-            alert("Dữ liệu không hợp lệ:\n- " + errors.join("\n- "));
-            return;
-        }
-
-        if (!confirm("Bạn có chắc chắn muốn cập nhật nội dung Hero này không?")) {
-            return;
-        }
-
+    async function persistHero(payload) {
         setButtonBusy(refs.saveHeroBtn, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
+        showRuntime("success", "Đang lưu nội dung Hero...");
         try {
             const existing = getSectionRow("hero");
             await window.adminApi.saveMovingServicePageSection(payload, existing);
@@ -478,21 +526,9 @@
         }
     }
 
-    async function handleServicesSectionSubmit(event) {
-        event.preventDefault();
-        const payload = buildSectionPayload(refs.servicesSectionForm, "services_section");
-
-        const errors = validateSectionPayload(payload);
-        if (errors.length) {
-            alert("Dữ liệu không hợp lệ:\n- " + errors.join("\n- "));
-            return;
-        }
-
-        if (!confirm("Cập nhật tiêu đề và mô tả cho khối dịch vụ?")) {
-            return;
-        }
-
+    async function persistServicesSection(payload) {
         setButtonBusy(refs.saveServicesSectionBtn, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
+        showRuntime("success", "Đang lưu khối dịch vụ...");
         try {
             const existing = getSectionRow("services_section");
             await window.adminApi.saveMovingServicePageSection(payload, existing);
@@ -506,29 +542,10 @@
         }
     }
 
-    async function handleServiceCardSubmit(event) {
-        event.preventDefault();
-        const form = event.target;
-        if (!(form instanceof HTMLFormElement)) {
-            return;
-        }
-
+    async function persistServiceCard(form, payload, serviceKey) {
         const button = form.querySelector('button[type="submit"]');
-        const serviceKey = normalizeText(form.dataset.serviceForm);
-        const sortOrder = Number(form.dataset.sortOrder || 0);
-
-        const payload = buildServicePayload(form, serviceKey, sortOrder);
-        const errors = validateServicePayload(payload);
-        if (errors.length) {
-            alert(`Nhóm ${serviceKey} có lỗi dữ liệu:\n- ` + errors.join("\n- "));
-            return;
-        }
-
-        if (!confirm(`Xác nhận lưu thay đổi cho dịch vụ [${payload.label}]?`)) {
-            return;
-        }
-
         setButtonBusy(button, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
+        showRuntime("success", `Đang lưu nhóm dịch vụ ${serviceKey}...`);
 
         try {
             const existing = getServiceRow(serviceKey);
@@ -541,6 +558,55 @@
         } finally {
             setButtonBusy(button, false, "");
         }
+    }
+
+    async function handleHeroSubmit(event) {
+        event.preventDefault();
+        const payload = buildSectionPayload(refs.heroForm, "hero");
+        
+        const errors = validateSectionPayload(payload);
+        if (errors.length) {
+            showInlineValidationError("Dữ liệu Hero không hợp lệ", errors);
+            return;
+        }
+
+        showInlineConfirm("Xác nhận lưu nội dung Hero này?", () => persistHero(payload));
+    }
+
+    async function handleServicesSectionSubmit(event) {
+        event.preventDefault();
+        const payload = buildSectionPayload(refs.servicesSectionForm, "services_section");
+
+        const errors = validateSectionPayload(payload);
+        if (errors.length) {
+            showInlineValidationError("Dữ liệu khối dịch vụ không hợp lệ", errors);
+            return;
+        }
+
+        showInlineConfirm("Xác nhận lưu tiêu đề và mô tả cho khối dịch vụ?", () => persistServicesSection(payload));
+    }
+
+    async function handleServiceCardSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) {
+            return;
+        }
+
+        const serviceKey = normalizeText(form.dataset.serviceForm);
+        const sortOrder = Number(form.dataset.sortOrder || 0);
+
+        const payload = buildServicePayload(form, serviceKey, sortOrder);
+        const errors = validateServicePayload(payload);
+        if (errors.length) {
+            showInlineValidationError(`Nhóm ${serviceKey} có lỗi dữ liệu`, errors);
+            return;
+        }
+
+        showInlineConfirm(
+            `Xác nhận lưu thay đổi cho dịch vụ [${payload.label || serviceKey}]?`,
+            () => persistServiceCard(form, payload, serviceKey)
+        );
     }
 
     async function handleServiceImageUpload(event) {
