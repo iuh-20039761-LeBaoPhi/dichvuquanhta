@@ -289,7 +289,7 @@
       if (!query || query.length < 5) return;
 
       // ── Hàm cập nhật marker & tọa độ sau khi có kết quả ──
-      function _applyLocation(lat, lng, showPopup) {
+      function _applyLocation(lat, lng, showPopup, popupText) {
         init().then(() => {
           if (!map) return;
           if (live) {
@@ -302,7 +302,8 @@
           
           marker = L.marker([lat, lng]).addTo(map);
           if (showPopup) {
-            const popupContent = `<small>${query}</small>`;
+            const content = popupText || query;
+            const popupContent = `<small>${content}</small>`;
             currentPopup = L.popup({ autoClose: false })
               .setLatLng([lat, lng])
               .setContent(popupContent);
@@ -334,21 +335,107 @@
         });
       }
 
+      // ── Hàm hiển thị danh sách gợi ý (Autocomplete) ──
+      function _renderSuggestions(data) {
+        const addrEl = getAddressInput();
+        if (!addrEl) return;
+
+        let list = document.getElementById('mapSuggestionsList');
+        if (!list) {
+          list = document.createElement('div');
+          list.id = 'mapSuggestionsList';
+          list.style.cssText = `
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            z-index: 9999;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 0 0 8px 8px;
+          `;
+          addrEl.parentNode.style.position = 'relative';
+          addrEl.parentNode.appendChild(list);
+        }
+
+        if (!data || !data.length) {
+          list.style.display = 'none';
+          return;
+        }
+
+        list.innerHTML = '';
+        list.style.display = 'block';
+
+        data.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'suggestion-item';
+          div.style.cssText = `
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            transition: background 0.2s;
+          `;
+          div.innerHTML = `<i class="fas fa-map-marker-alt text-danger me-2"></i> ${item.display_name}`;
+          
+          div.addEventListener('mouseover', () => div.style.background = '#f8f9fa');
+          div.addEventListener('mouseout', () => div.style.background = 'white');
+
+          div.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            addrEl.value = item.display_name;
+            const lat = parseFloat(item.lat);
+            const lng = parseFloat(item.lon);
+            _applyLocation(lat, lng, true, item.display_name); // Hiện popup với địa chỉ đầy đủ
+            list.style.display = 'none';
+          });
+
+          list.appendChild(div);
+        });
+
+        // Đóng list khi click ra ngoài
+        document.addEventListener('click', function _hideList(e) {
+          if (!addrEl.contains(e.target) && !list.contains(e.target)) {
+            list.style.display = 'none';
+            document.removeEventListener('click', _hideList);
+          }
+        });
+      }
+
       // ── Hàm thực sự gọi Nominatim ──
       function _doFetch(signal) {
+        const limit = live ? 5 : 1; // Live lấy 5 để gợi ý, bình thường lấy 1
         return fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=vn`,
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=${limit}&countrycodes=vn`,
           { headers: { 'Accept-Language': 'vi' }, ...(signal ? { signal } : {}) }
         )
           .then(r => r.json())
           .then(data => {
-            if (!data || !data.length) return;
-            const lat = parseFloat(data[0].lat);
-            const lng = parseFloat(data[0].lon);
-            _applyLocation(lat, lng, !live);
+            if (!data || !data.length) {
+              if (live) _renderSuggestions([]);
+              return;
+            }
+
+            if (live) {
+              // Ở chế độ live: hiển thị list gợi ý + pan bản đồ tới kết quả đầu tiên
+              _renderSuggestions(data);
+              const lat = parseFloat(data[0].lat);
+              const lng = parseFloat(data[0].lon);
+              _applyLocation(lat, lng, false); // Không hiện popup khi đang gõ
+            } else {
+              // Chế độ thường/auto-open: lấy kết quả đầu tiên và hiện popup
+              const lat = parseFloat(data[0].lat);
+              const lng = parseFloat(data[0].lon);
+              _applyLocation(lat, lng, true);
+            }
           })
           .catch(err => {
-            if (err && err.name === 'AbortError') return; // bỏ qua huỷ request
+            if (err && err.name === 'AbortError') return;
           });
       }
 
