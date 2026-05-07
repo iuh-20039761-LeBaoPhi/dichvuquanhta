@@ -16,3 +16,4 @@ import "./modules/main-provider-dashboard.js";
 import "./modules/main-provider-jobs.js";
 import "./modules/main-provider-order-detail.js";
 import "./modules/main-provider-profile.js";
+import "./modules/main-provider-vehicles.js";

@@ -934,6 +934,8 @@ function tao_du_lieu_gui() {
     phuong_tien: selectedService.selectedVehicleKey || "",
     ten_phuong_tien:
       selectedService.selectedVehicleLabel || selectedService.vehicleSuggestion,
+    shipper_xe_id: "",
+    shipper_xe_ten: "",
     tong_cuoc: selectedService.total,
     chi_tiet_gia_cuoc: chiTietGiaCuoc,
     vi_do_lay_hang: quotePayload.pickup_lat || 0,

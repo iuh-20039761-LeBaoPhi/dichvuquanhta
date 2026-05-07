@@ -6,9 +6,44 @@
     session: "ghn-auth-session",
   };
   const dvqtUserTable = "nguoidung";
+  const ghnShipperVehicleTable = "giaohangnhanh_shipper_xe";
   const ghnServiceId = "7";
   const providedServiceLabels = Object.freeze({
     [ghnServiceId]: "Giao Hàng Nhanh",
+  });
+  const fallbackVehicleCatalog = Object.freeze({
+    xe_may: "Xe máy",
+    xe_4_banh_nho: "Xe 4 bánh nhỏ",
+    xe_4_banh_vua: "Xe 4 bánh vừa",
+    xe_4_banh_lon: "Xe 4 bánh lớn",
+  });
+  const vehicleKeyAliases = Object.freeze({
+    xemay: "xe_may",
+    xe_may: "xe_may",
+    xe_may_: "xe_may",
+    xe_may__2_banh: "xe_may",
+    xe_loi: "xe_4_banh_nho",
+    xeloi: "xe_4_banh_nho",
+    xeba: "xe_4_banh_nho",
+    xe_ba_gac: "xe_4_banh_nho",
+    xe_ban_tai: "xe_4_banh_nho",
+    xebantai: "xe_4_banh_nho",
+    xevan: "xe_4_banh_nho",
+    xe_4_banh_nho: "xe_4_banh_nho",
+    xe4banhnho: "xe_4_banh_nho",
+    taior5: "xe_4_banh_nho",
+    tai_nhe: "xe_4_banh_vua",
+    tainhe: "xe_4_banh_vua",
+    xe_tai_vua: "xe_4_banh_vua",
+    xetaivua: "xe_4_banh_vua",
+    xe_4_banh_vua: "xe_4_banh_vua",
+    xe4banhvua: "xe_4_banh_vua",
+    taior10: "xe_4_banh_vua",
+    xe_tai: "xe_4_banh_lon",
+    xetai: "xe_4_banh_lon",
+    xe_4_banh_lon: "xe_4_banh_lon",
+    xe4banhlon: "xe_4_banh_lon",
+    taior20: "xe_4_banh_lon",
   });
   const authChangeEventName = "ghn:auth-changed";
   const customerPhonePattern = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
@@ -61,6 +96,87 @@
 
   function normalizeEmail(value) {
     return normalizeLowerText(value);
+  }
+
+  function normalizeVehicleKey(value) {
+    const normalized = normalizeLowerText(value);
+    return vehicleKeyAliases[normalized] || normalized;
+  }
+
+  function getVehicleTypeLabel(value) {
+    const normalizedKey = normalizeVehicleKey(value);
+    return fallbackVehicleCatalog[normalizedKey] || normalizeText(value) || "Chưa cập nhật";
+  }
+
+  function normalizeVehicleStatus(value) {
+    const normalized = normalizeLowerText(value);
+    if (["inactive", "paused", "pause", "tam_dung", "tam_ngung"].includes(normalized)) {
+      return "tam_ngung";
+    }
+    return "hoat_dong";
+  }
+
+  function toFlag(value) {
+    if (typeof value === "boolean") return value ? 1 : 0;
+    if (typeof value === "number") return value > 0 ? 1 : 0;
+    const normalized = normalizeLowerText(value);
+    return ["1", "true", "yes", "on", "mac_dinh", "default"].includes(normalized)
+      ? 1
+      : 0;
+  }
+
+  function normalizeLicensePlate(value) {
+    return normalizeText(value).toUpperCase();
+  }
+
+  function mapShipperVehicleRecord(row) {
+    if (!row || typeof row !== "object") return null;
+
+    const loaiXe = normalizeVehicleKey(row.loai_xe || row.vehicle_type || row.loai_phuong_tien || "");
+    const tenHienThi = normalizeText(
+      row.ten_hien_thi ||
+        row.shipper_vehicle ||
+        row.vehicle_name ||
+        row.name ||
+        getVehicleTypeLabel(loaiXe),
+    );
+
+    return {
+      ...row,
+      id: normalizeText(row.id || ""),
+      shipper_id: normalizeText(row.shipper_id || row.provider_id || row.user_id || ""),
+      loai_xe: loaiXe,
+      loai_xe_label: getVehicleTypeLabel(loaiXe),
+      ten_hien_thi: tenHienThi,
+      bien_so: normalizeLicensePlate(row.bien_so || row.license_plate || ""),
+      shipper_vehicle: tenHienThi,
+      trang_thai: normalizeVehicleStatus(row.trang_thai || row.status || ""),
+      la_mac_dinh: toFlag(row.la_mac_dinh || row.is_default || row.mac_dinh),
+      ghi_chu: normalizeText(row.ghi_chu || row.note || ""),
+      created_at: normalizeText(row.created_at || row.created_date || ""),
+      updated_at: normalizeText(row.updated_at || ""),
+    };
+  }
+
+  function sortShipperVehicles(list) {
+    return (Array.isArray(list) ? list : [])
+      .slice()
+      .sort((left, right) => {
+        const defaultDelta = Number(right.la_mac_dinh || 0) - Number(left.la_mac_dinh || 0);
+        if (defaultDelta !== 0) return defaultDelta;
+        const activeDelta =
+          (left.trang_thai === "hoat_dong" ? 0 : 1) -
+          (right.trang_thai === "hoat_dong" ? 0 : 1);
+        if (activeDelta !== 0) return activeDelta;
+        const rightTime = new Date(right.updated_at || right.created_at || 0).getTime();
+        const leftTime = new Date(left.updated_at || left.created_at || 0).getTime();
+        if (rightTime !== leftTime) return rightTime - leftTime;
+        return String(right.id || "").localeCompare(String(left.id || ""));
+      });
+  }
+
+  function pickPrimaryShipperVehicle(list) {
+    return sortShipperVehicles(list)[0] || null;
   }
 
   function readCookie(name) {
@@ -158,8 +274,13 @@
     const address = normalizeText(
       row.diachi || row.dia_chi || row.address || row.company_address || row.shipper_address || "",
     );
-    const vehicleType = normalizeText(
+    const rawVehicleType = normalizeText(
       row.loai_phuong_tien || row.vehicle_type || row.shipper_vehicle || "",
+    );
+    const vehicleType = normalizeVehicleKey(rawVehicleType);
+    const vehicleTypeLabel = getVehicleTypeLabel(rawVehicleType);
+    const shipperVehicle = normalizeText(
+      row.shipper_vehicle || row.ten_hien_thi || vehicleTypeLabel,
     );
     const companyName = normalizeText(row.ten_cong_ty || row.company_name || "");
     const taxCode = normalizeText(row.ma_so_thue || row.tax_code || "");
@@ -217,8 +338,10 @@
       id_dichvu: normalizeText(row.id_dichvu || "0") || "0",
       trangthai,
       vehicle_type: vehicleType,
+      vehicle_type_label: vehicleTypeLabel,
       loai_phuong_tien: vehicleType,
-      shipper_vehicle: vehicleType,
+      loai_phuong_tien_label: vehicleTypeLabel,
+      shipper_vehicle: shipperVehicle || vehicleTypeLabel,
       address,
       dia_chi: address,
       shipper_address: address,
@@ -551,6 +674,273 @@
     return users.find((user) => matcher(user)) || null;
   }
 
+  async function listKrudShipperVehicles(shipperId = "") {
+    await ensureKrudReady();
+    const listFn = getKrudListFn();
+    if (!listFn) {
+      throw new Error("Không tìm thấy hàm KRUD list.");
+    }
+
+    const rows = [];
+    const limit = 200;
+    const maxPages = 10;
+
+    for (let page = 1; page <= maxPages; page += 1) {
+      const response = await Promise.resolve(
+        listFn({
+          table: ghnShipperVehicleTable,
+          page,
+          limit,
+          sort: {
+            id: "desc",
+          },
+        }),
+      );
+      const batch = extractRows(response);
+      if (!batch.length) break;
+      rows.push(...batch);
+      if (batch.length < limit) break;
+    }
+
+    const normalizedShipperId = normalizeText(shipperId);
+    const vehicles = rows
+      .map(mapShipperVehicleRecord)
+      .filter(Boolean)
+      .filter((item) => {
+        if (!normalizedShipperId) return true;
+        return normalizeText(item.shipper_id) === normalizedShipperId;
+      });
+    return sortShipperVehicles(vehicles);
+  }
+
+  async function enforceShipperVehicleDefaults(shipperId, preferredVehicleId = "") {
+    const normalizedShipperId = normalizeText(shipperId);
+    if (!normalizedShipperId) return [];
+
+    const vehicles = await listKrudShipperVehicles(normalizedShipperId);
+    if (!vehicles.length) {
+      return [];
+    }
+
+    const updateFn = getKrudUpdateFn();
+    if (!updateFn) {
+      throw new Error("Không tìm thấy hàm KRUD update.");
+    }
+
+    let primaryVehicle = vehicles.find(
+      (item) => normalizeText(item.id) === normalizeText(preferredVehicleId),
+    );
+    if (!primaryVehicle) {
+      primaryVehicle = pickPrimaryShipperVehicle(vehicles);
+    }
+    if (!primaryVehicle) return vehicles;
+
+    const nextVehicles = vehicles.map((item) => ({
+      ...item,
+      la_mac_dinh: normalizeText(item.id) === normalizeText(primaryVehicle.id) ? 1 : 0,
+    }));
+
+    for (const item of nextVehicles) {
+      const previous = vehicles.find(
+        (current) => normalizeText(current.id) === normalizeText(item.id),
+      );
+      if (!previous || Number(previous.la_mac_dinh || 0) === Number(item.la_mac_dinh || 0)) {
+        continue;
+      }
+      await updateFn(
+        ghnShipperVehicleTable,
+        {
+          id: item.id,
+          la_mac_dinh: item.la_mac_dinh,
+          updated_at: new Date().toISOString(),
+        },
+        item.id,
+      );
+    }
+
+    return sortShipperVehicles(nextVehicles);
+  }
+
+  async function syncPrimaryVehicleToUser(shipperId, vehicles = null) {
+    const normalizedShipperId = normalizeText(shipperId);
+    if (!normalizedShipperId) return null;
+
+    const vehicleList = Array.isArray(vehicles)
+      ? sortShipperVehicles(vehicles)
+      : await listKrudShipperVehicles(normalizedShipperId);
+    const primaryVehicle = pickPrimaryShipperVehicle(vehicleList);
+    await updateKrudUser(normalizedShipperId, "shipper", {
+      vehicle_type: primaryVehicle?.loai_xe || "",
+      loai_phuong_tien: primaryVehicle?.loai_xe || "",
+    });
+    return primaryVehicle || null;
+  }
+
+  async function createKrudShipperVehicle(shipperId, payload = {}) {
+    const normalizedShipperId = normalizeText(shipperId);
+    if (!normalizedShipperId) {
+      throw new Error("Thiếu mã shipper để tạo xe.");
+    }
+
+    await ensureKrudReady();
+    const insertFn = getKrudInsertFn();
+    if (!insertFn) {
+      throw new Error("Không tìm thấy hàm KRUD insert.");
+    }
+
+    const loaiXe = normalizeVehicleKey(payload.loai_xe || payload.vehicle_type || payload.loai_phuong_tien || "");
+    const tenHienThi = normalizeText(payload.ten_hien_thi || payload.shipper_vehicle || "");
+    const bienSo = normalizeLicensePlate(payload.bien_so || payload.license_plate || "");
+    if (!loaiXe || !tenHienThi || !bienSo) {
+      throw new Error("Vui lòng nhập tên gợi nhớ, biển số và loại xe.");
+    }
+
+    const currentVehicles = await listKrudShipperVehicles(normalizedShipperId);
+    if (currentVehicles.some((item) => normalizeLicensePlate(item.bien_so) === bienSo)) {
+      throw new Error("Biển số xe này đã tồn tại trong danh sách của shipper.");
+    }
+    const shouldBeDefault = toFlag(payload.la_mac_dinh) === 1 || currentVehicles.length === 0;
+    const createdAt = new Date().toISOString();
+
+    const insertPayload = {
+      shipper_id: normalizedShipperId,
+      loai_xe: loaiXe,
+      ten_hien_thi: tenHienThi,
+      bien_so: bienSo,
+      trang_thai: normalizeVehicleStatus(payload.trang_thai),
+      la_mac_dinh: shouldBeDefault ? 1 : 0,
+      created_at: createdAt,
+      updated_at: createdAt,
+    };
+
+    const result = await insertFn(ghnShipperVehicleTable, insertPayload);
+    const insertedId = extractInsertId(result);
+    let vehicles = await listKrudShipperVehicles(normalizedShipperId);
+    let createdVehicle =
+      vehicles.find((item) => normalizeText(item.id) === insertedId) ||
+      mapShipperVehicleRecord({
+        ...insertPayload,
+        id: insertedId,
+      });
+
+    if (shouldBeDefault && createdVehicle?.id) {
+      vehicles = await enforceShipperVehicleDefaults(normalizedShipperId, createdVehicle.id);
+      createdVehicle =
+        vehicles.find((item) => normalizeText(item.id) === normalizeText(createdVehicle.id)) ||
+        createdVehicle;
+    }
+
+    await syncPrimaryVehicleToUser(normalizedShipperId, vehicles);
+    return {
+      status: "success",
+      vehicle: createdVehicle,
+      vehicles,
+    };
+  }
+
+  async function updateKrudShipperVehicle(vehicleId, shipperId, patch = {}) {
+    const normalizedVehicleId = normalizeText(vehicleId);
+    const normalizedShipperId = normalizeText(shipperId);
+    if (!normalizedVehicleId || !normalizedShipperId) {
+      throw new Error("Thiếu mã xe hoặc mã shipper để cập nhật.");
+    }
+
+    await ensureKrudReady();
+    const updateFn = getKrudUpdateFn();
+    if (!updateFn) {
+      throw new Error("Không tìm thấy hàm KRUD update.");
+    }
+
+    const vehicles = await listKrudShipperVehicles(normalizedShipperId);
+    const existingVehicle = vehicles.find(
+      (item) => normalizeText(item.id) === normalizedVehicleId,
+    );
+    if (!existingVehicle) {
+      throw new Error("Không tìm thấy xe cần cập nhật.");
+    }
+
+    const loaiXe = normalizeVehicleKey(
+      patch.loai_xe || patch.vehicle_type || patch.loai_phuong_tien || existingVehicle.loai_xe,
+    );
+    const tenHienThi = normalizeText(
+      patch.ten_hien_thi || patch.shipper_vehicle || existingVehicle.ten_hien_thi,
+    );
+    const bienSo = normalizeLicensePlate(
+      Object.prototype.hasOwnProperty.call(patch, "bien_so") ||
+        Object.prototype.hasOwnProperty.call(patch, "license_plate")
+        ? patch.bien_so || patch.license_plate || ""
+        : existingVehicle.bien_so,
+    );
+    if (!loaiXe || !tenHienThi || !bienSo) {
+      throw new Error("Vui lòng nhập tên gợi nhớ, biển số và loại xe.");
+    }
+    if (
+      vehicles.some(
+        (item) =>
+          normalizeText(item.id) !== normalizedVehicleId &&
+          normalizeLicensePlate(item.bien_so) === bienSo,
+      )
+    ) {
+      throw new Error("Biển số xe này đã tồn tại trong danh sách của shipper.");
+    }
+
+    await updateFn(
+      ghnShipperVehicleTable,
+      {
+        id: normalizedVehicleId,
+        loai_xe: loaiXe,
+        ten_hien_thi: tenHienThi,
+        bien_so: bienSo,
+        trang_thai: normalizeVehicleStatus(
+          patch.trang_thai || existingVehicle.trang_thai,
+        ),
+        la_mac_dinh: Object.prototype.hasOwnProperty.call(patch, "la_mac_dinh")
+          ? toFlag(patch.la_mac_dinh)
+          : Number(existingVehicle.la_mac_dinh || 0),
+        updated_at: new Date().toISOString(),
+      },
+      normalizedVehicleId,
+    );
+
+    const preferredVehicleId = Object.prototype.hasOwnProperty.call(patch, "la_mac_dinh") &&
+      toFlag(patch.la_mac_dinh) === 1
+      ? normalizedVehicleId
+      : "";
+    const nextVehicles = await enforceShipperVehicleDefaults(
+      normalizedShipperId,
+      preferredVehicleId,
+    );
+    await syncPrimaryVehicleToUser(normalizedShipperId, nextVehicles);
+    return {
+      status: "success",
+      vehicle:
+        nextVehicles.find((item) => normalizeText(item.id) === normalizedVehicleId) || null,
+      vehicles: nextVehicles,
+    };
+  }
+
+  async function deleteKrudShipperVehicle(vehicleId, shipperId) {
+    const normalizedVehicleId = normalizeText(vehicleId);
+    const normalizedShipperId = normalizeText(shipperId);
+    if (!normalizedVehicleId || !normalizedShipperId) {
+      throw new Error("Thiếu mã xe hoặc mã shipper để xóa.");
+    }
+
+    await ensureKrudReady();
+    const deleteFn = getKrudDeleteFn();
+    if (!deleteFn) {
+      throw new Error("Không tìm thấy hàm KRUD delete.");
+    }
+
+    await deleteFn(ghnShipperVehicleTable, normalizedVehicleId);
+    const nextVehicles = await enforceShipperVehicleDefaults(normalizedShipperId);
+    await syncPrimaryVehicleToUser(normalizedShipperId, nextVehicles);
+    return {
+      status: "success",
+      vehicles: nextVehicles,
+    };
+  }
+
   function normalizeLoginIdentifier(value) {
     const text = normalizeText(value);
     if (!text) return "";
@@ -721,7 +1111,7 @@
     }
 
     const createdAt = new Date().toISOString();
-    const vehicleType = normalizeText(
+    const vehicleType = normalizeVehicleKey(
       payload?.vehicle_type || payload?.loai_phuong_tien || "",
     );
     const companyAddress = normalizeText(
@@ -876,8 +1266,7 @@
         normalizedPatch.shipper_address,
       loai_phuong_tien:
         normalizedPatch.loai_phuong_tien ??
-        normalizedPatch.vehicle_type ??
-        normalizedPatch.shipper_vehicle,
+        normalizedPatch.vehicle_type,
       ten_cong_ty: normalizedPatch.ten_cong_ty ?? normalizedPatch.company_name,
       ma_so_thue: normalizedPatch.ma_so_thue ?? normalizedPatch.tax_code,
       matkhau: normalizedPatch.matkhau ?? normalizedPatch.mat_khau ?? normalizedPatch.password,
@@ -896,6 +1285,10 @@
       }
       if (field === "sodienthoai") {
         payload[field] = normalizePhone(value);
+        return;
+      }
+      if (field === "loai_phuong_tien") {
+        payload[field] = normalizeVehicleKey(value);
         return;
       }
       payload[field] = typeof value === "string" ? normalizeText(value) : value;
@@ -989,9 +1382,14 @@
     krudTables: {
       customer: dvqtUserTable,
       shipper: dvqtUserTable,
+      shipper_vehicle: ghnShipperVehicleTable,
     },
     normalizeText,
     normalizePhone,
+    normalizeVehicleKey,
+    getVehicleTypeLabel,
+    mapShipperVehicleRecord,
+    pickPrimaryShipperVehicle,
     splitServiceIds,
     hasGhnProviderRole,
     getProviderServiceLabels,
@@ -1002,6 +1400,10 @@
     logout,
     getDashboardPath,
     listAllKrudUsers,
+    listKrudShipperVehicles,
+    createKrudShipperVehicle,
+    updateKrudShipperVehicle,
+    deleteKrudShipperVehicle,
     updateKrudUser,
     deleteKrudUser,
     register,

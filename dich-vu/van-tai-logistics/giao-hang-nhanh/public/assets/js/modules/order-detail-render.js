@@ -852,7 +852,12 @@
         provider.shipper_phone || provider.phone || "Chưa cập nhật";
       const providerAddress = getProviderAddress(provider, session);
       const providerVehicle =
-        provider.shipper_vehicle || provider.vehicle_type || "Chưa cập nhật";
+        provider.shipper_xe_ten ||
+        provider.shipper_vehicle ||
+        provider.vehicle_type_label ||
+        provider.vehicle_type ||
+        "Chưa cập nhật";
+      const providerPlate = provider.bien_so || provider.license_plate || "Chưa cập nhật";
       const progressMeta = getHeroProgressMeta(order);
       const totalFeeLabel = formatCurrency(
         order?.fee_breakdown?.total_fee || order.shipping_fee,
@@ -1151,6 +1156,12 @@
                       <strong>${escapeHtml(providerName)}</strong>
                       ${providerMetaLine}
                     </div>
+                  </div>
+                  <div class="standalone-order-info-list">
+                    ${renderInfoRow("Số điện thoại", providerPhone)}
+                    ${renderInfoRow("Địa chỉ", providerAddress)}
+                    ${renderInfoRow("Phương tiện", providerVehicle)}
+                    ${renderInfoRow("Biển số", providerPlate)}
                   </div>
                 </article>
                 <div class="standalone-order-provider-grid">

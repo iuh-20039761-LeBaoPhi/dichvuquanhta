@@ -60,6 +60,23 @@ const providerOrderDetailModule = (function (window, document) {
     return String(value || "").replace(/[^\d+]/g, "");
   }
 
+  function normalizeVehicleKey(value) {
+    if (typeof store.normalizeVehicleKey === "function") {
+      return store.normalizeVehicleKey(value);
+    }
+    return normalizeText(value).toLowerCase().replace(/[\s-]+/g, "_");
+  }
+
+  function getVehicleRecordKey(value) {
+    if (typeof store.getProviderVehicleRecordKey === "function") {
+      return store.getProviderVehicleRecordKey(value);
+    }
+    if (value && typeof value === "object") {
+      return normalizeText(value.id || value.local_id || "");
+    }
+    return normalizeText(value);
+  }
+
   function splitPipeValues(value) {
     return String(value || "")
       .split("|")
@@ -72,6 +89,185 @@ const providerOrderDetailModule = (function (window, document) {
       .map((item) => normalizeText(item))
       .filter(Boolean)
       .join(" | ");
+  }
+
+  function resolveRequiredVehicleKey(order) {
+    return normalizeVehicleKey(
+      order?.vehicle_key ||
+        order?.loai_xe ||
+        order?.vehicle_label ||
+        "",
+    );
+  }
+
+  function getAssignableVehicleCandidates(vehicles, requiredVehicleKey) {
+    const normalizedRequiredVehicleKey = normalizeVehicleKey(requiredVehicleKey);
+    return (Array.isArray(vehicles) ? vehicles : []).filter((vehicle) => {
+      if (!vehicle || vehicle.trang_thai !== "hoat_dong") return false;
+      if (!normalizedRequiredVehicleKey) return true;
+      return normalizeVehicleKey(vehicle.loai_xe) === normalizedRequiredVehicleKey;
+    });
+  }
+
+  function openProviderVehiclePickerDialog(orderCode, requiredVehicleKey, vehicles) {
+    return new Promise((resolve, reject) => {
+      const list = Array.isArray(vehicles) ? vehicles : [];
+      if (!list.length) {
+        reject(new Error("Không có xe khả dụng để chọn."));
+        return;
+      }
+
+      const overlay = document.createElement("div");
+      overlay.style.cssText = [
+        "position:fixed",
+        "inset:0",
+        "z-index:9999",
+        "background:rgba(15,23,42,0.52)",
+        "backdrop-filter:blur(4px)",
+        "display:flex",
+        "align-items:center",
+        "justify-content:center",
+        "padding:20px",
+      ].join(";");
+
+      const card = document.createElement("div");
+      card.style.cssText = [
+        "width:min(100%,560px)",
+        "background:#fff",
+        "border-radius:24px",
+        "padding:24px",
+        "box-shadow:0 28px 60px rgba(15,23,42,.22)",
+        "display:grid",
+        "gap:16px",
+      ].join(";");
+
+      const optionsHtml = list
+        .map(
+          (vehicle, index) => `
+            <label style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid #dbe4f0;border-radius:18px;cursor:pointer;">
+              <input type="radio" name="provider_vehicle_pick" value="${escapeHtml(getVehicleRecordKey(vehicle))}" ${index === 0 ? "checked" : ""} style="margin-top:4px;" />
+              <span style="display:flex;flex-direction:column;gap:4px;">
+                <strong style="color:#0f172a;">${escapeHtml(vehicle.ten_hien_thi || store.getProviderVehicleLabel?.(vehicle.loai_xe) || vehicle.loai_xe || "")}</strong>
+                <span style="color:#475569;">${escapeHtml(store.getProviderVehicleLabel?.(vehicle.loai_xe) || vehicle.loai_xe || "")}</span>
+                <span style="color:#475569;">Biển số: ${escapeHtml(vehicle.bien_so || "--")}</span>
+                <span style="color:#64748b;font-size:13px;">${escapeHtml(vehicle.ghi_chu || "Không có ghi chú thêm.")}</span>
+              </span>
+            </label>
+          `,
+        )
+        .join("");
+
+      card.innerHTML = `
+        <div>
+          <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#f97316;">Chọn xe thực hiện đơn</p>
+          <h2 style="margin:0 0 8px;font-size:28px;line-height:1.2;color:#0f172a;">Đơn ${escapeHtml(orderCode || "")}</h2>
+          <p style="margin:0;color:#475569;line-height:1.65;">Đơn này đang yêu cầu loại xe <strong>${escapeHtml(store.getProviderVehicleLabel?.(requiredVehicleKey) || requiredVehicleKey || "--")}</strong>. Hãy chọn xe cụ thể sẽ xử lý đơn.</p>
+        </div>
+        <div style="display:grid;gap:12px;max-height:min(52vh,420px);overflow:auto;padding-right:4px;">
+          ${optionsHtml}
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:12px;">
+          <button type="button" data-dialog-action="cancel" style="border:1px solid #cbd5e1;background:#fff;color:#0f172a;border-radius:999px;padding:12px 18px;font-weight:600;cursor:pointer;">Để sau</button>
+          <button type="button" data-dialog-action="confirm" style="border:0;background:linear-gradient(135deg,#f97316,#fb923c);color:#fff;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer;">Xác nhận xe</button>
+        </div>
+      `;
+
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+
+      const cleanup = () => {
+        if (overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      };
+
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          cleanup();
+          reject(new Error("Bạn chưa chọn xe để xử lý đơn."));
+        }
+      });
+
+      card.querySelector('[data-dialog-action="cancel"]')?.addEventListener("click", () => {
+        cleanup();
+        reject(new Error("Bạn chưa chọn xe để xử lý đơn."));
+      });
+
+      card.querySelector('[data-dialog-action="confirm"]')?.addEventListener("click", () => {
+        const selected = card.querySelector('input[name="provider_vehicle_pick"]:checked');
+        const selectedVehicle = list.find(
+          (item) => getVehicleRecordKey(item) === getVehicleRecordKey(selected?.value || ""),
+        );
+        cleanup();
+        if (!selectedVehicle) {
+          reject(new Error("Bạn chưa chọn xe để xử lý đơn."));
+          return;
+        }
+        resolve(selectedVehicle);
+      });
+    });
+  }
+
+  async function ensureAssignedVehicleForDetail(detail, action = "") {
+    if (!["accept", "start", "complete"].includes(String(action || ""))) {
+      return null;
+    }
+
+    const providerId = normalizeText(
+      currentProfile?.id || store.readIdentity?.()?.id || "",
+    );
+    if (!providerId) {
+      throw new Error("Không xác định được NCC hiện tại để gán xe.");
+    }
+
+    const vehicles =
+      typeof store.listProviderVehicles === "function"
+        ? store.listProviderVehicles(providerId)
+        : [];
+    if (!vehicles.length) {
+      throw new Error("Bạn chưa cấu hình xe xử lý đơn trong hồ sơ NCC.");
+    }
+
+    const order = detail?.order || {};
+    const requiredVehicleKey = resolveRequiredVehicleKey(order);
+    const candidates = getAssignableVehicleCandidates(vehicles, requiredVehicleKey);
+    if (!candidates.length) {
+      throw new Error(
+        `Không có xe hoạt động phù hợp với loại xe ${store.getProviderVehicleLabel?.(requiredVehicleKey) || requiredVehicleKey || "đơn hàng này"}.`,
+      );
+    }
+
+    const storedAssignment =
+      typeof store.getProviderOrderVehicleAssignment === "function"
+        ? store.getProviderOrderVehicleAssignment(providerId, order.code || order.id || "")
+        : null;
+    const matchedStoredVehicle = storedAssignment
+      ? candidates.find(
+          (item) => getVehicleRecordKey(item) === getVehicleRecordKey(storedAssignment),
+        )
+      : null;
+    if (matchedStoredVehicle) {
+      return matchedStoredVehicle;
+    }
+
+    const selectedVehicle =
+      candidates.length === 1
+        ? candidates[0]
+        : await openProviderVehiclePickerDialog(
+            order.code || order.id || "",
+            requiredVehicleKey,
+            candidates,
+          );
+
+    if (typeof store.saveProviderOrderVehicleAssignment === "function") {
+      store.saveProviderOrderVehicleAssignment(
+        providerId,
+        order.code || order.id || "",
+        selectedVehicle,
+      );
+    }
+
+    return selectedVehicle;
   }
 
   function mergeAttachmentValues(existingValues, nextValues) {
@@ -746,6 +942,9 @@ const providerOrderDetailModule = (function (window, document) {
           row?.ngay_thuc_hien || "",
           row?.ten_khung_gio_thuc_hien || row?.khung_gio_thuc_hien || "",
         ),
+        vehicle_key: normalizeVehicleKey(
+          row?.loai_xe || row?.ten_loai_xe || "",
+        ),
         vehicle_label: getBookingVehicleLabel(
           row?.loai_xe || row?.ten_loai_xe || "",
         ),
@@ -840,6 +1039,7 @@ const providerOrderDetailModule = (function (window, document) {
   }
 
   async function updateBookingAction(detail, action, payload = {}) {
+
     const order = detail?.order || {};
     if (!order.id) {
       throw new Error("Không tìm thấy id đơn hàng để cập nhật.");
@@ -849,27 +1049,30 @@ const providerOrderDetailModule = (function (window, document) {
     validateProviderBookingAction(order, action, { actor });
 
     if (["accept", "start", "complete"].includes(action)) {
-      await store.autoCancelExpiredBookings?.({ force: true });
-      const refreshedRow = await fetchBookingRowByCode(
-        resolveBookingRowCode(order),
-        { skipAutoSweep: true },
-      );
-      const latestStatus = normalizeLowerText(
-        refreshedRow?.trang_thai || refreshedRow?.status || "",
-      );
-
-      if (
-        !refreshedRow ||
-        ["cancelled", "canceled", "huy", "da_huy", "huy_bo"].includes(
-          latestStatus,
-        )
-      ) {
-        throw new Error(
-          "Yêu cầu này đã quá thời gian chờ và được hệ thống tự hủy.",
+      await ensureAssignedVehicleForDetail(detail, action);
+      if (action === "accept") {
+        await store.autoCancelExpiredBookings?.({ force: true });
+        const refreshedRow = await fetchBookingRowByCode(
+          resolveBookingRowCode(order),
+          { skipAutoSweep: true },
         );
-      }
+        const latestStatus = normalizeLowerText(
+          refreshedRow?.trang_thai || refreshedRow?.status || "",
+        );
 
-      validateProviderBookingAction(refreshedRow, action, { actor });
+        if (
+          !refreshedRow ||
+          ["cancelled", "canceled", "huy", "da_huy", "huy_bo"].includes(
+            latestStatus,
+          )
+        ) {
+          throw new Error(
+            "Yêu cầu này đã quá thời gian chờ và được hệ thống tự hủy.",
+          );
+        }
+
+        validateProviderBookingAction(refreshedRow, action, { actor });
+      }
     }
 
     await updateBookingRow(

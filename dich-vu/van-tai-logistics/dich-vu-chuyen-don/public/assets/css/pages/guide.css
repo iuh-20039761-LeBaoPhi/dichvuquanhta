@@ -20,6 +20,7 @@ body.guide-page .guide-card {
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
   backdrop-filter: blur(12px);
   box-sizing: border-box;
+  color: #2f3e46;
 }
 
 body.guide-page .hero-section {
@@ -187,6 +188,7 @@ body.guide-page .guide-status-card {
   border: 1px solid rgba(226, 232, 240, 0.9);
   padding: 22px 20px;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+  color: #2f3e46;
 }
 
 body.guide-page .logic-item {
@@ -214,6 +216,7 @@ body.guide-page .guide-note {
   margin-top: 22px;
   border-radius: 20px;
   padding: 20px 22px;
+  color: #2f3e46;
 }
 
 body.guide-page .guide-highlight {
@@ -276,6 +279,7 @@ body.guide-page .service-guide-detail {
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 251, 248, 0.96) 100%);
   padding: 24px;
+  color: #2f3e46;
 }
 
 body.guide-page .service-guide-detail.is-active {
@@ -294,6 +298,7 @@ body.guide-page .service-guide-meta-item {
   background: #f7fbf8;
   border: 1px solid rgba(45, 106, 79, 0.12);
   padding: 16px 18px;
+  color: #2f3e46;
 }
 
 body.guide-page .service-guide-meta-item span {
@@ -322,6 +327,11 @@ body.guide-page .guide-status-card small {
   color: #6b7280;
   font-size: 13px;
   line-height: 1.6;
+}
+
+body.guide-page .guide-card a:not(.step-nav-item):not(.service-guide-pill),
+body.guide-page .hero-section a:not(.step-nav-item):not(.service-guide-pill) {
+  color: #1b4332;
 }
 
 body.guide-page .guide-flow {

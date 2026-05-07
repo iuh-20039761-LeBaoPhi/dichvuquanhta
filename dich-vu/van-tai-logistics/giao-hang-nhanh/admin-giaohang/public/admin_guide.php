@@ -651,7 +651,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         <li>Thông tin người gửi, người nhận, địa chỉ và ghi chú đơn.</li>
                         <li>Cước vận chuyển, COD, khoảng cách và phương tiện.</li>
                         <li>Timeline: tạo đơn, nhận đơn, bắt đầu, hoàn thành hoặc hủy.</li>
+                        <li>Nếu đơn đã có shipper xử lý, kiểm tra thêm xe đã được gắn cho đơn qua <code>shipper_xe_id</code>, <code>shipper_xe_ten</code> hoặc biển số snapshot nếu có.</li>
                     </ul>
+                    <div class="guide-note">
+                        Từ luồng mới của shipper: một tài khoản có thể có nhiều xe, xe mặc định và trạng thái xe riêng. Nếu shipper báo không nhận được đơn,
+                        admin nên nghĩ ngay tới 3 khả năng: chưa có xe, xe đang tạm ngưng, hoặc không có xe đúng loại với <code>phuong_tien</code> của đơn.
+                    </div>
                 </section>
 
                 <section class="guide-section" id="users">
@@ -671,6 +676,10 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         Khi khóa tài khoản, hệ thống cập nhật các field như <code>trangthai</code>, <code>is_locked</code>,
                         <code>bi_khoa</code>, <code>lock_reason</code> và <code>ly_do_khoa</code>.
                     </p>
+                    <div class="guide-note">
+                        Với shipper giao hàng, field <code>vehicle_type</code> trong hồ sơ giờ chỉ còn mang tính đồng bộ nhanh từ xe mặc định.
+                        Danh sách xe thực tế được quản lý ở khu public qua trang <strong>Quản lý xe</strong>, không còn hiểu theo mô hình một tài khoản chỉ có một phương tiện như trước.
+                    </div>
                     <div class="guide-link-row">
                         <a class="guide-link" href="users_manage.php"><i class="fa-solid fa-users"></i> Mở quản lý người dùng</a>
                     </div>

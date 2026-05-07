@@ -11,7 +11,7 @@
     <title>Hướng dẫn sử dụng dịch vụ Giao Hàng Nhanh | Giao Hàng Nhanh</title>
     <meta
       name="description"
-      content="Hướng dẫn thao tác nhanh cho khách hàng Giao Hàng Nhanh từ đăng nhập, tạo đơn, theo dõi đến hoàn thành và đánh giá đơn hàng."
+      content="Hướng dẫn sử dụng dịch vụ Giao Hàng Nhanh theo đúng luồng hiện tại: tạo đơn, theo dõi đơn, nhân viên xử lý, quản lý xe và đánh giá sau hoàn thành."
     />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
@@ -32,107 +32,48 @@
       <header class="hero-section">
         <h1>Hướng dẫn sử dụng dịch vụ Giao Hàng Nhanh</h1>
         <p>
-          Tài liệu hướng dẫn chi tiết cho khách hàng theo đúng luồng đang dùng:
-          đăng nhập, tạo đơn có COD hoặc nhiều kiện hàng, theo dõi tiến độ,
-          chờ nhân viên giao hàng xử lý và gửi đánh giá sau khi hoàn thành.
+          Tài liệu hướng dẫn theo đúng luồng đang dùng: tạo đơn có COD hoặc
+          nhiều kiện hàng, theo dõi tiến độ, nhân viên giao hàng xử lý, quản lý
+          xe nhận đơn và đánh giá sau khi hoàn thành.
         </p>
 
         <nav class="step-nav guide-tab-nav" aria-label="Các bước hướng dẫn">
           <a
-            href="#dang-nhap"
-            class="step-nav-item guide-tab-trigger is-active"
-            data-guide-tab="dang-nhap"
-            >1. Đăng nhập</a
-          >
-          <a
             href="#tao-don"
-            class="step-nav-item guide-tab-trigger"
+            class="step-nav-item guide-tab-trigger is-active"
             data-guide-tab="tao-don"
-            >2. Tạo đơn</a
+            >1. Tạo đơn</a
           >
           <a
             href="#theo-doi"
             class="step-nav-item guide-tab-trigger"
             data-guide-tab="theo-doi"
-            >3. Theo dõi</a
+            >2. Khách hàng: Quản lý đơn</a
           >
           <a
             href="#xu-ly-shipper"
             class="step-nav-item guide-tab-trigger"
             data-guide-tab="xu-ly-shipper"
-            >4. Nhân viên giao hàng xử lý</a
+            >3. Nhân viên: Xử lý đơn</a
+          >
+          <a
+            href="#xac-minh-quan-ly-xe"
+            class="step-nav-item guide-tab-trigger"
+            data-guide-tab="xac-minh-quan-ly-xe"
+            >4. Xác minh & Quản lý xe</a
           >
           <a
             href="#hoan-thanh"
             class="step-nav-item guide-tab-trigger"
             data-guide-tab="hoan-thanh"
-            >5. Hoàn thành</a
-          >
-          <a
-            href="#danh-gia"
-            class="step-nav-item guide-tab-trigger"
-            data-guide-tab="danh-gia"
-            >6. Đánh giá</a
+            >5. Hoàn thành & Đánh giá</a
           >
         </nav>
       </header>
 
-      <section id="dang-nhap" class="guide-card guide-panel is-active">
+      <section id="tao-don" class="guide-card guide-panel is-active">
         <div class="section-header">
           <div class="section-number">1</div>
-          <h2 class="section-title">Đăng nhập và vào khu vực khách hàng</h2>
-        </div>
-        <p>
-          Đây là bước giúp hệ thống gắn đơn hàng với đúng tài khoản của bạn để
-          mở danh sách đơn, chi tiết từng đơn và phần đánh giá sau giao.
-        </p>
-
-        <div class="logic-grid">
-          <article class="logic-item">
-            <i class="fas fa-right-to-bracket"></i>
-            <h4>Khi nào cần đăng nhập</h4>
-            <p>
-              Khi muốn tạo đơn mới, xem danh sách đơn, mở chi tiết đơn, kiểm tra
-              COD, theo dõi trạng thái và gửi phản hồi sau giao.
-            </p>
-          </article>
-          <article class="logic-item">
-            <i class="fas fa-computer-mouse"></i>
-            <h4>Cách vào tài khoản</h4>
-            <p>
-              Nhấn <strong>Đăng nhập</strong> trên menu và làm theo hướng dẫn trên
-              màn hình. Sau khi vào thành công, menu sẽ đổi sang trạng thái tài
-              khoản của bạn.
-            </p>
-          </article>
-          <article class="logic-item">
-            <i class="fas fa-circle-check"></i>
-            <h4>Sau khi đăng nhập sẽ có gì</h4>
-            <p>
-              Bạn sẽ mở được khu tổng quan khách hàng, hồ sơ cá nhân, danh sách
-              đơn hàng và chi tiết từng đơn đã tạo.
-            </p>
-          </article>
-          <article class="logic-item">
-            <i class="fas fa-user-shield"></i>
-            <h4>Nếu chưa đăng nhập thì sao</h4>
-            <p>
-              Bạn vẫn có thể tra cứu nhanh bằng mã đơn, nhưng sẽ không theo dõi
-              được toàn bộ danh sách đơn và các thao tác riêng của tài khoản.
-            </p>
-          </article>
-        </div>
-
-        <ul class="feature-list">
-          <li>Tra cứu nhanh bằng mã đơn có thể không cần đăng nhập.</li>
-          <li>Nên đăng nhập trước nếu muốn theo dõi trọn vòng đời đơn và đánh giá sau giao.</li>
-          <li>Nếu bạn gửi hàng thường xuyên, đăng nhập trước sẽ giúp tra lại đơn cũ nhanh hơn.</li>
-        </ul>
-      </section>
-
-      <section id="tao-don" class="guide-card guide-panel">
-        <div class="section-header">
-          <div class="section-number">2</div>
           <h2 class="section-title">Tạo đơn giao hàng từ form đặt lịch</h2>
         </div>
         <p>
@@ -170,9 +111,9 @@
             <i class="fas fa-money-bill-wave"></i>
             <h4>Tiền thu hộ và thanh toán</h4>
             <p>
-              Bạn có thể nhập giá trị thu hộ, chọn người trả cước, chọn tiền
-              mặt hoặc chuyển khoản và kiểm tra các khoản phí tạm tính trước khi
-              xác nhận.
+              Bạn có thể nhập giá trị thu hộ, chọn người trả cước, chọn tiền mặt
+              hoặc chuyển khoản và kiểm tra các khoản phí tạm tính trước khi xác
+              nhận.
             </p>
           </article>
         </div>
@@ -192,7 +133,8 @@
             <h4>Phương tiện và gói cước</h4>
             <p>
               Hệ thống sẽ gợi ý phương tiện theo loại hàng, cân nặng, thể tích
-              và khoảng cách. Bạn cũng thấy gói dịch vụ đang được dùng để tính giá.
+              và khoảng cách. Bạn cũng thấy gói dịch vụ đang được dùng để tính
+              giá.
             </p>
           </article>
           <article class="logic-item">
@@ -213,7 +155,10 @@
           </article>
         </div>
 
-        <div class="guide-screenshot-grid" aria-label="Ảnh minh họa quy trình tạo đơn giao hàng nhanh">
+        <div
+          class="guide-screenshot-grid"
+          aria-label="Ảnh minh họa quy trình tạo đơn giao hàng nhanh"
+        >
           <figure class="guide-screenshot">
             <img
               src="public/assets/images/guide/giao-hang-nhanh-tao-don-thong-tin-gui-nhan-pc.png"
@@ -259,25 +204,34 @@
         </div>
 
         <ul class="feature-list">
-          <li>Nếu giá trị khai báo cao, đơn có thể phát sinh phí bảo hiểm theo cấu hình hệ thống.</li>
-          <li>Nếu dùng COD, hãy kiểm tra kỹ số tiền thu hộ để tránh sai lệch khi giao hàng.</li>
-          <li>Nếu đơn có nhiều kiện, nên khai báo từng kiện rõ ràng để hệ thống gợi ý đúng phương tiện.</li>
+          <li>
+            Nếu giá trị khai báo cao, đơn có thể phát sinh phí bảo hiểm theo cấu
+            hình hệ thống.
+          </li>
+          <li>
+            Nếu dùng COD, hãy kiểm tra kỹ số tiền thu hộ để tránh sai lệch khi
+            giao hàng.
+          </li>
+          <li>
+            Nếu đơn có nhiều kiện, nên khai báo từng kiện rõ ràng để hệ thống
+            gợi ý đúng phương tiện.
+          </li>
         </ul>
       </section>
 
       <section id="theo-doi" class="guide-card guide-panel">
         <div class="section-header">
-          <div class="section-number">3</div>
-          <h2 class="section-title">Theo dõi đơn sau khi đã tạo</h2>
+          <div class="section-number">2</div>
+          <h2 class="section-title">Khách hàng: Quản lý và theo dõi đơn hàng</h2>
         </div>
         <p>
           Sau khi đặt thành công, bạn có thể tra cứu nhanh bằng mã đơn hoặc theo
           dõi đầy đủ trong tài khoản đã đăng nhập.
         </p>
         <p>
-          <strong>Lưu ý quan trọng:</strong> Khách hàng có thể tự hủy đơn khi đơn
-          chưa được nhân viên giao hàng nhận và nút <strong>Hủy đơn</strong> vẫn
-          còn hiển thị trong trang chi tiết đơn.
+          <strong>Lưu ý:</strong> Khách hàng chỉ còn tự hủy đơn khi đơn chưa
+          được nhân viên giao hàng nhận và nút
+          <strong>Hủy đơn</strong> vẫn còn hiển thị trong chi tiết đơn hàng.
         </p>
 
         <div class="logic-grid">
@@ -354,7 +308,39 @@
           </article>
         </div>
 
-        <div class="guide-screenshot-grid" aria-label="Ảnh minh họa khách hàng theo dõi đơn giao hàng nhanh">
+        <div class="guide-check-grid">
+          <article class="guide-check-card">
+            <h4>Các trạng thái khách hàng cần hiểu</h4>
+            <ul class="guide-check-list">
+              <li><strong>Chưa được nhận:</strong> đơn đã tạo nhưng chưa có nhân viên giao hàng tiếp nhận.</li>
+              <li><strong>Đã nhận đơn:</strong> phía nhà cung cấp đã tiếp nhận và chuẩn bị xử lý.</li>
+              <li><strong>Đang giao:</strong> đơn đang ở giai đoạn giao thực tế.</li>
+              <li><strong>Hoàn thành:</strong> đơn đã giao xong và có thể mở phần đánh giá.</li>
+              <li><strong>Đã hủy:</strong> đơn không tiếp tục xử lý nữa.</li>
+            </ul>
+          </article>
+          <article class="guide-check-card">
+            <h4>Đơn chưa được nhận và quá hạn</h4>
+            <ul class="guide-check-list">
+              <li>Nếu đơn vẫn chờ tiếp nhận quá thời gian quy định, hệ thống có thể tự động hủy đơn.</li>
+              <li>Trường hợp này thường chỉ áp với đơn chưa có nhân viên giao hàng nhận xử lý.</li>
+              <li>Khi đơn đã lên trạng thái đã hủy, khách hàng vẫn xem lại được lịch sử đơn trong tài khoản.</li>
+            </ul>
+          </article>
+          <article class="guide-check-card">
+            <h4>Khi nào khách hàng không còn hủy được</h4>
+            <ul class="guide-check-list">
+              <li>Khi đơn đã được nhân viên giao hàng nhận xử lý, nút <strong>Hủy đơn</strong> thường sẽ không còn hiển thị nữa.</li>
+              <li>Khi đơn đã bắt đầu giao, khách hàng nên theo dõi tiến độ thay vì chờ thao tác hủy trực tiếp trên trang.</li>
+              <li>Sau khi hoàn thành, khách hàng chỉ còn xem chi tiết đơn và gửi đánh giá nếu hệ thống cho phép.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div
+          class="guide-screenshot-grid"
+          aria-label="Ảnh minh họa khách hàng theo dõi đơn giao hàng nhanh"
+        >
           <figure class="guide-screenshot">
             <img
               src="public/assets/images/guide/giao-hang-nhanh-khach-hang-dashboard-pc.png"
@@ -390,21 +376,30 @@
         </div>
 
         <ul class="feature-list">
-          <li>Nút <strong>Hủy đơn</strong> chỉ hiện khi bạn còn được phép tự hủy trên màn hình.</li>
-          <li>Khi đơn đã được nhận hoặc đã bắt đầu giao, bạn thường sẽ không còn hủy trực tiếp được nữa.</li>
-          <li>Khi nhân viên giao hàng đã bắt đầu giao, nên theo dõi trực tiếp trong chi tiết đơn thay vì chỉ xem tra cứu nhanh.</li>
-          <li>Nên giữ lại mã đơn để tra cứu nhanh trong trường hợp bạn chưa đăng nhập trên thiết bị đang dùng.</li>
+          <li>
+            Nên giữ lại mã đơn để tra cứu nhanh trong trường hợp bạn chưa đăng
+            nhập trên thiết bị đang dùng.
+          </li>
+          <li>
+            Khi nhân viên giao hàng đã bắt đầu giao, nên theo dõi trực tiếp
+            trong chi tiết đơn thay vì chỉ xem tra cứu nhanh.
+          </li>
+          <li>
+            Sau khi đơn đã được nhận, các mốc quan trọng nhất cần theo dõi là
+            bắt đầu giao, hoàn thành và các ghi chú phát sinh.
+          </li>
         </ul>
       </section>
 
       <section id="xu-ly-shipper" class="guide-card guide-panel">
         <div class="section-header">
-          <div class="section-number">4</div>
-          <h2 class="section-title">Các mốc nhân viên giao hàng xử lý đơn hàng</h2>
+          <div class="section-number">3</div>
+          <h2 class="section-title">Nhân viên: Xem và xử lý đơn hàng</h2>
         </div>
         <p>
-          Đây là các mốc quan trọng mà khách hàng sẽ thấy trên timeline và phần
-          trạng thái của chi tiết đơn hàng.
+          Đây là luồng làm việc của phía nhận đơn. Nhân viên giao hàng xem
+          danh sách đơn có thể xử lý, mở chi tiết đơn, nhận đơn, bắt đầu giao
+          và hoàn thành đơn theo đúng tiến độ thực tế.
         </p>
 
         <div class="service-badge-grid">
@@ -477,7 +472,8 @@
             <h4>Timeline sẽ cập nhật gì</h4>
             <p>
               Tối thiểu sẽ có mốc tạo đơn, nhận đơn, bắt đầu thực hiện, hoàn
-              thành hoặc hủy đơn. Nếu có thêm log cập nhật, timeline cũng sẽ hiển thị.
+              thành hoặc hủy đơn. Nếu có thêm log cập nhật, timeline cũng sẽ
+              hiển thị.
             </p>
           </article>
           <article class="logic-item">
@@ -492,21 +488,24 @@
             <i class="fas fa-triangle-exclamation"></i>
             <h4>Khi nào cần chú ý đặc biệt</h4>
             <p>
-              Nếu đơn đứng lâu ở trạng thái đầu, vừa đổi trạng thái hoặc có ghi
-              chú mới, bạn nên mở chi tiết đơn để đọc đầy đủ thông tin.
+              Nếu đơn đứng lâu ở trạng thái đầu, vừa đổi trạng thái hoặc có cập
+              nhật mới, bạn nên mở chi tiết đơn để đọc đầy đủ thông tin.
             </p>
           </article>
           <article class="logic-item">
             <i class="fas fa-flag-checkered"></i>
             <h4>Khi nào kết thúc luồng xử lý</h4>
             <p>
-              Luồng xử lý chỉ kết thúc khi đơn được cập nhật <strong>Hoàn
-              thành</strong> hoặc <strong>Đã hủy</strong>.
+              Luồng xử lý chỉ kết thúc khi đơn được cập nhật
+              <strong>Hoàn thành</strong> hoặc <strong>Đã hủy</strong>.
             </p>
           </article>
         </div>
 
-        <div class="guide-screenshot-grid" aria-label="Ảnh minh họa shipper xử lý đơn giao hàng nhanh">
+        <div
+          class="guide-screenshot-grid"
+          aria-label="Ảnh minh họa shipper xử lý đơn giao hàng nhanh"
+        >
           <figure class="guide-screenshot">
             <img
               src="public/assets/images/guide/giao-hang-nhanh-shipper-dashboard-pc.png"
@@ -540,17 +539,138 @@
             <figcaption>Mobile - Cập nhật trạng thái</figcaption>
           </figure>
         </div>
+
+        <div class="guide-check-grid">
+          <article class="guide-check-card">
+            <h4>Chức năng trong danh sách đơn hàng</h4>
+            <ul class="guide-check-list">
+              <li>Xem các đơn đang mở, đơn đã nhận, đơn đang giao và đơn đã hoàn thành.</li>
+              <li>Tìm lại đơn theo mã đơn, trạng thái hoặc thời gian thực hiện.</li>
+              <li>Mở chi tiết từng đơn để kiểm tra thông tin trước khi nhận xử lý.</li>
+            </ul>
+          </article>
+          <article class="guide-check-card">
+            <h4>Chức năng trong chi tiết đơn hàng</h4>
+            <ul class="guide-check-list">
+              <li>Xem thông tin gửi nhận, COD, phí, timeline và ảnh hoặc video đã đính kèm.</li>
+              <li>Nhận đơn, bắt đầu giao, hoàn thành hoặc dừng xử lý theo quyền đang có.</li>
+              <li>Cập nhật báo cáo hoặc ghi chú phát sinh để khách hàng theo dõi.</li>
+            </ul>
+          </article>
+          <article class="guide-check-card">
+            <h4>Điều kiện nhận đơn</h4>
+            <ul class="guide-check-list">
+              <li>Nhân viên giao hàng nên hoàn tất hồ sơ xác minh trước khi nhận đơn thường xuyên trên hệ thống.</li>
+              <li>Cần có xe hoạt động phù hợp với loại xe đơn hàng đang yêu cầu.</li>
+              <li>Nếu chưa có xe phù hợp hoặc xe đang tạm ngưng, hệ thống sẽ không cho nhận đơn tương ứng.</li>
+            </ul>
+          </article>
+          <article class="guide-check-card">
+            <h4>Quản lý xe nhận đơn</h4>
+            <ul class="guide-check-list">
+              <li>Mở mục <strong>Quản lý xe</strong> trong menu người dùng để thêm xe, sửa xe, đặt xe mặc định, tạm ngưng xe và xóa xe không còn sử dụng.</li>
+              <li>Xe mặc định sẽ được ưu tiên khi thao tác nhận đơn nhanh.</li>
+              <li>Nên khai báo đủ các xe đang dùng để hệ thống phản ánh đúng năng lực giao hàng thực tế.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="guide-check-grid">
+          <article class="guide-check-card">
+            <h4>Các trường hợp không thể nhận đơn</h4>
+            <ul class="guide-check-list">
+              <li>Chưa khai báo xe nào trong mục <strong>Quản lý xe</strong>.</li>
+              <li>Xe đã có nhưng đang ở trạng thái <strong>Tạm ngưng</strong>.</li>
+              <li>Loại xe hiện có không phù hợp với loại xe mà đơn đang yêu cầu.</li>
+              <li>Hồ sơ chưa đủ điều kiện để nhận đơn thường xuyên trên hệ thống.</li>
+            </ul>
+          </article>
+          <article class="guide-check-card">
+            <h4>Nếu có nhiều xe cùng phù hợp</h4>
+            <ul class="guide-check-list">
+              <li>Hệ thống sẽ cho nhân viên giao hàng chọn xe cụ thể để gắn với đơn hàng.</li>
+              <li>Xe mặc định được ưu tiên khi thao tác nhanh, nhưng vẫn phải đúng loại xe của đơn.</li>
+              <li>Một loại xe có thể có nhiều xe khác nhau, được phân biệt bằng biển số.</li>
+            </ul>
+          </article>
+          <article class="guide-check-card">
+            <h4>Sau khi đã nhận đơn</h4>
+            <ul class="guide-check-list">
+              <li>Nhân viên giao hàng vẫn tiếp tục bấm <strong>Bắt đầu</strong> và <strong>Hoàn thành</strong> theo tiến độ thực tế.</li>
+              <li>Đơn đã được nhận sẽ không còn bị coi là đơn chờ tiếp nhận ban đầu nữa.</li>
+              <li>Nếu đơn đã có người nhận, trọng tâm theo dõi sẽ chuyển sang tiến độ giao thay vì trạng thái chờ.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="xac-minh-quan-ly-xe" class="guide-card guide-panel">
+        <div class="section-header">
+          <div class="section-number">4</div>
+          <h2 class="section-title">Xác minh hồ sơ và quản lý xe</h2>
+        </div>
+        <p>
+          Để bắt đầu nhận đơn ổn định, nhân viên giao hàng cần hoàn tất hồ sơ
+          xác minh và khai báo danh sách xe nhận đơn trong mục
+          <strong>Quản lý xe</strong> của menu người dùng.
+        </p>
+
+        <div class="logic-grid">
+          <article class="logic-item">
+            <i class="fas fa-id-card"></i>
+            <h4>Xác minh hồ sơ</h4>
+            <p>
+              Cập nhật ảnh CCCD, ảnh đại diện và các thông tin định danh để hệ
+              thống cấp quyền xử lý đơn hàng.
+            </p>
+          </article>
+          <article class="logic-item">
+            <i class="fas fa-truck-fast"></i>
+            <h4>Thêm xe nhận đơn</h4>
+            <p>
+              Khai báo tên gợi nhớ, biển số và loại xe theo danh mục chuẩn để
+              khớp đúng với yêu cầu của từng đơn.
+            </p>
+          </article>
+          <article class="logic-item">
+            <i class="fas fa-star"></i>
+            <h4>Xe mặc định</h4>
+            <p>
+              Có thể đặt một xe làm mặc định để hệ thống ưu tiên chọn khi bạn
+              thao tác nhận đơn nhanh.
+            </p>
+          </article>
+          <article class="logic-item">
+            <i class="fas fa-gears"></i>
+            <h4>Trạng thái xe</h4>
+            <p>
+              Xe tạm ngưng sẽ không được dùng để nhận đơn cho tới khi được kích
+              hoạt lại.
+            </p>
+          </article>
+        </div>
+
+        <ul class="feature-list">
+          <li>Nhân viên giao hàng nên hoàn tất hồ sơ xác minh trước để tránh bị gián đoạn ở bước nhận đơn.</li>
+          <li>Xe mặc định được ưu tiên khi thao tác nhận đơn nhanh, nhưng vẫn phải phù hợp với loại xe đơn hàng yêu cầu.</li>
+          <li>Nếu xe tạm nghỉ hoặc không còn sử dụng, nên chuyển trạng thái để tránh chọn nhầm khi nhận đơn.</li>
+          <li>Nếu không có xe phù hợp với loại xe của đơn, hệ thống sẽ không cho nhận đơn.</li>
+        </ul>
+
+        <div class="guide-note">
+          Xe mặc định chỉ là xe được ưu tiên trước khi nhận đơn. Nếu xe đó đang tạm ngưng hoặc không đúng loại xe đơn hàng yêu cầu, hệ thống vẫn sẽ không cho nhận đơn bằng xe đó.
+        </div>
       </section>
 
       <section id="hoan-thanh" class="guide-card guide-panel">
         <div class="section-header">
           <div class="section-number">5</div>
-          <h2 class="section-title">Khi nào đơn được xem là hoàn thành</h2>
+          <h2 class="section-title">Hoàn thành đơn hàng và gửi đánh giá</h2>
         </div>
         <p>
-          Đây là điểm kết thúc nghiệp vụ giao hàng. Sau khi lên trạng thái này,
-          đơn không còn ở giai đoạn xử lý nữa và khách hàng được mở phần đánh
-          giá.
+          Đây là điểm kết thúc nghiệp vụ giao hàng. Sau khi lên trạng thái
+          <strong>Hoàn thành</strong>, đơn không còn ở giai đoạn xử lý nữa và
+          khách hàng được mở phần đánh giá ngay trên chi tiết đơn.
         </p>
 
         <div class="logic-grid">
@@ -580,63 +700,11 @@
             </p>
           </article>
           <article class="logic-item">
-            <i class="fas fa-receipt"></i>
-            <h4>Những phần nên đối chiếu lại</h4>
-            <p>
-              Phí vận chuyển, COD, bảo hiểm, phụ phí phát sinh, phương thức
-              thanh toán, người trả cước và các mốc hoàn tất trên timeline.
-            </p>
-          </article>
-        </div>
-
-        <ul class="feature-list">
-          <li>Nếu chưa lên hoàn thành thì phần đánh giá vẫn bị khóa.</li>
-          <li>Khi đó bạn chỉ cần chờ nhân viên giao hàng cập nhật xong trạng thái đơn hàng.</li>
-          <li>Nếu thấy đơn đã giao xong ngoài thực tế nhưng hệ thống chưa lên hoàn thành, hãy tiếp tục theo dõi trong chi tiết đơn.</li>
-        </ul>
-      </section>
-
-      <section id="danh-gia" class="guide-card guide-panel">
-        <div class="section-header">
-          <div class="section-number">6</div>
-          <h2 class="section-title">Đánh giá đơn hàng sau khi hoàn thành</h2>
-        </div>
-        <p>
-          Đây là bước cuối phía khách hàng. Form phản hồi chỉ mở khi đơn đã ở
-          trạng thái <strong>Hoàn thành</strong>.
-        </p>
-
-        <div class="logic-grid">
-          <article class="logic-item">
-            <i class="fas fa-lock-open"></i>
-            <h4>Khi nào mở được</h4>
-            <p>
-              Chỉ khi đơn hàng của bạn đã hiển thị trạng thái
-              <strong>Hoàn thành</strong>.
-            </p>
-          </article>
-          <article class="logic-item">
             <i class="fas fa-star"></i>
-            <h4>Những gì có thể gửi</h4>
+            <h4>Khách hàng có thể đánh giá gì</h4>
             <p>
-              Số sao, nội dung phản hồi, ảnh chụp và video nếu cần ghi nhận chất
-              lượng phục vụ hoặc vấn đề phát sinh.
-            </p>
-          </article>
-          <article class="logic-item">
-            <i class="fas fa-message"></i>
-            <h4>Nên viết phản hồi thế nào</h4>
-            <p>
-              Nên mô tả ngắn gọn nhưng rõ ý: giao đúng hay trễ, hàng hóa có
-              nguyên vẹn không, thái độ phục vụ ra sao và có phát sinh gì không.
-            </p>
-          </article>
-          <article class="logic-item">
-            <i class="fas fa-folder-open"></i>
-            <h4>Sau khi lưu sẽ ở đâu</h4>
-            <p>
-              Đánh giá cùng ảnh hoặc video phản hồi sẽ được lưu vào chi tiết đơn
-              để bạn và nhân viên giao hàng xem lại khi cần.
+              Số sao, nội dung phản hồi, ảnh chụp và video nếu cần ghi nhận
+              chất lượng phục vụ hoặc vấn đề phát sinh.
             </p>
           </article>
         </div>
@@ -663,7 +731,8 @@
             <h4>Nếu form vẫn bị khóa</h4>
             <p>
               Điều đó có nghĩa là hệ thống chưa ghi nhận đơn ở trạng thái
-              <strong>Hoàn thành</strong>. Bạn cần chờ cập nhật trạng thái trước.
+              <strong>Hoàn thành</strong>. Bạn cần chờ cập nhật trạng thái
+              trước.
             </p>
           </article>
           <article class="logic-item">
@@ -677,9 +746,14 @@
         </div>
 
         <ul class="feature-list">
-          <li>Kiểm tra đơn đã hiển thị trạng thái <strong>Hoàn thành</strong>.</li>
+          <li>Kiểm tra phí vận chuyển, COD, bảo hiểm, phụ phí và trạng thái thanh toán trước khi chốt đánh giá.</li>
+          <li>
+            Kiểm tra đơn đã hiển thị trạng thái <strong>Hoàn thành</strong>.
+          </li>
           <li>Chuẩn bị nội dung ngắn gọn, rõ vấn đề nếu có phát sinh.</li>
-          <li>Đính kèm ảnh hoặc video nếu cần minh chứng hiện trạng thực tế.</li>
+          <li>
+            Đính kèm ảnh hoặc video nếu cần minh chứng hiện trạng thực tế.
+          </li>
           <li>Nếu đơn chưa hoàn tất, form sẽ tiếp tục bị khóa.</li>
         </ul>
       </section>
@@ -714,7 +788,9 @@
         const panels = Array.from(document.querySelectorAll(".guide-panel"));
         const lightbox = document.getElementById("guide-image-lightbox");
         const lightboxImage = document.getElementById("guide-lightbox-image");
-        const lightboxCaption = document.getElementById("guide-lightbox-caption");
+        const lightboxCaption = document.getElementById(
+          "guide-lightbox-caption",
+        );
         const lightboxClose = lightbox?.querySelector(".guide-lightbox-close");
 
         if (!triggers.length || !panels.length) return;
@@ -767,10 +843,13 @@
           }
 
           function openLightbox(image) {
-            const caption = image.closest("figure")?.querySelector("figcaption");
+            const caption = image
+              .closest("figure")
+              ?.querySelector("figcaption");
             lightboxImage.src = image.currentSrc || image.src;
             lightboxImage.alt = image.alt || "";
-            lightboxCaption.textContent = caption?.textContent?.trim() || image.alt || "";
+            lightboxCaption.textContent =
+              caption?.textContent?.trim() || image.alt || "";
             lightbox.hidden = false;
             document.body.classList.add("guide-lightbox-open");
             lightboxClose.focus();

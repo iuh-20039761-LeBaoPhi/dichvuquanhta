@@ -93,6 +93,20 @@
     return String(value || "").replace(/\D/g, "");
   }
 
+  function normalizeVehicleKey(value) {
+    if (localAuth && typeof localAuth.normalizeVehicleKey === "function") {
+      return localAuth.normalizeVehicleKey(value);
+    }
+    return normalizeText(value).toLowerCase();
+  }
+
+  function getVehicleTypeLabel(value) {
+    if (localAuth && typeof localAuth.getVehicleTypeLabel === "function") {
+      return localAuth.getVehicleTypeLabel(value);
+    }
+    return normalizeText(value) || "Chưa cập nhật";
+  }
+
   function isSelfPlacedOrder(detail, session) {
     const order = detail?.order || {};
     const customer = detail?.customer || {};
@@ -323,6 +337,179 @@
       textarea?.focus();
       textarea?.setSelectionRange(textarea.value.length, textarea.value.length);
     });
+  }
+
+  function resolveRequiredVehicleKey(detail) {
+    const order = detail?.order || {};
+    return normalizeVehicleKey(
+      order.phuong_tien ||
+        order.required_vehicle_key ||
+        order.selectedVehicleKey ||
+        order.vehicle_type ||
+        "",
+    );
+  }
+
+  function getAssignableVehicleCandidates(vehicles, requiredVehicleKey) {
+    const list = Array.isArray(vehicles) ? vehicles : [];
+    const activeVehicles = list.filter((item) => item?.trang_thai === "hoat_dong");
+    if (!requiredVehicleKey) return activeVehicles;
+    return activeVehicles.filter(
+      (item) => normalizeVehicleKey(item?.loai_xe || "") === requiredVehicleKey,
+    );
+  }
+
+  function openShipperVehiclePickerDialog(orderCode, requiredVehicleKey, vehicles) {
+    return new Promise((resolve) => {
+      const list = Array.isArray(vehicles) ? vehicles : [];
+      const requiredLabel = getVehicleTypeLabel(requiredVehicleKey);
+      const overlay = document.createElement("div");
+      overlay.style.cssText = [
+        "position:fixed",
+        "inset:0",
+        "background:rgba(15,23,42,.52)",
+        "display:flex",
+        "align-items:center",
+        "justify-content:center",
+        "padding:20px",
+        "z-index:9999",
+      ].join(";");
+
+      const card = document.createElement("div");
+      card.style.cssText = [
+        "width:min(100%,640px)",
+        "background:#fff",
+        "border-radius:24px",
+        "box-shadow:0 32px 80px rgba(15,23,42,.24)",
+        "padding:24px",
+        "display:flex",
+        "flex-direction:column",
+        "gap:16px",
+      ].join(";");
+      const optionsHtml = list
+        .map(
+          (vehicle, index) => `
+            <label style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid #dbe4f0;border-radius:18px;cursor:pointer;">
+              <input type="radio" name="shipper_vehicle_pick" value="${escapeHtml(vehicle.id || "")}" ${index === 0 ? "checked" : ""} style="margin-top:4px;" />
+              <span style="display:flex;flex-direction:column;gap:4px;">
+                <strong style="color:#0f172a;">${escapeHtml(vehicle.ten_hien_thi || getVehicleTypeLabel(vehicle.loai_xe))}</strong>
+                <span style="color:#475569;">${escapeHtml(getVehicleTypeLabel(vehicle.loai_xe))}</span>
+                <span style="color:#475569;">Biển số: ${escapeHtml(vehicle.bien_so || "--")}</span>
+              </span>
+            </label>
+          `,
+        )
+        .join("");
+      card.innerHTML = `
+        <div>
+          <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#f97316;">Chọn xe thực hiện đơn</p>
+          <h2 style="margin:0 0 8px;font-size:28px;line-height:1.2;color:#0f172a;">Đơn ${escapeHtml(orderCode || "")}</h2>
+          <p style="margin:0;color:#64748b;">Đơn này cần <strong>${escapeHtml(requiredLabel)}</strong>. Hãy chọn đúng xe đang hoạt động của bạn để gán vào đơn.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;max-height:45vh;overflow:auto;">
+          ${optionsHtml}
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;">
+          <button type="button" data-action="cancel" class="customer-btn customer-btn-ghost">Quay lại</button>
+          <button type="button" data-action="confirm" class="customer-btn customer-btn-primary">Chọn xe này</button>
+        </div>
+      `;
+
+      const cleanup = (value) => {
+        overlay.remove();
+        resolve(value);
+      };
+
+      card.querySelector('[data-action="cancel"]')?.addEventListener("click", () => {
+        cleanup(null);
+      });
+      card.querySelector('[data-action="confirm"]')?.addEventListener("click", () => {
+        const selected = card.querySelector('input[name="shipper_vehicle_pick"]:checked');
+        const selectedId = normalizeText(selected?.value || "");
+        cleanup(
+          list.find((item) => normalizeText(item.id || "") === selectedId) || null,
+        );
+      });
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          cleanup(null);
+        }
+      });
+      window.addEventListener(
+        "keydown",
+        function handleEscape(event) {
+          if (event.key !== "Escape") return;
+          window.removeEventListener("keydown", handleEscape);
+          cleanup(null);
+        },
+        { once: true },
+      );
+
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+    });
+  }
+
+  async function ensureAssignedVehicleForDetail(detail, session) {
+    const nextDetail = normalizeDetail(detail);
+    const existingVehicleId = normalizeText(
+      nextDetail.provider?.shipper_xe_id || nextDetail.order?.shipper_xe_id || "",
+    );
+    if (existingVehicleId) {
+      return nextDetail;
+    }
+
+    if (!localAuth || typeof localAuth.listKrudShipperVehicles !== "function") {
+      throw new Error("Hệ thống xe shipper chưa sẵn sàng.");
+    }
+
+    const shipperId = normalizeText(
+      session?.id || nextDetail.provider?.shipper_id || nextDetail.provider?.provider_id || "",
+    );
+    if (!shipperId) {
+      throw new Error("Không xác định được shipper để gán xe.");
+    }
+
+    const requiredVehicleKey = resolveRequiredVehicleKey(nextDetail);
+    const vehicles = await localAuth.listKrudShipperVehicles(shipperId);
+    const candidates = getAssignableVehicleCandidates(vehicles, requiredVehicleKey);
+    if (!candidates.length) {
+      throw new Error(
+        requiredVehicleKey
+          ? `Bạn chưa có xe hoạt động phù hợp với loại ${getVehicleTypeLabel(requiredVehicleKey)}.`
+          : "Bạn chưa có xe hoạt động để nhận đơn.",
+      );
+    }
+
+    let selectedVehicle = candidates[0];
+    if (candidates.length > 1) {
+      selectedVehicle = await openShipperVehiclePickerDialog(
+        nextDetail.order?.order_code || nextDetail.order?.id || "",
+        requiredVehicleKey,
+        candidates,
+      );
+      if (!selectedVehicle) {
+        throw new Error("Bạn chưa chọn xe để gán vào đơn.");
+      }
+    }
+
+    nextDetail.provider = {
+      ...getProviderSnapshotFromSession(session, nextDetail.provider),
+      shipper_xe_id: selectedVehicle.id || "",
+      shipper_xe_ten: selectedVehicle.ten_hien_thi || "",
+      shipper_vehicle:
+        selectedVehicle.ten_hien_thi || getVehicleTypeLabel(selectedVehicle.loai_xe),
+      vehicle_type: selectedVehicle.loai_xe || "",
+      vehicle_type_label: getVehicleTypeLabel(selectedVehicle.loai_xe),
+      bien_so: selectedVehicle.bien_so || "",
+      license_plate: selectedVehicle.bien_so || "",
+    };
+    nextDetail.order = {
+      ...(nextDetail.order || {}),
+      shipper_xe_id: selectedVehicle.id || "",
+      shipper_xe_ten: selectedVehicle.ten_hien_thi || "",
+    };
+    return nextDetail;
   }
 
   function getRoot() {
@@ -660,16 +847,34 @@
       ),
       shipper_vehicle:
         provider.shipper_vehicle ||
+        provider.shipper_xe_ten ||
         provider.vehicle_type ||
         session.vehicle_type ||
         session.shipper_vehicle ||
-        "Xe máy",
+        getVehicleTypeLabel(session.vehicle_type || session.loai_phuong_tien || "xe_may"),
       vehicle_type:
         provider.vehicle_type ||
-        provider.shipper_vehicle ||
+        provider.vehicle_type_key ||
         session.vehicle_type ||
-        session.shipper_vehicle ||
-        "Xe máy",
+        session.loai_phuong_tien ||
+        "",
+      vehicle_type_label:
+        provider.vehicle_type_label ||
+        getVehicleTypeLabel(
+          provider.vehicle_type ||
+            provider.vehicle_type_key ||
+            session.vehicle_type ||
+            session.loai_phuong_tien ||
+            "",
+        ),
+      shipper_xe_id:
+        provider.shipper_xe_id ||
+        provider.assigned_vehicle_id ||
+        "",
+      shipper_xe_ten:
+        provider.shipper_xe_ten ||
+        provider.shipper_vehicle ||
+        "",
       bien_so:
         provider.bien_so ||
         provider.license_plate ||
@@ -764,6 +969,11 @@
       order.pickup_slot ||
       order.service_meta?.pickup_slot_label ||
       "";
+    order.phuong_tien =
+      order.phuong_tien ||
+      order.required_vehicle_key ||
+      order.selectedVehicleKey ||
+      "";
     order.vehicle_label =
       order.vehicle_label ||
       order.ten_phuong_tien ||
@@ -771,6 +981,13 @@
       order.phuong_tien ||
       order.service_meta?.vehicle_label ||
       "";
+    order.required_vehicle_key = normalizeVehicleKey(order.phuong_tien || order.vehicle_type || "");
+    order.shipper_xe_id = normalizeText(
+      order.shipper_xe_id || order.assigned_vehicle_id || "",
+    );
+    order.shipper_xe_ten = normalizeText(
+      order.shipper_xe_ten || order.assigned_vehicle_name || "",
+    );
     const explicitServiceLabel = normalizeText(
       order.ten_dich_vu ||
         order.service_name ||
@@ -811,10 +1028,34 @@
       order.status === "completed" ? "Đã hoàn tất" : "Chưa hoàn tất",
     );
 
+    const providerVehicleReference =
+      provider.vehicle_type ||
+      provider.vehicle_type_key ||
+      order.phuong_tien ||
+      order.required_vehicle_key ||
+      order.vehicle_type ||
+      order.ten_phuong_tien ||
+      "";
+
     return {
       order,
       provider: {
         ...provider,
+        vehicle_type: normalizeVehicleKey(providerVehicleReference),
+        vehicle_type_label: getVehicleTypeLabel(providerVehicleReference),
+        shipper_xe_id: normalizeText(
+          provider.shipper_xe_id || provider.assigned_vehicle_id || order.shipper_xe_id || "",
+        ),
+        shipper_xe_ten: normalizeText(
+          provider.shipper_xe_ten || provider.shipper_vehicle || order.shipper_xe_ten || "",
+        ),
+        shipper_vehicle: normalizeText(
+          provider.shipper_vehicle ||
+            provider.shipper_xe_ten ||
+            order.shipper_xe_ten ||
+            order.ten_phuong_tien ||
+            getVehicleTypeLabel(providerVehicleReference),
+        ),
         avatar: pickFirstText(
           provider.avatar,
           provider.photo,
@@ -858,6 +1099,223 @@
       logs,
       source: detail?.source || "local",
     };
+  }
+
+  async function hydrateProviderFromLatestProfile(detail) {
+    const normalized = normalizeDetail(detail);
+    if (!localAuth || typeof localAuth.listAllKrudUsers !== "function") {
+      return normalized;
+    }
+
+    const provider =
+      normalized?.provider && typeof normalized.provider === "object"
+        ? { ...normalized.provider }
+        : {};
+    const order =
+      normalized?.order && typeof normalized.order === "object"
+        ? normalized.order
+        : {};
+    const shipperId = normalizeText(
+      provider.shipper_id ||
+        provider.provider_id ||
+        order.shipper_id ||
+        order.ncc_id ||
+        "",
+    );
+    const shipperPhone = normalizePhone(
+      provider.shipper_phone ||
+        provider.phone ||
+        order.shipper_phone ||
+        order.nha_cung_cap_so_dien_thoai ||
+        "",
+    );
+    const providerName = normalizeText(
+      provider.shipper_name ||
+        provider.fullname ||
+        order.shipper_name ||
+        order.nha_cung_cap_ho_ten ||
+        "",
+    ).toLowerCase();
+
+    if (!shipperId && !shipperPhone && !providerName) {
+      return normalized;
+    }
+
+    try {
+      const users = await localAuth.listAllKrudUsers();
+      const latestProfile = (Array.isArray(users) ? users : []).find((user) => {
+        if (!user || user.role !== "shipper") return false;
+        const userId = normalizeText(user.id || user.remote_id || "");
+        const userPhone = normalizePhone(user.phone || user.so_dien_thoai || "");
+        const aliases = [
+          normalizeText(user.username || "").toLowerCase(),
+          normalizeText(user.fullname || "").toLowerCase(),
+          normalizeText(user.ho_ten || "").toLowerCase(),
+        ].filter(Boolean);
+
+        return Boolean(
+          (shipperId && userId && shipperId === userId) ||
+            (shipperPhone && userPhone && shipperPhone === userPhone) ||
+            (providerName && aliases.includes(providerName)),
+        );
+      });
+
+      if (!latestProfile) return normalized;
+
+      const latestVehicleReference =
+        provider.vehicle_type ||
+        provider.vehicle_type_key ||
+        latestProfile.vehicle_type ||
+        latestProfile.loai_phuong_tien ||
+        order.phuong_tien ||
+        order.required_vehicle_key ||
+        order.vehicle_type ||
+        order.ten_phuong_tien ||
+        "";
+
+      return normalizeDetail({
+        ...normalized,
+        provider: {
+          ...provider,
+          shipper_id:
+            provider.shipper_id ||
+            provider.provider_id ||
+            latestProfile.id ||
+            latestProfile.remote_id ||
+            latestProfile.username ||
+            "",
+          provider_id:
+            provider.provider_id ||
+            provider.shipper_id ||
+            latestProfile.id ||
+            latestProfile.remote_id ||
+            latestProfile.username ||
+            "",
+          shipper_name:
+            pickFirstText(
+              latestProfile.fullname,
+              latestProfile.ho_ten,
+              latestProfile.username,
+              provider.shipper_name,
+              provider.fullname,
+            ) || "",
+          fullname:
+            pickFirstText(
+              latestProfile.fullname,
+              latestProfile.ho_ten,
+              provider.fullname,
+              provider.shipper_name,
+              latestProfile.username,
+            ) || "",
+          shipper_phone:
+            pickFirstText(
+              latestProfile.phone,
+              latestProfile.so_dien_thoai,
+              provider.shipper_phone,
+              provider.phone,
+            ) || "",
+          phone:
+            pickFirstText(
+              latestProfile.phone,
+              latestProfile.so_dien_thoai,
+              provider.phone,
+              provider.shipper_phone,
+            ) || "",
+          email: pickFirstText(latestProfile.email, provider.email) || "",
+          shipper_address:
+            pickFirstText(
+              latestProfile.shipper_address,
+              latestProfile.address,
+              latestProfile.dia_chi,
+              latestProfile.company_address,
+              provider.shipper_address,
+              provider.address,
+              provider.dia_chi,
+              provider.company_address,
+            ) || "",
+          address:
+            pickFirstText(
+              latestProfile.address,
+              latestProfile.shipper_address,
+              latestProfile.dia_chi,
+              latestProfile.company_address,
+              provider.address,
+              provider.shipper_address,
+              provider.dia_chi,
+              provider.company_address,
+            ) || "",
+          vehicle_type: normalizeVehicleKey(latestVehicleReference),
+          vehicle_type_label: getVehicleTypeLabel(latestVehicleReference),
+          shipper_xe_id:
+            provider.shipper_xe_id ||
+            provider.assigned_vehicle_id ||
+            order.shipper_xe_id ||
+            "",
+          shipper_xe_ten:
+            provider.shipper_xe_ten ||
+            order.shipper_xe_ten ||
+            "",
+          shipper_vehicle:
+            pickFirstText(
+              provider.shipper_xe_ten,
+              provider.shipper_vehicle,
+              order.shipper_xe_ten,
+              latestProfile.shipper_vehicle,
+              latestProfile.vehicle_type_label,
+              order.ten_phuong_tien,
+              getVehicleTypeLabel(latestVehicleReference),
+            ) || "",
+          avatar: pickFirstText(
+            latestProfile.avatar,
+            latestProfile.link_avatar,
+            latestProfile.avatar_link,
+            provider.avatar,
+            provider.photo,
+            provider.link_avatar,
+            provider.avatar_link,
+            provider.shipper_avatar,
+            provider.ncc_avatar,
+          ),
+          photo: pickFirstText(
+            latestProfile.photo,
+            latestProfile.avatar,
+            latestProfile.link_avatar,
+            latestProfile.avatar_link,
+            provider.photo,
+            provider.avatar,
+            provider.link_avatar,
+            provider.avatar_link,
+            provider.shipper_avatar,
+            provider.ncc_avatar,
+          ),
+          link_avatar: pickFirstText(
+            latestProfile.link_avatar,
+            latestProfile.avatar_link,
+            latestProfile.avatar,
+            provider.link_avatar,
+            provider.avatar_link,
+            provider.avatar,
+            provider.photo,
+            provider.shipper_avatar,
+            provider.ncc_avatar,
+          ),
+          avatar_link: pickFirstText(
+            latestProfile.avatar_link,
+            latestProfile.link_avatar,
+            latestProfile.avatar,
+            provider.avatar_link,
+            provider.link_avatar,
+            provider.avatar,
+            provider.photo,
+            provider.shipper_avatar,
+            provider.ncc_avatar,
+          ),
+        },
+      });
+    } catch (error) {
+      console.warn("Cannot hydrate GHN provider from latest profile:", error);
+      return normalized;
+    }
   }
 
   function getAllLocalDetails() {
@@ -1320,6 +1778,11 @@
           record.phuong_tien ||
           record.vehicle_type ||
           "",
+        phuong_tien:
+          record.phuong_tien ||
+          record.selected_vehicle_key ||
+          record.vehicle_key ||
+          "",
         vehicle_type:
           record.ten_phuong_tien ||
           record.vehicle_label ||
@@ -1362,6 +1825,8 @@
             : ""),
         pricing_breakdown: record.pricing_breakdown || {},
         fee_breakdown: breakdown,
+        shipper_xe_id: record.shipper_xe_id || "",
+        shipper_xe_ten: record.shipper_xe_ten || record.shipper_vehicle || "",
         service_meta: {
           distance_km: Number(
             record.khoang_cach_km || breakdown.khoang_cach_km || 0,
@@ -1445,8 +1910,20 @@
           record.dia_chi_nha_cung_cap,
           record.company_address,
         ),
-        vehicle_type: record.shipper_vehicle || record.vehicle_type || "",
-        shipper_vehicle: record.shipper_vehicle || record.vehicle_type || "",
+        vehicle_type:
+          record.vehicle_type ||
+          record.phuong_tien ||
+          "",
+        vehicle_type_label: getVehicleTypeLabel(
+          record.vehicle_type || record.phuong_tien || "",
+        ),
+        shipper_xe_id: record.shipper_xe_id || "",
+        shipper_xe_ten: record.shipper_xe_ten || record.shipper_vehicle || "",
+        shipper_vehicle:
+          record.shipper_xe_ten ||
+          record.shipper_vehicle ||
+          record.vehicle_type ||
+          "",
         bien_so: record.bien_so || "",
         attachments,
         shipper_reports: parseJsonSafe(
@@ -2134,9 +2611,23 @@
       du_kien_giao_hang: order.estimated_delivery || "",
       estimated_delivery: order.estimated_delivery || "",
       ten_khung_gio_lay_hang: order.pickup_slot_label || "",
+      phuong_tien: order.required_vehicle_key || order.phuong_tien || "",
       ten_phuong_tien: order.vehicle_label || order.vehicle_type || "",
-      shipper_vehicle: provider.shipper_vehicle || provider.vehicle_type || "",
-      vehicle_type: provider.vehicle_type || provider.shipper_vehicle || "",
+      shipper_xe_id: provider.shipper_xe_id || order.shipper_xe_id || "",
+      shipper_xe_ten:
+        provider.shipper_xe_ten ||
+        provider.shipper_vehicle ||
+        order.shipper_xe_ten ||
+        "",
+      shipper_vehicle:
+        provider.shipper_xe_ten ||
+        provider.shipper_vehicle ||
+        provider.vehicle_type_label ||
+        provider.vehicle_type ||
+        "",
+      vehicle_type: provider.vehicle_type || "",
+      vehicle_type_label:
+        provider.vehicle_type_label || getVehicleTypeLabel(provider.vehicle_type || ""),
       bien_so: provider.bien_so || provider.license_plate || "",
     };
 
@@ -2226,7 +2717,7 @@
 
     try {
       const now = new Date().toISOString();
-      const nextDetail = normalizeDetail(currentDetail);
+      let nextDetail = normalizeDetail(currentDetail);
       const nextOrder = { ...(nextDetail.order || {}) };
       const oldStatusLabel =
         nextOrder.status_label || getStatusLabel(nextOrder);
@@ -2259,6 +2750,9 @@
         if (isSelfPlacedOrder(nextDetail, currentSession)) {
           throw new Error("Bạn không thể nhận đơn hàng do chính mình đặt.");
         }
+        nextDetail = await ensureAssignedVehicleForDetail(nextDetail, currentSession);
+        nextOrder.shipper_xe_id = nextDetail.order?.shipper_xe_id || "";
+        nextOrder.shipper_xe_ten = nextDetail.order?.shipper_xe_ten || "";
         nextOrder.thoidiemnhandon = nextOrder.thoidiemnhandon || now;
         nextOrder.ngaynhan = nextOrder.ngaynhan || now;
         nextOrder.status = "pending";
@@ -2282,6 +2776,9 @@
       }
 
       if (action === "start") {
+        nextDetail = await ensureAssignedVehicleForDetail(nextDetail, currentSession);
+        nextOrder.shipper_xe_id = nextDetail.order?.shipper_xe_id || "";
+        nextOrder.shipper_xe_ten = nextDetail.order?.shipper_xe_ten || "";
         nextOrder.ngaybatdauthucte = nextOrder.ngaybatdauthucte || now;
         nextOrder.status = "shipping";
         nextOrder.status_label = "Đang giao";
@@ -2304,6 +2801,9 @@
       }
 
       if (action === "complete") {
+        nextDetail = await ensureAssignedVehicleForDetail(nextDetail, currentSession);
+        nextOrder.shipper_xe_id = nextDetail.order?.shipper_xe_id || "";
+        nextOrder.shipper_xe_ten = nextDetail.order?.shipper_xe_ten || "";
         nextOrder.ngayhoanthanhthucte = nextOrder.ngayhoanthanhthucte || now;
         nextOrder.status = "completed";
         nextOrder.status_label = "Hoàn thành";
@@ -2353,7 +2853,7 @@
           ? krudBreakdown
           : localBreakdown;
 
-      return normalizeDetail({
+      return hydrateProviderFromLatestProfile({
         ...normalizedLocal,
         ...normalizedKrud,
         order: {
@@ -2459,8 +2959,8 @@
       });
     }
 
-    if (krudDetail) return krudDetail;
-    if (localDetail) return localDetail;
+    if (krudDetail) return hydrateProviderFromLatestProfile(krudDetail);
+    if (localDetail) return hydrateProviderFromLatestProfile(localDetail);
     throw new Error("Không tìm thấy đơn hàng phù hợp.");
   }
 

@@ -47,8 +47,17 @@ const providerProfileModule = (function (window, document) {
     return Number.isFinite(amount) ? amount.toLocaleString("vi-VN") : "0";
   }
 
+  function getProjectUrl(path) {
+    return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
+  }
+
   function getProfileInitial(name) {
-    return String(name || "").trim().charAt(0).toUpperCase() || "N";
+    return (
+      String(name || "")
+        .trim()
+        .charAt(0)
+        .toUpperCase() || "N"
+    );
   }
 
   function resolveMediaUrl(value) {
@@ -70,7 +79,9 @@ const providerProfileModule = (function (window, document) {
   }
 
   function getStatusMeta(profile) {
-    const status = String(profile?.trangthai || "active").trim().toLowerCase();
+    const status = String(profile?.trangthai || "active")
+      .trim()
+      .toLowerCase();
     if (["pending", "waiting"].includes(status)) {
       return {
         label: "Chờ xác minh",
@@ -115,6 +126,98 @@ const providerProfileModule = (function (window, document) {
     `;
   }
 
+  function getVehicleLabel(value) {
+    if (typeof store.getProviderVehicleLabel === "function") {
+      return store.getProviderVehicleLabel(value);
+    }
+    return String(value || "").trim() || "Chưa cập nhật";
+  }
+
+  function getVehicleRecordKey(value) {
+    if (typeof store.getProviderVehicleRecordKey === "function") {
+      return store.getProviderVehicleRecordKey(value);
+    }
+    if (value && typeof value === "object") {
+      return String(value.id || value.local_id || "").trim();
+    }
+    return String(value || "").trim();
+  }
+
+  function buildVehicleSelectOptions(catalog, selectedValue) {
+    const selectedKey =
+      typeof store.normalizeVehicleKey === "function"
+        ? store.normalizeVehicleKey(selectedValue)
+        : String(selectedValue || "")
+            .trim()
+            .toLowerCase();
+    return (Array.isArray(catalog) ? catalog : [])
+      .map((item) => {
+        const key = String(item?.key || "").trim();
+        const label = String(item?.label || "").trim();
+        if (!key || !label) return "";
+        return `<option value="${escapeHtml(key)}" ${
+          key === selectedKey ? "selected" : ""
+        }>${escapeHtml(label)}</option>`;
+      })
+      .filter(Boolean)
+      .join("");
+  }
+
+  function renderProviderVehicleCards(vehicles) {
+    const list = Array.isArray(vehicles) ? vehicles : [];
+    if (!list.length) {
+      return `
+        <div class="customer-empty">
+          Chưa có xe nào cho NCC này. Hãy thêm ít nhất 1 xe để kiểm soát phương tiện xử lý đơn.
+        </div>
+      `;
+    }
+
+    return list
+      .map((vehicle) => {
+        const isActive = vehicle.trang_thai === "hoat_dong";
+        return `
+          <article class="customer-profile-card">
+            <div class="customer-profile-card-head">
+              <i class="fas fa-truck-fast"></i>
+              <h3>${escapeHtml(vehicle.ten_hien_thi || getVehicleLabel(vehicle.loai_xe))}</h3>
+            </div>
+            <div class="customer-active-filters">
+              <span class="customer-chip customer-chip-muted">${escapeHtml(getVehicleLabel(vehicle.loai_xe))}</span>
+              <span class="customer-chip customer-chip-muted">${escapeHtml(vehicle.bien_so || "Chưa có biển số")}</span>
+              <span class="customer-chip customer-chip-muted">${escapeHtml(isActive ? "Hoạt động" : "Tạm ngưng")}</span>
+              ${
+                Number(vehicle.la_mac_dinh || 0) === 1
+                  ? '<span class="customer-chip customer-chip-muted">Mặc định</span>'
+                  : ""
+              }
+            </div>
+            <div class="customer-profile-fact-list">
+              <div><span>Biển số</span><strong>${escapeHtml(vehicle.bien_so || "--")}</strong></div>
+              <div><span>Loại xe</span><strong>${escapeHtml(getVehicleLabel(vehicle.loai_xe))}</strong></div>
+              <div><span>Trạng thái</span><strong>${escapeHtml(isActive ? "Hoạt động" : "Tạm ngưng")}</strong></div>
+              <div><span>Ghi chú</span><strong>${escapeHtml(vehicle.ghi_chu || "--")}</strong></div>
+            </div>
+            <div class="customer-inline-actions">
+              <button type="button" class="customer-btn customer-btn-ghost customer-btn-sm" data-vehicle-action="edit" data-vehicle-id="${escapeHtml(getVehicleRecordKey(vehicle))}">
+                Sửa
+              </button>
+              <button type="button" class="customer-btn customer-btn-ghost customer-btn-sm" data-vehicle-action="default" data-vehicle-id="${escapeHtml(getVehicleRecordKey(vehicle))}">
+                Đặt mặc định
+              </button>
+              <button type="button" class="customer-btn customer-btn-ghost customer-btn-sm" data-vehicle-action="toggle-status" data-vehicle-id="${escapeHtml(getVehicleRecordKey(vehicle))}" data-next-status="${escapeHtml(isActive ? "tam_ngung" : "hoat_dong")}">
+                ${isActive ? "Tạm ngưng" : "Kích hoạt"}
+              </button>
+              <button type="button" class="customer-btn customer-btn-danger customer-btn-sm" data-vehicle-action="delete" data-vehicle-id="${escapeHtml(getVehicleRecordKey(vehicle))}">
+                Xóa
+              </button>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
   function bindMediaPreview(inputId, previewId, emptyId) {
     const input = root.querySelector(`#${inputId}`);
     const preview = root.querySelector(`#${previewId}`);
@@ -128,7 +231,11 @@ const providerProfileModule = (function (window, document) {
 
     preview.addEventListener("error", showEmptyState);
 
-    if (preview.complete && preview.getAttribute("src") && !preview.naturalWidth) {
+    if (
+      preview.complete &&
+      preview.getAttribute("src") &&
+      !preview.naturalWidth
+    ) {
       showEmptyState();
     }
 
@@ -162,7 +269,8 @@ const providerProfileModule = (function (window, document) {
     }
 
     const canUseProviderPortal =
-      store.hasProviderCapability?.(data.profile || store.readIdentity?.()) || false;
+      store.hasProviderCapability?.(data.profile || store.readIdentity?.()) ||
+      false;
     if (!canUseProviderPortal) {
       window.location.href = core.getSharedLoginUrl({
         redirect: core.getCurrentRelativeUrl(),
@@ -172,20 +280,45 @@ const providerProfileModule = (function (window, document) {
 
     const identity = data.profile;
     const stats = data.stats || {};
+    const vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
+    const primaryVehicle =
+      data.primaryVehicle ||
+      (typeof store.pickPrimaryProviderVehicle === "function"
+        ? store.pickPrimaryProviderVehicle(vehicles)
+        : vehicles[0] || null);
+    const vehicleCatalog = Array.isArray(data.vehicleCatalog)
+      ? data.vehicleCatalog
+      : [];
     const displayName = store.getDisplayName(identity);
     const phone = String(identity.sodienthoai || "").trim();
     const email = String(identity.email || "").trim();
     const address = String(identity.diachi || identity.dia_chi || "").trim();
-    const companyName = String(identity.ten_cong_ty || identity.company_name || "").trim();
-    const taxCode = String(identity.ma_so_thue || identity.tax_code || "").trim();
+    const companyName = String(
+      identity.ten_cong_ty || identity.company_name || "",
+    ).trim();
+    const taxCode = String(
+      identity.ma_so_thue || identity.tax_code || "",
+    ).trim();
     const businessAddress = String(
       identity.dia_chi_doanh_nghiep || identity.diachidonvi || "",
     ).trim();
-    const vehicleType = String(identity.loai_phuong_tien || identity.vehicle_type || "").trim();
+    const vehicleType = String(
+      primaryVehicle?.loai_xe ||
+        identity.loai_phuong_tien ||
+        identity.vehicle_type ||
+        "",
+    ).trim();
+    const defaultVehicleText = primaryVehicle?.ten_hien_thi || "Chưa cấu hình";
+    const activeVehicles = vehicles.filter(
+      (item) => item?.trang_thai === "hoat_dong",
+    ).length;
+    const pausedVehicles = Math.max(vehicles.length - activeVehicles, 0);
     const avatarUrl = resolveMediaUrl(identity.link_avatar);
     const cccdFrontUrl = resolveMediaUrl(identity.link_cccd_truoc);
     const cccdBackUrl = resolveMediaUrl(identity.link_cccd_sau);
-    const createdAtLabel = formatDateTime(identity.created_at || identity.updated_at || "");
+    const createdAtLabel = formatDateTime(
+      identity.created_at || identity.updated_at || "",
+    );
     const statusMeta = getStatusMeta(identity);
     const initial = getProfileInitial(displayName);
 
@@ -208,8 +341,6 @@ const providerProfileModule = (function (window, document) {
                 <p class="customer-profile-eyebrow">Hồ sơ cá nhân</p>
                 <h2>${escapeHtml(displayName)}</h2>
                 <div class="customer-profile-meta-list">
-                  <span><i class="fas fa-id-badge"></i> ${escapeHtml(phone || "Nhà cung cấp")}</span>
-                  <span><i class="fas fa-truck-fast"></i> ${escapeHtml(vehicleType || "Chưa cập nhật phương tiện")}</span>
                   <span><i class="fas fa-clock"></i> Đồng bộ: ${escapeHtml(createdAtLabel)}</span>
                 </div>
               </div>
@@ -232,6 +363,7 @@ const providerProfileModule = (function (window, document) {
                     <h3>Thông tin hành nghề</h3>
                   </div>
                   <div id="provider-profile-feedback"></div>
+                  <input type="hidden" name="loai_phuong_tien" value="${escapeHtml(vehicleType)}" />
                   <div class="customer-profile-form-grid">
                     <div class="customer-form-group">
                       <span>Họ và tên</span>
@@ -252,13 +384,6 @@ const providerProfileModule = (function (window, document) {
                       <div class="customer-form-field">
                         <i class="fas fa-envelope"></i>
                         <input name="email" type="email" value="${escapeHtml(email)}" placeholder="provider@example.com" />
-                      </div>
-                    </div>
-                    <div class="customer-form-group">
-                      <span>Loại phương tiện</span>
-                      <div class="customer-form-field">
-                        <i class="fas fa-truck"></i>
-                        <input name="loai_phuong_tien" value="${escapeHtml(vehicleType)}" placeholder="Ví dụ: Xe tải nhỏ, xe bán tải..." />
                       </div>
                     </div>
                     <div class="customer-form-group customer-form-group-wide">
@@ -332,7 +457,22 @@ const providerProfileModule = (function (window, document) {
                     </article>
                   </div>
                 </article>
+
               </form>
+                <article class="customer-profile-card">
+                  <div class="customer-profile-card-head">
+                    <i class="fas fa-truck-fast"></i>
+                    <h3>Quản lý xe xử lý đơn</h3>
+                  </div>
+                  <p class="customer-panel-subtext">
+                    Danh sách xe xử lý đơn đã được tách sang trang riêng để bạn dễ quản lý, chỉnh trạng thái và chọn xe mặc định.
+                  </p>
+                  <div class="customer-inline-actions">
+                    <a class="customer-btn customer-btn-primary" href="${escapeHtml(getProjectUrl("nha-cung-cap/quan-ly-xe-chuyendon.html"))}">
+                      <i class="fas fa-truck-fast"></i> Mở trang quản lý xe
+                    </a>
+                  </div>
+                </article>
             </div>
 
             <aside class="customer-profile-side-column">
@@ -351,12 +491,13 @@ const providerProfileModule = (function (window, document) {
               <article class="customer-profile-card">
                 <div class="customer-profile-card-head">
                   <i class="fas fa-route"></i>
-                  <h3>Tóm tắt phương tiện</h3>
+                  <h3>Tình trạng xe</h3>
                 </div>
-                <div class="customer-profile-fact-list">
-                  <div><span>Trạng thái</span><strong>${escapeHtml(statusMeta.label)}</strong></div>
-                  <div><span>Loại phương tiện</span><strong>${escapeHtml(vehicleType || "Chưa cập nhật")}</strong></div>
-                  <div><span>Email</span><strong>${escapeHtml(email || "Chưa cập nhật")}</strong></div>
+              <div class="customer-profile-fact-list">
+                  <div><span>Xe mặc định</span><strong>${escapeHtml(defaultVehicleText)}</strong></div>
+                  <div><span>Tổng số xe</span><strong>${escapeHtml(String(vehicles.length))}</strong></div>
+                  <div><span>Xe hoạt động</span><strong>${escapeHtml(String(activeVehicles))}</strong></div>
+                  <div><span>Xe tạm ngưng</span><strong>${escapeHtml(String(pausedVehicles))}</strong></div>
                 </div>
               </article>
 
@@ -434,10 +575,16 @@ const providerProfileModule = (function (window, document) {
 
     const profileForm = root.querySelector("#provider-profile-form");
     const profileFeedback = root.querySelector("#provider-profile-feedback");
+    const vehicleForm = root.querySelector("#provider-vehicle-form");
+    const vehicleList = root.querySelector("#provider-vehicle-list");
     const passwordForm = root.querySelector("#provider-password-form");
     const passwordFeedback = root.querySelector("#provider-password-feedback");
 
-    bindMediaPreview("provider-avatar-file", "provider-avatar-preview", "provider-avatar-empty");
+    bindMediaPreview(
+      "provider-avatar-file",
+      "provider-avatar-preview",
+      "provider-avatar-empty",
+    );
     bindMediaPreview(
       "provider-cccd-front-file",
       "provider-cccd-front-preview",
@@ -448,6 +595,222 @@ const providerProfileModule = (function (window, document) {
       "provider-cccd-back-preview",
       "provider-cccd-back-empty",
     );
+
+    const reloadProfileView = async () => {
+      const dashboard = await store.fetchDashboard?.();
+      const nextProfile = dashboard?.profile || null;
+      const nextVehicles =
+        nextProfile && typeof store.listProviderVehicles === "function"
+          ? store.listProviderVehicles(nextProfile.id)
+          : [];
+      const nextCatalog =
+        typeof store.listProviderVehicleCatalog === "function"
+          ? await store.listProviderVehicleCatalog()
+          : vehicleCatalog;
+      renderProfile({
+        profile: nextProfile,
+        stats: dashboard?.stats || {},
+        vehicles: nextVehicles,
+        primaryVehicle:
+          typeof store.pickPrimaryProviderVehicle === "function"
+            ? store.pickPrimaryProviderVehicle(nextVehicles)
+            : nextVehicles[0] || null,
+        vehicleCatalog: nextCatalog,
+      });
+    };
+
+    if (vehicleForm && vehicleList) {
+      const vehicleIndex = new Map(
+        vehicles.map((item) => [getVehicleRecordKey(item), item]),
+      );
+      const vehicleIdInput = vehicleForm.querySelector(
+        'input[name="vehicle_id"]',
+      );
+      const vehicleNameInput = vehicleForm.querySelector(
+        'input[name="ten_hien_thi"]',
+      );
+      const vehiclePlateInput = vehicleForm.querySelector(
+        'input[name="bien_so"]',
+      );
+      const vehicleTypeSelect = vehicleForm.querySelector(
+        'select[name="loai_xe"]',
+      );
+      const vehicleStatusSelect = vehicleForm.querySelector(
+        'select[name="trang_thai"]',
+      );
+      const vehicleNoteInput = vehicleForm.querySelector(
+        'input[name="ghi_chu"]',
+      );
+      const vehicleDefaultInput = vehicleForm.querySelector(
+        'input[name="la_mac_dinh"]',
+      );
+      const vehicleSubmitButton = root.querySelector(
+        "#provider-vehicle-submit-btn",
+      );
+      const vehicleCancelButton = root.querySelector(
+        "#provider-vehicle-cancel-btn",
+      );
+
+      const resetVehicleForm = () => {
+        if (vehicleIdInput) vehicleIdInput.value = "";
+        if (vehicleNameInput) vehicleNameInput.value = "";
+        if (vehiclePlateInput) vehiclePlateInput.value = "";
+        if (vehicleTypeSelect) {
+          vehicleTypeSelect.value =
+            primaryVehicle?.loai_xe ||
+            vehicleType ||
+            vehicleCatalog[0]?.key ||
+            "";
+        }
+        if (vehicleStatusSelect) {
+          vehicleStatusSelect.value = "hoat_dong";
+        }
+        if (vehicleNoteInput) vehicleNoteInput.value = "";
+        if (vehicleDefaultInput) {
+          vehicleDefaultInput.checked = vehicles.length === 0;
+        }
+        if (vehicleSubmitButton) {
+          vehicleSubmitButton.innerHTML = '<i class="fas fa-plus"></i> Thêm xe';
+          vehicleSubmitButton.disabled = false;
+        }
+        if (vehicleCancelButton) {
+          vehicleCancelButton.hidden = true;
+        }
+      };
+
+      resetVehicleForm();
+
+      vehicleSubmitButton?.addEventListener("click", async function () {
+        if (
+          (vehicleNameInput && typeof vehicleNameInput.reportValidity === "function" && !vehicleNameInput.reportValidity()) ||
+          (vehiclePlateInput && typeof vehiclePlateInput.reportValidity === "function" && !vehiclePlateInput.reportValidity()) ||
+          (vehicleTypeSelect && typeof vehicleTypeSelect.reportValidity === "function" && !vehicleTypeSelect.reportValidity())
+        ) {
+          return;
+        }
+
+        const payload = {
+          ten_hien_thi: String(vehicleNameInput?.value || "").trim(),
+          bien_so: String(vehiclePlateInput?.value || "").trim(),
+          loai_xe: String(vehicleTypeSelect?.value || "").trim(),
+          trang_thai: String(vehicleStatusSelect?.value || "hoat_dong").trim(),
+          la_mac_dinh: vehicleDefaultInput?.checked ? "1" : "",
+          ghi_chu: String(vehicleNoteInput?.value || "").trim(),
+        };
+
+        try {
+          if (vehicleSubmitButton) {
+            vehicleSubmitButton.disabled = true;
+            vehicleSubmitButton.innerHTML =
+              '<i class="fas fa-spinner fa-spin"></i> Đang lưu xe';
+          }
+
+          if (vehicleIdInput?.value) {
+            await store.updateProviderVehicle?.(
+              vehicleIdInput.value,
+              identity.id,
+              payload,
+            );
+          } else {
+            await store.createProviderVehicle?.(identity.id, payload);
+          }
+
+          core.notify?.(
+            vehicleIdInput?.value ? "Đã cập nhật xe." : "Đã thêm xe mới.",
+            "success",
+          );
+          await reloadProfileView();
+        } catch (error) {
+          console.error("Cannot save moving provider vehicle:", error);
+          core.notify?.(error?.message || "Không thể lưu xe lúc này.", "error");
+          if (vehicleSubmitButton) {
+            vehicleSubmitButton.disabled = false;
+            vehicleSubmitButton.innerHTML = vehicleIdInput?.value
+              ? '<i class="fas fa-save"></i> Cập nhật xe'
+              : '<i class="fas fa-plus"></i> Thêm xe';
+          }
+        }
+      });
+
+      vehicleCancelButton?.addEventListener("click", resetVehicleForm);
+
+      vehicleList.addEventListener("click", async function (event) {
+        const button = event.target.closest("[data-vehicle-action]");
+        if (!button) return;
+        const vehicleId = String(button.getAttribute("data-vehicle-id") || "");
+        const actionName = String(
+          button.getAttribute("data-vehicle-action") || "",
+        );
+        const vehicle = vehicleIndex.get(vehicleId);
+        if (!vehicle) {
+          core.notify?.("Không tìm thấy xe để xử lý.", "error");
+          return;
+        }
+
+        if (actionName === "edit") {
+          if (vehicleIdInput) vehicleIdInput.value = getVehicleRecordKey(vehicle);
+          if (vehicleNameInput)
+            vehicleNameInput.value = vehicle.ten_hien_thi || "";
+          if (vehiclePlateInput)
+            vehiclePlateInput.value = vehicle.bien_so || "";
+          if (vehicleTypeSelect)
+            vehicleTypeSelect.value = vehicle.loai_xe || "";
+          if (vehicleStatusSelect)
+            vehicleStatusSelect.value = vehicle.trang_thai || "hoat_dong";
+          if (vehicleNoteInput) vehicleNoteInput.value = vehicle.ghi_chu || "";
+          if (vehicleDefaultInput) {
+            vehicleDefaultInput.checked =
+              Number(vehicle.la_mac_dinh || 0) === 1;
+          }
+          if (vehicleSubmitButton) {
+            vehicleSubmitButton.innerHTML =
+              '<i class="fas fa-save"></i> Cập nhật xe';
+          }
+          if (vehicleCancelButton) {
+            vehicleCancelButton.hidden = false;
+          }
+          vehicleNameInput?.focus();
+          return;
+        }
+
+        try {
+          if (actionName === "delete") {
+            const confirmed = window.confirm(
+              `Xóa xe "${vehicle.ten_hien_thi}" khỏi danh sách xử lý đơn?`,
+            );
+            if (!confirmed) return;
+            await store.deleteProviderVehicle?.(getVehicleRecordKey(vehicle), identity.id);
+            core.notify?.("Đã xóa xe.", "success");
+            await reloadProfileView();
+            return;
+          }
+
+          if (actionName === "default") {
+            await store.updateProviderVehicle?.(getVehicleRecordKey(vehicle), identity.id, {
+              la_mac_dinh: 1,
+            });
+            core.notify?.("Đã đặt xe mặc định.", "success");
+            await reloadProfileView();
+            return;
+          }
+
+          if (actionName === "toggle-status") {
+            await store.updateProviderVehicle?.(getVehicleRecordKey(vehicle), identity.id, {
+              trang_thai:
+                button.getAttribute("data-next-status") || "hoat_dong",
+            });
+            core.notify?.("Đã cập nhật trạng thái xe.", "success");
+            await reloadProfileView();
+          }
+        } catch (error) {
+          console.error("Cannot update moving provider vehicle action:", error);
+          core.notify?.(
+            error?.message || "Không thể xử lý xe lúc này.",
+            "error",
+          );
+        }
+      });
+    }
 
     profileForm?.addEventListener("submit", async function (event) {
       event.preventDefault();
@@ -469,7 +832,8 @@ const providerProfileModule = (function (window, document) {
       try {
         if (submitButton) {
           submitButton.disabled = true;
-          submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu hồ sơ';
+          submitButton.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Đang lưu hồ sơ';
         }
         if (store.updateProfile) {
           const profile = await store.updateProfile({
@@ -482,7 +846,9 @@ const providerProfileModule = (function (window, document) {
             dia_chi_doanh_nghiep: String(
               formData.get("dia_chi_doanh_nghiep") || "",
             ).trim(),
-            loai_phuong_tien: String(formData.get("loai_phuong_tien") || "").trim(),
+            loai_phuong_tien: String(
+              formData.get("loai_phuong_tien") || "",
+            ).trim(),
             avatar_file: formData.get("avatar_file"),
             cccd_front_file: formData.get("cccd_front_file"),
             cccd_back_file: formData.get("cccd_back_file"),
@@ -493,7 +859,10 @@ const providerProfileModule = (function (window, document) {
             warning ? "warning" : "success",
             warning || "Đã cập nhật hồ sơ nhà cung cấp.",
           );
-          window.setTimeout(() => renderProfile({ profile, stats }), warning ? 1600 : 300);
+          window.setTimeout(
+            () => renderProfile({ profile, stats }),
+            warning ? 1600 : 300,
+          );
           return;
         }
       } catch (error) {
@@ -511,23 +880,39 @@ const providerProfileModule = (function (window, document) {
         }
       }
 
-      showFeedback(profileFeedback, "error", "Không thể cập nhật hồ sơ nhà cung cấp.");
+      showFeedback(
+        profileFeedback,
+        "error",
+        "Không thể cập nhật hồ sơ nhà cung cấp.",
+      );
     });
 
     passwordForm?.addEventListener("submit", async function (event) {
       event.preventDefault();
       const formData = new FormData(passwordForm);
-      const currentPassword = String(formData.get("current_password") || "").trim();
+      const currentPassword = String(
+        formData.get("current_password") || "",
+      ).trim();
       const newPassword = String(formData.get("new_password") || "").trim();
-      const confirmPassword = String(formData.get("confirm_password") || "").trim();
+      const confirmPassword = String(
+        formData.get("confirm_password") || "",
+      ).trim();
 
       if (!currentPassword || !newPassword || !confirmPassword) {
-        showFeedback(passwordFeedback, "error", "Vui lòng nhập đủ ba trường mật khẩu.");
+        showFeedback(
+          passwordFeedback,
+          "error",
+          "Vui lòng nhập đủ ba trường mật khẩu.",
+        );
         return;
       }
 
       if (newPassword.length < 8) {
-        showFeedback(passwordFeedback, "error", "Mật khẩu mới cần ít nhất 8 ký tự.");
+        showFeedback(
+          passwordFeedback,
+          "error",
+          "Mật khẩu mới cần ít nhất 8 ký tự.",
+        );
         return;
       }
 
@@ -549,7 +934,11 @@ const providerProfileModule = (function (window, document) {
         }
       } catch (error) {
         console.error("Cannot change provider password store:", error);
-        showFeedback(passwordFeedback, "error", error.message || "Không thể đổi mật khẩu.");
+        showFeedback(
+          passwordFeedback,
+          "error",
+          error.message || "Không thể đổi mật khẩu.",
+        );
         return;
       }
 
@@ -560,9 +949,24 @@ const providerProfileModule = (function (window, document) {
   (async function bootstrapProfile() {
     try {
       const dashboard = await store.fetchDashboard?.();
+      const profile = dashboard?.profile || null;
+      const vehicles =
+        profile && typeof store.listProviderVehicles === "function"
+          ? store.listProviderVehicles(profile.id)
+          : [];
+      const vehicleCatalog =
+        typeof store.listProviderVehicleCatalog === "function"
+          ? await store.listProviderVehicleCatalog()
+          : [];
       renderProfile({
-        profile: dashboard?.profile || null,
+        profile,
         stats: dashboard?.stats || {},
+        vehicles,
+        primaryVehicle:
+          typeof store.pickPrimaryProviderVehicle === "function"
+            ? store.pickPrimaryProviderVehicle(vehicles)
+            : vehicles[0] || null,
+        vehicleCatalog,
       });
     } catch (error) {
       console.error("Cannot load provider profile store:", error);

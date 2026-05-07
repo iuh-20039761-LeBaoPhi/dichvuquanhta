@@ -423,6 +423,11 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <li>Nếu đổi sang `da_xac_nhan`, hệ thống sẽ xem như đơn hoàn tất và tự bổ sung `accepted_at` hoặc `completed_at` khi cần.</li>
                 <li>Nếu đổi sang `da_huy`, admin nên nhập thêm `cancel_reason` hoặc ghi chú để tiện rà soát cuối ca.</li>
             </ul>
+            <div class="guide-note">
+                Luồng mới của nhà cung cấp chuyển dọn có thêm <strong>Quản lý xe</strong>. Nếu provider báo không nhận được đơn,
+                admin nên kiểm tra theo thứ tự: hồ sơ đã đủ điều kiện chưa, đã có xe nào chưa, xe có đang <code>hoat_dong</code> không,
+                và loại xe hiện có có khớp với yêu cầu phương tiện của đơn hay không.
+            </div>
             <div class="guide-table-wrap">
                 <table class="guide-table">
                     <thead>
@@ -459,6 +464,10 @@ require_once __DIR__ . '/../includes/header_admin.php';
             <h3>Trang chi tiết đơn</h3>
             <p>`order_detail.php` dùng để đọc sâu dữ liệu một đơn và xem media hiện trường. Đây là giao diện chi tiết độc lập, tái tạo lại gần với góc nhìn của Nhà cung cấp để Admin hỗ trợ và đối chiếu chính xác hơn.</p>
             <div class="guide-note guide-danger">Nếu gặp đơn đã ở `da_xac_nhan` nhưng chưa có `completed_at`, hãy ưu tiên lưu lại đơn một lần từ admin để mốc hoàn tất được bổ sung cho dữ liệu sạch hơn.</div>
+            <div class="guide-note">
+                Với rule quá hạn: chỉ nên hiểu là áp cho đơn chờ chưa có người nhận. Nếu provider đã nhận đơn rồi,
+                luồng đúng là vẫn tiếp tục <code>Bắt đầu triển khai</code> và <code>Hoàn thành</code>, không coi đó là đơn chờ ban đầu nữa.
+            </div>
         </article>
 
         <article class="guide-section" id="nguoi-dung">
@@ -476,6 +485,10 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <li>Mở preview avatar và 2 mặt CCCD ngay trên form.</li>
                 <li>Nếu hồ sơ thiếu/sai, hãy liên hệ trực tiếp hoặc thông báo qua hệ thống (không sửa trực tiếp trên form).</li>
             </ol>
+            <div class="guide-note">
+                Nhà cung cấp chuyển dọn hiện cũng có danh sách nhiều xe riêng ở khu public. Vì vậy field phương tiện trong hồ sơ người dùng
+                không còn là nguồn duy nhất để hiểu năng lực nhận đơn; cần đối chiếu thêm trạng thái xe thực tế từ luồng <strong>Quản lý xe</strong> khi hỗ trợ provider.
+            </div>
             <div class="guide-note">Vì module ở chế độ Chỉ xem, mọi yêu cầu thay đổi thông tin tài khoản cần được thực hiện bởi Admin tổng hoặc thông qua các yêu cầu hỗ trợ.</div>
         </article>
 
