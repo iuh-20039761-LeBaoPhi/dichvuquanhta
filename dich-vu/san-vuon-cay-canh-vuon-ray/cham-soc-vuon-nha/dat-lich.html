@@ -1,631 +1,2997 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="vi">
 
 <head>
-    <script src="/ga.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt Lịch Chăm Sóc - Chăm Sóc Vườn Nhà</title>
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo2.jpg" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đặt Lịch Chăm Sóc Vườn Nhà & Sân Vườn Nhanh Chóng | Giá Tốt</title>
+  <meta name="description"
+    content="Đặt lịch dịch vụ chăm sóc vườn nhà, cắt cỏ, tỉa cây, dọn dẹp sân vườn, bảo dưỡng tiểu cảnh. Đội ngũ chuyên nghiệp, phục vụ tận nơi, linh hoạt theo thời gian, giá hợp lý.">
+  <meta name="keywords"
+    content="đặt lịch chăm sóc vườn, dịch vụ chăm sóc vườn, cắt cỏ, tỉa cây, bảo dưỡng sân vườn, vườn nhà, tiểu cảnh, cảnh quan sân vườn">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/images/logo2.jpg" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Quicksand:wght@500;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --pg: #1a4d2e;
+      --ag: #4f6f52;
+      --lime: #e8f3d6;
+      --white: #f9fbf9;
+    }
 
-    <style>
-        :root {
-            --primary-green: #1a4d2e;
-            --accent-green: #4f6f52;
-            --soft-lime: #e8f3d6;
-            --nature-white: #f9fbf9;
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 
-        body {
-            font-family: "Quicksand", sans-serif;
-            color: #2d3436;
-            background-color: var(--nature-white);
-            line-height: 1.7;
-        }
+    body {
+      padding-top: 96px;
+      font-family: 'Quicksand', sans-serif;
+      background-color: var(--white);
+      color: #2d3436;
+      line-height: 1.7;
+    }
 
-        .hero-booking {
-            background: radial-gradient(circle at top right, #e8f3d6 0%, #ffffff 70%);
-            position: relative;
-            overflow: hidden;
-            padding: 160px 0 100px;
-            text-align: center;
-        }
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1050; }
+    .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+    .package-locked { opacity: .45; filter: grayscale(.2); cursor: not-allowed; }
 
-        .hero-booking::before {
-            content: "Booking";
-            position: absolute;
-            font-family: 'Playfair Display';
-            font-size: 15vw;
-            font-weight: 900;
-            color: rgba(26, 77, 46, 0.03);
-            top: 0; left: -2%;
-            z-index: 0;
-            pointer-events: none;
-        }
+    /* ── HERO ── */
+    .booking-hero {
+      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
+      padding: 80px 0 130px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .booking-hero::before {
+      content: "Booking";
+      position: absolute;
+      font-family: 'Playfair Display', serif;
+      font-size: 18vw;
+      font-weight: 900;
+      color: rgba(26,77,46,.03);
+      top: -2%; left: -1%;
+      z-index: 0;
+      pointer-events: none;
+      line-height: 1;
+    }
+    .booking-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--pg);
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -1px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .booking-hero .hero-sub {
+      font-size: 1.1rem;
+      color: #57606f;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+    .booking-hero .custom-underline {
+      width: 100px; height: 5px;
+      background: var(--pg);
+      margin: 16px auto 0;
+      border-radius: 50px;
+    }
 
-        .hero-booking h1 {
-            font-family: 'Playfair Display', serif;
-            color: var(--primary-green);
-            font-size: 4rem;
-            font-weight: 700;
-            position: relative;
-            z-index: 1;
-        }
+    /* ── CARD WRAP ── */
+    .booking-card-wrap {
+      max-width: 820px;
+      margin: -60px auto 80px;
+      position: relative;
+      z-index: 10;
+      padding: 0 16px;
+    }
+    #bookingPageSection .card,
+    #reviewPageSection .card {
+      background: #fff;
+      border-radius: 40px !important;
+      border: 1px solid rgba(26,77,46,.06) !important;
+      box-shadow: 0 30px 60px rgba(26,77,46,.10) !important;
+    }
+    #bookingPageSection .card-body,
+    #reviewPageSection .card-body { padding: 48px 48px 40px; }
 
-        .main-wrapper { margin-top: -50px; padding-bottom: 80px; position: relative; z-index: 10; }
+    /* ── CUSTOMER INFO BOX ── */
+    .customer-info-box {
+      background: linear-gradient(135deg, #f8fff9 0%, #fff 100%);
+      border: 1px solid rgba(26,77,46,.12);
+      border-radius: 25px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(26,77,46,.06);
+      transition: all .3s ease-in-out;
+    }
+    .customer-info-title {
+      color: var(--pg);
+      font-weight: 700;
+      font-size: 1.05rem;
+      line-height: 1;
+      margin-bottom: 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .customer-info-content { transition: all .3s ease-in-out; overflow: hidden; max-height: 1000px; opacity: 1; }
+    .customer-info-box.collapsed { padding-bottom: 16px; }
+    .customer-info-box.collapsed .customer-info-title { margin-bottom: 0; }
+    .customer-info-box.collapsed .customer-info-content { max-height: 0; opacity: 0; pointer-events: none; }
+    .toggle-arrow { transition: transform .3s ease; font-size: 1rem; color: var(--ag); }
+    .customer-info-box .form-label { font-weight: 700; color: #2f2f2f; margin-bottom: 5px; font-size: .88rem; }
+    .customer-info-box .form-control,
+    .customer-info-box .input-group-text { border-color: #c8e6c9; background: #f8fff9; border-radius: 12px; }
+    .customer-info-box .input-group .form-control { border-radius: 0 12px 12px 0; }
+    .customer-info-box .input-group-text { border-radius: 12px 0 0 12px; color: #66bb6a; background: #f0fff4; border-right: none; }
+    .customer-info-box .form-control:focus { border-color: #66bb6a; box-shadow: 0 0 0 3px rgba(102,187,106,.15); }
 
-        .custom-card {
-            background: #ffffff;
-            border-radius: 35px;
-            box-shadow: 0 20px 50px rgba(26, 77, 46, 0.08);
-            border: 1px solid rgba(26, 77, 46, 0.05);
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
+    /* ── SERVICE WORK BOX ── */
+    .service-work-box {
+      background: linear-gradient(135deg, #f8fff9 0%, #fff 100%);
+      border: 1px solid rgba(26,77,46,.12);
+      border-radius: 25px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(26,77,46,.06);
+    }
+    .service-work-box .form-label { color: var(--pg); font-weight: 700; margin-bottom: 6px; font-size: .88rem; }
+    #serviceSelector {
+      border-color: #c8e6c9; background: #f8fff9; border-radius: 12px;
+      font-weight: 700; color: var(--pg); padding: 10px 14px; height: auto;
+      cursor: pointer; transition: border-color .2s, box-shadow .2s;
+    }
+    #serviceSelector:focus { border-color: #43a047; box-shadow: 0 0 0 3px rgba(67,160,71,.15); }
+    #serviceSelector option { white-space: normal; }
+    #serviceSelector.service-selector-open { height: auto; }
+    #serviceJobs .list-group { gap: 6px; }
+    #serviceJobs .list-group-item {
+      border: 1px solid #e8f5e9 !important;
+      background: #f8fff9; padding: 10px 14px;
+      border-radius: 14px !important;
+      transition: background .15s, border-color .15s;
+      display: flex; align-items: center; gap: 10px;
+    }
+    #serviceJobs .list-group-item:hover { background: #e8f5e9; border-color: #a5d6a7 !important; }
+    #serviceJobs .job-check { width: 17px; height: 17px; border-radius: 5px; border-color: #43a047; accent-color: #2e7d32; flex-shrink: 0; }
+    #serviceJobs .list-group-item span { color: var(--pg); font-size: .95rem; font-weight: 600; line-height: 1.3; }
 
-        .bk-section { padding: 40px; border-bottom: 1px solid #f1f1f1; }
-        .bk-section:last-child { border-bottom: none; }
+    /* ── SCHEDULE BOX ── */
+    .schedule-box {
+      background: linear-gradient(135deg, #e8f3d6 0%, #f8fff9 100%);
+      border: 1px solid rgba(26,77,46,.15);
+      border-radius: 25px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(26,77,46,.07);
+    }
+    .schedule-box .form-label { font-weight: 700; color: var(--pg); margin-bottom: 6px; font-size: .88rem; }
+    .schedule-box .form-control,
+    .schedule-box .form-select { background: #fff; border-color: #a5d6a7; border-radius: 12px; color: var(--pg); font-weight: 700; transition: border-color .2s, box-shadow .2s; }
+    .schedule-box .form-control:focus,
+    .schedule-box .form-select:focus { border-color: #43a047; box-shadow: 0 0 0 3px rgba(67,160,71,.15); }
+    .schedule-box #servicePackages .list-group-item { background: #fff; border-color: #a5d6a7; border-radius: 14px !important; color: var(--pg); font-weight: 600; transition: all .15s; }
+    .schedule-box #servicePackages .list-group-item.active { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-color: #43a047; }
+    .schedule-box #servicePackages .list-group-item span { color: var(--pg); font-weight: 700; }
+    #areaLevelSection .form-control,
+    #areaLevelSection .form-select { border-radius: 12px; border-color: #a5d6a7; background: #fff; font-weight: 700; color: var(--pg); }
+    #timeSlotSelect { border-radius: 12px; border-color: #a5d6a7; background: #fff; font-weight: 700; color: var(--pg); }
+    #autoEndDateRow { border: 1px solid #66bb6a; border-radius: 16px; background: linear-gradient(135deg, #e8f5e9, #dcedc8); color: var(--pg); font-weight: 600; }
 
-        .bk-section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            color: var(--primary-green);
-        }
+    /* ── EXTRA / NOTE ── */
+    .extra-request-box .form-label,
+    .note-box .form-label { color: var(--pg); font-weight: 700; margin-bottom: 6px; font-size: .88rem; }
+    .extra-request-box #extraRequest,
+    .note-box #customerNote {
+      border: 1px solid #c8e6c9; border-radius: 16px; min-height: 60px;
+      padding: 12px 16px; font-size: .95rem; color: var(--pg); background: #f8fff9;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .extra-request-box #extraRequest:focus,
+    .note-box #customerNote:focus { border-color: #43a047; box-shadow: 0 0 0 3px rgba(67,160,71,.12); }
 
-        .bk-section-title i {
-            width: 45px;
-            height: 45px;
-            background: var(--soft-lime);
-            color: var(--primary-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            margin-right: 15px;
-            font-size: 1.2rem;
-        }
+    /* ── PRICE DETAIL BOX ── */
+    .price-detail-box {
+      background: linear-gradient(135deg, var(--lime) 0%, #fff 100%) !important;
+      border: 1px solid rgba(26,77,46,.15) !important;
+      border-radius: 25px !important;
+      box-shadow: 0 8px 24px rgba(26,77,46,.07);
+      overflow: hidden; position: relative;
+    }
+    .price-detail-box::before {
+      content: "\f155"; font-family: "Font Awesome 6 Free"; font-weight: 900;
+      position: absolute; right: -10px; top: -10px;
+      font-size: 7rem; color: rgba(26,77,46,.04); pointer-events: none;
+    }
+    .price-detail-box .card-body { color: var(--pg); font-weight: 700; position: relative; z-index: 1; }
+    .price-detail-title { font-size: 1rem; font-weight: 800 !important; }
+    .price-detail-box .text-muted { color: #57606f !important; font-weight: 600; }
+    .price-detail-box #basePrice,
+    .price-detail-box #travelFee,
+    .price-detail-box #nightFee,
+    .price-detail-box #holidayFee { font-weight: 800; color: var(--pg); }
+    .price-detail-box hr { border-color: rgba(26,77,46,.12); margin: 10px 0; }
 
-        .service-item-row {
-            background: #fff;
-            border: 1px solid #edf2f7;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: var(--transition);
-            cursor: pointer;
-        }
+    #totalPrice {
+      border: 2px solid var(--pg) !important;
+      background: linear-gradient(135deg, var(--lime), #f8fff9) !important;
+      color: var(--pg) !important;
+      border-radius: 16px !important;
+      font-size: 1.4rem !important;
+      font-weight: 800 !important;
+      text-align: center;
+      letter-spacing: .5px;
+      box-shadow: 0 4px 16px rgba(26,77,46,.12);
+    }
 
-        .service-item-row:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(26, 77, 46, 0.1);
-            border-color: var(--accent-green);
-        }
+    /* ── QUICK ATTACH ── */
+    .quick-attach-box .form-label { color: var(--pg); font-weight: 700; margin-bottom: 8px; font-size: .88rem; }
+    .quick-attach-box .btn { border-radius: 14px !important; font-weight: 700; padding: 11px 16px; transition: all .2s; }
+    .quick-attach-box .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(26,77,46,.2); }
+    .attachment-preview-box { border: 1px solid #c8e6c9; border-radius: 20px; background: #f8fff9; padding: 14px; }
+    .attachment-preview-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .attachment-pane { min-height: 100px; padding: 10px; border-radius: 14px; background: #fff; border: 1px dashed #c8e6c9; }
+    .attachment-pane+.attachment-pane { border-left: none; }
+    .attachment-pane-title { font-size: 11px; font-weight: 800; color: var(--ag); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+    .attachment-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+    .attachment-item { border: 1px solid #e8f5e9; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .attachment-item img,
+    .attachment-item video { display: block; width: 100%; height: 80px; object-fit: cover; background: #f8f8f8; }
+    .attachment-item-name { padding: 5px 8px; font-size: 11px; font-weight: 600; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .service-item-row.selected {
-            background: var(--soft-lime);
-            border: 2px solid var(--primary-green);
-        }
+    /* ── SUBMIT BUTTON ── */
+    #bookingForm .btn[type="submit"] {
+      background: linear-gradient(135deg, #43a047, #1b5e20) !important;
+      border: none !important; border-radius: 50px !important;
+      padding: 14px 48px !important; font-size: 1rem !important;
+      font-weight: 800 !important; letter-spacing: .3px;
+      box-shadow: 0 8px 24px rgba(27,94,32,.3); transition: all .25s;
+    }
+    #bookingForm .btn[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(27,94,32,.35); }
 
-        .area-input-wrapper {
-            display: none;
-            border-top: 1px dashed var(--primary-green);
-            margin-top: 15px;
-            padding-top: 15px !important;
-            animation: fadeIn 0.4s;
-        }
+    /* ── MAP ── */
+    #mapPickerEl { border-radius: 14px !important; border: 1px solid #a5d6a7 !important; }
+    .customer-info-box .btn-success { background: linear-gradient(135deg, #43a047, #2e7d32) !important; border: none !important; border-radius: 12px !important; font-weight: 700; }
+    .customer-info-box .btn-warning { background: linear-gradient(135deg, #ffa726, #e65100) !important; border: none !important; border-radius: 12px !important; font-weight: 700; color: #fff !important; }
 
-        .service-item-row.selected .area-input-wrapper { display: block !important; }
+    /* ── SHIFT / ERRORS ── */
+    #shiftInfoBox { border-radius: 12px; font-size: .88rem; border-color: #a5d6a7; background: #f1f8e9; color: var(--pg); }
+    #timeError { border-radius: 12px; font-size: .88rem; }
 
-        .price-summary-box {
-            background: var(--primary-green);
-            color: #fff;
-            border-radius: 35px;
-            padding: 40px;
-            position: sticky;
-            top: 120px;
-            box-shadow: 0 30px 60px rgba(26, 77, 46, 0.2);
-        }
+    /* ── REVIEW SECTION ── */
+    .review-row { display: flex; align-items: flex-start; gap: 10px; }
+    .review-label { width: 130px; min-width: 130px; font-weight: 700; color: #57606f; font-size: .85rem; }
+    .review-value { flex: 1; min-width: 0; text-align: left; word-break: break-word; font-weight: 600; color: var(--pg); }
+    .review-shell { background: #f8fff9; border: 1px solid rgba(26,77,46,.1) !important; }
+    .review-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--pg) !important;
+      font-size: 1.8rem;
+      font-weight: 700 !important;
+    }
+    .review-alert { background: #fffde7; border: 1px solid #f9a825; color: #5e4a00; border-radius: 14px; font-weight: 600; font-size: .88rem; }
+    .review-panel { background: #fff !important; border: 1px solid rgba(26,77,46,.12) !important; border-radius: 20px !important; box-shadow: 0 4px 16px rgba(26,77,46,.05); }
+    .review-panel .card-body { color: #2a2f36; }
+    .review-section-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--pg) !important;
+      font-size: 1.1rem;
+      font-weight: 700 !important;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--lime);
+      margin-bottom: 14px !important;
+    }
+    .review-panel .review-label { color: #57606f; font-weight: 700; }
+    .review-panel .review-value { color: var(--pg); font-weight: 600; }
+    #reviewJobs { color: var(--pg); font-weight: 600; }
+    .review-total-box {
+      background: linear-gradient(135deg, var(--lime), #f8fff9) !important;
+      border: 2px solid var(--pg) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 4px 16px rgba(26,77,46,.1);
+    }
+    .review-total-box .card-body { padding: 16px 20px; }
+    .review-action-row { margin-top: 20px !important; }
+    .review-action-row .btn { padding: 13px 0 !important; font-size: .95rem !important; border-radius: 50px !important; font-weight: 700; }
+    .review-btn-edit { background: #eceff1; border: 1px solid #cfd8dc !important; color: #546e7a; font-weight: 700; }
+    .review-btn-edit:hover { background: #cfd8dc; color: #37474f; }
+    .review-btn-save { background: linear-gradient(135deg, #43a047, #1b5e20) !important; border: none !important; color: #fff; font-weight: 800; box-shadow: 0 6px 20px rgba(27,94,32,.3); }
+    .review-btn-save:hover { background: linear-gradient(135deg, #388e3c, #1a4d2e) !important; transform: translateY(-1px); }
 
-        .summary-line { display: flex; justify-content: space-between; margin-bottom: 15px; opacity: 0.8; }
-        .summary-line.highlight { opacity: 1; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        .summary-total { color: #fff; font-size: 2rem; font-weight: 800; font-family: 'Playfair Display', serif; }
+    /* ── RESPONSIVE ── */
+    @media (max-width: 991.98px) {
+      body { padding-top: 86px; }
+      .navbar { overflow-x: clip; }
+      .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .95rem; }
+      .navbar-brand img { width: 56px !important; height: 42px !important; }
+      .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,.08); }
+      .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+      .navbar-collapse .nav-item { width: 100%; text-align: center; }
+      .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+      .booking-hero { padding: 60px 0 100px; }
+      .booking-hero h1 { font-size: 2.2rem; }
+      .booking-card-wrap { margin-top: -50px; }
+      #bookingPageSection .card-body,
+      #reviewPageSection .card-body { padding: 28px 24px; }
+    }
 
-        .btn-nature {
-            background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
-            color: white;
-            border-radius: 50px;
-            padding: 15px 30px;
-            font-weight: 700;
-            border: none;
-            transition: var(--transition);
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+    @media (max-width: 575.98px) {
+      .booking-hero { padding: 50px 0 80px; }
+      .booking-hero h1 { font-size: 1.8rem; }
+      .booking-card-wrap { margin-top: -40px; padding: 0 8px; }
+      .container,
+      #bookingPageSection,
+      #bookingPageSection .card { padding: 0 !important; margin: 0 !important; border-radius: 0 !important; max-width: 100% !important; }
+      #bookingPageSection .card-body,
+      #reviewPageSection .card-body { padding: 16px 10px !important; }
+      .customer-info-box,
+      .service-work-box,
+      .schedule-box,
+      .extra-request-box,
+      .price-detail-box,
+      #autoEndDateRow,
+      .mb-3 { margin-bottom: 10px !important; }
+      .customer-info-box,
+      .service-work-box,
+      .schedule-box,
+      .price-detail-box,
+      #autoEndDateRow { padding: 14px 12px !important; border-radius: 16px !important; }
+      .customer-info-box .mb-2,
+      .customer-info-box .row.mb-2,
+      .service-work-box .mb-2,
+      .schedule-box .mb-2 { margin-bottom: 8px !important; }
+      .form-label { margin-bottom: 3px !important; }
+      #servicePackages .list-group-item,
+      #serviceJobs .list-group-item { margin-bottom: 4px !important; padding: 8px 10px !important; }
+      .review-label { width: 110px; min-width: 110px; }
+      .service-work-box { overflow: visible; }
+      #serviceSelector { min-height: 44px; font-size: .98rem; }
+      #serviceSelector.service-selector-open { position: relative; z-index: 30; min-height: 176px; padding: 6px; border: 1px solid #66bb6a; border-radius: 14px; }
+      #serviceSelector.service-selector-open option { padding: 10px 12px; margin-bottom: 6px; border: 1px solid #c8e6c9; border-radius: 8px; color: var(--pg); }
+      #serviceSelector.service-selector-open option:last-child { margin-bottom: 0; }
+      #serviceSelector.service-selector-open option:checked { border-color: #43a047; font-weight: 700; }
+      .attachment-preview-split { grid-template-columns: 1fr 1fr !important; }
+      .attachment-pane+.attachment-pane { border-left: none; padding: 10px; }
+      .schedule-box .time-range-row .form-label { font-size: .9rem; margin-bottom: 4px; }
+      .schedule-box .time-range-row .form-control { padding: 0 8px; font-size: 1rem; }
+      #reviewPageSection { padding: 0 !important; margin: 0 !important; width: 100vw !important; max-width: 100vw !important; border-radius: 0 !important; position: relative; top: 0; left: 0; right: 0; }
+      #reviewPageSection .card,
+      #reviewPageSection .card-body,
+      #reviewPageSection .review-shell,
+      #reviewPageSection .review-panel,
+      #reviewPageSection .review-total-box,
+      #reviewPageSection .review-action-row,
+      #reviewPageSection .attachment-preview-box,
+      #reviewPageSection .attachment-pane,
+      #reviewPageSection .review-section-title,
+      #reviewPageSection .review-row,
+      #reviewPageSection .review-jobs-list,
+      #reviewPageSection .review-jobs-item { margin: 2px !important; padding: 4px !important; border-radius: 10px; }
+      #reviewPageSection .row.g-2 { margin: 0 -2px !important; }
+      #reviewPageSection .col-12,
+      #reviewPageSection .col-md-6 { padding: 0 2px !important; }
+      #reviewPageSection .review-title,
+      #reviewPageSection .review-label,
+      #reviewPageSection .review-value { margin: 2px 0 !important; padding: 2px 0 !important; }
+      #reviewPageSection .review-action-row button { margin: 2px !important; padding: 10px !important; }
+      #reviewPageSection .attachment-pane-title { margin-bottom: 4px !important; }
+    }
 
-        .btn-nature:hover {
-            transform: scale(1.03);
-            box-shadow: 0 15px 30px rgba(26, 77, 46, 0.3);
-            color: white;
-        }
-
-        /* FIX: Map Container và Z-index */
-        #map { 
-            height: 300px; 
-            border-radius: 25px; 
-            border: 4px solid white; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            margin-top: 15px; 
-            z-index: 1 !important; /* Đảm bảo không đè lên dropdown địa chỉ */
-        }
-
-        /* FIX: Input Group cho địa chỉ (Đồng bộ với image_2f21dd.png) */
-        .input-group-address {
-            display: flex;
-            align-items: center;
-            background: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .input-group-address .input-group-text { border: none; background: transparent; }
-        .input-group-address input { border: none; box-shadow: none !important; }
-        .input-group-address .btn-success { border-radius: 0 10px 10px 0 !important; }
-
-        .upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .upload-box {
-            aspect-ratio: 1/1;
-            border: 2px dashed #cbd5e0;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: #f8fafc;
-        }
-        .upload-box:hover { border-color: var(--primary-green); background: var(--soft-lime); color: var(--primary-green); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .btn-back-home {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            padding: 14px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        .btn-back-home:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        #confirmModal .modal-info-label { font-size: 0.75rem; color: #636e72; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
-        #confirmModal .modal-info-value { font-weight: 700; color: var(--primary-green); margin-bottom: 12px; font-size: 1rem; }
-        #confirmModal .modal-service-item { background: #f8fafc; border-radius: 12px; padding: 10px 15px; margin-bottom: 8px; border-left: 4px solid var(--primary-green); }
-    </style>
+    /* ── EMBEDDED MODE ── */
+    body.booking-embedded-mode nav,
+    body.booking-embedded-mode footer { display: none !important; }
+    body.booking-embedded-mode { padding-top: 0 !important; }
+    body.booking-embedded-mode section.py-5 { padding: 0 !important; background: #fff !important; }
+    body.booking-embedded-mode section.py-5 > .container { max-width: 100%; padding: 12px 12px 18px; }
+    body.booking-embedded-mode #bookingPageSection,
+    body.booking-embedded-mode #reviewPageSection { max-width: 100% !important; }
+    body.booking-embedded-mode .booking-page-heading { display: none !important; }
+  </style> 
+  <script src="/ga.js"></script>
 </head>
 
-<body>
-    <section class="hero-booking">
-        <div class="container">
-            <h1 class="fw-bold mb-2">Đặt Lịch <span class="fst-italic" style="color: var(--accent-green)">Chăm Sóc</span></h1>
-            <p class="lead text-muted fw-medium">Hệ thống đặt lịch chăm sóc cảnh quan chuyên nghiệp 24/7</p>
-            <div style="width: 80px; height: 4px; background: var(--primary-green); margin: 20px auto; border-radius: 50px;"></div>
-        </div>
+<body data-nav-active="booking">
+  <div style="font-family: 'Quicksand', sans-serif">
+    <div id="site-header"></div>
+
+    <!-- HERO -->
+    <section class="booking-hero">
+      <div class="container position-relative">
+        <h1>Đặt Lịch <br><span style="color:var(--ag)">Chăm Sóc Vườn Nhà</span></h1>
+        <p class="hero-sub">Nhanh chóng — Chuyên nghiệp — Tận tâm</p>
+        <div class="custom-underline"></div>
+      </div>
     </section>
 
-    <div class="container main-wrapper">
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <form id="bookingForm" onsubmit="handleBooking(event)">
-                    <div class="custom-card">
-                        <div class="bk-section">
-                            <div class="bk-section-title"><i class="fas fa-user-circle"></i> Thông tin khách hàng</div>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Họ và tên *</label>
-                                    <input type="text" class="form-control rounded-3" id="hoten" placeholder="Nguyễn Hoài Lộc" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Số điện thoại *</label>
-                                    <input type="tel" class="form-control rounded-3" id="sodienthoai" placeholder="0901 234 567" required>
-                                </div>
-                                
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Địa chỉ thực hiện *</label>
-                                    <div class="input-group shadow-sm rounded-3 position-relative mb-2">
-                                        <span class="input-group-text bg-white border-end-0"><i class="fas fa-location-dot text-success"></i></span>
-                                        <input type="text" class="form-control border-start-0 border-end-0" id="diachi" placeholder="Nhập địa chỉ hoặc chọn trên bản đồ..." autocomplete="off" required>
-                                        <button class="btn bg-white border-start-0 border-end-0 text-muted" type="button" id="clearAddress" style="display: none;">
-                                            <i class="fas fa-times-circle"></i>
-                                        </button>
-                                        <button class="btn btn-success" type="button" onclick="getCurrentLocation()">
-                                            <i class="fas fa-crosshairs"></i>
-                                        </button>
-                                        <div id="address-suggestions" class="list-group position-absolute w-100" style="top: 100%; z-index: 9999; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1);"></div>
-                                    </div>
-
-                                    <div id="map"></div>
-                                    <span class="distance-info mt-2 d-block fw-bold text-success" id="distance-display">
-                                        <i class="fas fa-truck-moving me-1"></i> Khoảng cách: 0 km
-                                    </span>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Email nhận báo giá</label>
-                                    <input type="email" class="form-control rounded-3" id="email" placeholder="name@example.com">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Ghi chú thêm</label>
-                                    <textarea class="form-control rounded-3" id="ghichu" rows="1" placeholder="Yêu cầu đặc biệt..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bk-section">
-                            <div class="bk-section-title"><i class="fas fa-spa"></i> Chọn dịch vụ thực hiện</div>
-                            <div id="service-list-render"></div>
-                        </div>
-
-                        <div class="bk-section">
-                            <div class="bk-section-title"><i class="fas fa-calendar-alt"></i> Thời gian thực hiện</div>
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Ngày thực hiện *</label>
-                                    <input type="date" class="form-control rounded-3" id="ngay_dat" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Giờ bắt đầu *</label>
-                                    <input type="time" class="form-control rounded-3" id="gio_dat" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bk-section">
-                            <div class="bk-section-title"><i class="fas fa-camera"></i> Hiện trạng khu vườn</div>
-                            <div class="upload-grid">
-                                <div class="upload-box" onclick="document.getElementById('videoInput').click()">
-                                    <i class="fas fa-video fa-2x mb-2" style="color: var(--accent-green)"></i>
-                                    <span class="fw-bold small">Quay video</span>
-                                    <input type="file" id="videoInput" hidden accept="video/*" capture="environment" onchange="handleFiles(this.files)">
-                                </div>
-                                <div class="upload-box" onclick="document.getElementById('cameraInput').click()">
-                                    <i class="fas fa-camera fa-2x mb-2" style="color: var(--accent-green)"></i>
-                                    <span class="fw-bold small">Chụp ảnh</span>
-                                    <input type="file" id="cameraInput" hidden accept="image/*" capture="environment" onchange="handleFiles(this.files)">
-                                </div>
-                                <div id="media-previews" class="d-contents" style="display: contents;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="price-summary-box">
-                    <h4 class="fw-bold mb-4 border-bottom border-white border-opacity-25 pb-3">Đơn hàng của bạn</h4>
-                    <div id="summary-items">
-                        <div class="text-center opacity-75 py-4 small">Chưa có dịch vụ nào được chọn</div>
-                    </div>
-                    <div id="fee-details" class="mt-4 pt-4 border-top border-white border-opacity-25" style="display: none;">
-                        <div class="summary-line"><span>Phí VAT (10%)</span><span id="service-fee">0đ</span></div>
-                        <div class="summary-line"><span>Phí di chuyển (<span id="km-text">0km</span>)</span><span id="shipping-fee">0đ</span></div>
-                        <div class="summary-line" id="holiday-fee-line" style="display: none; color: #ffeb3b;">
-                            <span><i class="fas fa-calendar-check me-1"></i>Phụ thu ngày Lễ</span>
-                            <span id="holiday-fee">100.000đ</span>
-                        </div>
-                        <div class="summary-total mt-4 d-flex justify-content-between align-items-center">
-                            <span>TỔNG</span><span id="total-amount">0đ</span>
-                        </div>
-                    </div>
-                    <div class="mt-5 d-flex flex-column gap-3">
-                        <button type="submit" form="bookingForm" id="btn-submit" class="btn btn-nature shadow-lg w-100">
-                            <i class="fas fa-paper-plane me-2"></i> XÁC NHẬN ĐẶT LỊCH
-                        </button>
-                        <button type="button" class="btn btn-back-home w-100" onclick="window.location.href='index.html'">
-                            <i class="fas fa-chevron-left me-2"></i> QUAY LẠI TRANG CHỦ
-                        </button>
-                    </div>
+    <!-- FORM -->
+    <div class="booking-card-wrap">
+      <div id="bookingPageSection" class="mx-auto">
+        <div class="card">
+          <div class="card-body">
+            <form id="bookingForm">
+              <div class="customer-info-box" id="customerInfoBox">
+                <div class="customer-info-title" onclick="toggleCustomerInfo()">
+                  <span><i class="fas fa-user me-2"></i>Thông tin khách hàng</span>
+                  <i class="fas fa-chevron-up toggle-arrow" id="customerInfoArrow"></i>
                 </div>
+
+                <div class="customer-info-content" id="customerInfoContent">
+                  <div class="mb-2">
+                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="far fa-user"></i></span>
+                      <input type="text" id="customerName" required placeholder="" class="form-control" />
+                    </div>
+                  </div>
+                    <div class="row g-2 mb-2">
+                      <div class="col-md-6">
+                        <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                          <input type="tel" id="customerPhone" required placeholder="" pattern="[0-9]{10,11}"
+                            class="form-control" />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="far fa-envelope"></i></span>
+                          <input type="email" id="customerEmail" placeholder="" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="mt-3 pt-3 border-top">
+                    <label class="form-label">Địa chỉ của bạn <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
+                      <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi' hoặc nhập thủ công"
+                        class="form-control" />
+                    </div>
+                    <div class="d-flex gap-2 mt-2">
+                      <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
+                        <i class="fas fa-location-dot me-1"></i>Lấy vị trí
+                      </button>
+                      <button type="button" id="toggleMapBtn" onclick="toggleMapPicker()"
+                        class="btn btn-warning btn-sm flex-fill">
+                        <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
+                      </button>
+                    </div>
+                    <div id="mapPickerBox" class="mt-2 d-none">
+                      <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #bcdcff">
+                      </div>
+                      <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
+                      <div id="distanceInfo" class="form-text mt-1 text-muted d-none">Quãng đường và phí di chuyển sẽ được tính
+                        tự động sau khi chọn vị trí.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="service-work-box">
+                  <div class="mb-2">
+                    <label class="form-label">Chọn dịch vụ chăm sóc vườn</label>
+                    <select id="serviceSelector" class="form-select"></select>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label">Chọn khu vực vườn:</label>
+                    <select id="serviceLoai" class="form-select"></select>
+                  </div>
+                  <div>
+                    <label class="form-label"><i class="fas fa-grip-horizontal me-1" style="color: #4f9d6b"></i>Chọn
+                      công việc chăm sóc vườn</label>
+                    <div id="serviceJobs">
+                      <div id="serviceJobsList" class="list-group"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3 extra-request-box">
+                  <label class="form-label fw-bold">Yêu cầu khác:</label>
+                  <textarea id="extraRequest" rows="2" class="form-control" placeholder=""></textarea>
+                </div>
+                <div class="schedule-box">
+                  <div class="mb-2">
+                    <label class="form-label fw-bold" style="color: #1f2a37"><i class="fas fa-clock me-1"
+                        style="color: #2f9348"></i>Chọn khung giờ</label>
+                    <div id="servicePackages">
+                      <div id="areaLevelSection" class="row g-2 mb-2 d-none">
+                        <div class="col-md-6">
+                          <label class="form-label fw-bold" for="serviceArea">Diện tích (m²)</label>
+                          <input type="number" min="1" id="serviceArea" class="form-control" placeholder="Ví dụ: 80" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label fw-bold" for="serviceLevel">Mức độ chăm sóc vườn</label>
+                          <select id="serviceLevel" class="form-select">
+                            <option value="nhẹ">Nhẹ</option>
+                            <option value="tiêu chuẩn" selected>Tiêu chuẩn</option>
+                            <option value="sâu">Sâu</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div id="packageSection" class="mb-2 d-none">
+                        <div id="packageList" class="list-group"></div>
+                      </div>
+
+                      <div id="timeSlotSection" class="mb-2 d-none">
+                        <label class="form-label fw-bold" for="timeSlotSelect">Khung giờ chăm sóc vườn</label>
+                        <select id="timeSlotSelect" class="form-select"></select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="shiftInfoBox" class="alert alert-info py-2 px-3 small d-none"></div>
+
+                  <div class="row g-2 mb-2 time-range-row d-none" id="timeRangeRow">
+                    <div class="col-6" id="startTimeCol">
+                      <label class="form-label fw-bold">Giờ bắt đầu</label>
+                      <input type="time" id="startTime" class="form-control" />
+                      <div id="startTimeHint" class="form-text text-muted small"></div>
+                    </div>
+                    <div class="col-6" id="endTimeCol">
+                      <label class="form-label fw-bold">Giờ kết thúc</label>
+                      <input type="time" id="endTime" class="form-control" readonly />
+                      <div id="endTimeHint" class="form-text text-muted small"></div>
+                    </div>
+                  </div>
+
+                  <div id="timeError" class="alert alert-danger py-2 px-3 small d-none mb-2"></div>
+
+                  <div class="row g-2">
+                    <div class="col-md-6 mb-2">
+                      <label class="form-label fw-bold">Ngày bắt đầu:</label>
+                      <input type="date" id="startDate" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-2">
+                      <label class="form-label fw-bold">Ngày kết thúc:</label>
+                      <input type="date" id="endDate" class="form-control" />
+                    </div>
+
+                    <input type="hidden" id="durationUnit" value="day" />
+                    <input type="hidden" id="durationAmount" value="" />
+                  </div>
+                </div>
+
+                <div id="autoEndDateRow" class="alert alert-success py-2 px-3 small d-none">
+                  <i class="fas fa-calendar-check me-1"></i>
+                  <strong>Ngày kết thúc:</strong>
+                  <span id="autoEndDateText" class="fw-bold ms-1"></span>
+                  <span id="totalDaysText" class="text-muted ms-2"></span>
+                </div>
+
+
+
+                <div class="card border-0 mb-3 price-detail-box">
+                  <div class="card-body py-2 px-3">
+                    <p class="price-detail-title mb-2" style="color: #1a7d3e"><i class="fas fa-receipt me-1"></i>Chi
+                      tiết tính tiền</p>
+                    <div class="d-flex justify-content-between small mb-1">
+                      <span>Tiền chăm sóc vườn</span>
+                      <span id="basePrice" class="fw-bold">0 đ</span>
+                    </div>
+                    <div id="calcDetailRow" class="d-none mb-1">
+                      <span id="calcDetailText" class="text-muted" style="font-size: 11px"></span>
+                    </div>
+                    <div id="nightRow" class="d-none justify-content-between small mb-1 text-danger">
+                      <span id="phuThuLabel">Phụ thu (+0%)</span>
+                      <span id="nightFee" class="fw-bold">0 đ</span>
+                    </div>
+                    <div id="holidayRow" class="d-none justify-content-between small mb-1 text-danger">
+                      <span>Phụ thu ngày lễ (+30%)</span>
+                      <span id="holidayFee" class="fw-bold">0 đ</span>
+                    </div>
+                    <div class="d-none justify-content-between small mb-1" id="travelFeeRow">
+                      <span>Phí di chuyển (5.000 đ/km)</span>
+                      <span id="travelFee">0 đ</span>
+                    </div>
+                    <hr class="my-2" />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Tổng tiền:</label>
+                  <input type="text" id="totalPrice" readonly value="0 đ" class="form-control fw-bold text-center fs-5"
+                    style="border-color: #2e7d32; background: #eefff3; color: #1a4d2e" />
+                </div>
+
+                <div class="mb-3 note-box">
+                  <label class="form-label fw-bold">Ghi chú:</label>
+                  <textarea id="customerNote" rows="2" class="form-control"
+                    placeholder="Thời gian mong muốn, yêu cầu đặc biệt..."></textarea>
+                </div>
+
+                <div class="mb-3 quick-attach-box">
+                  <label class="form-label fw-bold" style="color:#1a7d3e">
+                    <i class="fas fa-camera-retro me-1"></i>Tệp đính kèm nhanh
+                  </label>
+                  <div class="d-flex gap-2">
+                    <button type="button" id="capturePhotoBtn" class="btn flex-fill fw-bold rounded-pill"
+                      style="background:linear-gradient(135deg,#e8f5e9,#d0f0da);color:#1a4d2e;border:1px solid #a5d6b0"
+                      onclick="handleMediaClick('photo')">
+                      <i class="fas fa-camera me-1"></i>Chụp/Tải ảnh
+                    </button>
+                    <button type="button" id="recordVideoBtn" class="btn flex-fill fw-bold rounded-pill"
+                      style="background:linear-gradient(135deg,#e8f5e9,#d0f0da);color:#1a4d2e;border:1px solid #a5d6b0"
+                      onclick="handleMediaClick('video')">
+                      <i class="fas fa-video me-1"></i>Quay/Tải video
+                    </button>
+                  </div>
+
+                  <input type="file" id="quickPhotoInput" accept="image/*" class="d-none" multiple />
+                  <input type="file" id="quickVideoInput" accept="video/*" class="d-none" multiple />
+
+                  <div id="attachmentPreviewArea" class="attachment-preview-box mt-2">
+                    <div class="attachment-preview-split">
+                      <div class="attachment-pane">
+                        <div class="attachment-pane-title">Hình ảnh</div>
+                        <div id="attachmentImageEmpty" class="text-muted small">Chưa có hình ảnh được chọn.</div>
+                        <div id="attachmentImageGrid" class="attachment-preview-grid d-none"></div>
+                      </div>
+                      <div class="attachment-pane">
+                        <div class="attachment-pane-title">Video</div>
+                        <div id="attachmentVideoEmpty" class="text-muted small">Chưa có video được chọn.</div>
+                        <div id="attachmentVideoGrid" class="attachment-preview-grid d-none"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="uploadStatusMsg" class="form-text"></div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                  <button type="submit" class="btn text-white rounded-pill fw-bold"
+                    style="background-color: #2e7d32; border: none">
+                    <i class="fas fa-check me-1"></i>Xem Lại Thông Tin
+                  </button>
+                </div>
+              </form>
+
+              <div id="successMessage" class="text-center py-5 d-none">
+                <i class="fas fa-check-circle text-success" style="font-size: 3.5rem"></i>
+                <h3 class="mt-3 fw-bold">Đặt lịch chăm sóc vườn thành công!</h3>
+                <p class="text-muted">Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="JS/api-client.js"></script>
+        <div id="reviewPageSection" class="mx-auto d-none">
+          <div class="card review-shell">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3 review-title"><i class="fas fa-clipboard-check me-2"></i>Kiểm Tra Thông Tin Đặt
+                Lịch Chăm Sóc Vườn</h5>
 
+              <div class="alert alert-warning small review-alert">
+                <i class="fas fa-circle-info me-1"></i>
+                Vui lòng kiểm tra kỹ thông tin. Sau bước này bạn cần đăng nhập để xác nhận lưu vào hệ thống chăm sóc vườn.
+              </div>
+
+              <div class="card border-0 bg-light mb-3 review-panel">
+                <div class="card-body py-3">
+                  <h6 class="fw-bold mb-3 review-section-title">Thông tin khách hàng</h6>
+                  <div class="row g-2 small">
+                    <div class="col-12 review-row"><span class="review-label">Họ và tên:</span><span id="reviewName"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Số điện thoại:</span><span
+                        id="reviewPhone" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Email:</span><span id="reviewEmail"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Địa chỉ:</span><span id="reviewAddress"
+                        class="review-value">-</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card border-0 bg-light mb-3 review-panel">
+                <div class="card-body py-3">
+                  <h6 class="fw-bold mb-3 review-section-title">Chi tiết đặt lịch chăm sóc vườn</h6>
+                  <div class="row g-2 small">
+                    <div class="col-12 review-row"><span class="review-label">Dịch vụ:</span><span id="reviewService"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Khu vực vườn:</span><span id="reviewLoai"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Gói chăm sóc vườn:</span><span
+                        id="reviewPackage" class="review-value">-</span></div>
+                    <div class="col-12"><strong>Công việc chăm sóc vườn:</strong>
+                      <div id="reviewJobs" class="mt-1">-</div>
+                    </div>
+                    <div class="col-12 review-row"><span class="review-label">Ngày bắt đầu:</span><span
+                        id="reviewStartDate" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Ngày kết thúc:</span><span
+                        id="reviewEndDate" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Khung giờ:</span><span id="reviewTime"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Tổng số ngày:</span><span
+                        id="reviewTotalDays" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Tổng số giờ:</span><span
+                        id="reviewTotalHours" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Yêu cầu khác:</span><span
+                        id="reviewExtraRequest" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Ghi chú:</span><span id="reviewNote"
+                        class="review-value">-</span></div>
+                    <div class="col-12">
+                      <strong>Tệp đính kèm:</strong>
+                      <div id="reviewAttachmentArea" class="attachment-preview-box mt-1">
+                        <div class="attachment-preview-split">
+                          <div class="attachment-pane">
+                            <div class="attachment-pane-title">Hình ảnh</div>
+                            <div id="reviewAttachmentImageEmpty" class="text-muted small">Không có hình ảnh tạm.</div>
+                            <div id="reviewAttachmentImageGrid" class="attachment-preview-grid d-none"></div>
+                          </div>
+                          <div class="attachment-pane">
+                            <div class="attachment-pane-title">Video</div>
+                            <div id="reviewAttachmentVideoEmpty" class="text-muted small">Không có video tạm.</div>
+                            <div id="reviewAttachmentVideoGrid" class="attachment-preview-grid d-none"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card border-0 review-total-box">
+                <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                  <span class="fw-bold" style="color: #1a4d2e">Tổng tiền</span>
+                  <span id="reviewPrice" class="fw-bold fs-5" style="color: #1a4d2e">0 đ</span>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 mt-4 review-action-row">
+                <button type="button" id="btnBackToEdit" class="btn rounded-pill flex-fill fw-bold review-btn-edit">
+                  <i class="fas fa-pen me-1"></i>Chỉnh Sửa
+                </button>
+                <button type="button" id="btnConfirmSave"
+                  class="btn text-white rounded-pill flex-fill fw-bold review-btn-save" style="border: none">
+                  <i class="fas fa-check me-1"></i>Xác Nhận
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /.booking-card-wrap -->
+
+    <div id="site-footer"></div>
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
-    let HOLIDAYS = ['01-01', '04-30', '05-01', '09-02'];
-    window.CONFIG = { holiday_fee: 100000, shipping_rate: 15000, vat_rate: 0.1 };
-    const STORE_LOCATION = [10.8231, 106.6297];
-    let map, marker, servicesData = [], currentDistance = 0, selectedFiles = [];
-    let addressInput, clearBtn, suggestionBox;
+      if (typeof krud === 'undefined') {
+        console.warn('krud chưa load, tạo fallback');
 
-    async function init() {
-        addressInput = document.getElementById('diachi');
-        clearBtn = document.getElementById('clearAddress');
-        suggestionBox = document.getElementById('address-suggestions');
+        const KRUD_API_URL = "https://api.dvqt.vn";
+
+        function krud(action, table, data = {}, id = null) {
+          const payload = { action, table, data };
+          if (id !== null) payload.id = id;
+
+          return fetch(KRUD_API_URL + "/krud/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          }).then(res => res.json());
+        }
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="driveUtil.js"></script>
+    <script>
+      var EMBEDDED_BOOKING_MODE = false;
+      var PRESELECT_SERVICE_ID = '';
+      (function () {
+        var params = new URLSearchParams(window.location.search || '');
+        EMBEDDED_BOOKING_MODE = params.get('embedded') === '1';
+        PRESELECT_SERVICE_ID = params.get('serviceId') || '';
+        // Nếu serviceId truyền dạng '1:711' thì chỉ lấy phần trước dấu ':'
+        if (PRESELECT_SERVICE_ID && PRESELECT_SERVICE_ID.indexOf(':') !== -1) {
+          PRESELECT_SERVICE_ID = PRESELECT_SERVICE_ID.split(':')[0];
+        }
+        if (EMBEDDED_BOOKING_MODE) {
+          document.body.classList.add('booking-embedded-mode');
+        }
+      })();
+
+      var mapPickerMap = null;
+      var mapPickerMarker = null;
+      var CUSTOMER_LOCATION = null;
+
+      // Chuc nang: xu ly nghiep vu cho buildAddressFromNominatim.
+      function buildAddressFromNominatim(data, lat, lng) {
+        if (data && data.address) {
+          var a = data.address;
+          var parts = [
+            a.house_number,
+            a.road,
+            a.suburb || a.neighbourhood || a.quarter,
+            a.city_district || a.district,
+            a.city || a.town || a.village || a.county
+          ].filter(Boolean);
+          return parts.join(', ') || data.display_name || lat.toFixed(6) + ', ' + lng.toFixed(6);
+        }
+        return (data && data.display_name) || lat.toFixed(6) + ', ' + lng.toFixed(6);
+      }
+
+      // Thu gọn/mở rộng phần thông tin khách hàng.
+      function toggleCustomerInfo() {
+        const box = document.getElementById('customerInfoBox');
+        const arrow = document.getElementById('customerInfoArrow');
+        const isCollapsed = box.classList.toggle('collapsed');
+
+        if (isCollapsed) {
+          arrow.classList.replace('fa-chevron-up', 'fa-chevron-down');
+        } else {
+          arrow.classList.replace('fa-chevron-down', 'fa-chevron-up');
+        }
+      }
+
+      // Chuc nang: xu ly nghiep vu cho setPickedLocation.
+      async function setPickedLocation(lat, lng) {
+        var $address = $('#customerAddress');
+        $address.attr('placeholder', 'Đang tải địa chỉ...');
+        CUSTOMER_LOCATION = { lat: Number(lat), lng: Number(lng) };
+
+        if (mapPickerMap) {
+          if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+          mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
+          mapPickerMap.panTo([lat, lng]);
+        }
 
         try {
-            // FIX: Thêm kiểm tra API tồn tại để tránh lỗi crash trang
-            if (typeof API !== 'undefined') {
-                const configData = await API.getSettings();
-                window.CONFIG = { ...window.CONFIG, ...configData };
-                if (configData.holidays) HOLIDAYS = configData.holidays;
-                servicesData = await API.getServices();
-            } else {
-                // Fallback nếu không có file JS
-                servicesData = []; 
-            }
-            renderServices(servicesData);
-            initMap();
-            initAddressEvents();
+          var res = await fetch(
+            'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&addressdetails=1',
+            { headers: { 'Accept-Language': 'vi' } }
+          );
+          var data = await res.json();
+          var text = buildAddressFromNominatim(data, lat, lng);
+          $address.val(text);
+          if (mapPickerMarker) mapPickerMarker.bindPopup('<small>' + text + '</small>').openPopup();
         } catch (e) {
-            console.error("Lỗi:", e);
-            initMap();
-            initAddressEvents();
+          $address.val(lat.toFixed(6) + ', ' + lng.toFixed(6));
         }
-    }
 
-    function initMap() {
-        if (typeof L === 'undefined') return;
-        map = L.map('map').setView(STORE_LOCATION, 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        marker = L.marker(STORE_LOCATION, { draggable: true }).addTo(map);
-        map.on('click', (e) => updateLocation(e.latlng));
-        marker.on('dragend', () => updateLocation(marker.getLatLng()));
-        calculateDistance(STORE_LOCATION);
-    }
+        $address.attr('placeholder', "Bấm 'Lấy vị trí của tôi'");
 
-    async function updateLocation(latlng) {
-        marker.setLatLng(latlng);
-        calculateDistance([latlng.lat, latlng.lng]);
-        addressInput.value = "Đang xác định vị trí...";
-        clearBtn.style.display = 'block';
-        try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`);
-            const data = await response.json();
-            addressInput.value = data.display_name || `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
-        } catch (error) {
-            addressInput.value = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
+        if (typeof window.recalculateDistanceAndPrice === 'function') {
+          window.recalculateDistanceAndPrice();
         }
-    }
+      }
 
-    function initAddressEvents() {
-        addressInput.addEventListener('input', async function() {
-            const query = this.value;
-            clearBtn.style.display = query.length > 0 ? 'block' : 'none';
-            if (query.length < 4) { suggestionBox.style.display = 'none'; return; }
-            try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=vn&limit=5`);
-                const data = await response.json();
-                if (data.length > 0) {
-                    suggestionBox.innerHTML = data.map(item => `
-                        <button type="button" class="list-group-item list-group-item-action py-2" 
-                                onclick="selectAddress('${item.display_name.replace(/'/g, "\\'")}', ${item.lat}, ${item.lon})">
-                            <i class="fas fa-map-marker-alt me-2 text-success"></i>${item.display_name}
-                        </button>`).join('');
-                    suggestionBox.style.display = 'block';
-                }
-            } catch (e) { }
-        });
-
-        clearBtn.addEventListener('click', function() {
-            addressInput.value = '';
-            this.style.display = 'none';
-            suggestionBox.style.display = 'none';
-            addressInput.focus();
-        });
-    }
-
-    function selectAddress(name, lat, lon) {
-        addressInput.value = name;
-        suggestionBox.style.display = 'none';
-        const newLatLng = new L.LatLng(lat, lon);
-        marker.setLatLng(newLatLng);
-        map.setView(newLatLng, 16);
-        calculateDistance([lat, lon]);
-    }
-
-    function getCurrentLocation() {
-        if (navigator.geolocation) {
-            addressInput.value = "Đang lấy vị trí của bạn...";
-            navigator.geolocation.getCurrentPosition(p => {
-                const coords = [p.coords.latitude, p.coords.longitude];
-                map.setView(coords, 16);
-                updateLocation({ lat: coords[0], lng: coords[1] });
-            }, () => {
-                addressInput.value = "";
-                Swal.fire('Lỗi', 'Không thể truy cập vị trí', 'error');
-            });
+      // Chuc nang: xu ly nghiep vu cho ensureMapPickerInit.
+      function ensureMapPickerInit() {
+        if (typeof L === 'undefined') {
+          alert('Không thể tải bản đồ. Vui lòng thử lại sau.');
+          return false;
         }
-    }
+        var el = document.getElementById('mapPickerEl');
+        if (!el) return false;
 
-    function calculateDistance(targetCoords) {
-        const from = L.latLng(STORE_LOCATION);
-        const to = L.latLng(targetCoords);
-        currentDistance = (from.distanceTo(to) / 1000).toFixed(1);
-        document.getElementById('distance-display').innerHTML = `<i class="fas fa-truck-moving me-1"></i> Khoảng cách: ${currentDistance} km`;
-        document.getElementById('km-text').innerText = `${currentDistance} km`;
-        updateBill();
-    }
+        if (!mapPickerMap) {
+          mapPickerMap = L.map('mapPickerEl').setView([10.7769, 106.7009], 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+          }).addTo(mapPickerMap);
+          mapPickerMap.on('click', function (e) {
+            setPickedLocation(e.latlng.lat, e.latlng.lng);
+          });
+        }
 
-    function renderServices(data) {
-        if (!data || data.length === 0) return;
-        const html = data.map(sv => {
-            const avgPrice = (sv.price_m2_min + sv.price_m2_max) / 2;
-            return `
-            <div class="service-item-row" id="card_${sv.id}" onclick="selectService(event, ${sv.id})">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <input type="checkbox" class="form-check-input service-chk me-3" id="chk_${sv.id}" value="${sv.id}" 
-                               data-name="${sv.name}" data-price="${avgPrice}" onclick="event.stopPropagation(); updateBill()">
-                        <div>
-                            <div class="fw-bold text-dark">${sv.name}</div>
-                            <div class="text-muted small">${sv.description ? sv.description.substring(0, 60) + '...' : ''}</div>
-                        </div>
-                    </div>
-                    <div class="text-end fw-bold text-success">~${avgPrice.toLocaleString()}đ/${sv.area_unit || 'm²'}</div>
-                </div>
-                <div class="area-input-wrapper mt-3 p-3 bg-white rounded-4 shadow-sm" onclick="event.stopPropagation()" id="area_wrapper_${sv.id}">
-                    <div class="row align-items-center g-3">
-                        <div class="col-12">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light fw-bold text-secondary">Diện tích</span>
-                                <input type="number" class="form-control area-val" data-for="${sv.id}" value="0" min="0" oninput="updateBill()">
-                                <span class="input-group-text">${sv.area_unit || 'm²'}</span>
-                            </div>
-                        </div>
-                        <div class="col-12 mt-2 pt-2 border-top border-light d-flex justify-content-between align-items-center">
-                            <span class="small fw-bold text-secondary">Thành tiền:</span>
-                            <span class="fw-bold text-success fs-5" id="line_total_${sv.id}">0đ</span>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
-        document.getElementById('service-list-render').innerHTML = html;
-    }
+        setTimeout(function () {
+          mapPickerMap.invalidateSize();
+        }, 80);
+        return true;
+      }
 
-    function selectService(event, id) {
-        const chk = document.getElementById(`chk_${id}`);
-        const card = document.getElementById(`card_${id}`);
-        const areaWrapper = document.getElementById(`area_wrapper_${id}`);
-        if (event.target !== chk) chk.checked = !chk.checked;
-        card.classList.toggle('selected', chk.checked);
-        areaWrapper.style.display = chk.checked ? 'block' : 'none';
-        updateBill();
-    }
+      // Chuc nang: xu ly nghiep vu cho toggleMapPicker.
+      function toggleMapPicker() {
+        var $box = $('#mapPickerBox');
+        var $btn = $('#toggleMapBtn');
+        var opening = $box.hasClass('d-none');
 
-    function updateBill() {
-        const selected = document.querySelectorAll('.service-chk:checked');
-        const summaryBox = document.getElementById('summary-items');
-        const feeBox = document.getElementById('fee-details');
-        const bookingDate = document.getElementById('ngay_dat').value;
+        $box.toggleClass('d-none', !opening);
+        if (opening) {
+          $btn.html('<i class="fas fa-times me-1"></i>Đóng bản đồ');
+          ensureMapPickerInit();
+        } else {
+          $btn.html('<i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ');
+        }
+      }
 
-        if (selected.length === 0) {
-            summaryBox.innerHTML = '<div class="text-center opacity-75 py-4 small">Chưa có dịch vụ nào được chọn</div>';
-            feeBox.style.display = 'none';
+      // Chuc nang: xu ly nghiep vu cho getLocation.
+      function getLocation() {
+        if (!navigator.geolocation) {
+          alert('Trình duyệt của bạn không hỗ trợ định vị GPS.');
+          return;
+        }
+
+        var $address = $('#customerAddress');
+        var originalPlaceholder = $address.attr('placeholder') || '';
+        $address.attr('placeholder', 'Đang xác định vị trí...');
+
+        navigator.geolocation.getCurrentPosition(
+          async function (pos) {
+            var lat = pos.coords.latitude;
+            var lng = pos.coords.longitude;
+            if ($('#mapPickerBox').hasClass('d-none')) {
+              toggleMapPicker();
+            }
+            if (ensureMapPickerInit()) {
+              mapPickerMap.setView([lat, lng], 16);
+            }
+            await setPickedLocation(lat, lng);
+            $address.attr('placeholder', originalPlaceholder);
+          },
+          function (err) {
+            $address.attr('placeholder', originalPlaceholder);
+            if (err && err.code === 1) {
+              alert('Vui lòng cho phép truy cập vị trí trong trình duyệt để sử dụng tính năng này.');
+            } else {
+              alert('Không thể xác định vị trí. Vui lòng thử lại hoặc nhập địa chỉ thủ công.');
+            }
+          },
+          { timeout: 10000, enableHighAccuracy: true }
+        );
+      }
+
+      // [Thêm mới] Tự động tìm tọa độ khi người dùng gõ địa chỉ thủ công
+      var lookupAddressTimeout = null;
+      $(document).on('input', '#customerAddress', function () {
+        var query = $(this).val().trim();
+        if (query.length < 5) return;
+
+        clearTimeout(lookupAddressTimeout);
+        lookupAddressTimeout = setTimeout(async function () {
+          try {
+            var res = await fetch(
+              'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1',
+              { headers: { 'Accept-Language': 'vi' } }
+            );
+            var data = await res.json();
+            if (data && data.length > 0) {
+              var lat = Number(data[0].lat);
+              var lng = Number(data[0].lon);
+
+              // Cập nhật vị trí nhưng KHÔNG được gán ngược lại ô input (tránh làm gián đoạn việc gõ)
+              CUSTOMER_LOCATION = { lat: lat, lng: lng };
+
+              if (mapPickerMap) {
+                if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+                mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
+                mapPickerMap.setView([lat, lng], 16);
+                mapPickerMarker.bindPopup('<small>' + (data[0].display_name) + '</small>');
+              }
+
+              if (typeof window.recalculateDistanceAndPrice === 'function') {
+                window.recalculateDistanceAndPrice();
+              }
+            }
+          } catch (e) {
+            console.warn('Address lookup error:', e);
+          }
+        }, 1000); // Đợi 1 giây sau khi ngừng gõ để tránh gọi API quá nhiều
+      });
+
+      $(document).ready(async function () {
+        var SERVICES = [];
+        var CURRENT_SERVICE = null;
+        var LAST_CALC_RESULT = null;
+        var PENDING_BOOKING_DATA = null;
+        var STORAGE_KEY = 'pending_booking_dat_lich';
+        var QUICK_ATTACHMENTS = {
+          images: [],
+          videos: []
+        };
+        // Fixed coordinates for SBI Building - Quang Trung Software Park.
+        // Using fixed lat/lng avoids Nominatim geocode failures that make distance return 0.
+        var OFFICE_COORDS = { lat: 10.853880, lng: 106.629830 };
+        var DISTANCE_KM = 0;
+        var DISTANCE_REQUEST_ID = 0;
+
+        // Chuc nang: xu ly nghiep vu cho renderDistanceInfo.
+        function renderDistanceInfo(message, isError) {
+          var $distanceInfo = $('#distanceInfo');
+          if (!$distanceInfo.length) return;
+          $distanceInfo
+            .text(message)
+            .toggleClass('text-danger', !!isError)
+            .toggleClass('text-muted', !isError);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho haversineKm.
+        function haversineKm(from, to) {
+          var R = 6371;
+          var dLat = (to.lat - from.lat) * Math.PI / 180;
+          var dLng = (to.lng - from.lng) * Math.PI / 180;
+          var a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(from.lat * Math.PI / 180) * Math.cos(to.lat * Math.PI / 180) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          return R * c;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho isValidCoordinate.
+        function isValidCoordinate(value) {
+          return typeof value === 'number' && Number.isFinite(value);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho getRouteDistanceKm.
+        async function getRouteDistanceKm(origin, destination) {
+          var routeUrl =
+            'https://router.project-osrm.org/route/v1/driving/' +
+            origin.lng +
+            ',' +
+            origin.lat +
+            ';' +
+            destination.lng +
+            ',' +
+            destination.lat +
+            '?overview=false&alternatives=false&steps=false';
+          var response = await fetch(routeUrl);
+          if (!response.ok) throw new Error('Route API lỗi: ' + response.status);
+          var data = await response.json();
+          if (data && Array.isArray(data.routes) && data.routes.length) {
+            return Number(data.routes[0].distance || 0) / 1000;
+          }
+          throw new Error('Không lấy được dữ liệu tuyến đường.');
+        }
+
+        // Chuc nang: xu ly nghiep vu cho recalculateDistanceAndPrice.
+        async function recalculateDistanceAndPrice() {
+          var requestId = ++DISTANCE_REQUEST_ID;
+
+          if (!CUSTOMER_LOCATION) {
+            DISTANCE_KM = 0;
+            // renderDistanceInfo('Quãng đường và phí di chuyển sẽ được tính tự động sau khi chọn vị trí.');
+            updateTotalPrice();
             return;
+          }
+
+          // renderDistanceInfo('Đang tính quãng đường thực tế từ vị trí nhân sự đến địa chỉ của bạn...');
+
+          try {
+            var office = OFFICE_COORDS;
+            if (!office || !isValidCoordinate(office.lat) || !isValidCoordinate(office.lng)) {
+              throw new Error('Thiếu tọa độ vị trí công ty.');
+            }
+            if (!isValidCoordinate(CUSTOMER_LOCATION.lat) || !isValidCoordinate(CUSTOMER_LOCATION.lng)) {
+              throw new Error('Thiếu tọa độ vị trí khách hàng.');
+            }
+
+            var distanceKm;
+
+            try {
+              distanceKm = await getRouteDistanceKm(office, CUSTOMER_LOCATION);
+            } catch (routeError) {
+              distanceKm = haversineKm(office, CUSTOMER_LOCATION);
+            }
+
+            if (requestId !== DISTANCE_REQUEST_ID) return;
+
+            // DISTANCE_KM = Number(distanceKm.toFixed(2));
+            DISTANCE_KM = 0; // Luôn để 0 để ẩn tính phí di chuyển
+            
+            /*
+            renderDistanceInfo(
+              'Quãng đường ước tính: ' +
+              DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+              ' km. Phí di chuyển: ' +
+              formatMoney(DISTANCE_KM * 5000) +
+              '.'
+            );
+            */
+          } catch (error) {
+            if (requestId !== DISTANCE_REQUEST_ID) return;
+
+            DISTANCE_KM = 0;
+            // renderDistanceInfo('Không thể tính quãng đường tự động lúc này. Tạm tính phí di chuyển = 0 đ.', true);
+          }
+
+          updateTotalPrice();
         }
 
-        feeBox.style.display = 'block';
-        let subtotal = 0, html = '';
-        selected.forEach(chk => {
-            const id = chk.value;
-            const area = parseFloat(document.querySelector(`.area-val[data-for="${id}"]`)?.value) || 0;
-            const total = parseFloat(chk.dataset.price) * area;
-            subtotal += total;
-            document.getElementById(`line_total_${id}`).innerText = total.toLocaleString() + 'đ';
-            html += `<div class="summary-line highlight flex-column align-items-start mb-3">
-                <div class="d-flex justify-content-between w-100"><span class="fw-bold text-white">${chk.dataset.name}</span><span class="fw-bold">${total.toLocaleString()}đ</span></div>
-                <div class="opacity-75 small">Diện tích: ${area} m²</div></div>`;
-        });
+        window.recalculateDistanceAndPrice = recalculateDistanceAndPrice;
 
-        let holidaySurcharge = 0;
-        if (bookingDate) {
-            const dateStr = bookingDate.split('-').slice(1).join('-');
-            if (HOLIDAYS.includes(dateStr)) holidaySurcharge = window.CONFIG.holiday_fee;
+        // Chuc nang: xu ly nghiep vu cho isUserLoggedIn.
+        function isUserLoggedIn() {
+          try {
+            var user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            return !!user;
+          } catch (e) {
+            return false;
+          }
         }
 
-        let shippingFee = currentDistance > 2 ? Math.ceil(currentDistance) * window.CONFIG.shipping_rate : 0;
-        const amountBeforeTax = subtotal + shippingFee + holidaySurcharge;
-        const vatFee = amountBeforeTax * window.CONFIG.vat_rate;
-        const finalTotal = amountBeforeTax + vatFee;
+        // Chuc nang: xu ly nghiep vu cho getPricingType.
+        function getPricingType() {
+          return CURRENT_SERVICE && CURRENT_SERVICE.pricing ? CURRENT_SERVICE.pricing.type : '';
+        }
 
-        summaryBox.innerHTML = html;
-        document.getElementById('holiday-fee-line').style.display = holidaySurcharge > 0 ? 'flex' : 'none';
-        document.getElementById('service-fee').innerText = vatFee.toLocaleString() + 'đ';
-        document.getElementById('shipping-fee').innerText = shippingFee.toLocaleString() + 'đ';
-        document.getElementById('total-amount').innerText = finalTotal.toLocaleString() + 'đ';
-    }
+        // Chuc nang: xu ly nghiep vu cho hasVisibleTimeSlotSelector.
+        function hasVisibleTimeSlotSelector() {
+          var $slot = $('#timeSlotSelect');
+          var $section = $('#timeSlotSection');
+          return $slot.length && $section.length && !$section.hasClass('d-none') && $slot.find('option').length > 0;
+        }
 
-    function handleBooking(e) {
-        e.preventDefault();
-        const selected = document.querySelectorAll('.service-chk:checked');
-        if(selected.length === 0) { Swal.fire('Chú ý', 'Vui lòng chọn ít nhất 1 dịch vụ!', 'warning'); return; }
-        
-        let servicesHtml = '';
-        selected.forEach(chk => {
-            const area = document.querySelector(`.area-val[data-for="${chk.value}"]`).value;
-            servicesHtml += `<div class="modal-service-item d-flex justify-content-between align-items-center">
-                <div><div class="fw-bold text-dark">${chk.dataset.name}</div><div class="small text-muted">Diện tích: ${area} m²</div></div>
-                <div class="fw-bold text-success">${document.getElementById(`line_total_${chk.value}`).innerText}</div></div>`;
-        });
+        // Chuc nang: xu ly nghiep vu cho getSelectedPackage.
+        function getSelectedPackage() {
+          var $pkg = $('.package-check:checked');
+          return $pkg.length ? $pkg : null;
+        }
 
-        document.getElementById('modal-content-render').innerHTML = `
-            <div class="row g-2">
-                <div class="col-6"><label class="modal-info-label">Khách hàng</label><div class="modal-info-value">${document.getElementById('hoten').value}</div></div>
-                <div class="col-6"><label class="modal-info-label">Điện thoại</label><div class="modal-info-value text-success">${document.getElementById('sodienthoai').value}</div></div>
-                <div class="col-12"><label class="modal-info-label">Địa chỉ</label><div class="modal-info-value text-muted small">${document.getElementById('diachi').value}</div></div>
-            </div><hr>${servicesHtml}
-            <div class="mt-3 p-3 bg-light rounded-4 border">
-                <div class="d-flex justify-content-between mb-1 small"><span>Thuế & Phí:</span><span class="fw-bold">${document.getElementById('service-fee').innerText}</span></div>
-                <div class="d-flex justify-content-between mt-2 pt-2 border-top border-2"><span class="fw-bold">TỔNG:</span><span class="fw-bold text-success fs-4">${document.getElementById('total-amount').innerText}</span></div>
-            </div>`;
-        new bootstrap.Modal(document.getElementById('confirmModal')).show();
-    }
+        // Chuc nang: xu ly nghiep vu cho renderServiceLoaiOptions.
+        function renderServiceLoaiOptions(service, selectedLoai) {
+          var $serviceLoai = $('#serviceLoai');
+          if (!$serviceLoai.length) return;
 
-    function submitToSheet() {
-        Swal.fire({ title: 'Đang gửi...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-        setTimeout(() => { Swal.fire('Thành công', 'Lịch hẹn đã được gửi!', 'success').then(() => window.location.reload()); }, 2000);
-    }
+          var loaiList = Array.isArray(service && service.loai) ? service.loai : [];
+          $serviceLoai.empty();
 
-    function handleFiles(files) {
-        const container = document.getElementById('media-previews');
-        Array.from(files).forEach(file => {
-            selectedFiles.push(file);
-            const div = document.createElement('div');
-            div.className = 'upload-box position-relative';
-            const reader = new FileReader();
-            reader.onload = e => {
-                if (file.type.startsWith('image/')) div.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:18px">`;
-                else div.innerHTML = `<video src="${URL.createObjectURL(file)}" style="width:100%;height:100%;object-fit:cover;border-radius:18px" muted></video><i class="fas fa-play-circle position-absolute text-white"></i>`;
+          if (!loaiList.length) {
+            $serviceLoai.append($('<option>').val('').text('Chưa có loại khu vườn'));
+          } else {
+            loaiList.forEach(function (item) {
+              var value = String(item || '').trim();
+              if (!value) return;
+              $serviceLoai.append($('<option>').val(value).text(value));
+            });
+          }
+
+          if (selectedLoai) {
+            $serviceLoai.val(String(selectedLoai));
+          }
+          if (!$serviceLoai.val()) {
+            $serviceLoai.prop('selectedIndex', 0);
+          }
+        }
+
+        // Chuc nang: xu ly nghiep vu cho resetFormState.
+        function resetFormState() {
+          $('#startTime').val('');
+          $('#endTime').val('');
+          $('#startTime').prop('readonly', false);
+          $('#endTime').prop('readonly', true);
+          $('#startTimeHint').text('');
+          $('#endTimeHint').text('');
+          $('#timeRangeRow').addClass('d-none');
+          $('#shiftInfoBox').addClass('d-none').html('');
+          $('#timeError').addClass('d-none').text('');
+          $('#durationUnit').val('day');
+          $('#durationAmount').val(1);
+          $('#endDateRow').addClass('d-none');
+          $('#durationAmountRow').addClass('d-none');
+          $('#autoEndDateRow').addClass('d-none');
+          $('#startDate').val('');
+          $('#endDate').val('');
+          $('#calcDetailRow').addClass('d-none');
+          $('#nightRow').removeClass('d-flex').addClass('d-none');
+          $('#holidayRow').removeClass('d-flex').addClass('d-none');
+          $('#basePrice').text('0 đ');
+          $('#totalPrice').val('0 đ');
+          $('#travelFee').text('0 đ');
+          $('#serviceArea').val('');
+          $('#serviceLevel').val('tiêu chuẩn');
+          if ($('#timeSlotSelect').length) {
+            $('#timeSlotSelect').prop('selectedIndex', 0);
+          }
+          $('.package-check').prop('checked', false).closest('label').removeClass('active');
+          LAST_CALC_RESULT = null;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho applyShiftHints.
+        function applyShiftHints() {
+          var type = getPricingType();
+          var box = $('#shiftInfoBox');
+          box.addClass('d-none').removeClass('alert-info alert-warning').html('');
+          $('#startTimeHint').text('');
+          $('#endTimeHint').text('');
+          $('#timeError').addClass('d-none').text('');
+
+          if (!type || !CURRENT_SERVICE || !CURRENT_SERVICE.pricing) return;
+
+          if (type === 'per_m2') {
+            box
+              .removeClass('d-none')
+              .addClass('alert-info')
+              .html('<i class="fas fa-ruler-combined me-1"></i><strong>Đơn giá theo m²:</strong> nhập diện tích và mức độ chăm sóc vườn để hệ thống tự tính.');
+          } else if (type === 'package') {
+            box
+              .removeClass('d-none')
+              .addClass('alert-info')
+              .html('<i class="fas fa-box-open me-1"></i><strong>Chăm sóc vườn:</strong> chọn gói phục vụ, hệ thống dùng đúng giá và thời lượng của gói.');
+          }
+        }
+
+        // Chuc nang: xu ly nghiep vu cho updatePackageLockState.
+        function updatePackageLockState() {
+          $('.package-check').closest('label').removeClass('package-locked');
+        }
+
+        // Chuc nang: xu ly nghiep vu cho validateTimeForShift.
+        function validateTimeForShift() {
+          var hasTimeSlot = hasVisibleTimeSlotSelector();
+          var slotVal = hasTimeSlot ? String($('#timeSlotSelect').val() || '') : '';
+          var requireManualTime = !hasTimeSlot || slotVal === 'custom';
+          var start = $('#startTime').val();
+          var end = $('#endTime').val();
+          $('#timeError').addClass('d-none').text('');
+
+          if (!start && !end) {
+            if (!requireManualTime) return true;
+            $('#timeError').removeClass('d-none').text('Vui lòng nhập giờ bắt đầu khi chọn khung giờ Khác.');
+            return false;
+          }
+
+          if (!start || !end) {
+            $('#timeError').removeClass('d-none').text('Hệ thống chưa tính được giờ kết thúc. Vui lòng kiểm tra diện tích hoặc gói dịch vụ.');
+            return false;
+          }
+
+          var sh = parseInt(start.split(':')[0], 10);
+          var sm = parseInt(start.split(':')[1], 10);
+          var eh = parseInt(end.split(':')[0], 10);
+          var em = parseInt(end.split(':')[1], 10);
+          var sMin = sh * 60 + sm;
+          var eMin = eh * 60 + em;
+
+          if (eMin <= sMin) {
+            eMin += 1440;
+          }
+          if (eMin <= sMin) {
+            $('#timeError').removeClass('d-none').text('Giờ kết thúc phải sau giờ bắt đầu.');
+            return false;
+          }
+          return true;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho getHours.
+        function getHours() {
+          var start = $('#startTime').val();
+          var end = $('#endTime').val();
+          if (!start || !end) return 0;
+          var sh = parseInt(start.split(':')[0], 10);
+          var sm = parseInt(start.split(':')[1], 10);
+          var eh = parseInt(end.split(':')[0], 10);
+          var em = parseInt(end.split(':')[1], 10);
+          var sMin = sh * 60 + sm;
+          var eMin = eh * 60 + em;
+          if (eMin <= sMin) eMin += 1440;
+          var diff = eMin - sMin;
+          return diff > 0 ? diff / 60 : 0;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho getDays.
+        function getDays() {
+          var startVal = $('#startDate').val();
+          var unit = $('#durationUnit').val() || 'day';
+          if (!startVal || !unit) return 0;
+          var endVal = $('#endDate').val();
+          if (!endVal) {
+            endVal = startVal;
+          }
+          if (!endVal) return 0;
+          var diff = Math.floor((new Date(endVal) - new Date(startVal)) / 86400000) + 1;
+          return diff > 0 ? diff : 0;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho computeEndDate.
+        function computeEndDate() {
+          var startVal = $('#startDate').val();
+          var unit = $('#durationUnit').val();
+          if (!startVal || !unit || unit === 'day') return null;
+          var e = new Date(startVal);
+          if (unit === 'week') {
+            e.setDate(e.getDate() + (parseInt($('#durationAmount').val(), 10) || 1) * 7 - 1);
+          } else if (unit === 'month') {
+            e.setMonth(e.getMonth() + (parseInt($('#durationAmount').val(), 10) || 1));
+            e.setDate(e.getDate() - 1);
+          } else if (unit === 'year') {
+            e.setFullYear(e.getFullYear() + (parseInt($('#durationAmount').val(), 10) || 1));
+            e.setDate(e.getDate() - 1);
+          }
+          return e;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho formatDateVN.
+        function formatDateVN(d) {
+          return d ? d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+        }
+
+        // Chuc nang: xu ly nghiep vu cho formatDateFromInput.
+        function formatDateFromInput(dateStr) {
+          if (!dateStr) return '-';
+          var d = new Date(dateStr);
+          if (isNaN(d.getTime())) return dateStr;
+          return formatDateVN(d);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho updateDurationUI.
+        function updateDurationUI() {
+          $('#durationUnit').val('day');
+          $('#endDateRow').addClass('d-none');
+          $('#durationAmountRow').addClass('d-none');
+          $('#autoEndDateRow').addClass('d-none');
+        }
+
+        // Chuc nang: xu ly nghiep vu cho updateAutoEndDate.
+        function updateAutoEndDate() {
+          $('#autoEndDateRow').addClass('d-none');
+        }
+
+        var PHU_THU_RULES = [];
+
+        // Chuyển chuỗi 'HH:MM' thành số phút từ 0h.
+        function timeToMin(t) {
+          if (!t) return null;
+          var p = t.split(':');
+          return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+        }
+
+        // Tính tổng phụ thu (%) và nhãn cho ngày+giờ hiện tại dựa trên PHU_THU_RULES.
+        function calcPhuThu(dateStr, startTimeStr) {
+          var result = { percent: 0, labels: [] };
+          if (!PHU_THU_RULES.length) return result;
+
+          var d = dateStr ? new Date(dateStr) : null;
+          var ngay = d ? d.getDate() : null;
+          var thang = d ? d.getMonth() + 1 : null;
+          var nam = d ? d.getFullYear() : null;
+          var sMin = timeToMin(startTimeStr);
+
+          PHU_THU_RULES.forEach(function (r) {
+            var loai = (r.loai || '').trim();
+            var pct = parseFloat(r.phu_thu_percent) || 0;
+            var ten = (r.ten || '').trim();
+            if (!pct) return;
+
+            if (loai === 'le') {
+              var rNgay = r.ngay != null && r.ngay !== '' ? parseInt(r.ngay, 10) : null;
+              var rThang = r.thang != null && r.thang !== '' ? parseInt(r.thang, 10) : null;
+              var rNam = r.nam != null && r.nam !== '' ? parseInt(r.nam, 10) : null;
+              if (rNgay === null || rThang === null) return;
+              if (ngay !== rNgay || thang !== rThang) return;
+              if (rNam !== null && nam !== rNam) return;
+              result.percent += pct;
+              result.labels.push(ten);
+            } else if (loai === 'dem' || loai === 'cao_diem') {
+              if (sMin === null) return;
+              var bdMin = timeToMin(r.gio_bat_dau);
+              var ktMin = timeToMin(r.gio_ket_thuc);
+              if (bdMin === null || ktMin === null) return;
+              var inShift;
+              if (ktMin < bdMin) {
+                inShift = sMin >= bdMin || sMin < ktMin;
+              } else {
+                inShift = sMin >= bdMin && sMin < ktMin;
+              }
+              if (!inShift) return;
+              result.percent += pct;
+              result.labels.push(ten);
+            }
+          });
+          return result;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho isHoliday.
+        function isHoliday(dateStr) {
+          var pt = calcPhuThu(dateStr, null);
+          return pt.labels.some(l => l.toLowerCase().includes('lễ') || l.toLowerCase().includes('tết'));
+        }
+
+        // Chuc nang: xu ly nghiep vu cho isWeekend.
+        function isWeekend(dateStr) {
+          if (!dateStr) return false;
+          var d = new Date(dateStr);
+          var day = d.getDay();
+          return day === 0 || day === 6;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho isPeakTime.
+        function isPeakTime() {
+          var slotVal = hasVisibleTimeSlotSelector() ? String($('#timeSlotSelect').val() || '').toLowerCase() : '';
+          if (slotVal.indexOf('peak') !== -1 || slotVal.indexOf('evening') !== -1 || slotVal.indexOf('gio-cao-diem') !== -1) {
+            return true;
+          }
+
+          var start = $('#startTime').val();
+          if (!start) return false;
+          var h = parseInt(start.split(':')[0], 10);
+          return (h >= 6 && h < 9) || (h >= 17 && h < 21);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho getNearestEstimate.
+        function getNearestEstimate(area, estimatedList) {
+          if (!Array.isArray(estimatedList) || !estimatedList.length) return null;
+          var sorted = estimatedList.slice().sort(function (a, b) {
+            return Math.abs(Number(a.area || 0) - area) - Math.abs(Number(b.area || 0) - area);
+          });
+          return sorted[0] || null;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho normalizeTimeText.
+        function normalizeTimeText(timeText) {
+          if (!timeText) return '';
+          var parts = String(timeText).trim().split(':');
+          if (parts.length < 2) return '';
+          var h = parseInt(parts[0], 10);
+          var m = parseInt(parts[1], 10);
+          if (!Number.isFinite(h) || !Number.isFinite(m)) return '';
+          return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+        }
+
+        // Chuc nang: xu ly nghiep vu cho parseSlotRangeFromLabel.
+        function parseSlotRangeFromLabel(label) {
+          var m = String(label || '').match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+          if (!m) return null;
+          return {
+            start: normalizeTimeText(m[1]),
+            end: normalizeTimeText(m[2])
+          };
+        }
+
+        // Chuc nang: xu ly nghiep vu cho addHoursToTime.
+        function addHoursToTime(startTime, hours) {
+          var normalized = normalizeTimeText(startTime);
+          var workHours = Number(hours || 0);
+          if (!normalized || !(workHours > 0)) return '';
+
+          var sh = parseInt(normalized.split(':')[0], 10);
+          var sm = parseInt(normalized.split(':')[1], 10);
+          var totalMinutes = sh * 60 + sm + Math.round(workHours * 60);
+          var endHour = Math.floor(((totalMinutes % 1440) + 1440) % 1440 / 60);
+          var endMin = ((totalMinutes % 60) + 60) % 60;
+          return String(endHour).padStart(2, '0') + ':' + String(endMin).padStart(2, '0');
+        }
+
+        // Chuc nang: xu ly nghiep vu cho getEstimatedHoursForAutoEnd.
+        function getEstimatedHoursForAutoEnd() {
+          if (!CURRENT_SERVICE || !CURRENT_SERVICE.pricing) return 0;
+
+          var pricing = CURRENT_SERVICE.pricing;
+          var type = getPricingType();
+
+          if (type === 'per_m2') {
+            var area = Number($('#serviceArea').val() || 0);
+            if (!(area > 0)) return 0;
+            var estimate = getNearestEstimate(area, pricing.estimated || []);
+            return Number((estimate && estimate.hours) || 0);
+          }
+
+          var selectedPackage = getSelectedPackage();
+          if (!selectedPackage) return 0;
+          return Number(selectedPackage.data('hours') || 0);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho syncAutoEndTimeFromStart.
+        function syncAutoEndTimeFromStart() {
+          if (hasVisibleTimeSlotSelector() && String($('#timeSlotSelect').val() || '') !== 'custom') return;
+
+          var start = $('#startTime').val();
+          if (!start) {
+            $('#endTime').val('');
+            $('#endTimeHint').text('');
+            return;
+          }
+
+          var hours = getEstimatedHoursForAutoEnd();
+          if (!(hours > 0)) {
+            $('#endTime').val('');
+            $('#endTimeHint').text('Vui lòng nhập diện tích/gói chăm sóc vườn để hệ thống tự tính giờ kết thúc.');
+            return;
+          }
+
+          $('#endTime').val(addHoursToTime(start, hours));
+          $('#endTimeHint').text('Tự động: giờ bắt đầu + ' + Number(hours).toFixed(1) + ' giờ chăm sóc vườn.');
+        }
+
+        // Chuc nang: xu ly nghiep vu cho applyTimeSlotBehavior.
+        function applyTimeSlotBehavior() {
+          var $slot = $('#timeSlotSelect');
+          var $row = $('#timeRangeRow');
+
+          if (!hasVisibleTimeSlotSelector()) {
+            $row.removeClass('d-none');
+            $('#startTime').prop('readonly', false);
+            $('#endTime').prop('readonly', true);
+            $('#startTimeHint').text('Nhập giờ bắt đầu, hệ thống tự tính giờ kết thúc theo số giờ chăm sóc vườn.');
+            return;
+          }
+
+          var slotVal = String($slot.val() || '');
+          var slotLabel = $slot.find('option:selected').text() || '';
+
+          if (slotVal === 'custom') {
+            $row.removeClass('d-none');
+            $('#startTime').prop('readonly', false);
+            $('#endTime').prop('readonly', true);
+            $('#startTimeHint').text('Nhập giờ bắt đầu, hệ thống tự tính giờ kết thúc theo số giờ chăm sóc vườn.');
+            if (!$('#startTime').val()) {
+              $('#startTime').val('08:00');
+            }
+            syncAutoEndTimeFromStart();
+            return;
+          }
+
+          var slotRange = parseSlotRangeFromLabel(slotLabel);
+          if (slotRange && slotRange.start && slotRange.end) {
+            $('#startTime').val(slotRange.start);
+            $('#endTime').val(slotRange.end);
+            $('#startTimeHint').text('Giờ được lấy theo khung giờ chăm sóc vườn đã chọn.');
+            $('#endTimeHint').text('Giờ được lấy theo khung giờ chăm sóc vườn đã chọn.');
+          } else {
+            $('#startTime').val('');
+            $('#endTime').val('');
+            $('#startTimeHint').text('');
+            $('#endTimeHint').text('');
+          }
+
+          $('#startTime').prop('readonly', true);
+          $('#endTime').prop('readonly', true);
+          $row.addClass('d-none');
+        }
+
+        // Chuc nang: xu ly nghiep vu cho calculateBasePriceByServiceType.
+        function calculateBasePriceByServiceType() {
+          if (!CURRENT_SERVICE || !CURRENT_SERVICE.pricing) {
+            return { valid: false, message: 'Vui lòng chọn dịch vụ.', basePrice: 0 };
+          }
+
+          var type = getPricingType();
+          var pricing = CURRENT_SERVICE.pricing;
+
+          if (type === 'per_m2') {
+            var area = Number($('#serviceArea').val() || 0);
+            var level = $('#serviceLevel').val() || 'tiêu chuẩn';
+            var levelFactor = Number((pricing.levels && pricing.levels[level]) || 1);
+            if (area <= 0) {
+              return { valid: false, message: 'Vui lòng nhập diện tích (m²).', basePrice: 0 };
+            }
+
+            var base = area * Number(pricing.base_price || 0);
+            var leveled = base * levelFactor;
+            var finalBase = leveled;
+            var estimate = getNearestEstimate(area, pricing.estimated || []);
+            var estimateStaff = estimate ? Number(estimate.staff || 0) : 0;
+            var estimateHours = estimate ? Number(estimate.hours || 0) : 0;
+
+            return {
+              valid: true,
+              type: type,
+              basePrice: finalBase,
+              calcText:
+                'Tiền diện tích = ' + area + 'm² × ' + formatMoney(Number(pricing.base_price || 0)) +
+                '; Mức độ chăm sóc vườn(' + level + ') = ×' + levelFactor,
+              estimatedStaff: estimateStaff,
+              estimatedHours: estimateHours,
+              packageLabel: 'Mức độ chăm sóc vườn ' + level + ' - ' + area + 'm²',
+              packageValue: level
             };
-            reader.readAsDataURL(file);
-            container.appendChild(div);
+          }
+
+          var selectedPackage = getSelectedPackage();
+          if (!selectedPackage) {
+            return { valid: false, message: 'Vui lòng chọn gói dịch vụ.', basePrice: 0 };
+          }
+
+          var packagePrice = Number(selectedPackage.data('price') || 0);
+          var packageStaff = Number(selectedPackage.data('staff') || 0);
+          var packageHours = Number(selectedPackage.data('hours') || 0);
+          var packageLabel = selectedPackage.data('label') || 'Gói dịch vụ';
+
+          return {
+            valid: true,
+            type: type,
+            basePrice: packagePrice,
+            calcText: 'Giá gói chăm sóc vườn: ' + formatMoney(packagePrice),
+            estimatedStaff: packageStaff,
+            estimatedHours: packageHours,
+            packageLabel: packageLabel,
+            packageValue: String(selectedPackage.val())
+          };
+        }
+
+        // Chuc nang: xu ly nghiep vu cho getDayFactor.
+        function getDayFactor(dateStr) {
+          if (!dateStr) return { factor: 1, label: '' };
+          if (isHoliday(dateStr)) return { factor: 1.3, label: 'Ngày lễ (+30%)' };
+          if (isWeekend(dateStr)) return { factor: 1.1, label: 'Cuối tuần (+10%)' };
+          return { factor: 1, label: '' };
+        }
+
+        // Chuc nang: xu ly nghiep vu cho formatMoney.
+        function formatMoney(val) {
+          return Math.round(val).toLocaleString('vi-VN') + ' đ';
+        }
+        // [Thêm mới] Hàm hỗ trợ tìm kiếm địa chỉ và định vị bản đồ khi tự động điền từ session
+        async function lookupAndFocusAddress(query) {
+          if (!query || query.length < 5) return;
+          try {
+            const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1', {
+              headers: { 'Accept-Language': 'vi' }
+            });
+            const data = await res.json();
+            if (data && data.length > 0) {
+              const lat = Number(data[0].lat);
+              const lng = Number(data[0].lon);
+              CUSTOMER_LOCATION = { lat: lat, lng: lng };
+
+              // Khởi tạo bản đồ nếu cần và tập trung vào vị trí tìm thấy
+              if (typeof ensureMapPickerInit === 'function') ensureMapPickerInit();
+              if (mapPickerMap) {
+                // Mở khung bản đồ nếu đang đóng để người dùng thấy vị trí đã gán
+                if ($('#mapPickerBox').hasClass('d-none')) {
+                  if (typeof toggleMapPicker === 'function') toggleMapPicker();
+                }
+                if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+                mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
+                mapPickerMap.setView([lat, lng], 16);
+                mapPickerMarker.bindPopup('<small>' + (data[0].display_name) + '</small>').openPopup();
+              }
+
+              // Cập nhật lại quãng đường và phí di chuyển
+              if (typeof recalculateDistanceAndPrice === 'function') {
+                recalculateDistanceAndPrice();
+              }
+            }
+          } catch (e) {
+            console.warn('Auto focus address lookup failed:', e);
+          }
+        }
+        // [Thêm mới] Tự động điền thông tin khách hàng từ session nếu đã đăng nhập
+        async function autoFillCustomerInfo() {
+          try {
+            const response = await fetch('session_user.php?action=current', { credentials: 'same-origin' });
+            const data = await response.json();
+            if (data.success && data.user) {
+              const user = data.user;
+              if (user.hovaten) $('#customerName').val(user.hovaten);
+              if (user.sodienthoai) $('#customerPhone').val(user.sodienthoai);
+              if (user.email) $('#customerEmail').val(user.email);
+              if (user.diachi) {
+                $('#customerAddress').val(user.diachi);
+                // [Thêm mới] Tự động lookup địa chỉ và focus bản đồ khi gán từ session
+                lookupAndFocusAddress(user.diachi);
+              }
+              // Tự động thu gọn nếu đã điền xong thông tin cơ bản và chưa bị thu gọn
+              if (user.hovaten && user.sodienthoai) {
+                const box = document.getElementById('customerInfoBox');
+                if (box && !box.classList.contains('collapsed')) {
+                  if (typeof toggleCustomerInfo === 'function') toggleCustomerInfo();
+                }
+              }
+            }
+          } catch (error) {
+            console.log('Chưa đăng nhập hoặc lỗi session');
+          }
+        }
+        autoFillCustomerInfo();
+        // Chuc nang: xu ly nghiep vu cho updateTotalPrice.
+        function updateTotalPrice() {
+          if (!CURRENT_SERVICE) return;
+          if (!validateTimeForShift()) return;
+
+          var baseCalc = calculateBasePriceByServiceType();
+
+          if (!baseCalc.valid) {
+            $('#totalPrice').val('0 đ');
+            $('#basePrice').text('0 đ');
+            $('#calcDetailRow').addClass('d-none');
+            $('#nightRow').addClass('d-none');
+            $('#holidayRow').addClass('d-none');
+            $('#travelFee').text('0 đ');
+            LAST_CALC_RESULT = null;
+            return;
+          }
+
+          var adjustedBase = Number(baseCalc.basePrice || 0); // Bỏ jobRatio
+          var totalDays = Math.max(getDays(), 1);
+          var baseTotal = adjustedBase * totalDays;
+
+          // Tính phụ thu động
+          var pt = calcPhuThu($('#startDate').val(), $('#startTime').val());
+          var phuThuFee = pt.percent > 0 ? baseTotal * (pt.percent / 100) : 0;
+
+          var km = Number(DISTANCE_KM || 0);
+          var travelFee = km * 5000;
+          var finalPrice = baseTotal + phuThuFee + travelFee;
+
+          $('#basePrice').text(formatMoney(baseTotal));
+
+          $('#calcDetailText').text(
+            baseCalc.calcText +
+            '; số ngày ' + totalDays +
+            '; quãng đường ' + km.toFixed(2) + 'km'
+          );
+          $('#calcDetailRow').removeClass('d-none');
+
+          // Hiển thị phụ thu
+          if (phuThuFee > 0) {
+            $('#nightRow').removeClass('d-none').css('display', 'flex');
+            var labelText = (pt.labels.length ? pt.labels.join(', ') : 'Phụ thu chăm sóc vườn') + ' (+' + pt.percent + '%)';
+            $('#phuThuLabel').text(labelText);
+            $('#nightFee').text(formatMoney(phuThuFee));
+          } else {
+            $('#nightRow').addClass('d-none');
+          }
+          $('#holidayRow').addClass('d-none'); // Gộp chung vào nightRow (phụ thu)
+
+          $('#travelFee').text(formatMoney(travelFee));
+          $('#totalPrice').val(formatMoney(finalPrice));
+
+          LAST_CALC_RESULT = {
+            basePrice: adjustedBase,
+            finalPrice: finalPrice,
+            pricingType: getPricingType(),
+            packageLabel: baseCalc.packageLabel || 'Không chọn gói chăm sóc vườn',
+            packageValue: baseCalc.packageValue || '',
+            totalHours: Number(baseCalc.estimatedHours || getHours() || 0),
+            staff: Number(baseCalc.estimatedStaff || 0),
+            phuThuPercent: pt.percent,
+            phuThuLabels: pt.labels,
+            travelFee: travelFee,
+            distanceKm: km,
+            totalDays: totalDays
+          };
+        }
+
+        // Chuc nang: xu ly nghiep vu cho resetQuickAttachments.
+        function resetQuickAttachments() {
+          QUICK_ATTACHMENTS.images.forEach(function (item) {
+            if (item.url) URL.revokeObjectURL(item.url);
+          });
+          QUICK_ATTACHMENTS.videos.forEach(function (item) {
+            if (item.url) URL.revokeObjectURL(item.url);
+          });
+          QUICK_ATTACHMENTS.images = [];
+          QUICK_ATTACHMENTS.videos = [];
+
+          window._pendingPhotoFiles = [];
+          window._pendingVideoFiles = [];
+          window._uploadedPhotoIds = [];
+          window._uploadedVideoIds = [];
+          $('#quickPhotoInput').val('');
+          $('#quickVideoInput').val('');
+          renderAttachmentPreview();
+          renderReviewAttachmentPreview();
+        }
+
+        // Chuc nang: xu ly nghiep vu cho renderAttachmentPreview.
+        function renderAttachmentPreview() {
+          var images = QUICK_ATTACHMENTS.images;
+          var videos = QUICK_ATTACHMENTS.videos;
+          var $imageEmpty = $('#attachmentImageEmpty');
+          var $videoEmpty = $('#attachmentVideoEmpty');
+          var $imageGrid = $('#attachmentImageGrid');
+          var $videoGrid = $('#attachmentVideoGrid');
+
+          $imageGrid.empty();
+          $videoGrid.empty();
+
+          if (!images.length) {
+            $imageEmpty.removeClass('d-none');
+            $imageGrid.addClass('d-none');
+          } else {
+            $imageEmpty.addClass('d-none');
+            $imageGrid.removeClass('d-none');
+            images.forEach(function (item) {
+              var safeName = $('<div>').text(item.name).html();
+              $imageGrid.append(
+                '<div class="attachment-item">' +
+                '<img src="' + item.url + '" alt="' + safeName + '">' +
+                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '</div>'
+              );
+            });
+          }
+
+          if (!videos.length) {
+            $videoEmpty.removeClass('d-none');
+            $videoGrid.addClass('d-none');
+          } else {
+            $videoEmpty.addClass('d-none');
+            $videoGrid.removeClass('d-none');
+            videos.forEach(function (item) {
+              var safeName = $('<div>').text(item.name).html();
+              $videoGrid.append(
+                '<div class="attachment-item">' +
+                '<video src="' + item.url + '" controls muted preload="metadata"></video>' +
+                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '</div>'
+              );
+            });
+          }
+        }
+
+        // Chuc nang: xu ly nghiep vu cho renderReviewAttachmentPreview.
+        function renderReviewAttachmentPreview() {
+          var images = QUICK_ATTACHMENTS.images;
+          var videos = QUICK_ATTACHMENTS.videos;
+          var $imageEmpty = $('#reviewAttachmentImageEmpty');
+          var $videoEmpty = $('#reviewAttachmentVideoEmpty');
+          var $imageGrid = $('#reviewAttachmentImageGrid');
+          var $videoGrid = $('#reviewAttachmentVideoGrid');
+
+          $imageGrid.empty();
+          $videoGrid.empty();
+
+          if (!images.length) {
+            $imageEmpty.removeClass('d-none');
+            $imageGrid.addClass('d-none');
+          } else {
+            $imageEmpty.addClass('d-none');
+            $imageGrid.removeClass('d-none');
+            images.forEach(function (item) {
+              var safeName = $('<div>').text(item.name).html();
+              $imageGrid.append(
+                '<div class="attachment-item">' +
+                '<img src="' + item.url + '" alt="' + safeName + '">' +
+                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '</div>'
+              );
+            });
+          }
+
+          if (!videos.length) {
+            $videoEmpty.removeClass('d-none');
+            $videoGrid.addClass('d-none');
+          } else {
+            $videoEmpty.addClass('d-none');
+            $videoGrid.removeClass('d-none');
+            videos.forEach(function (item) {
+              var safeName = $('<div>').text(item.name).html();
+              $videoGrid.append(
+                '<div class="attachment-item">' +
+                '<video src="' + item.url + '" controls muted preload="metadata"></video>' +
+                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '</div>'
+              );
+            });
+          }
+        }
+
+        // Chuc nang: xu ly nghiep vu cho appendQuickFiles.
+        function appendQuickFiles(fileList, kind) {
+          if (!fileList || !fileList.length) return;
+          var bucket = kind === 'image' ? QUICK_ATTACHMENTS.images : QUICK_ATTACHMENTS.videos;
+
+          Array.from(fileList).forEach(function (file) {
+            bucket.push({
+              kind: kind,
+              name: file.name,
+              url: URL.createObjectURL(file)
+            });
+          });
+
+          renderAttachmentPreview();
+          renderReviewAttachmentPreview();
+        }
+
+        // Chuc nang: xu ly nghiep vu cho collectBookingData.
+        function collectBookingData() {
+          var selectedPackage = getSelectedPackage();
+          var selectedPackageLabel = selectedPackage ? selectedPackage.data('label') : 'Không chọn gói';
+          var selectedJobs =
+            $('.job-check:checked')
+              .map(function () {
+                return $(this).val();
+              })
+              .get() || [];
+          var unit = $('#durationUnit').val();
+          var endDateValue = $('#endDate').val();
+          var slotLabel = hasVisibleTimeSlotSelector() ? ($('#timeSlotSelect option:selected').text() || '') : '';
+
+          updateTotalPrice();
+
+          return {
+            serviceId: $('#serviceSelector').val() || '',
+            name: $('#customerName').val().trim(),
+            phone: $('#customerPhone').val().trim(),
+            email: $('#customerEmail').val().trim(),
+            address: $('#customerAddress').val().trim(),
+            service: $('#serviceSelector option:selected').text() || '',
+            serviceLoai: $('#serviceLoai').val() || '',
+            serviceLoaiLabel: $('#serviceLoai option:selected').text() || '',
+            packageValue: selectedPackage ? String(selectedPackage.val()) : (LAST_CALC_RESULT ? LAST_CALC_RESULT.packageValue : ''),
+            package: (LAST_CALC_RESULT && LAST_CALC_RESULT.packageLabel) || selectedPackageLabel,
+            jobsList: selectedJobs,
+            jobs: selectedJobs.join(', '),
+            startDate: $('#startDate').val(),
+            endDate: endDateValue,
+            durationUnit: unit || 'day',
+            durationAmount: '',
+            totalDays: getDays(),
+            startTime: $('#startTime').val(),
+            endTime: $('#endTime').val(),
+            timeSlotLabel: slotLabel,
+            totalHours: LAST_CALC_RESULT ? Number(LAST_CALC_RESULT.totalHours || 0) : getHours(),
+            extraRequest: $('#extraRequest').val(),
+            price: $('#totalPrice').val(),
+            distanceKm: LAST_CALC_RESULT ? Number(LAST_CALC_RESULT.distanceKm || 0) : Number(DISTANCE_KM || 0),
+            area: $('#serviceArea').val() || '',
+            level: $('#serviceLevel').val() || '',
+            estimatedStaff: LAST_CALC_RESULT ? Number(LAST_CALC_RESULT.staff || 0) : 0,
+            note: $('#customerNote').val().trim()
+          };
+        }
+
+        // Chuc nang: xu ly nghiep vu cho restoreBookingForm.
+        function restoreBookingForm(data) {
+          if (!data) return;
+
+          if (data.serviceId) {
+            $('#serviceSelector').val(String(data.serviceId));
+            var service = SERVICES.find(function (s) {
+              return String(s.id) === String(data.serviceId);
+            });
+            if (service) {
+              renderService(service);
+            }
+          }
+
+          $('#customerName').val(data.name || '');
+          $('#customerPhone').val(data.phone || '');
+          $('#customerEmail').val(data.email || '');
+          $('#customerAddress').val(data.address || '');
+          $('#extraRequest').val(data.extraRequest || '');
+          $('#customerNote').val(data.note || '');
+
+          if ($('#serviceLoai').length) {
+            $('#serviceLoai').val(data.serviceLoai || data.serviceLoaiLabel || '');
+          }
+
+          if (data.packageValue) {
+            var $pkg = $('.package-check[value="' + data.packageValue + '"]');
+            if ($pkg.length) {
+              $pkg.prop('checked', true);
+              $('.package-check').closest('label').removeClass('active');
+              $pkg.closest('label').addClass('active');
+            }
+          }
+
+          if (data.timeSlotLabel && hasVisibleTimeSlotSelector()) {
+            $('#timeSlotSelect option').filter(function () {
+              return $(this).text() === data.timeSlotLabel;
+            }).prop('selected', true);
+          }
+
+          if (data.area && $('#serviceArea').length) {
+            $('#serviceArea').val(data.area);
+          }
+          if (data.level && $('#serviceLevel').length) {
+            $('#serviceLevel').val(data.level);
+          }
+          if (data.distanceKm !== undefined && data.distanceKm !== null && data.distanceKm !== '') {
+            DISTANCE_KM = Number(data.distanceKm) || 0;
+            if (DISTANCE_KM > 0) {
+              renderDistanceInfo(
+                'Quãng đường ước tính: ' +
+                DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+                ' km. Phí di chuyển: ' +
+                formatMoney(DISTANCE_KM * 5000) +
+                '.'
+              );
+            }
+          }
+
+          $('.job-check').prop('checked', false);
+          if (Array.isArray(data.jobsList)) {
+            data.jobsList.forEach(function (job) {
+              $('.job-check[value="' + job + '"]').prop('checked', true);
+            });
+          }
+
+          $('#durationUnit').val('day');
+          updateDurationUI();
+
+          $('#startDate').val(data.startDate || '');
+          $('#endDate').val(data.endDate || '');
+          $('#startTime').val(data.startTime || '');
+          $('#endTime').val(data.endTime || '');
+          applyTimeSlotBehavior();
+
+          updateAutoEndDate();
+          updateTotalPrice();
+        }
+
+        // Chuc nang: xu ly nghiep vu cho renderReviewData.
+        function renderReviewData(data) {
+          $('#reviewName').text(data.name || '-');
+          $('#reviewPhone').text(data.phone || '-');
+          $('#reviewEmail').text(data.email || '-');
+          $('#reviewAddress').text(data.address || '-');
+          $('#reviewService').text(data.service || '-');
+          $('#reviewLoai').text(data.serviceLoaiLabel || data.serviceLoai || '-');
+          $('#reviewPackage').text(data.package || '-');
+
+          var jobs = Array.isArray(data.jobsList) ? data.jobsList : [];
+          if (!jobs.length && data.jobs) {
+            jobs = String(data.jobs)
+              .split(',')
+              .map(function (item) {
+                return item.trim();
+              })
+              .filter(Boolean);
+          }
+
+          if (!jobs.length) {
+            $('#reviewJobs').html('-');
+          } else {
+            var jobsHtml = '<div class="d-flex flex-column gap-1">';
+            jobs.forEach(function (job, idx) {
+              jobsHtml +=
+                '<div class="d-flex align-items-start gap-2">' +
+                '<span style="min-width:24px;height:24px;border-radius:50%;background:#66bb6a;color:#000;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;line-height:1;">' +
+                (idx + 1) +
+                '</span>' +
+                '<span>' +
+                $('<div>').text(job).html() +
+                '</span>' +
+                '</div>';
+            });
+            jobsHtml += '</div>';
+            $('#reviewJobs').html(jobsHtml);
+          }
+
+          $('#reviewStartDate').text(formatDateFromInput(data.startDate));
+          $('#reviewEndDate').text(formatDateFromInput(data.endDate));
+          var timeText = (data.startTime || '-') + ' - ' + (data.endTime || '-');
+          if (data.timeSlotLabel) {
+            timeText = data.timeSlotLabel + (data.startTime || data.endTime ? ' (' + timeText + ')' : '');
+          }
+          $('#reviewTime').text(timeText);
+          $('#reviewTotalDays').text(data.totalDays ? data.totalDays + ' ngày' : '-');
+          $('#reviewTotalHours').text(data.totalHours ? data.totalHours.toFixed(1) + ' giờ' : '-');
+          $('#reviewExtraRequest').text(data.extraRequest || '-');
+          $('#reviewNote').text(data.note || '-');
+          $('#reviewPrice').text(data.price || '0 đ');
+          renderReviewAttachmentPreview();
+        }
+
+        // Chuc nang: xu ly nghiep vu cho normalizeMoneyToNumber.
+        function normalizeMoneyToNumber(value) {
+          if (typeof value === 'number' && Number.isFinite(value)) return Math.round(value);
+          var raw = String(value == null ? '' : value).trim();
+          if (!raw) return 0;
+          var sign = raw.indexOf('-') !== -1 ? -1 : 1;
+          var digits = raw.replace(/\D/g, '');
+          if (!digits) return 0;
+          return sign * Number(digits);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho nowSql.
+        function nowSql() {
+          var d = new Date();
+          var pad = function (n) {
+            return String(n).padStart(2, '0');
+          };
+          return (
+            d.getFullYear() +
+            '-' +
+            pad(d.getMonth() + 1) +
+            '-' +
+            pad(d.getDate()) +
+            ' ' +
+            pad(d.getHours()) +
+            ':' +
+            pad(d.getMinutes()) +
+            ':' +
+            pad(d.getSeconds())
+          );
+        }
+
+        // Chuc nang: xu ly nghiep vu cho isKrudSuccess.
+        function isKrudSuccess(res) {
+          return !!res && !res.error && res.success !== false;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho getSheetErrorMessage.
+        function getSheetErrorMessage(result) {
+          if (!result) return 'Không nhận được phản hồi từ Google Sheet.';
+          var status = String(result.status || '').toLowerCase();
+          if (status === 'success' || result.success === true) return '';
+          return result.message || result.error || 'Google Sheet trả về trạng thái không thành công.';
+        }
+
+        // Chuc nang: xu ly nghiep vu cho buildBookingSheetPayload.
+        function buildBookingSheetPayload(data) {
+          return {
+            sheet_type: 'Chăm sóc vườn nhà',
+            created_at: '',
+            'Tên khách': (data.name || '').trim(),
+            'Số điện thoại': (data.phone || '').trim(),
+            'Email': (data.email || '').trim(),
+            'Địa chỉ': (data.address || '').trim(),
+            'Dịch vụ chăm sóc vườn': data.service || '',
+            'Loại khu vườn': data.serviceLoaiLabel || data.serviceLoai || '',
+            'Gói chăm sóc vườn': data.package || 'Không chọn gói',
+            'Công việc chăm sóc vườn': data.jobs || '',
+            'Ngày bắt đầu': data.startDate || '',
+            'Ngày kết thúc': data.endDate || '',
+            'Giờ bắt đầu': data.startTime || '',
+            'Giờ kết thúc': data.endTime || '',
+            'Tổng số ngày': Number(data.totalDays || 0),
+            'Tổng số giờ': Number(data.totalHours || 0),
+            'Yêu cầu khác': data.extraRequest || '',
+            'Ghi chú': (data.note || '').trim(),
+            'Tổng tiền': normalizeMoneyToNumber(data.price)
+          };
+        }
+
+        // Chuc nang: xu ly nghiep vu cho mapBookingDataForDatabase.
+        function mapBookingDataForDatabase(data) {
+          var payload = {
+            tenkhachhang: (data.name || '').trim(),
+            sdtkhachhang: (data.phone || '').trim(),
+            emailkhachhang: (data.email || '').trim(),
+            diachikhachhang: (data.address || '').trim(),
+            dich_vu: data.service || '',
+            loai_noi_don: data.serviceLoaiLabel || data.serviceLoai || '',
+            goi_dich_vu: data.package || 'Không chọn gói chăm sóc vườn',
+            cong_viec: data.jobs || '',
+            ngay_bat_dau_kehoach: data.startDate || '',
+            ngay_ket_thuc_kehoach: data.endDate || '',
+            gio_bat_dau_kehoach: data.startTime || '',
+            gio_ket_thuc_kehoach: data.endTime || '',
+            tong_tien: normalizeMoneyToNumber(data.price),
+            yeu_cau_khac: data.extraRequest || '',
+            ghi_chu: (data.note || '').trim(),
+            anh_id: data.anh_id || '',
+            video_id: data.video_id || ''
+          };
+
+          if (window.currentLoggedInId) {
+            payload.khach_hang_id = window.currentLoggedInId;
+          } else if (window.loggedInUserId) {
+            payload.khach_hang_id = window.loggedInUserId;
+          }
+
+          payload.created_date = nowSql();
+
+          return payload;
+        }
+
+        // Chuc nang: xu ly nghiep vu cho saveBookingToGoogleSheet.
+        function saveBookingToGoogleSheet(data) {
+          if (typeof saveToGoogleSheet !== 'function') {
+            throw new Error('Chưa tải được hàm lưu Google Sheet.');
+          }
+          var sheetPayload = buildBookingSheetPayload(data);
+          sheetPayload.created_at = nowSql();
+          return saveToGoogleSheet(sheetPayload);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho saveBookingToDatabase.
+        function saveBookingToDatabase(data) {
+          if (typeof krud !== 'function') {
+            throw new Error('Chưa tải KRUD API.');
+          }
+          return krud('insert', 'datlich_chamsocvuon', mapBookingDataForDatabase(data));
+        }
+
+        // Chuc nang: xu ly nghiep vu cho finishSuccessState.
+        function finishSuccessState(data) {
+          // [Thêm mới] Xử lý đăng nhập và chuyển hướng tự động
+          if (typeof xulyDangNhapSauDatLich === 'function') {
+            xulyDangNhapSauDatLich(data || PENDING_BOOKING_DATA);
+            // xulyDangNhapSauDatLich tự xử lý redirect, không cần fallback bên dưới
+            return;
+          }
+
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+              type: 'booking:success',
+              message: 'Chúng tôi sẽ liên hệ với bạn sớm nhất.'
+            }, '*');
+          }
+
+          // Fallback cho chế độ trang độc lập (khi không có xulyDangNhapSauDatLich)
+          $('#reviewPageSection').addClass('d-none');
+          $('#bookingPageSection').removeClass('d-none');
+          $('#bookingForm').addClass('d-none');
+          $('#successMessage').removeClass('d-none');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
+          setTimeout(function () {
+            window.top.location.href = "don-hang/index.php";
+          }, 3000);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho submitBookingData.
+        async function submitBookingData(data) {
+          var saveBtn = $('#btnConfirmSave');
+          var backBtn = $('#btnBackToEdit');
+          var originalText = saveBtn.html();
+
+          saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...').prop('disabled', true);
+          backBtn.prop('disabled', true);
+
+          try {
+            // 1. Lưu DATABASE trước để lấy Mã Đơn Hàng (orderId)
+            saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Khởi tạo đơn hàng...');
+            var dbResult = null;
+            try {
+              dbResult = await saveBookingToDatabase(data);
+              console.log('DB res:', dbResult);
+            } catch (dbErr) {
+              console.error('Lỗi DB:', dbErr);
+              throw new Error('Lỗi kết nối cơ sở dữ liệu: ' + (dbErr.message || 'vui lòng thử lại sau'));
+            }
+
+            if (!isKrudSuccess(dbResult)) {
+              throw new Error((dbResult && dbResult.message) || 'Lưu dữ liệu đặt lịch thất bại.');
+            }
+
+            var orderId = dbResult.id || (dbResult.data && dbResult.data.id) || dbResult.last_id || 0;
+            if (!orderId || orderId === 0) {
+              console.error('Lỗi: Không lấy được ID đơn hàng từ phản hồi:', dbResult);
+              throw new Error('Lỗi hệ thống: Không thể khởi tạo mã đơn hàng. Vui lòng liên hệ quản trị viên.');
+            }
+            var serviceName = data.service || 'ChamSocVuon';
+
+            // 2. Upload Ảnh/Video với tên file theo cấu trúc yêu cầu
+            var anhId = window._uploadedPhotoIds ? window._uploadedPhotoIds.join(',') : '';
+            var videoId = window._uploadedVideoIds ? window._uploadedVideoIds.join(',') : '';
+
+            try {
+              if (window._pendingPhotoFiles && window._pendingPhotoFiles.length) {
+                saveBtn.html('Đang upload ảnh...');
+                var photoIds = await uploadFilesToDrive(window._pendingPhotoFiles, orderId, serviceName);
+                if (photoIds.length) anhId = (anhId ? anhId + ',' : '') + photoIds.join(',');
+                window._uploadedPhotoIds = (window._uploadedPhotoIds || []).concat(photoIds);
+                window._pendingPhotoFiles = [];
+              }
+              if (window._pendingVideoFiles && window._pendingVideoFiles.length) {
+                saveBtn.html('Đang upload video...');
+                var videoIds = await uploadFilesToDrive(window._pendingVideoFiles, orderId, serviceName);
+                if (videoIds.length) videoId = (videoId ? videoId + ',' : '') + videoIds.join(',');
+                window._uploadedVideoIds = (window._uploadedVideoIds || []).concat(videoIds);
+                window._pendingVideoFiles = [];
+              }
+            } catch (uploadErr) {
+              console.warn('Lỗi upload file nhưng vẫn tiếp tục:', uploadErr);
+            }
+
+            data.anh_id = anhId;
+            data.video_id = videoId;
+
+            // 3. Cập nhật lại file IDs vào DB nếu có upload mới
+            if (anhId || videoId) {
+              try {
+                await krud('update', 'datlich_chamsocvuon', { anh_id: anhId, video_id: videoId }, orderId);
+              } catch (updateErr) {
+                console.warn('Lỗi cập nhật IDs vào DB:', updateErr);
+              }
+            }
+
+            // 4. Lưu Google Sheet
+            saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang đồng bộ Sheet...');
+            var sheetErrorMessage = '';
+            try {
+              var sheetResult = await saveBookingToGoogleSheet(data);
+              sheetErrorMessage = getSheetErrorMessage(sheetResult);
+            } catch (sheetErr) {
+              sheetErrorMessage = (sheetErr && sheetErr.message) || 'Không thể kết nối Google Sheet.';
+              console.warn('Lỗi lưu Google Sheet:', sheetErr);
+            }
+
+            PENDING_BOOKING_DATA = null;
+            sessionStorage.removeItem(STORAGE_KEY);
+            resetQuickAttachments();
+
+            if (sheetErrorMessage) {
+              alert('Đã lưu cơ sở dữ liệu thành công nhưng Google Sheet lỗi: ' + sheetErrorMessage);
+            }
+
+            finishSuccessState(data);
+          } catch (err) {
+            console.error('Lỗi khi lưu dữ liệu đặt lịch:', err);
+            alert('Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.\nChi tiết: ' + ((err && err.message) || 'Lỗi không xác định'));
+          } finally {
+            saveBtn.html(originalText).prop('disabled', false);
+            backBtn.prop('disabled', false);
+          }
+        }
+
+        // Chuc nang: xu ly nghiep vu cho showReviewStep.
+        function showReviewStep() {
+          $('#bookingPageSection').addClass('d-none');
+          $('#reviewPageSection').removeClass('d-none');
+          $('html, body').animate({ scrollTop: $('#reviewPageSection').offset().top - 30 }, 300);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho showEditStep.
+        function showEditStep() {
+          $('#reviewPageSection').addClass('d-none');
+          $('#bookingPageSection').removeClass('d-none');
+          $('#successMessage').addClass('d-none');
+          $('#bookingForm').removeClass('d-none').show();
+          $('html, body').animate({ scrollTop: $('#bookingPageSection').offset().top - 30 }, 300);
+        }
+
+        // Chuc nang: xu ly nghiep vu cho renderPackageOptions.
+        function renderPackageOptions(packages) {
+          var $packageList = $('#packageList');
+          $packageList.empty();
+
+          (packages || []).forEach(function (p, idx) {
+            var subText = p.hours ? ' • ' + p.hours + ' giờ' : '';
+            var $label = $('<label>').addClass('list-group-item list-group-item-action d-flex align-items-center gap-3 rounded mb-2 border');
+            var $input = $('<input type="radio" name="package">')
+              .addClass('package-check form-check-input flex-shrink-0')
+              .val(String(idx))
+              .attr('data-price', Number(p.price || 0))
+              .attr('data-label', p.name || '')
+              .attr('data-staff', Number(p.staff || 0))
+              .attr('data-hours', Number(p.hours || 0));
+            var $title = $('<span>').addClass('fw-bold').text((p.name || '') + subText);
+            var $price = $('<span>')
+              .addClass('ms-auto badge rounded-pill text-bg-danger')
+              .text(Number(p.price || 0).toLocaleString('vi-VN') + ' đ');
+
+            $label.append($input, $title, $price);
+            $packageList.append($label);
+          });
+        }
+
+        // Chuc nang: xu ly nghiep vu cho renderTimeSlotOptions.
+        function renderTimeSlotOptions(timeSlots) {
+          var $section = $('#timeSlotSection');
+          var $slot = $('#timeSlotSelect');
+          $slot.empty();
+
+          if (!Array.isArray(timeSlots) || !timeSlots.length) {
+            $section.addClass('d-none');
+            return;
+          }
+
+          timeSlots.forEach(function (slot) {
+            var value = slot && slot.value != null ? String(slot.value) : '';
+            var label = slot && slot.label != null ? String(slot.label) : '';
+            $slot.append($('<option>').val(value).text(label));
+          });
+          $slot.append($('<option>').val('custom').text('Khác (tự nhập giờ bắt đầu chăm sóc vườn)'));
+          $slot.prop('selectedIndex', 0);
+          $section.removeClass('d-none');
+        }
+
+        // Chuc nang: xu ly nghiep vu cho renderJobOptions.
+        function renderJobOptions(jobs) {
+          var $list = $('#serviceJobsList');
+          $list.empty();
+
+          (jobs || []).forEach(function (job) {
+            var $label = $('<label>').addClass('list-group-item list-group-item-action d-flex align-items-center gap-2 rounded mb-1 border');
+            var $input = $('<input type="checkbox" checked>')
+              .addClass('job-check form-check-input flex-shrink-0')
+              .val(job || '');
+            var $text = $('<span>').text(job || '');
+            $label.append($input, $text);
+            $list.append($label);
+          });
+        }
+        // Chuc nang: xu ly nghiep vu cho renderService.
+        function renderService(service) {
+          CURRENT_SERVICE = service;
+          $('#serviceSelector').val(String(service.id));
+          renderServiceLoaiOptions(service);
+
+          var pricing = service.pricing || {};
+          var pricingType = pricing.type || '';
+          var isPerM2 = pricingType === 'per_m2';
+          var isPackage = pricingType === 'package';
+
+          $('#areaLevelSection').toggleClass('d-none', !isPerM2);
+          $('#packageSection').toggleClass('d-none', !isPackage);
+
+          if (isPackage) {
+            renderPackageOptions(pricing.packages || []);
+          } else {
+            $('#packageList').empty();
+          }
+
+          renderTimeSlotOptions(service.time_slots || []);
+          renderJobOptions(service.includes || []);
+
+          resetFormState();
+          applyShiftHints();
+          applyTimeSlotBehavior();
+          updatePackageLockState();
+          updateTotalPrice();
+        }
+
+
+
+        async function loadServices() {
+          try {
+            // Lấy dịch vụ từ database của admin
+            const res = await fetch('api-dichvu.php');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error || 'Lỗi API');
+            SERVICES = Array.isArray(data.data) ? data.data : [];
+            // Parse các trường JSON string nếu cần
+            SERVICES = SERVICES.map(s => ({
+              ...s,
+              loai: typeof s.loai === 'string' ? JSON.parse(s.loai) : (Array.isArray(s.loai) ? s.loai : []),
+              includes: typeof s.includes === 'string' ? JSON.parse(s.includes) : (Array.isArray(s.includes) ? s.includes : []),
+              time_slots: typeof s.time_slots === 'string' ? JSON.parse(s.time_slots) : (Array.isArray(s.time_slots) ? s.time_slots : []),
+              pricing: typeof s.pricing === 'string' ? JSON.parse(s.pricing) : (s.pricing || {})
+            }));
+            if (!SERVICES.length) throw new Error('No data');
+          } catch (e) {
+            console.warn('Không lấy được dịch vụ từ admin, chuyển sang dich-vu.json:', e);
+            try {
+              const res = await fetch('dich-vu.json');
+              const raw = await res.json();
+              // Chuẩn hóa dữ liệu từ dich-vu.json sang cấu trúc tương thích
+              SERVICES = (Array.isArray(raw) ? raw : []).map(s => ({
+                id: s.id,
+                category: s.category || 'coban',
+                name: s.name || '',
+                description: s.description || '',
+                image: s.image || '',
+                loai: typeof s.service_area === 'string' && s.service_area
+                  ? s.service_area.split(',').map(x => x.trim())
+                  : [],
+                includes: Array.isArray(s.tags) ? s.tags : [],
+                pricing: {
+                  type: 'per_m2',
+                  base_price: s.price_m2_min || 0,
+                  max_price: s.price_m2_max || 0,
+                  unit: s.area_unit || 'm²',
+                  note: s.price_note || ''
+                },
+                time_slots: [],
+                rating: s.rating || 0,
+                reviews: s.total_reviews || 0,
+                duration: s.duration_estimate || '',
+                difficulty: s.difficulty_level || 'easy',
+                is_active: s.is_active !== false
+              }));
+            } catch (e2) {
+              console.error('Không load được dịch vụ:', e2);
+              SERVICES = [];
+            }
+          }
+
+          $('#serviceSelector').empty();
+          SERVICES.forEach(s => {
+            $('#serviceSelector').append('<option value="' + s.id + '">' + s.name + '</option>');
+          });
+
+          let defaultService = null;
+          if (PRESELECT_SERVICE_ID) {
+            // So sánh id dạng chuỗi, loại bỏ ký tự thừa nếu có
+            defaultService = SERVICES.find(s => String(s.id) === String(PRESELECT_SERVICE_ID));
+          }
+          if (!defaultService) defaultService = SERVICES[0];
+          if (defaultService) {
+            renderService(defaultService);
+            $('#serviceSelector').val(String(defaultService.id));
+          }
+        }
+
+        // Load quy tắc phụ thu từ admin (api-phuthu.php)
+        try {
+          const ptRes = await fetch('api-phuthu.php');
+          if (!ptRes.ok) throw new Error('HTTP ' + ptRes.status);
+          const ptData = await ptRes.json();
+          if (ptData.success && Array.isArray(ptData.data) && ptData.data.length) {
+            PHU_THU_RULES = ptData.data;
+          } else {
+            throw new Error('Không có dữ liệu phụ thu');
+          }
+        } catch (e) {
+          console.warn('Không load được phụ thu từ admin, thử fetchRows:', e.message);
+          try {
+            var ptRes2 = await fetchRows('phu_thu_dac_biet');
+            PHU_THU_RULES = normalizeRows(ptRes2);
+            if (!PHU_THU_RULES.length) throw new Error('empty');
+          } catch (e2) {
+            console.warn('Không load được phu_thu_dac_biet, PHU_THU_RULES rỗng (không dùng hardcode):', e2);
+            PHU_THU_RULES = [];
+          }
+        }
+
+        await loadServices();
+
+        var today = new Date().toISOString().split('T')[0];
+        $('#startDate').attr('min', today);
+        $('#endDate').attr('min', today);
+
+        $(document).on('change', '#serviceSelector', function () {
+          var selectedId = $(this).val();
+          var service = SERVICES.find(function (s) {
+            return String(s.id) === String(selectedId);
+          });
+          if (service) renderService(service);
         });
-    }
 
-    document.addEventListener('DOMContentLoaded', init);
-</script>
+        $(document).on('mousedown', '#servicePackages label', function () {
+          var $radio = $(this).find('.package-check');
+          $(this).data('wasChecked', $radio.is(':checked'));
+        });
 
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 30px; overflow: hidden;">
-            <div class="modal-header border-0 p-4" style="background: var(--primary-green); color: white;">
-                <h5 class="modal-title fw-bold"><i class="fas fa-file-invoice me-2"></i>XÁC NHẬN ĐẶT LỊCH</h5>
-                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4" id="modal-content-render"></div>
-            <div class="modal-footer border-0 p-4 bg-light d-flex gap-3">
-                <button type="button" class="btn rounded-pill px-4 fw-bold border-secondary text-secondary" data-bs-dismiss="modal">CHỈNH SỬA</button>
-                <button type="button" class="btn btn-nature rounded-pill px-5 fw-bold flex-grow-1" onclick="submitToSheet()">XÁC NHẬN GỬI</button>
-            </div>
-        </div>
-    </div>
-</div>
+        $(document).on('click', '#servicePackages label', function (e) {
+          var $radio = $(this).find('.package-check');
+          if ($(this).data('wasChecked') && $radio.length) {
+            e.preventDefault();
+            $radio.prop('checked', false).trigger('change');
+          }
+          $(this).removeData('wasChecked');
+        });
+
+        $(document).on('change', '.package-check', function () {
+          $('.package-check').closest('label').removeClass('active');
+          if ($(this).is(':checked')) {
+            $(this).closest('label').addClass('active');
+          }
+          syncAutoEndTimeFromStart();
+          updateTotalPrice();
+        });
+
+        $(document).on('change', '.job-check', updateTotalPrice);
+        $(document).on('change input', '#startTime', function () {
+          syncAutoEndTimeFromStart();
+          updateTotalPrice();
+        });
+        $(document).on('change input', '#endTime', updateTotalPrice);
+        $(document).on('change', '#timeSlotSelect', function () {
+          applyTimeSlotBehavior();
+          updateTotalPrice();
+        });
+        $(document).on('change input', '#serviceArea, #serviceLevel', function () {
+          syncAutoEndTimeFromStart();
+          updateTotalPrice();
+        });
+
+        $(document).on('change', '#startDate', function () {
+          var startVal = $(this).val();
+          $('#endDate').attr('min', startVal || today);
+          if (!$('#endDate').val() || $('#endDate').val() < startVal) {
+            $('#endDate').val(startVal);
+          }
+          updateAutoEndDate();
+          updateTotalPrice();
+        });
+
+        $(document).on('change', '#endDate', updateTotalPrice);
+
+        $(document).on('change', '#durationUnit', function () {
+          updateDurationUI();
+          updateTotalPrice();
+        });
+
+        $(document).on('input change', '#durationAmount', function () {
+          updateAutoEndDate();
+          updateTotalPrice();
+        });
+
+        // [LOẠI BỎ] Xóa các handler onclick cũ đã được thay bằng handleMediaClick trực tiếp trong HTML
+
+
+        window._pendingPhotoFiles = [];
+        window._pendingVideoFiles = [];
+        window._uploadedPhotoIds = [];
+        window._uploadedVideoIds = [];
+
+        async function uploadFilesToDrive(files, orderId, serviceName) {
+          var ids = [];
+          var timeStr = Date.now();
+          var orderIdPadded = String(orderId || '0').padStart(7, '0');
+          // Chuyển tên dịch vụ về dạng không dấu và bỏ ký tự đặc biệt để làm tên file an toàn
+          var cleanServiceName = (serviceName || 'ChamSocVuon')
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[./\s]/g, '_').replace(/_+/g, '_');
+
+          for (var i = 0; i < files.length; i++) {
+            var originalName = files[i].name;
+            var extension = originalName.split('.').pop();
+            var fileNameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
+
+            // Cấu trúc: madonhang_tendichvu_thoigiaupload_tenhinh.ext
+            var newName = orderIdPadded + '_' + cleanServiceName + '_' + timeStr + '_' + fileNameWithoutExt + '.' + extension;
+
+            var fd = new FormData();
+            fd.append('file', files[i]);
+            fd.append('name', newName);
+            try {
+              var res = await fetch('upload.php', { method: 'POST', body: fd });
+              var data = await res.json();
+              if (data.success && data.fileId) ids.push(data.fileId);
+              else console.warn('Upload lỗi:', data.message);
+            } catch (e) { console.warn('Upload exception:', e); }
+          }
+          return ids;
+        }
+
+        $('#quickPhotoInput').on('change', function () {
+          var files = Array.from(this.files);
+          if (!files.length) return;
+          appendQuickFiles(files, 'image');
+          this.value = '';
+
+          files.forEach(function (f) { window._pendingPhotoFiles.push(f); });
+          $('#uploadStatusMsg').text('Đã thêm ' + files.length + ' ảnh (sẽ upload khi xác nhận).');
+        });
+
+        $('#quickVideoInput').on('change', function () {
+          var files = Array.from(this.files);
+          if (!files.length) return;
+          appendQuickFiles(files, 'video');
+          this.value = '';
+
+          files.forEach(function (f) { window._pendingVideoFiles.push(f); });
+          $('#uploadStatusMsg').text('Đã thêm ' + files.length + ' video (sẽ upload khi xác nhận).');
+        });
+
+        // ==========================================
+        // [THÊM MỚI] XỬ LÝ MEDIA (CHỤP/TẢI) THÔNG MINH
+        // ==========================================
+
+        window.handleMediaClick = function (type) {
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+          if (isMobile) {
+            document.getElementById(type === 'photo' ? 'quickPhotoInput' : 'quickVideoInput').click();
+          } else {
+            showMediaChoiceModal(type);
+          }
+        };
+
+        function showMediaChoiceModal(type) {
+          const modalId = 'mediaChoiceModal';
+          let modalEl = document.getElementById(modalId);
+          if (!modalEl) {
+            const html = `
+            <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow rounded-4">
+                  <div class="modal-header border-0 pb-0">
+                    <h6 class="modal-title fw-bold" style="color:#1a4d2e">Chọn phương thức</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body d-grid gap-2 p-4">
+                    <button id="choiceCameraBtn" class="btn btn-outline-primary rounded-pill fw-bold">
+                      <i class="fas fa-camera me-2"></i>Dùng Máy Ảnh
+                    </button>
+                    <button id="choiceFileBtn" class="btn btn-outline-secondary rounded-pill fw-bold">
+                      <i class="fas fa-folder-open me-2"></i>Chọn Từ Tệp
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
+            modalEl = document.getElementById(modalId);
+          }
+
+          const modal = new bootstrap.Modal(modalEl);
+          document.getElementById('choiceFileBtn').onclick = () => {
+            modal.hide();
+            document.getElementById(type === 'photo' ? 'quickPhotoInput' : 'quickVideoInput').click();
+          };
+          document.getElementById('choiceCameraBtn').onclick = () => {
+            modal.hide();
+            openCameraModal(type);
+          };
+          modal.show();
+        }
+
+        let cameraStream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
+        function openCameraModal(type) {
+          const modalId = 'cameraCaptureModal';
+          let modalEl = document.getElementById(modalId);
+          if (!modalEl) {
+            const html = `
+            <div class="modal fade" id="${modalId}" tabindex="-1" data-bs-backdrop="static">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+                  <div class="modal-header bg-dark text-white border-0">
+                    <h6 class="modal-title"><i class="fas fa-camera me-2"></i>Máy ảnh trực tiếp</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body p-0 bg-black position-relative" style="min-height: 300px;">
+                    <video id="cameraVideo" autoplay playsinline style="width:100%; display:block;"></video>
+                    <canvas id="cameraCanvas" style="display:none;"></canvas>
+                    <div id="recordingIndicator" class="position-absolute top-0 start-0 m-3 d-none">
+                      <span class="badge rounded-pill bg-danger"><i class="fas fa-circle me-1"></i>REC</span>
+                    </div>
+                  </div>
+                  <div class="modal-footer justify-content-center border-0 bg-dark p-3">
+                    <button id="takeSnapshotBtn" class="btn btn-light rounded-pill px-4 fw-bold">
+                      <i class="fas fa-camera me-2"></i>Chụp ảnh
+                    </button>
+                    <button id="startRecordBtn" class="btn btn-outline-danger rounded-pill px-4 fw-bold">
+                      <i class="fas fa-video me-2"></i>Bắt đầu quay
+                    </button>
+                    <button id="stopRecordBtn" class="btn btn-danger rounded-pill px-4 fw-bold d-none">
+                      <i class="fas fa-stop me-2"></i>Dừng quay
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
+            modalEl = document.getElementById(modalId);
+            modalEl.addEventListener('hidden.bs.modal', stopCamera);
+          }
+
+          const modal = new bootstrap.Modal(modalEl);
+          const video = document.getElementById('cameraVideo');
+          const takeBtn = document.getElementById('takeSnapshotBtn');
+          const startBtn = document.getElementById('startRecordBtn');
+          const stopBtn = document.getElementById('stopRecordBtn');
+          const indicator = document.getElementById('recordingIndicator');
+
+          takeBtn.classList.toggle('d-none', type !== 'photo');
+          startBtn.classList.toggle('d-none', type !== 'video');
+          stopBtn.classList.add('d-none');
+          indicator.classList.add('d-none');
+
+          navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' },
+            audio: type === 'video'
+          })
+            .then(stream => {
+              cameraStream = stream;
+              video.srcObject = stream;
+              modal.show();
+            })
+            .catch(err => {
+              console.error("Camera error:", err);
+              alert("Không thể truy cập máy ảnh. Vui lòng kiểm tra quyền truy cập.");
+            });
+
+          takeBtn.onclick = () => {
+            const canvas = document.getElementById('cameraCanvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.toBlob(blob => {
+              const file = new File([blob], `capture_${Date.now()}.jpg`, { type: 'image/jpeg' });
+              appendQuickFiles([file], 'image');
+              window._pendingPhotoFiles.push(file);
+              $('#uploadStatusMsg').text('Đã chụp 1 ảnh (sẽ upload khi xác nhận).');
+              modal.hide();
+            }, 'image/jpeg', 0.9);
+          };
+
+          startBtn.onclick = () => {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(cameraStream);
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+              const blob = new Blob(recordedChunks, { type: 'video/webm' });
+              const file = new File([blob], `record_${Date.now()}.webm`, { type: 'video/webm' });
+              appendQuickFiles([file], 'video');
+              window._pendingVideoFiles.push(file);
+              $('#uploadStatusMsg').text('Đã quay 1 video (sẽ upload khi xác nhận).');
+            };
+            mediaRecorder.start();
+            startBtn.classList.add('d-none');
+            stopBtn.classList.remove('d-none');
+            indicator.classList.remove('d-none');
+          };
+
+          stopBtn.onclick = () => {
+            mediaRecorder.stop();
+            modal.hide();
+          };
+        }
+
+        function stopCamera() {
+          if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+          }
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+          }
+        }
+
+        $('#btnResetBooking').on('click', function () {
+          $('#bookingForm')[0].reset();
+          CUSTOMER_LOCATION = null;
+          DISTANCE_KM = 0;
+          renderDistanceInfo('Quãng đường và phí di chuyển sẽ được tính tự động sau khi chọn vị trí.');
+          resetQuickAttachments();
+          resetFormState();
+          if (CURRENT_SERVICE) {
+            renderService(CURRENT_SERVICE);
+          }
+        });
+
+        $('#bookingForm').on('submit', function (e) {
+          e.preventDefault();
+          if (!validateTimeForShift()) return;
+
+          var baseCalc = calculateBasePriceByServiceType();
+
+          if (!baseCalc.valid) {
+            alert(baseCalc.message || 'Vui lòng nhập đủ thông tin để tính giá.');
+            return;
+          }
+          if (!$('#startDate').val()) {
+            alert('Vui lòng chọn ngày bắt đầu.');
+            return;
+          }
+
+          PENDING_BOOKING_DATA = collectBookingData();
+          renderReviewData(PENDING_BOOKING_DATA);
+          showReviewStep();
+        });
+
+        $('#btnBackToEdit').on('click', function () {
+          restoreBookingForm(PENDING_BOOKING_DATA);
+          showEditStep();
+        });
+
+        $('#btnConfirmSave').on('click', function () {
+          if (!PENDING_BOOKING_DATA) {
+            alert('Không tìm thấy dữ liệu đặt lịch để lưu. Vui lòng kiểm tra lại.');
+            return;
+          }
+          submitBookingData(PENDING_BOOKING_DATA);
+        });
+
+        window.addEventListener('auth:login-success', function () {
+          if (PENDING_BOOKING_DATA) {
+            submitBookingData(PENDING_BOOKING_DATA);
+            return;
+          }
+
+          var raw = sessionStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          try {
+            var parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+              PENDING_BOOKING_DATA = parsed;
+              renderReviewData(PENDING_BOOKING_DATA);
+              showReviewStep();
+              submitBookingData(PENDING_BOOKING_DATA);
+            }
+          } catch (e) {
+            console.error('Không thể đọc dữ liệu đặt lịch chờ:', e);
+          }
+        });
+      });
+      async function fetchRows(table) {
+        if (typeof krudList === 'function') {
+          return await krudList({ table: table });
+        }
+        const res = await fetch('https://api.dvqt.vn/list/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ table: table })
+        });
+        return await res.json();
+      }
+      function normalizeRows(res) {
+        if (Array.isArray(res)) return res;
+        if (!res || typeof res !== 'object') return [];
+        if (res.error) throw new Error(res.error);
+        if (res.success === false) throw new Error(res.message || 'API tra ve loi');
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.rows)) return res.rows;
+        if (Array.isArray(res.items)) return res.items;
+        if (Array.isArray(res.result)) return res.result;
+        return [];
+      }
+      // ==========================================
+      // [THÊM MỚI] HÀM XỬ LÝ ĐĂNG NHẬP VÀ CHUYỂN HƯỚNG
+      // ==========================================
+      async function xulyDangNhapSauDatLich(formData) {
+        if (!formData || !formData.phone) return;
+        var phone = formData.phone.trim();
+        var name = formData.name || '';
+        var email = formData.email || '';
+        var address = formData.address || '';
+
+        var Utils = window.Utils || {
+          normalizePhone: function (p) {
+            return String(p || '').replace(/\D/g, '');
+          },
+          setCookie: function (name, value, days) {
+            var expires = "";
+            var d = (typeof days !== "undefined") ? days : 30;
+            var date = new Date();
+            date.setTime(date.getTime() + (d * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+            // Sử dụng encodeURIComponent để tránh lỗi ký tự đặc biệt trong cookie
+            document.cookie = name + "=" + encodeURIComponent(value || "") + expires + "; path=/";
+          }
+        };
+
+        try {
+          let matkhau = '';
+          // Lấy dữ liệu từ bảng nguoidung, giới hạn 10000 dòng để check kỹ từng ID
+          const res = await krudList({ table: 'nguoidung', limit: 100000 });
+          const rows = normalizeRows(res);
+
+          // Sắp xếp theo ID từ nhỏ nhất đến lớn nhất để kiểm tra tuần tự
+          rows.sort((a, b) => parseInt(a.id || 0) - parseInt(b.id || 0));
+
+          // Duyệt qua từng ID (đã sort) và dừng ngay khi tìm thấy số điện thoại trùng
+          let found = null;
+          const phoneNorm = Utils.normalizePhone(phone);
+          for (const r of rows) {
+            const dbPhone = Utils.normalizePhone(r.sodienthoai || r.phone || r.so_dien_thoai);
+            if (dbPhone === phoneNorm) {
+              found = r;
+              break; // Dừng ngay khi tìm thấy
+            }
+          }
+
+          if (found) {
+            // Lấy mật khẩu từ bản ghi tìm được (hỗ trợ các trường matkhau, password, mat_khau)
+            matkhau = found.matkhau || found.password || found.mat_khau || '';
+          } else {
+            matkhau = phone;
+            await krud('insert', 'nguoidung', {
+              hovaten: name,
+              sodienthoai: phone,
+              email: email,
+              diachi: address,
+              matkhau: matkhau,
+              trangthai: '0'
+            });
+          }
+
+          // 1. Đăng xuất tài khoản cũ và xóa sạch session trên server
+          await fetch('session_user.php?action=logout', { credentials: 'same-origin' }).catch(function (e) {
+            console.error('Logout error:', e);
+          });
+
+          // 2. Thiết lập cookie đăng nhập (dvqt_u, dvqt_p) để session_user.php nhận diện
+          // Tự động reset cookie cục bộ trước khi thiết lập mới
+          Utils.setCookie('dvqt_u', '', -1);
+          Utils.setCookie('dvqt_p', '', -1);
+
+          Utils.setCookie('dvqt_u', phone);
+          Utils.setCookie('dvqt_p', matkhau);
+
+          // 3. Khởi tạo session mới trên server bằng cách gọi session_user.php
+          // Truyền qua URL params để đảm bảo server nhận được ngay (không phụ thuộc cookie timing)
+          var syncUrl = 'session_user.php?sodienthoai=' + encodeURIComponent(phone) + '&password=' + encodeURIComponent(matkhau);
+          try {
+            await fetch(syncUrl, { credentials: 'same-origin' });
+          } catch (e) {
+            console.warn('Session sync warning:', e);
+          }
+
+          // 4. Chuyển hướng tới trang danh sách đơn hàng
+          // Dùng URL params để session_user.php tự đăng nhập ngay khi load trang
+          window.top.location.href = "don-hang/index.php?sodienthoai=" + encodeURIComponent(phone) + "&password=" + encodeURIComponent(matkhau);
+
+        } catch (error) {
+          console.error('Lỗi xử lý đăng nhập sau đặt lịch:', error);
+          // Vẫn cố gắng chuyển hướng để người dùng không bị kẹt ở màn hình thành công
+          window.top.location.href = "don-hang/index.php";
+        }
+      }
+    </script>
+
+  </div>
+  
+  <script src="JS/user-nav-menu.js"></script>
 </body>
+
 </html>

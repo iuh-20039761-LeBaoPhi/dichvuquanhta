@@ -39,13 +39,30 @@ const customerPortalStoreModule = (function (window) {
   const dvqtUserTable = "nguoidung";
   const movingServiceId = "12";
   const krudScriptUrl = "https://api.dvqt.vn/js/krud.js";
+  const providerVehiclesStorageKey = "fastgo-moving-provider-vehicles";
+  const providerOrderVehiclesStorageKey = "fastgo-moving-provider-order-vehicles";
   const AUTO_CANCEL_PENDING_MINUTES = 120;
   const AUTO_CANCEL_PENDING_MS = AUTO_CANCEL_PENDING_MINUTES * 60 * 1000;
   const AUTO_CANCEL_SWEEP_COOLDOWN_MS = 60 * 1000;
+  const DEFAULT_PROVIDER_VEHICLE_LABEL_MAP = Object.freeze({
+    xe_may_cho_hang: "Xe máy chở hàng",
+    ba_gac_may: "Ba gác máy",
+    xe_van_500kg: "Xe tải 500kg",
+    xe_tai_750kg: "Xe tải 750kg",
+    xe_tai_1_tan: "Xe tải 1 tấn",
+    xe_tai_1_5_tan: "Xe tải 1.5 tấn",
+    xe_tai_2_5_tan: "Xe tải 2 tấn",
+    xe_tai_3_5_tan: "Xe tải 3.5 tấn",
+    xe_tai_5_tan: "Xe tải 5 tấn",
+    xe_tai_7_5_tan: "Xe tải 8 tấn",
+    xe_tai_15_tan: "Xe tải 15 tấn",
+    dau_keo_container: "Đầu kéo container",
+  });
   let krudScriptPromise = null;
   let autoCancelSweepPromise = null;
   let authRowsPromise = null;
   let lastAutoCancelSweepAt = 0;
+  let providerVehicleCatalogPromise = null;
 
   function normalizeText(value) {
     return String(value || "")
@@ -59,6 +76,549 @@ const customerPortalStoreModule = (function (window) {
 
   function normalizePhone(value) {
     return String(value || "").replace(/[^\d+]/g, "");
+  }
+
+  function readStorageJson(key, fallback) {
+    try {
+      return safeParse(window.localStorage.getItem(key), fallback);
+    } catch (error) {
+      console.error("Cannot read moving portal storage payload:", error);
+      return fallback;
+    }
+  }
+
+  function writeStorageJson(key, value) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.error("Cannot write moving portal storage payload:", error);
+      return false;
+    }
+  }
+
+  function normalizeVehicleKey(value) {
+    return normalizeText(value)
+      .toLowerCase()
+      .replace(/[\s-]+/g, "_");
+  }
+
+  function normalizeVehicleStatus(value) {
+    const normalized = normalizeLowerText(value);
+    if (["tam_ngung", "inactive", "disabled", "paused", "off"].includes(normalized)) {
+      return "tam_ngung";
+    }
+    return "hoat_dong";
+  }
+
+  function normalizeLicensePlate(value) {
+    return normalizeText(value).toUpperCase();
+  }
+
+  function toFlag(value) {
+    if (typeof value === "boolean") return value ? 1 : 0;
+    if (typeof value === "number") return value > 0 ? 1 : 0;
+    const normalized = normalizeLowerText(value);
+    return ["1", "true", "yes", "on", "mac_dinh", "default"].includes(normalized)
+      ? 1
+      : 0;
+  }
+
+  function getProviderVehicleLabel(value) {
+    const normalizedKey = normalizeVehicleKey(value);
+    return (
+      DEFAULT_PROVIDER_VEHICLE_LABEL_MAP[normalizedKey] ||
+      normalizeText(value) ||
+      "Chưa cập nhật"
+    );
+  }
+
+  function buildLocalProviderVehicleId() {
+    return `mv_local_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  function isLegacyLocalProviderVehicleId(value) {
+    return /^mv_/i.test(normalizeText(value));
+  }
+
+  function getProviderVehicleRecordKey(value) {
+    if (value && typeof value === "object") {
+      return normalizeText(
+        value.id ||
+          value.local_id ||
+          value.local_key ||
+          value.vehicle_local_id ||
+          value.vehicle_key ||
+          "",
+      );
+    }
+    return normalizeText(value);
+  }
+
+  function mapProviderVehicleRecord(row) {
+    if (!row || typeof row !== "object") return null;
+    const loaiXe = normalizeVehicleKey(
+      row.loai_xe || row.vehicle_type || row.loai_phuong_tien || "",
+    );
+    const tenHienThi = normalizeText(
+      row.ten_hien_thi || row.vehicle_name || row.name || getProviderVehicleLabel(loaiXe),
+    );
+    const rawId = normalizeText(row.id || row.remote_id || "");
+    const localId = normalizeText(
+      row.local_id || row.local_key || row.vehicle_local_id || "",
+    );
+    const mappedId = isLegacyLocalProviderVehicleId(rawId) ? "" : rawId;
+    const mappedLocalId = localId || (mappedId ? "" : rawId) || buildLocalProviderVehicleId();
+    return {
+      ...row,
+      id: mappedId,
+      local_id: mappedLocalId,
+      provider_id: normalizeText(row.provider_id || row.user_id || row.shipper_id || ""),
+      loai_xe: loaiXe,
+      loai_xe_label: getProviderVehicleLabel(loaiXe),
+      ten_hien_thi: tenHienThi,
+      bien_so: normalizeLicensePlate(row.bien_so || row.license_plate || ""),
+      trang_thai: normalizeVehicleStatus(row.trang_thai || row.status || ""),
+      la_mac_dinh: toFlag(row.la_mac_dinh || row.is_default || row.mac_dinh),
+      ghi_chu: normalizeText(row.ghi_chu || row.note || ""),
+      created_at: normalizeText(row.created_at || row.created_date || ""),
+      updated_at: normalizeText(row.updated_at || ""),
+    };
+  }
+
+  function sortProviderVehicles(list) {
+    return (Array.isArray(list) ? list : [])
+      .slice()
+      .sort((left, right) => {
+        const defaultDelta = Number(right.la_mac_dinh || 0) - Number(left.la_mac_dinh || 0);
+        if (defaultDelta !== 0) return defaultDelta;
+        const activeDelta =
+          (left.trang_thai === "hoat_dong" ? 0 : 1) -
+          (right.trang_thai === "hoat_dong" ? 0 : 1);
+        if (activeDelta !== 0) return activeDelta;
+        const rightTime = new Date(right.updated_at || right.created_at || 0).getTime();
+        const leftTime = new Date(left.updated_at || left.created_at || 0).getTime();
+        if (rightTime !== leftTime) return rightTime - leftTime;
+        return getProviderVehicleRecordKey(right).localeCompare(getProviderVehicleRecordKey(left));
+      });
+  }
+
+  function readProviderVehicleState() {
+    const state = readStorageJson(providerVehiclesStorageKey, {});
+    return state && typeof state === "object" ? state : {};
+  }
+
+  function writeProviderVehicleState(state) {
+    return writeStorageJson(providerVehiclesStorageKey, state && typeof state === "object" ? state : {});
+  }
+
+  function readProviderOrderVehicleState() {
+    const state = readStorageJson(providerOrderVehiclesStorageKey, {});
+    return state && typeof state === "object" ? state : {};
+  }
+
+  function writeProviderOrderVehicleState(state) {
+    return writeStorageJson(
+      providerOrderVehiclesStorageKey,
+      state && typeof state === "object" ? state : {},
+    );
+  }
+
+  function buildProviderOrderVehicleAssignmentKey(providerId, orderCode) {
+    const normalizedProviderId = normalizeText(providerId);
+    const normalizedOrderCode = normalizeText(orderCode).toLowerCase();
+    return `${normalizedProviderId}::${normalizedOrderCode}`;
+  }
+
+  function pickPrimaryProviderVehicle(vehicles) {
+    return sortProviderVehicles(vehicles)[0] || null;
+  }
+
+  async function listProviderVehicleCatalog() {
+    if (providerVehicleCatalogPromise) return providerVehicleCatalogPromise;
+
+    const fallbackCatalog = Object.entries(DEFAULT_PROVIDER_VEHICLE_LABEL_MAP).map(
+      ([key, label]) => ({
+        key,
+        label,
+      }),
+    );
+
+    providerVehicleCatalogPromise = (async () => {
+      try {
+        const url =
+          typeof core.toPublicUrl === "function"
+            ? core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json")
+            : "assets/js/data/bang-gia-minh-bach.json";
+        const response = await window.fetch(url, {
+          method: "GET",
+          credentials: "same-origin",
+        });
+        if (!response.ok) {
+          throw new Error(`Cannot load moving vehicle catalog: ${response.status}`);
+        }
+        const pricingData = await response.json();
+        const sourceList = Array.isArray(pricingData) ? pricingData : [];
+        const seen = new Set();
+        const catalog = [];
+
+        sourceList.forEach((serviceData) => {
+          const entries =
+            typeof core.getPricingVehicleEntries === "function"
+              ? core.getPricingVehicleEntries(serviceData)
+              : [];
+          entries.forEach((entry) => {
+            const key = normalizeVehicleKey(entry?.slug || "");
+            const label = normalizeText(entry?.ten_hien_thi || entry?.ten || "");
+            if (!key || !label || seen.has(key)) return;
+            seen.add(key);
+            catalog.push({ key, label });
+          });
+        });
+
+        return catalog.length ? catalog : fallbackCatalog;
+      } catch (error) {
+        console.error("Cannot load moving provider vehicle catalog:", error);
+        return fallbackCatalog;
+      }
+    })();
+
+    return providerVehicleCatalogPromise;
+  }
+
+  function listProviderVehicles(providerId = "") {
+    const normalizedProviderId =
+      normalizeText(providerId) || normalizeText(readIdentity()?.id || "");
+    if (!normalizedProviderId) return [];
+    const state = readProviderVehicleState();
+    const vehicles = Array.isArray(state[normalizedProviderId]) ? state[normalizedProviderId] : [];
+    return sortProviderVehicles(vehicles.map(mapProviderVehicleRecord).filter(Boolean));
+  }
+
+  function saveProviderVehicles(providerId, vehicles) {
+    const normalizedProviderId =
+      normalizeText(providerId) || normalizeText(readIdentity()?.id || "");
+    if (!normalizedProviderId) return [];
+    const nextVehicles = sortProviderVehicles(
+      (Array.isArray(vehicles) ? vehicles : []).map(mapProviderVehicleRecord).filter(Boolean),
+    );
+    const state = readProviderVehicleState();
+    state[normalizedProviderId] = nextVehicles;
+    writeProviderVehicleState(state);
+    return nextVehicles;
+  }
+
+  function clearProviderVehicleAssignmentsForVehicle(providerId, vehicleId) {
+    const normalizedProviderId = normalizeText(providerId);
+    const normalizedVehicleId = getProviderVehicleRecordKey(vehicleId);
+    if (!normalizedProviderId || !normalizedVehicleId) return;
+    const state = readProviderOrderVehicleState();
+    let changed = false;
+    Object.entries(state).forEach(([key, value]) => {
+      if (
+        key.startsWith(`${normalizedProviderId}::`) &&
+        getProviderVehicleRecordKey(value) === normalizedVehicleId
+      ) {
+        delete state[key];
+        changed = true;
+      }
+    });
+    if (changed) {
+      writeProviderOrderVehicleState(state);
+    }
+  }
+
+  async function syncPrimaryProviderVehicle(providerId, vehicles = null) {
+    const normalizedProviderId =
+      normalizeText(providerId) || normalizeText(readIdentity()?.id || "");
+    const nextVehicles = Array.isArray(vehicles)
+      ? sortProviderVehicles(vehicles)
+      : listProviderVehicles(normalizedProviderId);
+    const primaryVehicle = pickPrimaryProviderVehicle(nextVehicles);
+    const currentIdentity = readIdentity();
+
+    if (
+      currentIdentity &&
+      normalizeText(currentIdentity.id || "") === normalizedProviderId
+    ) {
+      saveIdentity({
+        ...currentIdentity,
+        loai_phuong_tien: primaryVehicle?.loai_xe || "",
+      });
+    }
+
+    if (!normalizedProviderId) return primaryVehicle;
+
+    try {
+      await ensureKrudRuntime();
+      const updateFn = getKrudUpdateFn();
+      const tableName = getAuthTableName("nha-cung-cap");
+      if (updateFn && tableName) {
+        await Promise.resolve(
+          updateFn(
+            tableName,
+            {
+              id: normalizedProviderId,
+              loai_phuong_tien: primaryVehicle?.loai_xe || "",
+              updated_at: new Date().toISOString(),
+            },
+            normalizedProviderId,
+          ),
+        );
+      }
+    } catch (error) {
+      console.warn("Cannot sync moving provider primary vehicle to KRUD:", error);
+    }
+
+    return primaryVehicle;
+  }
+
+  function enforceProviderVehicleDefaults(providerId, preferredVehicleId = "") {
+    const normalizedProviderId = normalizeText(providerId);
+    if (!normalizedProviderId) return [];
+    const vehicles = listProviderVehicles(normalizedProviderId);
+    if (!vehicles.length) return [];
+
+    let primaryVehicle = vehicles.find(
+      (item) => getProviderVehicleRecordKey(item) === getProviderVehicleRecordKey(preferredVehicleId),
+    );
+    if (!primaryVehicle) {
+      primaryVehicle =
+        vehicles.find((item) => Number(item.la_mac_dinh || 0) === 1) ||
+        pickPrimaryProviderVehicle(vehicles);
+    }
+    if (!primaryVehicle) return vehicles;
+
+    return saveProviderVehicles(
+      normalizedProviderId,
+      vehicles.map((item) => ({
+        ...item,
+        la_mac_dinh:
+          getProviderVehicleRecordKey(item) === getProviderVehicleRecordKey(primaryVehicle) ? 1 : 0,
+      })),
+    );
+  }
+
+  async function createProviderVehicle(providerId, payload = {}) {
+    const normalizedProviderId =
+      normalizeText(providerId) || normalizeText(readIdentity()?.id || "");
+    if (!normalizedProviderId) {
+      throw new Error("Thiếu mã NCC để thêm xe.");
+    }
+
+    const loaiXe = normalizeVehicleKey(
+      payload.loai_xe || payload.vehicle_type || payload.loai_phuong_tien || "",
+    );
+    const tenHienThi = normalizeText(payload.ten_hien_thi || payload.vehicle_name || "");
+    const bienSo = normalizeLicensePlate(payload.bien_so || payload.license_plate || "");
+    if (!loaiXe || !tenHienThi || !bienSo) {
+      throw new Error("Vui lòng nhập tên gợi nhớ, biển số và loại xe.");
+    }
+
+    const currentVehicles = listProviderVehicles(normalizedProviderId);
+    if (currentVehicles.some((item) => normalizeLicensePlate(item.bien_so) === bienSo)) {
+      throw new Error("Biển số xe này đã tồn tại trong danh sách của NCC.");
+    }
+
+    const createdAt = new Date().toISOString();
+    const shouldBeDefault = toFlag(payload.la_mac_dinh) === 1 || currentVehicles.length === 0;
+    const insertedVehicle = mapProviderVehicleRecord({
+      local_id: buildLocalProviderVehicleId(),
+      provider_id: normalizedProviderId,
+      loai_xe: loaiXe,
+      ten_hien_thi: tenHienThi,
+      bien_so: bienSo,
+      trang_thai: normalizeVehicleStatus(payload.trang_thai),
+      la_mac_dinh: shouldBeDefault ? 1 : 0,
+      ghi_chu: normalizeText(payload.ghi_chu || ""),
+      created_at: createdAt,
+      updated_at: createdAt,
+    });
+
+    let nextVehicles = saveProviderVehicles(normalizedProviderId, [
+      ...currentVehicles,
+      insertedVehicle,
+    ]);
+    if (shouldBeDefault) {
+      nextVehicles = enforceProviderVehicleDefaults(
+        normalizedProviderId,
+        getProviderVehicleRecordKey(insertedVehicle),
+      );
+    }
+    const primaryVehicle = await syncPrimaryProviderVehicle(normalizedProviderId, nextVehicles);
+
+    const insertedVehicleKey = getProviderVehicleRecordKey(insertedVehicle);
+    return {
+      status: "success",
+      vehicle:
+        nextVehicles.find((item) => getProviderVehicleRecordKey(item) === insertedVehicleKey) ||
+        insertedVehicle,
+      vehicles: nextVehicles,
+      primary_vehicle: primaryVehicle,
+    };
+  }
+
+  async function updateProviderVehicle(vehicleId, providerId, patch = {}) {
+    const normalizedVehicleId = getProviderVehicleRecordKey(vehicleId);
+    const normalizedProviderId =
+      normalizeText(providerId) || normalizeText(readIdentity()?.id || "");
+    if (!normalizedVehicleId || !normalizedProviderId) {
+      throw new Error("Thiếu mã xe hoặc mã NCC để cập nhật.");
+    }
+
+    const vehicles = listProviderVehicles(normalizedProviderId);
+    const existingVehicle = vehicles.find(
+      (item) => getProviderVehicleRecordKey(item) === normalizedVehicleId,
+    );
+    if (!existingVehicle) {
+      throw new Error("Không tìm thấy xe để cập nhật.");
+    }
+
+    const loaiXe = normalizeVehicleKey(
+      patch.loai_xe || patch.vehicle_type || patch.loai_phuong_tien || existingVehicle.loai_xe,
+    );
+    const tenHienThi = normalizeText(
+      patch.ten_hien_thi || patch.vehicle_name || existingVehicle.ten_hien_thi,
+    );
+    const bienSo = normalizeLicensePlate(
+      Object.prototype.hasOwnProperty.call(patch, "bien_so") ||
+        Object.prototype.hasOwnProperty.call(patch, "license_plate")
+        ? patch.bien_so || patch.license_plate || ""
+        : existingVehicle.bien_so,
+    );
+    if (!loaiXe || !tenHienThi || !bienSo) {
+      throw new Error("Vui lòng nhập tên gợi nhớ, biển số và loại xe.");
+    }
+    if (
+      vehicles.some(
+        (item) =>
+          getProviderVehicleRecordKey(item) !== normalizedVehicleId &&
+          normalizeLicensePlate(item.bien_so) === bienSo,
+      )
+    ) {
+      throw new Error("Biển số xe này đã tồn tại trong danh sách của NCC.");
+    }
+
+    let nextVehicles = saveProviderVehicles(
+      normalizedProviderId,
+      vehicles.map((item) =>
+        getProviderVehicleRecordKey(item) !== normalizedVehicleId
+          ? item
+          : {
+              ...item,
+              loai_xe: loaiXe,
+              ten_hien_thi: tenHienThi,
+              bien_so: bienSo,
+              trang_thai: Object.prototype.hasOwnProperty.call(patch, "trang_thai")
+                ? normalizeVehicleStatus(patch.trang_thai)
+                : existingVehicle.trang_thai,
+              la_mac_dinh: Object.prototype.hasOwnProperty.call(patch, "la_mac_dinh")
+                ? toFlag(patch.la_mac_dinh)
+                : Number(existingVehicle.la_mac_dinh || 0),
+              ghi_chu: Object.prototype.hasOwnProperty.call(patch, "ghi_chu")
+                ? normalizeText(patch.ghi_chu || "")
+                : existingVehicle.ghi_chu,
+              updated_at: new Date().toISOString(),
+            },
+      ),
+    );
+
+    const preferredVehicleId =
+      Object.prototype.hasOwnProperty.call(patch, "la_mac_dinh") &&
+      toFlag(patch.la_mac_dinh) === 1
+        ? normalizedVehicleId
+        : "";
+    nextVehicles = enforceProviderVehicleDefaults(normalizedProviderId, preferredVehicleId);
+    const primaryVehicle = await syncPrimaryProviderVehicle(normalizedProviderId, nextVehicles);
+
+    return {
+      status: "success",
+      vehicle:
+        nextVehicles.find((item) => getProviderVehicleRecordKey(item) === normalizedVehicleId) || null,
+      vehicles: nextVehicles,
+      primary_vehicle: primaryVehicle,
+    };
+  }
+
+  async function deleteProviderVehicle(vehicleId, providerId) {
+    const normalizedVehicleId = getProviderVehicleRecordKey(vehicleId);
+    const normalizedProviderId =
+      normalizeText(providerId) || normalizeText(readIdentity()?.id || "");
+    if (!normalizedVehicleId || !normalizedProviderId) {
+      throw new Error("Thiếu mã xe hoặc mã NCC để xóa.");
+    }
+
+    const vehicles = listProviderVehicles(normalizedProviderId);
+    const nextVehicles = saveProviderVehicles(
+      normalizedProviderId,
+      vehicles.filter((item) => getProviderVehicleRecordKey(item) !== normalizedVehicleId),
+    );
+    clearProviderVehicleAssignmentsForVehicle(normalizedProviderId, normalizedVehicleId);
+    const enforcedVehicles = enforceProviderVehicleDefaults(normalizedProviderId);
+    const primaryVehicle = await syncPrimaryProviderVehicle(
+      normalizedProviderId,
+      enforcedVehicles.length ? enforcedVehicles : nextVehicles,
+    );
+
+    return {
+      status: "success",
+      vehicles: enforcedVehicles.length ? enforcedVehicles : nextVehicles,
+      primary_vehicle: primaryVehicle,
+    };
+  }
+
+  function getProviderOrderVehicleAssignment(providerId, orderCode) {
+    const normalizedProviderId =
+      normalizeText(providerId) || normalizeText(readIdentity()?.id || "");
+    const normalizedOrderCode = normalizeText(orderCode);
+    if (!normalizedProviderId || !normalizedOrderCode) return null;
+    const state = readProviderOrderVehicleState();
+    const key = buildProviderOrderVehicleAssignmentKey(
+      normalizedProviderId,
+      normalizedOrderCode,
+    );
+    const assignment = state[key];
+    return assignment && typeof assignment === "object"
+      ? mapProviderVehicleRecord({
+          ...assignment,
+          provider_id: normalizedProviderId,
+        })
+      : null;
+  }
+
+  function saveProviderOrderVehicleAssignment(providerId, orderCode, vehicle) {
+    const normalizedProviderId =
+      normalizeText(providerId) || normalizeText(readIdentity()?.id || "");
+    const normalizedOrderCode = normalizeText(orderCode);
+    const mappedVehicle = mapProviderVehicleRecord({
+      ...(vehicle && typeof vehicle === "object" ? vehicle : {}),
+      provider_id: normalizedProviderId,
+    });
+    const vehicleKey = getProviderVehicleRecordKey(mappedVehicle);
+    if (!normalizedProviderId || !normalizedOrderCode || !vehicleKey) {
+      return null;
+    }
+
+    const state = readProviderOrderVehicleState();
+    const key = buildProviderOrderVehicleAssignmentKey(
+      normalizedProviderId,
+      normalizedOrderCode,
+    );
+    state[key] = {
+      id: mappedVehicle.id,
+      local_id: mappedVehicle.local_id,
+      vehicle_key: vehicleKey,
+      provider_id: normalizedProviderId,
+      loai_xe: mappedVehicle.loai_xe,
+      ten_hien_thi: mappedVehicle.ten_hien_thi,
+      bien_so: mappedVehicle.bien_so,
+      trang_thai: mappedVehicle.trang_thai,
+      la_mac_dinh: mappedVehicle.la_mac_dinh,
+      ghi_chu: mappedVehicle.ghi_chu,
+      updated_at: new Date().toISOString(),
+    };
+    writeProviderOrderVehicleState(state);
+    return mapProviderVehicleRecord(state[key]);
   }
 
   function splitServiceIds(value) {
@@ -2181,6 +2741,17 @@ const customerPortalStoreModule = (function (window) {
     getSavedRole,
     hasProviderCapability,
     getProvidedServiceLabels,
+    normalizeVehicleKey,
+    getProviderVehicleLabel,
+    getProviderVehicleRecordKey,
+    listProviderVehicleCatalog,
+    listProviderVehicles,
+    createProviderVehicle,
+    updateProviderVehicle,
+    deleteProviderVehicle,
+    pickPrimaryProviderVehicle,
+    getProviderOrderVehicleAssignment,
+    saveProviderOrderVehicleAssignment,
     resolveCustomerBookingOwnership,
     getCurrentProviderActor,
     isRowAssignedToProvider,
@@ -2233,19 +2804,30 @@ export const {
   getDisplayName,
   getSavedRole,
   getProvidedServiceLabels,
+  createProviderVehicle,
+  deleteProviderVehicle,
   getCurrentProviderActor,
+  getProviderOrderVehicleAssignment,
+  getProviderVehicleLabel,
+  getProviderVehicleRecordKey,
   hasProviderCapability,
   isExpiredPendingBookingRow,
   isRowAssignedToProvider,
+  listProviderVehicleCatalog,
+  listProviderVehicles,
   canProviderAccessBookingRow,
   isRowOwnedByProviderActor,
   matchesBookingCode,
+  normalizeVehicleKey,
+  pickPrimaryProviderVehicle,
   readIdentity,
   resolveCustomerBookingOwnership,
   resolveBookingRowCode,
+  saveProviderOrderVehicleAssignment,
   saveIdentity,
   storageKeys: portalStorageKeys,
   syncIdentityFromProfile,
+  updateProviderVehicle,
   updateProfile,
   cancelBooking,
   saveBookingFeedback,

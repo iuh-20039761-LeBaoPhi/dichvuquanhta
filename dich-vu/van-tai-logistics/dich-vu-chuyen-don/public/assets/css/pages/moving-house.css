@@ -3397,3 +3397,510 @@ body[data-page="provider-profile"] .moving-profile-card {
     height: 112px;
   }
 }
+
+/* --- Provider vehicles page --- */
+body[data-page="provider-vehicles"] .customer-portal-page-main {
+  background: linear-gradient(180deg, #f6f9ff 0, #ffffff 220px), #ffffff;
+}
+
+body[data-page="provider-vehicles"] .customer-portal-shell {
+  gap: 22px;
+  padding: 8px 0 40px;
+}
+
+body[data-page="provider-vehicles"] .customer-profile-card .customer-inline-actions {
+  justify-content: flex-start;
+}
+
+body[data-page="provider-vehicles"] .customer-profile-link-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+body[data-page="provider-vehicles"] .customer-profile-link-list li + li {
+  margin-top: 8px;
+}
+
+:is(body[data-page="provider-profile"], body[data-page="provider-vehicles"]) .customer-form-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 44px 0 42px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  background: #ffffff;
+  color: #251912;
+  font: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+:is(body[data-page="provider-profile"], body[data-page="provider-vehicles"]) .customer-form-field select:focus {
+  border-color: #ff7a00 !important;
+  box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.12);
+  outline: none;
+}
+
+:is(body[data-page="provider-profile"], body[data-page="provider-vehicles"]) .customer-vehicle-form-default-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 4px 0 0;
+  color: #584235;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+:is(body[data-page="provider-profile"], body[data-page="provider-vehicles"]) .customer-vehicle-form-default-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-portal-profile-rich {
+  display: grid;
+  gap: 16px;
+  max-width: 1400px;
+  padding: 0 20px 42px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-hero,
+:is(body[data-page="provider-vehicles"]) .customer-profile-card {
+  border: 1px solid #f2f4f7;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(12, 30, 75, 0.04);
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 122, 0, 0.12), transparent 34%),
+    linear-gradient(90deg, #fff7ed 0%, #ffffff 56%, #ffffff 100%);
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-hero-main {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-avatar-wrapper-rich,
+:is(body[data-page="provider-vehicles"]) .customer-profile-avatar-image,
+:is(body[data-page="provider-vehicles"]) .customer-profile-avatar-large {
+  width: 128px;
+  height: 128px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-avatar-image,
+:is(body[data-page="provider-vehicles"]) .customer-profile-avatar-large {
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  box-shadow: 0 12px 28px rgba(12, 30, 75, 0.12);
+  background: #ffffff;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-avatar-image {
+  display: block;
+  object-fit: cover;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-avatar-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff7a00 0%, #994700 100%);
+  font-size: 42px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-eyebrow {
+  margin: 0 0 8px;
+  color: #994700;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-hero-info h2 {
+  margin: 0 0 8px;
+  color: #251912;
+  font-size: 30px;
+  line-height: 1.25;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-meta-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-meta-list span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #f2d6c6;
+  color: #584235;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-hero-actions {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+  max-width: 360px;
+  text-align: right;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-status-badge.is-active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-status-badge.is-pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-status-badge.is-locked {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-main-column,
+:is(body[data-page="provider-vehicles"]) .customer-profile-side-column {
+  display: grid;
+  gap: 16px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-card {
+  width: 100%;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 18px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-metric {
+  padding: 16px 18px;
+  border: 1px solid #f2f4f7;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(12, 30, 75, 0.04);
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-metric span {
+  display: block;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-metric strong {
+  display: block;
+  margin-top: 8px;
+  color: #251912;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.35fr);
+  gap: 16px;
+  align-items: start;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-form-column,
+body[data-page="provider-vehicles"] .vehicle-management-list-column {
+  display: grid;
+  gap: 16px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-card-head i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: #ff7a00;
+  background: #fff1ea;
+  flex: 0 0 auto;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-card-head h3 {
+  margin: 0;
+  color: #251912;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(180px, 0.7fr);
+  gap: 12px;
+  align-items: end;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-search,
+body[data-page="provider-vehicles"] .vehicle-management-filter {
+  display: grid;
+  gap: 8px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-search {
+  position: relative;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-search input,
+body[data-page="provider-vehicles"] .vehicle-management-filter select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #251912;
+  font: inherit;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-search input {
+  padding: 0 14px 0 40px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-filter span {
+  color: #584235;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-filter select {
+  padding: 0 14px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-list-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-list-meta strong {
+  color: #251912;
+  font-size: 14px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-list-shell {
+  margin-top: 14px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-list {
+  gap: 14px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-list .vehicle-management-card {
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  background: #fbfdff;
+  box-shadow: none;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-card-label {
+  margin: 0 0 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-card-plate {
+  margin: 0;
+  color: #251912;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-card-badges {
+  margin: 0;
+  justify-content: flex-end;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-facts {
+  gap: 10px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-actions {
+  margin-top: 14px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-form-group-wide {
+  grid-column: 1 / -1;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-stats-card {
+  background: #ff7a00;
+  color: #ffffff;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-stats-card .customer-profile-card-head h3,
+:is(body[data-page="provider-vehicles"]) .customer-profile-stats-card .customer-profile-card-head i {
+  color: #ffffff;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-stats-card .customer-profile-card-head i,
+:is(body[data-page="provider-vehicles"]) .customer-profile-stat-list div {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-stat-list,
+:is(body[data-page="provider-vehicles"]) .customer-profile-fact-list {
+  display: grid;
+  gap: 12px;
+}
+
+:is(body[data-page="provider-vehicles"]) .customer-profile-stat-list div,
+:is(body[data-page="provider-vehicles"]) .customer-profile-fact-list div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+@media (max-width: 1100px) {
+  :is(body[data-page="provider-vehicles"]) .vehicle-management-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  :is(body[data-page="provider-vehicles"]) .customer-profile-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  :is(body[data-page="provider-vehicles"]) .vehicle-management-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  :is(body[data-page="provider-vehicles"]) .customer-profile-hero,
+  :is(body[data-page="provider-vehicles"]) .customer-profile-hero-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  :is(body[data-page="provider-vehicles"]) .customer-profile-hero-actions {
+    width: 100%;
+    max-width: none;
+    justify-items: start;
+    text-align: left;
+  }
+
+  :is(body[data-page="provider-vehicles"]) .customer-profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  :is(body[data-page="provider-vehicles"]) .customer-form-group-wide {
+    grid-column: auto;
+  }
+
+  :is(body[data-page="provider-vehicles"]) .vehicle-management-toolbar,
+  :is(body[data-page="provider-vehicles"]) .vehicle-management-list-meta,
+  :is(body[data-page="provider-vehicles"]) .vehicle-management-card-head {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  :is(body[data-page="provider-vehicles"]) .vehicle-management-summary {
+    grid-template-columns: 1fr;
+  }
+
+  :is(body[data-page="provider-vehicles"]) .vehicle-management-card-plate {
+    font-size: 20px;
+  }
+
+  :is(body[data-page="provider-vehicles"]) .vehicle-management-list .vehicle-management-card {
+    padding: 16px;
+  }
+}

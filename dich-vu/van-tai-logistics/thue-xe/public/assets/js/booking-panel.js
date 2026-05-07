@@ -43,7 +43,7 @@
             '      <div class="modal-header booking-modal-header" style="padding:10px 14px;">',
             '        <div class="tx-bk-spacer"></div>',
             '        <div class="tx-bk-center">',
-            '          <img src="public/assets/images/logo-dich-vu-quanh-ta.jpg" alt="Dịch Vụ Quanh Ta" class="tx-bk-logo">',
+            '          <img src="public/assets/images/logo-dich-vu-quanh-ta.png" alt="Dịch Vụ Quanh Ta" class="tx-bk-logo">',
             '          <h5 class="modal-title mb-0 fw-bold" style="color:#1e293b;">',
             '            Thông Tin Đặt Xe',
             '          </h5>',

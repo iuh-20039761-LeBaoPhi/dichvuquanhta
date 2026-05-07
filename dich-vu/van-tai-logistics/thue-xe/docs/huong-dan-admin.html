@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Thuê Xe - Hướng Dẫn Admin</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pacifico&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0b5ed7;
+            --primary-light: #e7f1ff;
+            --gradient: linear-gradient(135deg, #1d4ed8, #60a5fa);
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            scroll-behavior: smooth;
+        }
+
+        .doc-header {
+            background: var(--gradient);
+            color: white;
+            padding: 80px 0 100px;
+            text-align: center;
+            clip-path: ellipse(150% 100% at 50% 0%);
+        }
+
+        .doc-header h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+        }
+
+        .doc-nav {
+            position: sticky;
+            top: 20px;
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 10px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            z-index: 1000;
+        }
+
+        .doc-nav .nav-link {
+            padding: 10px 15px;
+            color: var(--text-sub);
+            font-weight: 600;
+            border-radius: 8px;
+            margin-bottom: 2px;
+        }
+
+        .doc-nav .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .doc-nav .nav-link.active {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .doc-section {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 40px;
+            scroll-margin-top: 20px;
+        }
+
+        .section-title {
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-main);
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .detail-step {
+            margin-bottom: 60px;
+            padding-left: 20px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        .detail-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-label {
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .step-heading {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+        }
+
+        .nav-pills .nav-link {
+            margin: 0 8px;
+            border: 1px solid #e9ecef;
+            color: #495057;
+            border-radius: 30px;
+            padding: 8px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #f8f9fa;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+        }
+
+        .pc-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pc-monitor {
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 12px 12px 0 0;
+            padding: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            margin: 0 auto;
+        }
+
+        .pc-titlebar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            padding: 0 2px;
+        }
+
+        .pc-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+        .pc-screen {
+            width: 100%;
+            background: #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pc-stand {
+            background: #2d2d2d;
+            margin: 0 auto;
+        }
+
+        .pc-base {
+            background: #222;
+            border-radius: 0 0 6px 6px;
+            margin: 0 auto;
+        }
+
+        .tablet-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tablet-body {
+            background: #1a1a1a;
+            border-radius: 22px;
+            padding: 14px 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tablet-cam {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #333;
+            margin: 0 auto 8px;
+        }
+
+        .tablet-screen {
+            flex: 1;
+            background: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .tablet-home {
+            width: 32px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin: 8px auto 0;
+        }
+
+        .mobile-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mobile-body {
+            background: #1a1a1a;
+            border-radius: 30px;
+            padding: 12px 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-notch {
+            background: #1a1a1a;
+            border-radius: 0 0 12px 12px;
+            margin: 0 auto 6px;
+            z-index: 2;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .mobile-notch-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #333;
+        }
+
+        .mobile-screen {
+            flex: 1;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .mobile-home {
+            width: 50px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin: 8px auto 0;
+        }
+
+        .device-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2.5rem 1.5rem;
+            background: #f8f9fa;
+            border-radius: 16px;
+            margin-top: 1rem;
+            border: 1px dashed #ced4da;
+            min-height: 580px;
+        }
+
+        .upload-zone {
+            width: 100%;
+            height: 100%;
+            border: 1.5px dashed #cfd4da;
+            border-radius: 8px;
+            background: #eef1f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #98a2b3;
+            font-size: 12px;
+            text-align: center;
+            gap: 6px;
+        }
+
+        .upload-zone i {
+            font-size: 22px;
+            color: var(--primary);
+        }
+
+        .upload-size {
+            font-size: 10px;
+            color: #b0b8c1;
+        }
+
+        .pc-screen,
+        .tablet-screen,
+        .mobile-screen {
+            background: #fff !important;
+        }
+
+        .pc-screen img,
+        .tablet-screen img,
+        .mobile-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 60px 0;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        @media (max-width: 991px) {
+            .doc-nav {
+                position: relative;
+                top: 0;
+                margin-bottom: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#sideNav" data-bs-offset="100">
+
+    <!-- Header -->
+    <header class="doc-header">
+        <div class="container-fluid px-lg-5">
+            <h1>Thuê Xe</h1>
+            <p class="lead">Hướng dẫn dành cho quản trị viên</p>
+        </div>
+    </header>
+
+    <div class="container-fluid px-lg-5" style="margin-top: -40px;">
+        <div class="row g-4">
+            <div class="col-lg-3 col-xxl-2">
+                <nav class="doc-nav" id="sideNav">
+                    <a class="nav-link" href="#sec-admin-login"><i class="fas fa-sign-in-alt me-2"></i> Đăng nhập admin</a>
+                    <a class="nav-link" href="#sec-admin-orders"><i class="fas fa-clipboard-list me-2"></i> Quản lý đơn</a>
+                    <a class="nav-link" href="#sec-admin-services"><i class="fas fa-tools me-2"></i> Quản lý dịch vụ</a>
+                    <a class="nav-link" href="#sec-admin-rentals"><i class="fas fa-car-side me-2"></i> Quản lý xe cho thuê</a>
+                </nav>
+            </div>
+
+            <div class="col-lg-9 col-xxl-10">
+
+                <!-- SECTION: ADMIN LOGIN -->
+                <section id="sec-admin-login" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-sign-in-alt"></i> 1. Hướng dẫn đăng nhập cho admin</h2>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 1.1</span>
+                        <h3 class="step-heading">Đăng nhập</h3>
+                        <p>Truy cập trang đăng nhập admin, nhập tài khoản và mật khẩu, sau đó nhấn "Đăng nhập".</p>
+
+                        <div class="setup-mockup" data-title="Đăng Nhập Admin" data-icon="fa-sign-in-alt"
+                            data-img-height="120" data-btn-text="Đăng nhập" 
+                            data-img-pc="img/huong-dan-dang-nhap-admin-pc.png" 
+                            data-img-tablet="img/huong-dan-dang-nhap-admin-tablet.png"
+                            data-img-mobile="img/huong-dan-dang-nhap-admin-mobile.png"></div>
+                    </div>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 1.2</span>
+                        <h3 class="step-heading">Chọn mục Thuê Xe</h3>
+                        <p>Sau khi đăng nhập, chọn mục "Thuê Xe" trong menu để vào khu vực quản trị chuyên môn.</p>
+
+                        <div class="setup-mockup" data-title="Chọn Mục Thuê Xe" data-icon="fa-car-side"
+                            data-img-height="120" data-btn-text="Thuê Xe" 
+                            data-img-pc="img/huong-dan-dang-nhap-admin-pc1.png" 
+                            data-img-tablet="img/huong-dan-dang-nhap-admin-tablet1.png"
+                            data-img-mobile="img/huong-dan-dang-nhap-admin-mobile1.png"></div>
+                    </div>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 1.3</span>
+                        <h3 class="step-heading">Vào trang admin Thuê Xe thành công</h3>
+                        <p>Hệ thống hiển thị trang quản trị Thuê Xe, bạn có thể bắt đầu theo dõi và thao tác.</p>
+
+                        <div class="setup-mockup" data-title="Trang Admin Thuê Xe" data-icon="fa-check-circle"
+                            data-img-height="140" data-btn-text="Vào trang" 
+                            data-img-pc="img/huong-dan-dang-nhap-admin-pc2.png" 
+                            data-img-tablet="img/huong-dan-dang-nhap-admin-tablet2.png"
+                            data-img-mobile="img/huong-dan-dang-nhap-admin-mobile2.png"></div>
+                    </div>
+                </section>
+
+                <!-- SECTION: ORDER MANAGEMENT -->
+                <section id="sec-admin-orders" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-clipboard-list"></i> 2. Quản lý đơn</h2>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 2.1</span>
+                        <h3 class="step-heading">Vào trang quản lý đơn</h3>
+                        <p>Truy cập mục "Quản lý đơn" để xem danh sách các đơn thuê xe.</p>
+
+                        <div class="setup-mockup" data-title="Trang Quản Lý Đơn" data-icon="fa-clipboard-list"
+                            data-img-height="130" data-btn-text="Quản lý đơn" 
+                            data-img-pc="img/huong-dan-quan-ly-don-pc.png" 
+                            data-img-tablet="img/huong-dan-quan-ly-don-tablet.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-mobile.png"></div>
+                    </div>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 2.2</span>
+                        <h3 class="step-heading">Xem chi tiết đơn</h3>
+                        <p>Chọn một đơn trong danh sách để xem chi tiết thông tin và trạng thái xử lý.</p>
+
+                        <div class="setup-mockup" data-title="Chi Tiết Đơn" data-icon="fa-file-alt"
+                            data-img-height="120" data-btn-text="Xem chi tiết" 
+                            data-img-pc="img/huong-dan-quan-ly-don-pc1.png" 
+                            data-img-tablet="img/huong-dan-quan-ly-don-tablet1.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-mobile1.png"></div>
+                    </div>
+                </section>
+
+                <!-- SECTION: SERVICE MANAGEMENT -->
+                <section id="sec-admin-services" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-tools"></i> 3. Quản lý dịch vụ</h2>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 3.1</span>
+                        <h3 class="step-heading">Truy cập trang quản lý dịch vụ</h3>
+                        <p>Vào mục "Quản lý dịch vụ" để thao tác danh sách xe và dịch vụ trên hệ thống.</p>
+
+                        <div class="setup-mockup" data-title="Trang Quản Lý Dịch Vụ" data-icon="fa-tools"
+                            data-img-height="130" data-btn-text="Quản lý dịch vụ" 
+                            data-img-pc="img/huong-dan-quan-ly-dich-vu-pc.png" 
+                            data-img-tablet="img/huong-dan-quan-ly-dich-vu-tablet.png"
+                            data-img-mobile="img/huong-dan-quan-ly-dich-vu-mobile.png"></div>
+                    </div>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 3.2</span>
+                        <h3 class="step-heading">Thêm, sửa, xóa dịch vụ</h3>
+                        <p>Thực hiện các thao tác thêm mới, chỉnh sửa hoặc xóa dịch vụ theo nhu cầu quản trị. Sau đó nhấn "Lưu" để ghi nhận thay đổi.</p>
+
+                        <div class="setup-mockup" data-title="Thêm, Sửa, Xóa Dịch Vụ" data-icon="fa-edit"
+                            data-img-height="130" data-btn-text="Chỉnh sửa" 
+                            data-img-pc="img/huong-dan-quan-ly-dich-vu-pc1.png" 
+                            data-img-tablet="img/huong-dan-quan-ly-dich-vu-tablet1.png"
+                            data-img-mobile="img/huong-dan-quan-ly-dich-vu-mobile1.png"></div>
+                    </div>
+
+                </section>
+
+                <!-- SECTION: RENTAL MANAGEMENT -->
+                <section id="sec-admin-rentals" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-car-side"></i> 4. Quản lý xe cho thuê</h2>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 4.1</span>
+                        <h3 class="step-heading">Truy cập trang quản lý xe cho thuê</h3>
+                        <p>Vào mục "Xe cho thuê" để xem danh sách xe đang hoạt động trên hệ thống.</p>
+
+                        <div class="setup-mockup" data-title="Danh Sách Xe Cho Thuê" data-icon="fa-car-side"
+                            data-img-height="140" data-btn-text="Xem xe" 
+                            data-img-pc="img/huong-dan-quan-ly-xe-pc.png" 
+                            data-img-tablet="img/huong-dan-quan-ly-xe-tablet.png"
+                            data-img-mobile="img/huong-dan-quan-ly-xe-mobile.png"></div>
+                    </div>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 4.2</span>
+                        <h3 class="step-heading">Xem chi tiết</h3>
+                        <p>Chọn một xe để xem thông tin chi tiết, hình ảnh và trạng thái hiện tại.</p>
+
+                        <div class="setup-mockup" data-title="Chi Tiết Xe" data-icon="fa-info-circle"
+                            data-img-height="130" data-btn-text="Xem chi tiết" 
+                            data-img-pc="img/huong-dan-quan-ly-xe-pc1.png" 
+                            data-img-tablet="img/huong-dan-quan-ly-xe-tablet1.png"
+                            data-img-mobile="img/huong-dan-quan-ly-xe-mobile1.png"></div>
+                    </div>
+
+                    <div class="detail-step">
+                        <span class="step-label">Bước 4.3</span>
+                        <h3 class="step-heading">Duyệt, từ chối</h3>
+                        <p>Thực hiện duyệt hoặc từ chối xe cho thuê theo quy định quản trị.</p>
+
+                        <div class="setup-mockup" data-title="Duyệt Hoặc Từ Chối" data-icon="fa-check-double"
+                            data-img-height="120" data-btn-text="Duyệt" 
+                            data-img-pc="img/huong-dan-quan-ly-xe-pc2.png" 
+                            data-img-tablet="img/huong-dan-quan-ly-xe-tablet2.png"
+                            data-img-mobile="img/huong-dan-quan-ly-xe-mobile2.png"></div>
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container-fluid">
+            <h2 class="mb-3" style="font-family: 'Pacifico', cursive; color: white;">Thuê Xe</h2>
+            <p>Hệ thống kết nối dịch vụ thuê xe thông minh</p>
+            <p class="small opacity-50 mt-4">&copy; 2026 Dịch Vụ Quanh Ta. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Mockup Generator Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const mockups = document.querySelectorAll('.setup-mockup');
+
+            mockups.forEach((el, index) => {
+                const id = 'mock-thue-xe-admin-' + index;
+                const imgPc = el.getAttribute('data-img-pc') || '';
+                const imgTablet = el.getAttribute('data-img-tablet') || '';
+                const imgMobile = el.getAttribute('data-img-mobile') || '';
+
+                const title = el.getAttribute('data-title') || 'Giao diện hệ thống';
+                const icon = el.getAttribute('data-icon') || 'fa-image';
+                const btnText = el.getAttribute('data-btn-text') || 'Tiếp tục';
+                const imgHeight = parseInt(el.getAttribute('data-img-height')) || 0;
+
+                const getSizeHint = (label) => {
+                    if (label === 'Desktop') return '1440 x 900px';
+                    if (label === 'Tablet') return '768 x 1024px';
+                    return '390 x 844px';
+                };
+
+                const renderUI = (label, imgSrc) => {
+                    if (imgSrc) {
+                        return `<img src="${imgSrc}" alt="${label} screenshot">`;
+                    }
+
+                    const sizeHint = getSizeHint(label);
+                    return `
+                        <div class="upload-zone">
+                            <i class="fas fa-image" aria-hidden="true"></i>
+                            <span>Nhập để chèn ảnh ${label}</span>
+                            <span class="upload-size">${sizeHint}</span>
+                        </div>
+                    `;
+                };
+
+                el.innerHTML = `
+                    <div class="mt-4 border-top pt-4">
+                        <ul class="nav nav-pills justify-content-center mb-4" id="nav-${id}">
+                            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pc-${id}"><i class="fas fa-desktop me-2"></i> PC</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tablet-${id}"><i class="fas fa-tablet-alt me-2"></i> Tablet</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#mob-${id}"><i class="fas fa-mobile-alt me-2"></i> Mobile</button></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="pc-${id}">
+                                <div class="device-container">
+                                    <div class="pc-wrap">
+                                        <div class="pc-monitor" style="width:600px">
+                                            <div class="pc-titlebar">
+                                                <div class="pc-dot" style="background:#ff5f56"></div>
+                                                <div class="pc-dot" style="background:#ffbd2e"></div>
+                                                <div class="pc-dot" style="background:#27c93f"></div>
+                                                <span style="font-size:11px;color:#666;margin-left:auto">Thuê Xe — Dashboard</span>
+                                            </div>
+                                            <div class="pc-screen" style="height:350px">
+                                                ${renderUI('Desktop', imgPc)}
+                                            </div>
+                                        </div>
+                                        <div class="pc-stand" style="width:100px;height:24px"></div>
+                                        <div class="pc-base" style="width:170px;height:8px"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="tablet-${id}">
+                                <div class="device-container">
+                                    <div class="tablet-wrap">
+                                        <div class="tablet-body" style="width:340px;height:460px">
+                                            <div class="tablet-cam"></div>
+                                            <div class="tablet-screen">
+                                                ${renderUI('Tablet', imgTablet)}
+                                            </div>
+                                            <div class="tablet-home"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="mob-${id}">
+                                <div class="device-container">
+                                    <div class="mobile-wrap">
+                                        <div class="mobile-body" style="width:210px;height:430px">
+                                            <div class="mobile-notch" style="width:80px;height:18px">
+                                                <div class="mobile-notch-dot"></div>
+                                                <div class="mobile-notch-dot" style="width:8px;height:8px;background:#222;border-radius:50%"></div>
+                                            </div>
+                                            <div class="mobile-screen">
+                                                ${renderUI('Mobile', imgMobile)}
+                                            </div>
+                                            <div class="mobile-home"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -13,5 +13,5 @@ setcookie('admin_p', '', time() - 3600, '/');
 
 session_regenerate_id(true);
 
-header('Location: ../../../../public/admin-login.html');
+header('Location: login.php');
 exit;

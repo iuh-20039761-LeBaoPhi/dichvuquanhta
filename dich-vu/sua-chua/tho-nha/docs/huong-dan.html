@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Thợ Nhà - Tài Liệu Hướng Dẫn Chi Tiết (Toàn diện)</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pacifico&display=swap"
+        rel="stylesheet">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <style>
         :root {
             --primary: #10b981;
@@ -27,10 +29,15 @@
             --border: #e2e8f0;
             --radius-md: 12px;
             --radius-lg: 20px;
-            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            scroll-behavior: smooth;
+        }
 
         /* Header */
         .doc-header {
@@ -40,7 +47,12 @@
             text-align: center;
             clip-path: ellipse(150% 100% at 50% 0%);
         }
-        .doc-header h1 { font-family: 'Pacifico', cursive; font-size: 3.5rem; margin-bottom: 10px; }
+
+        .doc-header h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+        }
 
         /* Navigation */
         .doc-nav {
@@ -53,6 +65,7 @@
             border: 1px solid var(--border);
             z-index: 1000;
         }
+
         .doc-nav .nav-link {
             padding: 10px 15px;
             color: var(--text-sub);
@@ -60,19 +73,70 @@
             border-radius: 8px;
             margin-bottom: 2px;
         }
-        .doc-nav .nav-link:hover { background: var(--primary-light); color: var(--primary); }
-        .doc-nav .nav-link.active { background: var(--gradient); color: white; }
+
+        .doc-nav .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .doc-nav .nav-link.active {
+            background: var(--gradient);
+            color: white;
+        }
 
         /* Content Sections */
-        .doc-section { background: white; padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 40px; scroll-margin-top: 20px; }
-        .section-title { font-weight: 800; font-size: 1.8rem; margin-bottom: 30px; display: flex; align-items: center; gap: 12px; color: var(--text-main); }
-        .section-title i { color: var(--primary); }
+        .doc-section {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 40px;
+            scroll-margin-top: 20px;
+        }
+
+        .section-title {
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-main);
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
 
         /* Step Details */
-        .detail-step { margin-bottom: 60px; padding-left: 20px; border-left: 3px solid var(--primary-light); }
-        .detail-step:last-child { margin-bottom: 0; }
-        .step-label { color: var(--primary); font-weight: 800; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; margin-bottom: 8px; display: block; }
-        .step-heading { font-weight: 700; font-size: 1.25rem; marg        /* Tabs Styling */
+        .detail-step {
+            margin-bottom: 60px;
+            padding-left: 20px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        .detail-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-label {
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .step-heading {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+        }
+
+        /* Tabs Styling */
         .nav-pills .nav-link {
             margin: 0 8px;
             border: 1px solid #e9ecef;
@@ -82,14 +146,167 @@
             font-weight: 500;
             transition: all 0.3s ease;
         }
+
         .nav-pills .nav-link:hover {
             background-color: #f8f9fa;
         }
+
         .nav-pills .nav-link.active {
             background-color: var(--primary);
             color: white;
             border-color: var(--primary);
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        /* PC View */
+        .pc-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pc-monitor {
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 12px 12px 0 0;
+            padding: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            margin: 0 auto;
+        }
+
+        .pc-titlebar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            padding: 0 2px;
+        }
+
+        .pc-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+        .pc-screen {
+            width: 100%;
+            background: #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pc-stand {
+            background: #2d2d2d;
+            margin: 0 auto;
+        }
+
+        .pc-base {
+            background: #222;
+            border-radius: 0 0 6px 6px;
+            margin: 0 auto;
+        }
+
+        /* Tablet View */
+        .tablet-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tablet-body {
+            background: #1a1a1a;
+            border-radius: 22px;
+            padding: 14px 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tablet-cam {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #333;
+            margin: 0 auto 8px;
+        }
+
+        .tablet-screen {
+            flex: 1;
+            background: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .tablet-home {
+            width: 32px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin: 8px auto 0;
+        }
+
+        /* Mobile View */
+        .mobile-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mobile-body {
+            background: #1a1a1a;
+            border-radius: 30px;
+            padding: 12px 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-notch {
+            background: #1a1a1a;
+            border-radius: 0 0 12px 12px;
+            margin: 0 auto 6px;
+            z-index: 2;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .mobile-notch-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #333;
+        }
+
+        .mobile-screen {
+            flex: 1;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .mobile-home {
+            width: 50px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin: 8px auto 0;
         }
 
         /* Device Mockups Container */
@@ -102,174 +319,97 @@
             border-radius: 16px;
             margin-top: 1rem;
             border: 1px dashed #ced4da;
-            min-height: 400px;
+            min-height: 580px;
         }
 
-        /* PC Mockup */
-        .mockup-pc {
-            width: 100%;
-            max-width: 800px;
-            background: #fff;
-            border-radius: 12px 12px 0 0;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
-            border-bottom: 30px solid #d1d5db;
-            overflow: hidden;
-            position: relative;
-            transition: transform 0.3s;
-        }
-        .mockup-pc:hover { transform: translateY(-5px); }
-        .mockup-pc .header {
-            background: #f1f3f5;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            gap: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        .mockup-pc .header .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .mockup-pc .header .dot.red { background: #ff5f56; }
-        .mockup-pc .header .dot.yellow { background: #ffbd2e; }
-        .mockup-pc .header .dot.green { background: #27c93f; }
-        .mockup-pc .screen {
-            height: 400px;
-            background: #e9ecef;
-            position: relative;
-        }
-        .mockup-pc::after {
-            content: '';
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 6px;
-            background: #adb5bd;
-            border-radius: 6px 6px 0 0;
-        }
-
-        /* Tablet Mockup */
-        .mockup-tablet {
-            width: 100%;
-            max-width: 450px;
-            height: 580px;
-            background: #fff;
-            border: 18px solid #1a1a1a;
-            border-radius: 35px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-            margin: 0 auto;
-            transition: transform 0.3s;
-        }
-        .mockup-tablet:hover { transform: translateY(-5px); }
-        .mockup-tablet .camera {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 8px;
-            height: 8px;
-            background: #333;
-            border-radius: 50%;
-        }
-        .mockup-tablet .screen {
+        /* Upload Placeholder */
+        .upload-zone {
             width: 100%;
             height: 100%;
-            background: #e9ecef;
-            position: relative;
-        }
-
-        /* Mobile Mockup */
-        .mockup-mobile {
-            width: 100%;
-            max-width: 280px;
-            height: 580px;
-            background: #fff;
-            border: 12px solid #1a1a1a;
-            border-radius: 35px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            position: relative;
-            overflow: hidden;
-            margin: 0 auto;
-            transition: transform 0.3s;
-        }
-        .mockup-mobile:hover { transform: translateY(-5px); }
-        .mockup-mobile .notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 24px;
-            background: #1a1a1a;
-            border-radius: 0 0 14px 14px;
-            z-index: 2;
-        }
-        .mockup-mobile .screen {
-            width: 100%;
-            height: 100%;
-            background: #e9ecef;
-            position: relative;
-        }
-
-        /* UI Wireframe elements */
-        .ui-wire-header { background: #dee2e6; height: 50px; width: 100%; position: absolute; top:0; left:0; display:flex; align-items:center; padding: 0 15px; }
-        .ui-wire-logo { width: 30px; height: 30px; background: #adb5bd; border-radius: 6px; }
-        .ui-wire-nav { display:flex; gap:8px; margin-left:auto;}
-        .ui-wire-nav-item { width: 25px; height: 8px; background: #adb5bd; border-radius: 4px; }
-        .ui-wire-body { padding-top: 70px; text-align: center; padding-inline: 15px; height: 100%; overflow-y: auto;}
-        .ui-wire-title { font-weight: 700; color: #475569; margin-bottom: 20px; }
-        .ui-wire-img-placeholder { 
-            background: #cbd5e1; 
-            border-radius: 12px; 
-            margin: 0 auto 20px auto;
+            border: 1.5px dashed #cfd4da;
+            border-radius: 8px;
+            background: #eef1f4;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-size: 2rem;
+            color: #98a2b3;
+            font-size: 12px;
+            text-align: center;
+            gap: 6px;
         }
-        .ui-wire-line { background: #e2e8f0; height: 10px; width: 80%; border-radius: 5px; margin: 8px auto;}
-        .ui-wire-line.short { width: 50%; }
-        .ui-wire-btn { 
-            background: var(--primary); 
-            height: 40px; 
-            width: 60%; 
-            border-radius: 8px; 
-            margin: 25px auto;
-            color: white; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            font-weight: 600;
-            font-size: 13px;
+
+        .upload-zone i {
+            font-size: 22px;
+            color: #10b981;
         }
-; color: #cbd5e1; }
+
+        .upload-size {
+            font-size: 10px;
+            color: #b0b8c1;
+        }
+
+        /* Keep screenshots inside frames */
+        .pc-screen,
+        .tablet-screen,
+        .mobile-screen {
+            background: #fff !important;
+        }
+
+        .pc-screen img,
+        .tablet-screen img,
+        .mobile-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
 
         /* Tip Box */
         .note-box {
-            background: #f0fdf4; border-left: 4px solid var(--primary); padding: 15px; border-radius: 0 8px 8px 0; margin: 15px 0;
+            background: #f0fdf4;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
             font-size: 14px;
         }
 
-        footer { background: #0f172a; color: #94a3b8; padding: 60px 0; text-align: center; margin-top: 80px; }
-        
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 60px 0;
+            text-align: center;
+            margin-top: 80px;
+        }
+
         @media (max-width: 991px) {
-            .doc-nav { position: relative; top: 0; margin-bottom: 30px; }
-            .mobile-mockup { width: 100px; height: 180px; }
-            .tablet-mockup, .pc-mockup { height: 180px; }
+            .doc-nav {
+                position: relative;
+                top: 0;
+                margin-bottom: 30px;
+            }
+
+            .mobile-mockup {
+                width: 100px;
+                height: 180px;
+            }
+
+            .tablet-mockup,
+            .pc-mockup {
+                height: 180px;
+            }
         }
     </style>
 </head>
+
 <body data-bs-spy="scroll" data-bs-target="#sideNav" data-bs-offset="100">
 
     <!-- Header -->
     <header class="doc-header">
         <div class="container-fluid px-lg-5">
             <h1>Thợ Nhà</h1>
-            <p class="lead">Tài liệu hướng dẫn v4.0 - Toàn diện cho mọi thiết bị</p>
+            <p class="lead">Tài liệu hướng dẫn dịch vụ thợ nhà - Toàn diện cho mọi thiết bị</p>
         </div>
     </header>
 
@@ -279,122 +419,310 @@
             <div class="col-lg-3 col-xxl-2">
                 <nav class="doc-nav" id="sideNav">
                     <a class="nav-link" href="#sec-auth"><i class="fas fa-user-plus me-2"></i> Đăng ký/Đăng nhập</a>
-                    <a class="nav-link" href="#sec-booking"><i class="fas fa-calendar-alt me-2"></i> Quy trình Đặt lịch</a>
-                    <a class="nav-link" href="#sec-customer"><i class="fas fa-user me-2"></i> Cho Khách hàng</a>
-                    <a class="nav-link" href="#sec-provider"><i class="fas fa-tools me-2"></i> Cho Nhà cung cấp</a>
-                    <a class="nav-link" href="#sec-admin"><i class="fas fa-user-shield me-2"></i> Cho Quản trị viên</a>
+                    <a class="nav-link" href="#sec-booking"><i class="fas fa-calendar-alt me-2"></i> Quy trình Đặt
+                        lịch</a>
+                    <a class="nav-link" href="#sec-user"><i class="fas fa-users me-2"></i> Quản lý đơn của tôi</a>
+                    <a class="nav-link" href="#sec-worker"><i class="fas fa-hammer me-2"></i> Quản lý đơn của khách</a>
+                    <a class="nav-link" href="#sec-service"><i class="fas fa-tasks me-2"></i> Đăng ký dịch vụ cung cấp</a>
                 </nav>
             </div>
 
             <!-- Main Content -->
             <div class="col-lg-9 col-xxl-10">
-                
+
                 <!-- SECTION: AUTH -->
                 <section id="sec-auth" class="doc-section">
                     <h2 class="section-title"><i class="fas fa-sign-in-alt"></i> 1. Đăng ký & Đăng nhập</h2>
-                    
+
                     <!-- Step 1.1 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 1.1</span>
-                        <h3 class="step-heading">Vào menu tài khoản</h3>
-                        <p>Từ Header chính, click chọn "Tài khoản" để bắt đầu truy cập hệ thống.</p>
-                        
-                        <div class="setup-mockup" data-title="Header Website" data-icon="fa-desktop" data-img-height="120" data-btn-text="Vào Tài Khoản"></div>
+                        <h3 class="step-heading">Chuyển đến trang Đăng ký</h3>
+                        <p>Từ màn hình Trang chủ, nhấp chuột vào nút "Tài khoản" ở góc phải màn hình(chế độ tablet hoặc
+                            mobile thì ấn vào nút 3 gạch để hiện menu). Sau đó ấn tiếp vào chữ <strong>"Đăng
+                                ký ngay"</strong> để bắt đầu tạo tài
+                            khoản mới.</p>
+
+                        <div class="setup-mockup" data-title="Chuyển hướng Đăng ký" data-icon="fa-mouse-pointer"
+                            data-img-height="120" data-btn-text="Chuyển đến Đăng ký"
+                            data-img-pc="img/huong-dan-dang-ky-tho-nha-pc.png"
+                            data-img-tablet="img/huong-dan-dang-ky-tho-nha-tablet.png"
+                            data-img-mobile="img/huong-dan-dang-ky-tho-nha-mobile.png"></div>
                     </div>
 
                     <!-- Step 1.2 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 1.2</span>
-                        <h3 class="step-heading">Điền form Đăng ký</h3>
-                        <p>Nhập đầy đủ Họ tên, SĐT, Email và đặc biệt là chọn vai trò: <strong>Khách hàng</strong> hoặc <strong>Thợ</strong>.</p>
-                        
-                        <div class="setup-mockup" data-title="Form Đăng Ký Người Dùng" data-icon="fa-user-edit" data-img-height="150" data-btn-text="Đăng Ký Ngay"></div>
+                        <h3 class="step-heading">Nhập thông tin cá nhân</h3>
+                        <p>Điền đầy đủ và chính xác các thông tin cần thiết vào form đăng ký, bao gồm: <strong>Họ tên,
+                                Số điện thoại, Địa chỉ, ảnh căn cước công dân, Email và Mật khẩu, Chọn dịch vụ muốn cung
+                                cấp</strong>.</p>
+
+                        <div class="setup-mockup" data-title="Form Nhập Thông Tin" data-icon="fa-user-edit"
+                            data-img-height="150" data-btn-text="Kiểm tra thông tin"
+                            data-img-pc="img/huong-dan-dang-ky-tho-nha-pc1.png"
+                            data-img-tablet="img/huong-dan-dang-ky-tho-nha-tablet1.png"
+                            data-img-mobile="img/huong-dan-dang-ky-tho-nha-mobile1.png"></div>
+                    </div>
+
+                    <!-- Step 1.3 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 1.3</span>
+                        <h3 class="step-heading">Xác nhận tạo tài khoản</h3>
+                        <p>Kiểm tra kỹ lại các thông tin đã nhập đảm bảo tính chính xác, sau đó ấn chọn nút
+                            <strong>"Tạo tài khoản"</strong> để hoàn tất yêu cầu tham gia hệ thống.
+                        </p>
+
+                        <div class="setup-mockup" data-title="Xác Nhận Đăng Ký" data-icon="fa-check-circle"
+                            data-img-height="100" data-btn-text="Đăng Ký Ngay"
+                            data-img-pc="img/huong-dan-dang-ky-tho-nha-pc2.png"
+                            data-img-tablet="img/huong-dan-dang-ky-tho-nha-tablet2.png"
+                            data-img-mobile="img/huong-dan-dang-ky-tho-nha-mobile2.png"></div>
+                    </div>
+
+                    <!-- Step 1.4 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 1.4</span>
+                        <h3 class="step-heading">Đăng nhập vào hệ thống</h3>
+                        <p>Sau khi hệ thống thông báo đăng ký thành công, hãy chuyển sang trang <strong>Đăng
+                                nhập</strong>. Nhập <strong>Số điện thoại</strong> và <strong>Mật khẩu</strong>
+                            vừa tạo, sau đó ấn <strong>"Đăng nhập"</strong> để truy cập vào hệ thống Người dùng.</p>
+
+                        <div class="setup-mockup" data-title="Form Đăng Nhập" data-icon="fa-sign-in-alt"
+                            data-img-height="130" data-btn-text="Đăng Nhập"
+                            data-img-pc="img/huong-dan-dang-ky-tho-nha-pc3.png"
+                            data-img-tablet="img/huong-dan-dang-ky-tho-nha-tablet3.png"
+                            data-img-mobile="img/huong-dan-dang-ky-tho-nha-mobile3.png"></div>
+                    </div>
+                    <!-- Step 1.5 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 1.5</span>
+                        <h3 class="step-heading">Giao diện sau khi đăng nhập thành công</h3>
+                        <p>Sau khi đăng nhập thành công, hệ thống sẽ chuyển bạn đến giao diện quản lý cá nhân hoặc Trang
+                            chủ. Tại đây, bạn có thể xem <strong>Thông báo, Quản lý đơn hàng</strong> và bắt đầu các
+                            hoạt động trên hệ thống.</p>
+
+                        <div class="setup-mockup" data-title="Giao diện sau đăng nhập" data-icon="fa-home"
+                            data-img-height="140" data-btn-text="Khám phá ngay"
+                            data-img-pc="img/huong-dan-dang-ky-tho-nha-pc4.png"
+                            data-img-tablet="img/huong-dan-dang-ky-tho-nha-tablet4.png"
+                            data-img-mobile="img/huong-dan-dang-ky-tho-nha-mobile4.png"></div>
                     </div>
                 </section>
 
                 <!-- SECTION: BOOKING -->
                 <section id="sec-booking" class="doc-section">
                     <h2 class="section-title"><i class="fas fa-calendar-check"></i> 2. Quy trình Đặt lịch</h2>
-                    
+
                     <!-- Step 2.1 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 2.1</span>
-                        <h3 class="step-heading">Chọn dịch vụ sửa chữa</h3>
-                        <p>Duyệt qua danh mục (Máy lạnh, Điện nước...) và click vào nút chi tiết hoặc đặt lịch.</p>
-                        
-                        <div class="setup-mockup" data-title="Danh Sách Dịch Vụ Sửa Chữa" data-icon="fa-tools" data-img-height="160" data-btn-text="Đặt Lịch"></div>
+                        <h3 class="step-heading">Nhấn nút đặt lịch
+                        </h3>
+                        <p>Nhấn nút đặt lịch ở card dịch vụ muốn đặt hoặc nút đặt lịch trên menu sau đó chọn dịch vụ
+                        <div class="setup-mockup" data-title="Danh Sách Dịch Vụ Sửa Chữa" data-icon="fa-tools"
+                            data-img-height="160" data-btn-text="Đặt Lịch"
+                            data-img-pc="img/huong-dan-dat-lich-tho-nha-pc.png"
+                            data-img-tablet="img/huong-dan-dat-lich-tho-nha-tablet.png"
+                            data-img-mobile="img/huong-dan-dat-lich-tho-nha-mobile.png"></div>
                     </div>
 
                     <!-- Step 2.2 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 2.2</span>
                         <h3 class="step-heading">Hoàn tất Form Đặt lịch</h3>
-                        <p>Nhập địa chỉ và mô tả sự cố. Chú ý kiểm tra chính xác số điện thoại để Thợ liên hệ.</p>
-                        
-                        <div class="setup-mockup" data-title="Thông Tin Đặt Lịch Sửa Chữa" data-icon="fa-map-marker-alt" data-img-height="0" data-btn-text="Xác Nhận Đặt"></div>
+                        <p>Nhập thông tin và chọn dịch vụ muốn đặt. Có thể thêm ảnh, video, ghi chú trường hợp hỏng hóc
+                            đang gặp phải khi đặt lịch. Sau đó ấn <strong>"Đặt lịch"</strong></p>
+
+                        <div class="setup-mockup" data-title="Thông Tin Đặt Lịch Sửa Chữa" data-icon="fa-map-marker-alt"
+                            data-img-height="0" data-btn-text="Xác Nhận Đặt"
+                            data-img-pc="img/huong-dan-dat-lich-tho-nha-pc1.png"
+                            data-img-tablet="img/huong-dan-dat-lich-tho-nha-tablet1.png"
+                            data-img-mobile="img/huong-dan-dat-lich-tho-nha-mobile1.png"></div>
+                    </div>
+                    <!-- Step 2.3 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 2.3</span>
+                        <h3 class="step-heading">Kiểm tra và xác nhận đặt lịch</h3>
+                        <p>Hệ thống sẽ hiển thị lại toàn bộ thông tin bạn đã nhập. Hãy kiểm tra kỹ các thông tin về
+                            <strong>Địa chỉ, Dịch vụ và Mô tả sự cố</strong>. Sau đó nhấn nút <strong>"Gửi đặt
+                                lịch"</strong> để gửi yêu cầu đến các Thợ trong khu vực. Nếu thông tin chưa đúng hãy
+                            nhấn nút <strong>"Quay lại chỉnh sửa"</strong> để chỉnh sửa lại thông tin
+                        </p>
+
+                        <div class="setup-mockup" data-title="Xác nhận thông tin đặt lịch" data-icon="fa-check-double"
+                            data-img-height="120" data-btn-text="Hoàn tất"
+                            data-img-pc="img/huong-dan-dat-lich-tho-nha-pc2.png"
+                            data-img-tablet="img/huong-dan-dat-lich-tho-nha-tablet2.png"
+                            data-img-mobile="img/huong-dan-dat-lich-tho-nha-mobile2.png"></div>
+                    </div>
+                    <!-- Step 2.4 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 2.4</span>
+                        <h3 class="step-heading">Hoàn tất và Xem đơn hàng</h3>
+                        <p>Khi màn hình hiển thị thông báo "Đặt lịch thành công", bạn hãy nhấn vào nút <strong>"Xem đơn
+                                hàng"</strong> để được chuyển ngay đến trang quản lý đơn. Tại đây, bạn có thể theo dõi
+                            tiến độ và thông tin phản hồi từ phía Thợ.</p>
+
+                        <div class="setup-mockup" data-title="Thông báo đặt lịch thành công"
+                            data-icon="fa-clipboard-check" data-img-height="110" data-btn-text="Xem đơn hàng"
+                            data-img-pc="img/huong-dan-dat-lich-tho-nha-pc3.png"
+                            data-img-tablet="img/huong-dan-dat-lich-tho-nha-tablet3.png"
+                            data-img-mobile="img/huong-dan-dat-lich-tho-nha-mobile3.png"></div>
+                    </div>
+                    <!-- Step 2.5 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 2.5</span>
+                        <h3 class="step-heading">Giao diện quản lý đơn hàng</h3>
+                        <p>Tại trang quản lý đơn, bạn sẽ thấy danh sách các đơn hàng đã đặt. Bạn có thể theo dõi
+                            <strong>Trạng thái đơn hàng, Thông tin thợ nhận
+                                việc</strong> và thực hiện các thao tác như Hủy đơn.
+                        </p>
+
+                        <div class="setup-mockup" data-title="Trang quản lý đơn hàng" data-icon="fa-list-alt"
+                            data-img-height="150" data-btn-text="Quản lý"
+                            data-img-pc="img/huong-dan-dat-lich-tho-nha-pc4.png"
+                            data-img-tablet="img/huong-dan-dat-lich-tho-nha-tablet4.png"
+                            data-img-mobile="img/huong-dan-dat-lich-tho-nha-mobile4.png"></div>
                     </div>
                 </section>
 
-                <!-- SECTION: CUSTOMER -->
-                <section id="sec-customer" class="doc-section">
-                    <h2 class="section-title"><i class="fas fa-user"></i> 3. Hướng dẫn cho Khách hàng</h2>
-                    
+                <!-- SECTION: USER -->
+                <section id="sec-user" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-users"></i> 3. Hướng dẫn quản lý đơn của tôi</h2>
+
                     <!-- Step 3.1 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 3.1</span>
-                        <h3 class="step-heading">Quản lý Đơn hàng cá nhân</h3>
-                        <p>Theo dõi trạng thái đơn từ lúc Chờ xác nhận đến khi Thợ hoàn thành công việc.</p>
-                        
-                        <div class="setup-mockup" data-title="Dashboard Khách Hàng" data-icon="fa-user-cog" data-img-height="140" data-btn-text="Quản Lý Đơn"></div>
+                        <h3 class="step-heading">Danh sách đơn của tôi</h3>
+                        <p>Theo dõi trạng thái đơn từ lúc đặt lịch đến khi hoàn thành công việc. Bạn có thể xem chi
+                            tiết từng đơn, thông tin thợ nhận việc và tiến độ thực hiện.</p>
+
+                        <div class="setup-mockup" data-title="Dashboard Người Dùng" data-icon="fa-user-cog"
+                            data-img-height="140" data-btn-text="Quản Lý Đơn" 
+                            data-img-pc="img/huong-dan-quan-ly-don-cua-toi-pc.png"
+                            data-img-tablet="img/huong-dan-quan-ly-don-cua-toi-tablet.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-cua-toi-mobile.png"></div>
                     </div>
 
                     <!-- Step 3.2 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 3.2</span>
-                        <h3 class="step-heading">Xác nhận giá thực tế & Nhận trợ giá 5%</h3>
-                        <p>Khi đơn hàng ở trạng thái hoàn thành, Khách hàng thực hiện nhập số tiền thực tế đã thỏa thuận với Thợ.</p>
+                        <h3 class="step-heading">Xem chi tiết đơn</h3>
+                        <p>Nhấn vào nút "Xem chi tiết" để xem thông tin trạng thái đơn, thông tin thợ nhận việc, thời gian, chi phí dự kiến và
+                            ghi chú yêu cầu. Từ đây bạn có thể theo dõi tiến độ thực hiện, Hủy đơn khi thợ chưa nhận làm.</p>
+
+                        <div class="setup-mockup" data-title="Chi Tiết Đơn Của Tôi" data-icon="fa-file-alt"
+                            data-img-height="120" data-btn-text="Xem Chi Tiết" 
+                            data-img-pc="img/huong-dan-quan-ly-don-cua-toi-pc1.png"
+                            data-img-tablet="img/huong-dan-quan-ly-don-cua-toi-tablet1.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-cua-toi-mobile1.png"></div>
+                    </div>
+
+                    <!-- Step 3.3 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 3.3</span>
+                        <h3 class="step-heading">Nhập giá thực tế</h3>
+                        <p>Khi đơn hàng ở trạng thái hoàn thành, Người đặt nhấn nút "Nhập Giá Thực Tế" để thực hiện nhập số tiền thực tế thợ đã báo giá.
+                        </p>
                         <div class="note-box">
-                            <strong>Quyền lợi:</strong> Hệ thống sẽ tính toán khoản trợ giá 5% dựa trên số tiền này để tri ân khách hàng và hỗ trợ phí dịch vụ.
+                            <strong>Quyền lợi:</strong> Hệ thống sẽ tính toán khoản trợ giá dựa trên số tiền này để
+                            tri ân người dùng và hỗ trợ phí dịch vụ.
                         </div>
-                        
-                        <div class="setup-mockup" data-title="Nhập Giá Thực Tế Thương Lượng" data-icon="fa-hand-holding-usd" data-img-height="80" data-btn-text="Gửi Xác Nhận"></div>
+
+                        <div class="setup-mockup" data-title="Nhập Giá Thực Tế Thương Lượng"
+                            data-icon="fa-hand-holding-usd" data-img-height="80" data-btn-text="Gửi Xác Nhận"
+                            data-img-pc="img/huong-dan-quan-ly-don-cua-toi-pc2.png"
+                            data-img-tablet="img/huong-dan-quan-ly-don-cua-toi-tablet2.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-cua-toi-mobile2.png"></div>
+                    </div>
+
+                    <!-- Step 3.4 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 3.4</span>
+                        <h3 class="step-heading">Đánh giá</h3>
+                        <p>Sau khi đơn hoàn tất, Người dùng có thể để lại đánh giá(có thể thêm ảnh và video) về chất lượng dịch vụ và thái độ phục vụ của
+                            thợ để giúp hệ thống cải thiện trải nghiệm.</p>
+
+                        <div class="setup-mockup" data-title="Đánh Giá Dịch Vụ" data-icon="fa-star"
+                            data-img-height="90" data-btn-text="Gửi Đánh Giá" 
+                            data-img-pc="img/huong-dan-quan-ly-don-cua-toi-pc3.png"
+                            data-img-tablet="img/huong-dan-quan-ly-don-cua-toi-tablet3.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-cua-toi-mobile3.png"></div>
                     </div>
                 </section>
 
-                <!-- SECTION: PROVIDER -->
-                <section id="sec-provider" class="doc-section">
-                    <h2 class="section-title"><i class="fas fa-tools"></i> 4. Hướng dẫn cho Nhà cung cấp</h2>
-                    
+                <!-- SECTION: WORKER -->
+                <section id="sec-worker" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-hammer"></i> 4. Quản lý đơn của khách</h2>
+
                     <!-- Step 4.1 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 4.1</span>
-                        <h3 class="step-heading">Tiếp nhận đơn hàng mới</h3>
-                        <p>Xem thông tin khách hàng, vị trí và sự cố cần xử lý để nhận đơn.</p>
-                        
-                        <div class="setup-mockup" data-title="Danh Sách Đơn Hàng Mới" data-icon="fa-tasks" data-img-height="130" data-btn-text="Nhận Đơn"></div>
-                    </div>
+                        <h3 class="step-heading">Theo dõi & xử lý đơn khách đặt</h3>
+                        <p>Tại menu chọn Đơn khách đặt để Xem danh sách đơn khách đã đặt cho dịch vụ bạn cung cấp, xác nhận nhận việc và cập nhật trạng
+                            thái đơn trong quá trình thực hiện.</p>
 
+                        <div class="setup-mockup" data-title="Quản Lý Đơn Của Khách" data-icon="fa-clipboard-list"
+                            data-img-height="130" data-btn-text="Xem Đơn" 
+                            data-img-pc="img/huong-dan-quan-ly-don-khach-dat-pc.png"
+                            data-img-tablet="img/huong-dan-quan-ly-don-khach-dat-tablet.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-khach-dat-mobile.png"></div>
+                    </div>
                     <!-- Step 4.2 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 4.2</span>
-                        <h3 class="step-heading">Thực hiện và Cập nhật trạng thái</h3>
-                        <p>Thợ thực hiện sửa chữa và cập nhật trạng thái đơn hàng sang "Đang thực hiện" và "Hoàn thành" trên dashboard của mình.</p>
-                        
-                        <div class="setup-mockup" data-title="Tiến Độ Sửa Chữa" data-icon="fa-check-double" data-img-height="110" data-btn-text="Hoàn Thành"></div>
+                        <h3 class="step-heading">Nhận đơn, bắt đầu thực hiện, hoàn thành đơn</h3>
+                        <p>Nhấn vào nút "Xem chi tiết" để nhận đơn, bắt đầu thực hiện và hoàn thành đơn.</p>
+
+                        <div class="setup-mockup" data-title="Chi Tiết Đơn Khách Đặt" data-icon="fa-file-alt"
+                            data-img-height="120" data-btn-text="Xác nhận nhận việc" 
+                            data-img-pc="img/huong-dan-quan-ly-don-khach-dat-pc1.png"
+                            data-img-tablet="img/huong-dan-quan-ly-don-khach-dat-tablet1.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-khach-dat-mobile1.png"></div>
+                    </div>
+
+                    <!-- Step 4.3 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 4.3</span>
+                        <h3 class="step-heading">Đánh giá</h3>
+                        <p>Sau khi hoàn thành đơn, thợ có thể nhập đánh giá công việc(có thể thêm ảnh và video)</p>
+                        <div class="setup-mockup" data-title="Đánh Giá Đơn Hàng" data-icon="fa-star"
+                            data-img-height="90" data-btn-text="Đánh Giá" 
+                            data-img-pc="img/huong-dan-quan-ly-don-khach-dat-pc2.png"
+                            data-img-tablet="img/huong-dan-quan-ly-don-khach-dat-tablet2.png"
+                            data-img-mobile="img/huong-dan-quan-ly-don-khach-dat-mobile2.png"></div>
                     </div>
                 </section>
 
-                <!-- SECTION: ADMIN -->
-                <section id="sec-admin" class="doc-section">
-                    <h2 class="section-title"><i class="fas fa-user-shield"></i> 5. Hướng dẫn cho Admin</h2>
-                    
+                <!-- SECTION: SERVICE -->
+                <section id="sec-service" class="doc-section">
+                    <h2 class="section-title"><i class="fas fa-tasks"></i> 5. Đăng ký dịch vụ cung cấp</h2>
+
                     <!-- Step 5.1 -->
                     <div class="detail-step">
                         <span class="step-label">Bước 5.1</span>
-                        <h3 class="step-heading">Quản trị toàn hệ thống</h3>
-                        <p>Theo dõi biểu đồ doanh thu và quản lý danh sách Thợ, Khách hàng toàn quốc.</p>
-                        
-                        <div class="setup-mockup" data-title="Admin Dashboard Quản Trị" data-icon="fa-chart-line" data-img-height="180" data-btn-text="Xem Thống Kê"></div>
+                        <h3 class="step-heading">Đăng ký Cung cấp Dịch vụ</h3>
+                        <p>Nhân vào "Dịch vụ đăng ký" để chọn các dịch vụ mình muốn cung cấp.</p>
+
+                        <div class="setup-mockup" data-title="Đăng Ký Dịch Vụ Cung Cấp" data-icon="fa-tasks"
+                            data-img-height="130" data-btn-text="Dịch vụ đăng ký" 
+                            data-img-pc="img/huong-dan-dang-ky-dich-vu-pc.png"
+                            data-img-tablet="img/huong-dan-dang-ky-dich-vu-tablet.png"
+                            data-img-mobile="img/huong-dan-dang-ky-dich-vu-mobile.png"></div>
+                    </div>
+
+                    <!-- Step 5.2 -->
+                    <div class="detail-step">
+                        <span class="step-label">Bước 5.2</span>
+                        <h3 class="step-heading">Chọn dịch vụ và Lưu thay đổi</h3>
+                        <p>Chọn các dịch vụ muốn làm và nhấn nút "Lưu thay đổi" để hoàn tất đăng ký.</p>
+
+                        <div class="setup-mockup" data-title="Chọn Dịch Vụ Muốn Làm" data-icon="fa-check-circle"
+                            data-img-height="120" data-btn-text="Lưu thay đổi" 
+                            data-img-pc="img/huong-dan-dang-ky-dich-vu-pc1.png" 
+                            data-img-tablet="img/huong-dan-dang-ky-dich-vu-tablet1.png"
+                            data-img-mobile="img/huong-dan-dang-ky-dich-vu-mobile1.png"></div>
                     </div>
                 </section>
 
@@ -415,40 +743,104 @@
 
     <!-- Mockup Generator Script -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const mockups = document.querySelectorAll('.setup-mockup');
-            
+
             mockups.forEach((el, index) => {
                 const id = 'mock-thm-' + index;
+                // Get image paths from data attributes
+                const imgPc = el.getAttribute('data-img-pc') || '';
+                const imgTablet = el.getAttribute('data-img-tablet') || '';
+                const imgMobile = el.getAttribute('data-img-mobile') || '';
+
                 const title = el.getAttribute('data-title') || 'Giao diện hệ thống';
                 const icon = el.getAttribute('data-icon') || 'fa-image';
                 const btnText = el.getAttribute('data-btn-text') || 'Tiếp tục';
                 const imgHeight = parseInt(el.getAttribute('data-img-height')) || 0;
-                
-                const renderUI = (label) => {
-                    let imgBlock = imgHeight > 0 ? `<div class="ui-wire-img-placeholder" style="height:${imgHeight}px; width:90%;"><i class="fas ${icon}"></i></div>` : '';
+
+                const getSizeHint = (label) => {
+                    if (label === 'Desktop') return '1440 x 900px';
+                    if (label === 'Tablet') return '768 x 1024px';
+                    return '390 x 844px';
+                };
+
+                const renderUI = (label, imgSrc) => {
+                    // If image source exists, render image.
+                    if (imgSrc) {
+                        return `<img src="${imgSrc}" alt="${label} screenshot">`;
+                    }
+
+                    const sizeHint = getSizeHint(label);
                     return `
-                        <div class="ui-wire-header"><div class="ui-wire-logo"></div><div class="ui-wire-nav"><div class="ui-wire-nav-item"></div><div class="ui-wire-nav-item"></div></div></div>
-                        <div class="ui-wire-body">
-                            <h4 class="ui-wire-title" style="font-size: ${label === 'Mobile' ? '1rem' : '1.15rem'};">${title} <br><small class="text-muted" style="font-size:70%">(${label})</small></h4>
-                            ${imgBlock}
-                            <div class="ui-wire-line"></div><div class="ui-wire-line"></div><div class="ui-wire-line short"></div>
-                            <div class="ui-wire-btn"><i class="fas fa-check-circle me-2"></i> ${btnText}</div>
+                        <div class="upload-zone">
+                            <i class="fas fa-image" aria-hidden="true"></i>
+                            <span>Nhập để chèn ảnh ${label}</span>
+                            <span class="upload-size">${sizeHint}</span>
                         </div>
                     `;
                 };
 
                 el.innerHTML = `
                     <div class="mt-4 border-top pt-4">
-                        <ul class="nav nav-pills justify-content-center mb-4" id="tab-${id}">
+                        <ul class="nav nav-pills justify-content-center mb-4" id="nav-${id}">
                             <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pc-${id}"><i class="fas fa-desktop me-2"></i> PC</button></li>
-                            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-${id}"><i class="fas fa-tablet-alt me-2"></i> Tablet</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tablet-${id}"><i class="fas fa-tablet-alt me-2"></i> Tablet</button></li>
                             <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#mob-${id}"><i class="fas fa-mobile-alt me-2"></i> Mobile</button></li>
                         </ul>
                         <div class="tab-content">
-                            <div class="tab-pane fade show active" id="pc-${id}"><div class="device-container"><div class="mockup-pc"><div class="header"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div><div class="screen">${renderUI('Desktop')}</div></div></div></div>
-                            <div class="tab-pane fade" id="tab-${id}"><div class="device-container"><div class="mockup-tablet"><div class="camera"></div><div class="screen">${renderUI('Tablet')}</div></div></div></div>
-                            <div class="tab-pane fade" id="mob-${id}"><div class="device-container"><div class="mockup-mobile"><div class="notch"></div><div class="screen">${renderUI('Mobile')}</div></div></div></div>
+                            <!-- PC View -->
+                            <div class="tab-pane fade show active" id="pc-${id}">
+                                <div class="device-container">
+                                    <div class="pc-wrap">
+                                        <div class="pc-monitor" style="width:600px">
+                                            <div class="pc-titlebar">
+                                                <div class="pc-dot" style="background:#ff5f56"></div>
+                                                <div class="pc-dot" style="background:#ffbd2e"></div>
+                                                <div class="pc-dot" style="background:#27c93f"></div>
+                                                <span style="font-size:11px;color:#666;margin-left:auto">Thợ Nhà — Dashboard</span>
+                                            </div>
+                                            <div class="pc-screen" style="height:350px">
+                                                ${renderUI('Desktop', imgPc)}
+                                            </div>
+                                        </div>
+                                        <div class="pc-stand" style="width:100px;height:24px"></div>
+                                        <div class="pc-base" style="width:170px;height:8px"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tablet View -->
+                            <div class="tab-pane fade" id="tablet-${id}">
+                                <div class="device-container">
+                                    <div class="tablet-wrap">
+                                        <div class="tablet-body" style="width:340px;height:460px">
+                                            <div class="tablet-cam"></div>
+                                            <div class="tablet-screen">
+                                                ${renderUI('Tablet', imgTablet)}
+                                            </div>
+                                            <div class="tablet-home"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mobile View -->
+                            <div class="tab-pane fade" id="mob-${id}">
+                                <div class="device-container">
+                                    <div class="mobile-wrap">
+                                        <div class="mobile-body" style="width:210px;height:430px">
+                                            <div class="mobile-notch" style="width:80px;height:18px">
+                                                <div class="mobile-notch-dot"></div>
+                                                <div class="mobile-notch-dot" style="width:8px;height:8px;background:#222;border-radius:50%"></div>
+                                            </div>
+                                            <div class="mobile-screen">
+                                                ${renderUI('Mobile', imgMobile)}
+                                            </div>
+                                            <div class="mobile-home"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -456,4 +848,5 @@
         });
     </script>
 </body>
+
 </html>

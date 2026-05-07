@@ -133,6 +133,8 @@
         form.email.value = currentUser.email || '';
         form.diachi.value = currentUser.diachi || '';
         if (form.cccd) form.cccd.value = currentUser.cccd || '';
+        const deletePhone = document.getElementById('deletePhone');
+        if (deletePhone) deletePhone.textContent = currentUser.sodienthoai || '---';
         
         // Load Current Address
         if (form.diachihientai) form.diachihientai.value = currentUser.diachihientai || '';
@@ -701,7 +703,7 @@
         document.getElementById('btnDeleteAccount').onclick = async function () {
             const { value: confirmPhone } = await Swal.fire({
                 title: 'Xác nhận xóa tài khoản',
-                html: `<div class="text-start">Tài khoản của bạn sẽ bị <b>vô hiệu hóa</b> và không thể đăng nhập. Vui lòng nhập số điện thoại <b>${currentUser.sodienthoai}</b> để xác nhận.</div>`,
+                html: `<div class="text-start">Tài khoản của bạn sẽ bị xoá khỏi hệ thống. Vui lòng nhập số điện thoại <b>${currentUser.sodienthoai}</b> để xác nhận.</div>`,
                 input: 'text',
                 inputPlaceholder: 'Nhập SĐT của bạn...',
                 showCancelButton: true,

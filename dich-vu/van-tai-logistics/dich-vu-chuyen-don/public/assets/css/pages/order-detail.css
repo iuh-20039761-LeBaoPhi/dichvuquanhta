@@ -897,8 +897,8 @@
 
 .standalone-order-media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
 }
 
 .standalone-order-media-item {
@@ -916,10 +916,12 @@
 .standalone-order-media-item img,
 .standalone-order-media-item video {
   width: 100%;
-  height: 180px;
+  height: auto;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 12px;
   background: #e2e8f0;
+  display: block;
 }
 
 .standalone-order-media-item strong {
@@ -1132,6 +1134,29 @@
 .standalone-order-upload-zone-video .standalone-order-upload-icon {
   background: #e3f4e8;
   color: #2d6a4f;
+}
+
+.standalone-order-upload-zone .standalone-order-media-grid {
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.standalone-order-upload-zone .standalone-order-media-item {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.standalone-order-upload-zone .standalone-order-media-item img,
+.standalone-order-upload-zone .standalone-order-media-item video {
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+}
+
+.standalone-order-upload-zone-video .standalone-order-media-item video {
+  aspect-ratio: 4 / 3;
 }
 
 .standalone-order-selected-files {
@@ -1431,6 +1456,20 @@
   .standalone-order-info-value {
     text-align: left;
   }
+
+  .standalone-order-upload-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .standalone-order-inline-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .standalone-order-inline-actions .customer-btn {
+    width: 100%;
+  }
 }
 
 .standalone-order-page .customer-btn-primary {
@@ -1498,6 +1537,7 @@
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1681,45 +1721,6 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-
-.standalone-order-hero-route-copy strong {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  font-weight: 700;
-  color: #fff;
-  overflow-wrap: anywhere;
-}
-
-.standalone-order-progress-ring {
-  width: 76px;
-  height: 76px;
-  padding: 6px;
-  flex-shrink: 0;
-}
-
-.standalone-order-progress-ring-core {
-  gap: 2px;
-}
-
-.standalone-order-progress-ring-core strong {
-  font-size: 18px;
-}
-
-.standalone-order-progress-ring-core span {
-  font-size: 9px;
-  letter-spacing: 0.04em;
-}
-
-.standalone-order-hero-side-progress {
-  gap: 12px;
-  padding: 0;
-  max-width: 320px;
-  width: 100%;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
   align-self: flex-end;
 }
 

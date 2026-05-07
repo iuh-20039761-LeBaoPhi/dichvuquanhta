@@ -250,7 +250,7 @@
 
       // 1. Kết nối Header và Footer
       if ($("#site-header").is(':empty')) {
-          $("#site-header").load("header.html", function() {
+          $("#site-header").load("html/shared-header.html", function() {
               const navMenu = document.getElementById('navMenu');
               if (navMenu && typeof bootstrap !== 'undefined') {
                   new bootstrap.Collapse(navMenu, { toggle: false });
