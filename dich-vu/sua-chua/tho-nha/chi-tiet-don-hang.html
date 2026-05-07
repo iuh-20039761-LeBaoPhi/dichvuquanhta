@@ -145,7 +145,8 @@
     <header class="standalone-header">
         <div class="standalone-header-inner">
             <a href="../../../index.html" aria-label="Về cổng thông tin Dịch Vụ Quanh Ta">
-                <img class="standalone-logo" src="../../../public/asset/image/logo-dich-vu-quanh-ta.png" alt="Logo DVQT" />
+                <img class="standalone-logo" src="../../../public/asset/image/logo-dich-vu-quanh-ta.png"
+                    alt="Logo DVQT" />
             </a>
             <div class="standalone-title-wrap">
                 <h1 class="standalone-title">Chi tiết hóa đơn Thợ Nhà</h1>
@@ -179,8 +180,8 @@
             <i class="fas fa-exclamation-triangle state-icon"></i>
             <h3 id="errorTitle">Không tìm thấy hóa đơn</h3>
             <p id="errorMessage">Vui lòng kiểm tra lại mã đơn hàng hoặc quyền truy cập của bạn.</p>
-            <a href="khachhang/trang-ca-nhan.html" class="btn btn-primary mt-4 px-4 py-2"
-                style="border-radius:50px;">Về trang cá nhân</a>
+            <a href="khachhang/trang-ca-nhan.html" class="btn btn-primary mt-4 px-4 py-2" style="border-radius:50px;">Về
+                trang cá nhân</a>
         </div>
 
         <!-- 3. Success Content (The Partial) -->
@@ -204,21 +205,31 @@
     <!-- Pricing Modal -->
     <div class="modal fade" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 24px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-                <div class="modal-header" style="background: linear-gradient(135deg, #065f46, #059669); color: white; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 20px 25px;">
-                    <h5 class="modal-title fw-bold" id="pricingModalLabel"><i class="fas fa-gift me-2"></i>NHẬP GIÁ & NHẬN TRỢ GIÁ</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content"
+                style="border-radius: 24px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+                <div class="modal-header"
+                    style="background: linear-gradient(135deg, #065f46, #059669); color: white; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 20px 25px;">
+                    <h5 class="modal-title fw-bold" id="pricingModalLabel"><i class="fas fa-gift me-2"></i>NHẬP GIÁ &
+                        NHẬN TRỢ GIÁ</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="padding: 30px 25px;">
-                    <p class="text-muted mb-4">Vui lòng nhập giá trị thực tế bạn đã thanh toán cho thợ để nhận ngay <b>cấp trợ giá 5%</b> cứu cánh túi tiền!</p>
+                    <p class="text-muted mb-4">Vui lòng nhập giá trị thực tế bạn đã thanh toán cho thợ để nhận ngay
+                        <b>trợ giá <span id="subsidyPercentDisplay">...</span>%</b>!</p>
                     <div class="form-group mb-3">
-                        <label for="inputActualPriceModal" class="form-label fw-bold" style="color: #334155;">Giá thực tế đã trả (VND)</label>
-                        <input type="number" id="inputActualPriceModal" class="form-control" placeholder="Ví dụ: 500000" style="padding: 12px 15px; border-radius: 12px; border: 2px solid #e2e8f0; font-weight: 600;">
+                        <label for="inputActualPriceModal" class="form-label fw-bold" style="color: #334155;">Giá thực
+                            tế đã trả (VND)</label>
+                        <input type="number" id="inputActualPriceModal" class="form-control" placeholder="Ví dụ: 500000"
+                            style="padding: 12px 15px; border-radius: 12px; border: 2px solid #e2e8f0; font-weight: 600;">
                     </div>
                 </div>
                 <div class="modal-footer" style="padding: 15px 25px 25px; border: none;">
-                    <button type="button" class="btn btn-outline-secondary px-4 fw-bold" data-bs-dismiss="modal" style="border-radius: 12px; height: 48px;">Để sau</button>
-                    <button type="button" class="btn btn-primary px-4 fw-bold" id="btnSubmitPricingModal" style="border-radius: 12px; height: 48px; background: #059669; border: none; box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);">Gửi & Nhận ưu đãi</button>
+                    <button type="button" class="btn btn-outline-secondary px-4 fw-bold" data-bs-dismiss="modal"
+                        style="border-radius: 12px; height: 48px;">Để sau</button>
+                    <button type="button" class="btn btn-primary px-4 fw-bold" id="btnSubmitPricingModal"
+                        style="border-radius: 12px; height: 48px; background: #059669; border: none; box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);">Gửi
+                        & Nhận ưu đãi</button>
                 </div>
             </div>
         </div>
@@ -340,7 +351,7 @@
                 if (orderMapped.provider && orderMapped.provider.id && providerMap[orderMapped.provider.id]) {
                     orderMapped.provider.avatar = providerMap[orderMapped.provider.id].avatar;
                 }
-                
+
                 // Inject Viewer's Avatar if they are the Customer
                 if (identifiedRole === 'customer' && session) {
                     orderMapped.customer.avatar = session.link_avatar || session.avatar || session.avatartenfile || '';

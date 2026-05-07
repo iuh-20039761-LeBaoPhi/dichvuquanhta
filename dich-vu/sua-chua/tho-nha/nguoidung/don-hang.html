@@ -17,7 +17,7 @@
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-2 w-100 justify-content-xl-end"
                         id="orderSearchSection">
-                        <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+                        <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0 order-search-row">
                             <div class="input-group input-group-sm"
                                 style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 140px;">
                                 <span class="input-group-text bg-light border-0 small fw-600 text-muted"
@@ -32,8 +32,17 @@
                                 <input type="date" class="form-control bg-light border-0 small" id="orderToDate"
                                     style="font-size: 0.75rem;">
                             </div>
+                            <div class="input-group input-group-sm"
+                                style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 160px;">
+                                <span class="input-group-text bg-light border-0 small fw-600 text-muted"
+                                    style="font-size: 0.7rem;">Danh mục</span>
+                                <select class="form-select bg-light border-0 small" id="orderCategoryFilter"
+                                    style="font-size: 0.75rem;">
+                                    <option value="">Tất cả danh mục</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="d-flex gap-2 flex-grow-1" style="max-width: 350px;">
+                        <div class="d-flex gap-2 flex-grow-1 order-search-actions" style="max-width: 350px;">
                             <div class="input-group search-box-wrap"
                                 style="flex: 1; min-width: 120px; border-radius: 8px; overflow: hidden;">
                                 <span class="input-group-text bg-light border-0"><i
@@ -56,17 +65,34 @@
                     <!-- Mobile Dropdown -->
                     <div class="d-md-none mb-2">
                         <div class="dropdown w-100">
-                            <button class="btn btn-light w-100 d-flex justify-content-between align-items-center fw-bold" type="button" id="mobileStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 12px; font-size: 0.85rem; padding: 10px 15px; background: #f8f9fa; border: 1px solid #eee;">
-                                <span><i class="fas fa-filter text-muted me-2"></i>Trạng thái: <span id="currentStatusText" class="text-primary">Tất cả</span></span>
+                            <button
+                                class="btn btn-light w-100 d-flex justify-content-between align-items-center fw-bold"
+                                type="button" id="mobileStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                style="border-radius: 12px; font-size: 0.85rem; padding: 10px 15px; background: #f8f9fa; border: 1px solid #eee;">
+                                <span><i class="fas fa-filter text-muted me-2"></i>Trạng thái: <span
+                                        id="currentStatusText" class="text-primary">Tất cả</span></span>
                                 <i class="fas fa-chevron-down small text-muted"></i>
                             </button>
-                            <ul class="dropdown-menu w-100 shadow-sm border-0 mt-1" aria-labelledby="mobileStatusDropdown" style="border-radius: 12px; padding: 8px;">
-                                <li><a class="dropdown-item rounded-3 py-2 active" href="#" id="filter-all-mob">Tất cả <span class="badge bg-secondary ms-1 float-end" id="stat-all-count-mob">0</span></a></li>
-                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-new-mob">Đang xác nhận <span class="badge bg-warning text-dark ms-1 float-end" id="stat-new-count-mob">0</span></a></li>
-                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-confirmed-mob">Đã nhận <span class="badge bg-info text-dark ms-1 float-end" id="stat-confirmed-count-mob">0</span></a></li>
-                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-doing-mob">Đã bắt đầu <span class="badge bg-primary ms-1 float-end" id="stat-doing-count-mob">0</span></a></li>
-                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-done-mob">Đã hoàn thành <span class="badge bg-success ms-1 float-end" id="stat-done-count-mob">0</span></a></li>
-                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-cancel-mob">Đã hủy <span class="badge bg-danger ms-1 float-end" id="stat-cancel-count-mob">0</span></a></li>
+                            <ul class="dropdown-menu w-100 shadow-sm border-0 mt-1"
+                                aria-labelledby="mobileStatusDropdown" style="border-radius: 12px; padding: 8px;">
+                                <li><a class="dropdown-item rounded-3 py-2 active" href="#" id="filter-all-mob">Tất cả
+                                        <span class="badge bg-secondary ms-1 float-end"
+                                            id="stat-all-count-mob">0</span></a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-new-mob">Đang xác nhận
+                                        <span class="badge bg-warning text-dark ms-1 float-end"
+                                            id="stat-new-count-mob">0</span></a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-confirmed-mob">Đã nhận
+                                        <span class="badge bg-info text-dark ms-1 float-end"
+                                            id="stat-confirmed-count-mob">0</span></a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-doing-mob">Đã bắt đầu
+                                        <span class="badge bg-primary ms-1 float-end"
+                                            id="stat-doing-count-mob">0</span></a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-done-mob">Đã hoàn thành
+                                        <span class="badge bg-success ms-1 float-end"
+                                            id="stat-done-count-mob">0</span></a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="#" id="filter-cancel-mob">Đã hủy <span
+                                            class="badge bg-danger ms-1 float-end"
+                                            id="stat-cancel-count-mob">0</span></a></li>
                             </ul>
                         </div>
                     </div>
@@ -124,6 +150,31 @@
                     background-color: rgba(255, 255, 255, 0.2) !important;
                     color: white !important;
                 }
+
+                @media (max-width: 575.98px) {
+
+                    #orderSearchSection .order-search-row,
+                    #orderSearchSection .order-search-actions {
+                        flex-wrap: wrap;
+                        width: 100%;
+                    }
+
+                    #orderSearchSection .order-search-row .input-group,
+                    #orderSearchSection .order-search-actions .search-box-wrap {
+                        flex: 1 1 100% !important;
+                        min-width: 0 !important;
+                    }
+
+                    #orderSearchSection .order-search-actions {
+                        max-width: 100% !important;
+                    }
+
+                    #orderSearchSection #refreshCustomerBtn {
+                        width: 100% !important;
+                        border-radius: 10px !important;
+                        height: 38px !important;
+                    }
+                }
             </style>
 
             <div class="u-table-wrap">
@@ -161,7 +212,7 @@
                 <a href="../dich-vu.html" class="btn btn-outline-primary mt-3 px-4" style="border-radius: 10px;">Đặt
                     lịch ngay</a>
             </div>
-            
+
             <!-- Pagination -->
             <div class="py-3 border-top d-flex justify-content-center" id="customerPaginationWrap">
                 <nav aria-label="Order pagination">
@@ -195,8 +246,8 @@
                     aria-label="Close"></button>
             </div>
             <div class="modal-body" style="padding: 30px 25px;">
-                <p class="text-muted mb-4">Vui lòng nhập giá trị thực tế bạn đã thanh toán cho thợ để nhận ngay <b>cấp
-                        trợ giá 5%</b> túi tiền!</p>
+                <p class="text-muted mb-4">Vui lòng nhập giá trị thực tế bạn đã thanh toán cho thợ để nhận ngay <b>
+                        trợ giá <span id="subsidyPercentDisplay">...</span>%</b>!</p>
                 <div class="form-group mb-3">
                     <label for="inputActualPriceModal" class="form-label fw-bold" style="color: #334155;">Giá thực tế đã
                         trả (VND)</label>

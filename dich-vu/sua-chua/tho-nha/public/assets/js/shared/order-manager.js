@@ -45,6 +45,7 @@
             if (toDateInput && !toDateInput.value) toDateInput.value = today;
 
             this.bindEvents();
+            this.loadCategories();
             this.loadOrders(false);
         },
 
@@ -67,6 +68,7 @@
                 assignedMobileList: listSec ? listSec.querySelector('#assignedMobileList') : document.getElementById('assignedMobileList'),
                 openEmpty: listSec ? listSec.querySelector('#openEmptyState') : document.getElementById('openEmptyState'),
                 assignedEmpty: listSec ? listSec.querySelector('#assignedEmptyState') : document.getElementById('assignedEmptyState'),
+                categorySelect: listSec ? listSec.querySelector('#orderCategoryFilter') : document.getElementById('orderCategoryFilter'),
                 // Stats & Buttons
                 refreshBtn: listSec ? listSec.querySelector('#refresh' + (id === 'customer' ? 'Customer' : 'Provider') + 'Btn') : document.getElementById('refresh' + (id === 'customer' ? 'Customer' : 'Provider') + 'Btn'),
                 stats: {
@@ -87,6 +89,31 @@
                     assigned: listSec ? listSec.querySelector('#statAssigned') : document.getElementById('statAssigned')
                 }
             };
+        },
+
+        loadCategories: async function() {
+            const els = this.getElements();
+            const select = els.categorySelect;
+            if (!select || select.dataset.loaded) return;
+            if (!window.DVQTKrud) return;
+
+            try {
+                const cats = await window.DVQTKrud.listTable('danhmuc_thonha', { limit: 1000 });
+                const list = Array.isArray(cats) ? cats.slice() : [];
+                list.sort((a, b) => {
+                    const aOrder = Number(a.thu_tu || 0);
+                    const bOrder = Number(b.thu_tu || 0);
+                    if (aOrder !== bOrder) return aOrder - bOrder;
+                    return String(a.ten_danhmuc || '').localeCompare(String(b.ten_danhmuc || ''), 'vi');
+                });
+
+                const options = ['<option value="">Tất cả danh mục</option>']
+                    .concat(list.map(cat => `<option value="${cat.id}">${cat.ten_danhmuc || ('Danh mục #' + cat.id)}</option>`));
+                select.innerHTML = options.join('');
+                select.dataset.loaded = '1';
+            } catch (err) {
+                console.error('[OrderManager] Load categories failed:', err);
+            }
         },
 
         loadOrders: async function(showErrorAlert) {
@@ -128,6 +155,8 @@
             const fromDate = fromDateInput ? fromDateInput.value : '';
             const toDate = toDateInput ? toDateInput.value : '';
             const q = searchQueryInput ? searchQueryInput.value.toLowerCase().trim() : '';
+            const catSelect = listSec ? listSec.querySelector('#orderCategoryFilter') : document.getElementById('orderCategoryFilter');
+            const catId = catSelect ? String(catSelect.value || '').trim() : '';
 
             // 2. Lọc theo Ngày (Ưu tiên createdAt, fallback dates.ordered)
             let baseOrders = orders;
@@ -153,6 +182,14 @@
                     const providerName = o.provider && o.provider.name ? String(o.provider.name).toLowerCase() : '';
                     
                     return orderCode.includes(q) || service.includes(q) || clientName.includes(q) || providerName.includes(q);
+                });
+            }
+
+            // 3b. Lọc theo Danh mục
+            if (catId) {
+                baseOrders = baseOrders.filter(o => {
+                    const rawCatId = o && o._raw ? String(o._raw.id_danhmuc || '') : '';
+                    return rawCatId && rawCatId === catId;
                 });
             }
 
@@ -400,6 +437,7 @@
             if (fromDateInput) fromDateInput.onchange = () => { this.state.currentPage = 1; this.render(); };
             if (toDateInput) toDateInput.onchange = () => { this.state.currentPage = 1; this.render(); };
             if (searchQueryInput) searchQueryInput.onkeyup = () => { this.state.currentPage = 1; this.render(); };
+            if (els.categorySelect) els.categorySelect.onchange = () => { this.state.currentPage = 1; this.render(); };
 
             // Global Delegated Click (Only bind once)
             if (!document.body.dataset.orderManagerBound) {

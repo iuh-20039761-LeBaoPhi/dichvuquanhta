@@ -17,7 +17,7 @@
                     </div>
                     <div class="d-flex flex-wrap align-items-center gap-2 w-100 justify-content-xl-end"
                         id="orderSearchSection">
-                        <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+                        <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0 order-search-row">
                             <div class="input-group input-group-sm"
                                 style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 140px;">
                                 <span class="input-group-text bg-light border-0 small fw-600 text-muted"
@@ -32,8 +32,17 @@
                                 <input type="date" class="form-control bg-light border-0 small" id="orderToDate"
                                     style="font-size: 0.75rem;">
                             </div>
+                            <div class="input-group input-group-sm"
+                                style="flex: 1; border-radius: 8px; overflow: hidden; min-width: 160px;">
+                                <span class="input-group-text bg-light border-0 small fw-600 text-muted"
+                                    style="font-size: 0.7rem;">Danh mục</span>
+                                <select class="form-select bg-light border-0 small" id="orderCategoryFilter"
+                                    style="font-size: 0.75rem;">
+                                    <option value="">Tất cả danh mục</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="d-flex gap-2 flex-grow-1" style="max-width: 350px;">
+                        <div class="d-flex gap-2 flex-grow-1 order-search-actions" style="max-width: 350px;">
                             <div class="input-group search-box-wrap"
                                 style="flex: 1; min-width: 120px; border-radius: 8px; overflow: hidden;">
                                 <span class="input-group-text bg-light border-0"><i
@@ -124,6 +133,30 @@
                 #orderFilterSection .nav-pills .nav-link.active .badge {
                     background-color: rgba(255, 255, 255, 0.2) !important;
                     color: white !important;
+                }
+
+                @media (max-width: 575.98px) {
+                    #orderSearchSection .order-search-row,
+                    #orderSearchSection .order-search-actions {
+                        flex-wrap: wrap;
+                        width: 100%;
+                    }
+
+                    #orderSearchSection .order-search-row .input-group,
+                    #orderSearchSection .order-search-actions .search-box-wrap {
+                        flex: 1 1 100% !important;
+                        min-width: 0 !important;
+                    }
+
+                    #orderSearchSection .order-search-actions {
+                        max-width: 100% !important;
+                    }
+
+                    #orderSearchSection #refreshProviderBtn {
+                        width: 100% !important;
+                        border-radius: 10px !important;
+                        height: 38px !important;
+                    }
                 }
             </style>
 

@@ -11,7 +11,7 @@ if (typeof _tnToast === 'undefined') {
         var icon = type === 'success' ? 'fa-check-circle' : (type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle');
         d.innerHTML = '<i class="fas ' + icon + ' me-2"></i>' + msg;
         document.body.appendChild(d);
-        setTimeout(function() { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(function() { d.remove(); }, 500); }, 3500);
+        setTimeout(function () { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(function () { d.remove(); }, 500); }, 3500);
     }
 }
 const ThoNhaOrderActions = (() => {
@@ -48,7 +48,7 @@ const ThoNhaOrderActions = (() => {
         const actionHandler = async (e, btn) => {
             const action = btn.dataset.action;
             const id = btn.dataset.id;
-            
+
             // Lấy thời gian hiện tại chuẩn SQL
             const d = new Date();
             const vnDate = new Date(d.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
@@ -57,7 +57,7 @@ const ThoNhaOrderActions = (() => {
 
             try {
                 let payload = {};
-                
+
                 if (action === 'accept-order') {
                     // Kiểm tra không cho nhận đơn chính mình đặt
                     if (window.ThoNhaOrderStore) {
@@ -83,19 +83,19 @@ const ThoNhaOrderActions = (() => {
                     }
 
                     if (!(await confirmAction('Xác nhận nhận việc', 'Bạn đồng ý nhận và chịu trách nhiệm thực hiện đơn hàng này?', 'question', '#6366f1'))) return;
-                    payload = { 
-                        id_nhacungcap: session.id, 
-                        tenncc: session.name || session.hovaten, 
-                        sdtncc: session.phone || session.sodienthoai, 
+                    payload = {
+                        id_nhacungcap: session.id,
+                        tenncc: session.name || session.hovaten,
+                        sdtncc: session.phone || session.sodienthoai,
                         diachincc: session.address || session.diachi || '',
-                        ngaynhan: now 
+                        ngaynhan: now
                     };
                 } else if (action === 'start-order') {
                     payload = { ngaybatdauthucte: now, ngaythuchienthucte: now };
                 } else if (action === 'complete-order') {
                     if (!(await confirmAction('Xác nhận hoàn thành', 'Bạn chắc chắn đã hoàn thành mọi hạng mục công việc?', 'success', '#10b981'))) return;
                     payload = { ngayhoanthanhthucte: now };
-                    
+
                     // Lưu vị trí hiện tại của NCC
                     if (session && session.id && navigator.geolocation) {
                         if (window.Swal) {
@@ -117,8 +117,8 @@ const ThoNhaOrderActions = (() => {
                                     });
                                     const data = await r.json();
                                     if (data && data.display_name) addr = data.display_name.split(', ').slice(0, 5).join(', ');
-                                } catch (e) {}
-                                
+                                } catch (e) { }
+
                                 if (window.DVQTKrud) {
                                     try {
                                         await window.DVQTKrud.updateRow('nguoidung', session.id, {
@@ -126,7 +126,7 @@ const ThoNhaOrderActions = (() => {
                                             lat_hientai: lat,
                                             lng_hientai: lng
                                         });
-                                    } catch (e) {}
+                                    } catch (e) { }
                                 }
                                 resolve();
                             }, () => { resolve(); }, { enableHighAccuracy: true, timeout: 6000 });
@@ -138,6 +138,20 @@ const ThoNhaOrderActions = (() => {
                     if (modalEl) {
                         const submitBtn = document.getElementById('btnSubmitPricingModal');
                         if (submitBtn) submitBtn.dataset.id = id;
+
+                        // Fetch tro_gia from dichvucungcap (id=9) and display it
+                        const subsidySpan = document.getElementById('subsidyPercentDisplay');
+                        if (subsidySpan) {
+                            subsidySpan.textContent = '...';
+                            try {
+                                const services = await window.DVQTKrud.listTable('dichvucungcap');
+                                const thoNhaSvc = services.find(s => String(s.id) === '9');
+                                subsidySpan.textContent = (thoNhaSvc && thoNhaSvc.tro_gia) ? thoNhaSvc.tro_gia : '5';
+                            } catch (e) {
+                                subsidySpan.textContent = '5';
+                            }
+                        }
+
                         const modal = new bootstrap.Modal(modalEl);
                         modal.show();
                     }
@@ -170,15 +184,15 @@ const ThoNhaOrderActions = (() => {
                     const text = document.getElementById('inputCustFeedback')?.value;
                     const fileInput = document.getElementById('fileCustEvidence');
                     if (!text) return _tnToast('Vui lòng nhập cảm nhận của bạn.', 'danger');
-                    
+
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    
+
                     let driveFileId = '';
                     if (fileInput && fileInput.files.length > 0) {
                         const dLocal = new Date();
                         const padD = (n) => String(n).padStart(2, '0');
-                        const timeUploadStr = `${padD(dLocal.getDate())}${padD(dLocal.getMonth()+1)}${dLocal.getFullYear()}_${padD(dLocal.getHours())}${padD(dLocal.getMinutes())}${padD(dLocal.getSeconds())}${String(dLocal.getMilliseconds()).padStart(3, '0')}`;
+                        const timeUploadStr = `${padD(dLocal.getDate())}${padD(dLocal.getMonth() + 1)}${dLocal.getFullYear()}_${padD(dLocal.getHours())}${padD(dLocal.getMinutes())}${padD(dLocal.getSeconds())}${String(dLocal.getMilliseconds()).padStart(3, '0')}`;
                         const cName = `${id}_thonha_${timeUploadStr}_danhgia`;
                         const up = await DVQTApp.uploadFile(fileInput.files[0], { folderKey: 29, customName: cName });
                         if (up.success) {
@@ -193,15 +207,15 @@ const ThoNhaOrderActions = (() => {
                     const text = document.getElementById('inputProviderFeedback')?.value;
                     const fileInput = document.getElementById('fileProviderEvidence');
                     if (!text) return _tnToast('Vui lòng nhập báo cáo công việc.', 'danger');
-                    
+
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    
+
                     let driveFileId = '';
                     if (fileInput && fileInput.files.length > 0) {
                         const dLocal = new Date();
                         const padD = (n) => String(n).padStart(2, '0');
-                        const timeUploadStr = `${padD(dLocal.getDate())}${padD(dLocal.getMonth()+1)}${dLocal.getFullYear()}_${padD(dLocal.getHours())}${padD(dLocal.getMinutes())}${padD(dLocal.getSeconds())}${String(dLocal.getMilliseconds()).padStart(3, '0')}`;
+                        const timeUploadStr = `${padD(dLocal.getDate())}${padD(dLocal.getMonth() + 1)}${dLocal.getFullYear()}_${padD(dLocal.getHours())}${padD(dLocal.getMinutes())}${padD(dLocal.getSeconds())}${String(dLocal.getMilliseconds()).padStart(3, '0')}`;
                         const cName = `${id}_thonha_${timeUploadStr}_danhgia`;
                         const up = await DVQTApp.uploadFile(fileInput.files[0], { folderKey: 29, customName: cName });
                         if (up.success) {
@@ -219,7 +233,7 @@ const ThoNhaOrderActions = (() => {
                         btn.disabled = true;
                         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                     }
-                    
+
                     await DVQTApp.updateOrder(id, payload, 'datlich_thonha');
                     _tnToast('Gửi thông tin thành công!', 'success');
 
@@ -246,7 +260,7 @@ const ThoNhaOrderActions = (() => {
         container.addEventListener('click', async (e) => {
             const btn = e.target.closest('[data-action]');
             if (!btn) return;
-            
+
             // Chỉ chặn sự kiện nếu là các hành động mà module này xử lý
             const handledActions = ['accept-order', 'start-order', 'complete-order', 'open-pricing-modal', 'submit-actual-price', 'cancel-order', 'submit-customer-feedback', 'submit-provider-feedback'];
             if (handledActions.includes(btn.dataset.action)) {
