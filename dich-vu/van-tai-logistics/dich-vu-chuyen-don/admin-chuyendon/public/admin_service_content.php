@@ -5,110 +5,6 @@ moving_admin_require_login();
 $pageTitle = 'Nội dung dịch vụ | Admin Chuyển Dọn';
 $pageSlug = 'dich-vu-chuyen-don';
 $pageUrl = '../../dich-vu-chuyen-don.html';
-$pageJsonUrl = '../../public/assets/js/data/dich-vu-chuyen-don-page.json';
-$legacyJsonPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'services-hub.json';
-$pageHtmlPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'dich-vu-chuyen-don.html';
-
-function moving_content_admin_fallback_hero(string $path): array
-{
-    $fallback = [
-        'eyebrow' => 'Ba nhóm dịch vụ chuyển dọn',
-        'title' => 'Chọn đúng dịch vụ chuyển dọn cho nhu cầu của bạn',
-        'description' => 'Dù bạn đang muốn chuyển đến một căn hộ mới, di dời trụ sở văn phòng hay tổ chức lại toàn bộ hệ thống kho bãi, chúng tôi đều cung cấp dịch vụ chuyên nghiệp trọn gói. Khám phá chi tiết các hạng mục hỗ trợ và chọn ngay giải pháp phù hợp nhất.',
-        'primary_cta_label' => 'Đặt lịch ngay',
-        'primary_cta_url' => 'dat-lich-chuyendon.html',
-        'secondary_cta_label' => 'Xem bảng giá',
-        'secondary_cta_url' => 'bang-gia-chuyen-don.html',
-    ];
-
-    if (!is_file($path)) {
-        return $fallback;
-    }
-
-    $html = file_get_contents($path);
-    if ($html === false || trim($html) === '') {
-        return $fallback;
-    }
-
-    libxml_use_internal_errors(true);
-    $dom = new DOMDocument();
-    if (!$dom->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING)) {
-        return $fallback;
-    }
-    $xpath = new DOMXPath($dom);
-
-    $eyebrowNode = $xpath->query('//section[contains(@class,"hero-dich-vu")]//*[contains(@class,"nhan-phu")]')->item(0);
-    $titleNode = $xpath->query('//section[contains(@class,"hero-dich-vu")]//h1')->item(0);
-    $descriptionNode = $xpath->query('//section[contains(@class,"hero-dich-vu")]//p')->item(0);
-    $primaryNode = $xpath->query('//section[contains(@class,"hero-dich-vu")]//a[contains(@class,"nut-dat-lich")]')->item(0);
-    $secondaryNode = $xpath->query('//section[contains(@class,"hero-dich-vu")]//a[contains(@class,"nut-vien")]')->item(0);
-
-    return [
-        'eyebrow' => trim($eyebrowNode?->textContent ?? $fallback['eyebrow']),
-        'title' => trim($titleNode?->textContent ?? $fallback['title']),
-        'description' => trim(preg_replace('/\s+/u', ' ', (string) ($descriptionNode?->textContent ?? $fallback['description'])) ?? $fallback['description']),
-        'primary_cta_label' => trim($primaryNode?->textContent ?? $fallback['primary_cta_label']),
-        'primary_cta_url' => trim($primaryNode?->getAttribute('href') ?? $fallback['primary_cta_url']),
-        'secondary_cta_label' => trim($secondaryNode?->textContent ?? $fallback['secondary_cta_label']),
-        'secondary_cta_url' => trim($secondaryNode?->getAttribute('href') ?? $fallback['secondary_cta_url']),
-    ];
-}
-
-function moving_content_admin_fallback_services(string $path): array
-{
-    $raw = is_file($path) ? file_get_contents($path) : false;
-    $decoded = json_decode($raw ?: '{}', true);
-    if (!is_array($decoded)) {
-        $decoded = [];
-    }
-
-    $services = [];
-    foreach ((array) ($decoded['services'] ?? []) as $index => $service) {
-        if (!is_array($service)) {
-            continue;
-        }
-
-        $serviceKey = trim((string) ($service['id'] ?? $service['service_key'] ?? ''));
-        if ($serviceKey === '') {
-            continue;
-        }
-
-        $cta = is_array($service['cta'] ?? null) ? $service['cta'] : [];
-        $services[] = [
-            'service_key' => $serviceKey,
-            'is_visible' => '1',
-            'label' => trim((string) ($service['label'] ?? '')),
-            'title' => trim((string) ($service['title'] ?? '')),
-            'summary' => trim((string) ($service['summary'] ?? '')),
-            'image' => trim((string) ($service['image'] ?? '')),
-            'image_alt' => trim((string) ($service['image_alt'] ?? '')),
-            'service_items' => array_values(array_filter((array) ($service['service_items'] ?? []), static fn($item) => trim((string) $item) !== '')),
-            'booking_label' => trim((string) ($cta['booking_label'] ?? '')),
-            'booking_url' => trim((string) ($cta['booking_url'] ?? '')),
-            'pricing_label' => trim((string) ($cta['pricing_label'] ?? '')),
-            'pricing_url' => trim((string) ($cta['pricing_url'] ?? '')),
-            'sort_order' => $index + 1,
-        ];
-    }
-
-    return [
-        'section' => [
-            'eyebrow' => trim((string) (($decoded['section']['eyebrow'] ?? ''))),
-            'title' => trim((string) (($decoded['section']['title'] ?? ''))),
-            'description' => trim((string) (($decoded['section']['description'] ?? ''))),
-        ],
-        'services' => $services,
-    ];
-}
-
-$fallbackHero = moving_content_admin_fallback_hero($pageHtmlPath);
-$fallbackServiceData = moving_content_admin_fallback_services($legacyJsonPath);
-$bootstrapPayload = [
-    'page_slug' => $pageSlug,
-    'hero' => $fallbackHero,
-    'services_section' => $fallbackServiceData['section'],
-    'services' => $fallbackServiceData['services'],
-];
 
 require_once __DIR__ . '/../includes/header_admin.php';
 ?>
@@ -124,6 +20,28 @@ require_once __DIR__ . '/../includes/header_admin.php';
 
     .service-content-runtime {
         display: none;
+        position: fixed;
+        top: 22px;
+        right: 22px;
+        width: min(420px, calc(100vw - 28px));
+        margin: 0;
+        z-index: 2400;
+        border-radius: 18px;
+        border: 1px solid rgba(194, 122, 77, 0.18);
+        background: rgba(255, 248, 242, 0.96);
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.18);
+        backdrop-filter: blur(12px);
+    }
+
+    .service-content-runtime.flash-error {
+        border-color: rgba(239, 68, 68, 0.22);
+        background: rgba(255, 245, 245, 0.97);
+        box-shadow: 0 18px 42px rgba(127, 29, 29, 0.16);
+    }
+
+    .service-content-runtime .btn {
+        min-width: 126px;
+        justify-content: center;
     }
 
     /* ── Tab navigation ── */
@@ -348,6 +266,13 @@ require_once __DIR__ . '/../includes/header_admin.php';
     }
 
     @media (max-width: 640px) {
+        .service-content-runtime {
+            top: 14px;
+            right: 14px;
+            left: 14px;
+            width: auto;
+        }
+
         .sc-tab-btn {
             font-size: 12px;
             padding: 10px 14px;
@@ -361,7 +286,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
     <div>
         <h1>Quản lý nội dung trang dịch vụ chuyển dọn</h1>
         <p>Sửa Hero, tiêu đề khối dịch vụ và 3 nhóm dịch vụ của trang <code>dich-vu-chuyen-don.html</code>. Dữ liệu lưu
-            ở KRUD và export ra JSON public.</p>
+            ở KRUD và trang public đọc trực tiếp từ API.</p>
     </div>
     <div class="hero-actions">
         <a href="<?php echo moving_admin_escape($pageUrl); ?>" target="_blank" rel="noopener" class="btn btn-outline">
@@ -520,9 +445,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
 </script>
 
 <script>
-    window.__MOVING_SERVICE_CONTENT_BOOTSTRAP__ = <?php echo json_encode($bootstrapPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
     window.__MOVING_SERVICE_CONTENT_PAGE_URL__ = <?php echo json_encode($pageUrl, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
-    window.__MOVING_SERVICE_CONTENT_JSON_URL__ = <?php echo json_encode($pageJsonUrl, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 </script>
 <script src="assets/js/admin-api.js"></script>
 <script src="assets/js/admin-service-content.js"></script>

@@ -1721,6 +1721,8 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+.standalone-order-progress-info {
   align-self: flex-end;
 }
 

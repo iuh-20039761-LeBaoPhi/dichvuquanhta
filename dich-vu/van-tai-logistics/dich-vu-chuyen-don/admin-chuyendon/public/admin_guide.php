@@ -388,7 +388,7 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <li>Vào `Thông báo` nếu cần danh sách cảnh báo theo từng record, sau đó nhảy sang đơn hoặc contact tương ứng.</li>
                 <li>Mở `Đơn hàng`, lọc theo trạng thái và provider để xử lý các đơn mới, đơn cần gán nhà cung cấp, hoặc đơn có khảo sát trước.</li>
                 <li>Rà `Nhà cung cấp & người dùng` để xác minh các provider đang `pending` hoặc thiếu `avatar + CCCD`.</li>
-                <li>Nếu cần cập nhật trang dịch vụ chuyển dọn ngoài site, xử lý ở `Nội dung dịch vụ`. Khi thay ảnh dịch vụ, hệ thống sẽ tải ảnh lên Drive và tự lưu luôn nhóm dịch vụ đó; sau khi hoàn tất vẫn cần kiểm tra JSON public và giao diện thực tế.</li>
+                <li>Nếu cần cập nhật trang dịch vụ chuyển dọn ngoài site, xử lý ở `Nội dung dịch vụ`. Khi thay ảnh dịch vụ, hệ thống sẽ tải ảnh lên Drive và tự lưu luôn nhóm dịch vụ đó; sau khi hoàn tất vẫn cần kiểm tra endpoint `public/service_content.php` và giao diện thực tế.</li>
                 <li>Nếu có thay đổi chính sách giá hoặc phụ phí, xử lý ở `Bảng giá`, xác nhận export JSON thành công rồi mới bàn giao.</li>
                 <li>Cuối ca, kiểm tra `Liên hệ` và `Cẩm nang` để tránh bỏ sót inbox mới hoặc bài viết đang cần cập nhật.</li>
             </ol>
@@ -501,13 +501,13 @@ require_once __DIR__ . '/../includes/header_admin.php';
                 <li>Khối giới thiệu dịch vụ: eyebrow, tiêu đề và mô tả chung phía trên danh sách card.</li>
                 <li>Từng dịch vụ: label, tiêu đề, mô tả ngắn, ảnh, alt ảnh, danh sách hạng mục dịch vụ, CTA đặt lịch và CTA xem bảng giá.</li>
             </ul>
-            <h3>Nguồn dữ liệu và export</h3>
+            <h3>Nguồn dữ liệu và hiển thị public</h3>
             <ul>
-                <li>Hero được bootstrap từ `dich-vu-chuyen-don.html` nếu KRUD chưa có dữ liệu.</li>
-                <li>Danh sách dịch vụ cũ được bootstrap từ `public/assets/js/data/services-hub.json` nếu cần.</li>
-                <li>Sau khi lưu, hệ thống export lại `public/assets/js/data/dich-vu-chuyen-don-page.json` qua `api/service_content_export.php` để frontend public đọc.</li>
+                <li>KRUD là nguồn chuẩn duy nhất cho nội dung trang dịch vụ chuyển dọn.</li>
+                <li>Màn admin không còn bootstrap nội dung từ HTML cũ hoặc `public/assets/js/data/services-hub.json` nữa.</li>
+                <li>Trang public đọc trực tiếp dữ liệu qua endpoint `public/service_content.php`, không còn phụ thuộc file `dich-vu-chuyen-don-page.json`.</li>
             </ul>
-            <div class="guide-note">Nếu lưu thành công ở KRUD nhưng trang ngoài site chưa đổi, hãy ưu tiên kiểm tra bước export JSON và làm mới cứng trang public trước khi kết luận dữ liệu bị mất.</div>
+            <div class="guide-note">Nếu lưu thành công ở KRUD nhưng trang ngoài site chưa đổi, hãy ưu tiên kiểm tra response của `public/service_content.php`, sau đó mới kiểm tra cache trình duyệt hoặc dữ liệu KRUD.</div>
             <div class="guide-link-row">
                 <a class="guide-link" href="admin_service_content.php"><i class="fas fa-pen-ruler"></i> Mở Nội dung dịch vụ</a>
                 <a class="guide-link" href="../../dich-vu-chuyen-don.html" target="_blank" rel="noopener"><i class="fas fa-arrow-up-right-from-square"></i> Xem trang ngoài site</a>
@@ -663,8 +663,9 @@ require_once __DIR__ . '/../includes/header_admin.php';
             </ul>
             <h3>4. Nội dung dịch vụ đã lưu nhưng trang ngoài site chưa đổi</h3>
             <ul>
-                <li>Kiểm tra bước export `dich-vu-chuyen-don-page.json` có báo lỗi hay không.</li>
-                <li>Nếu KRUD đã lưu nhưng JSON chưa cập nhật, mở lại màn Nội dung dịch vụ và lưu lại một thay đổi hợp lệ để export lại.</li>
+                <li>Kiểm tra endpoint `public/service_content.php` đã trả dữ liệu mới từ KRUD hay chưa.</li>
+                <li>Nếu KRUD đã lưu nhưng trang ngoài site chưa đổi, làm mới cứng trình duyệt và kiểm tra request public có bị cache hay lỗi API hay không.</li>
+                <li>Không dùng `sync_service_images.php` để sửa JSON trực tiếp vì endpoint này đã bị khóa để tránh lệch dữ liệu với KRUD.</li>
             </ul>
             <h3>5. Đơn đã hoàn tất nhưng trang chi tiết hiển thị lạ</h3>
             <ul>

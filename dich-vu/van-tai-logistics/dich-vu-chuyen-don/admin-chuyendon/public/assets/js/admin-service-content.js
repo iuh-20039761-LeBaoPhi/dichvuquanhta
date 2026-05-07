@@ -1,9 +1,12 @@
 (function (window, document) {
     const PAGE_SLUG = "dich-vu-chuyen-don";
-    const EXPORT_API_URL = "../api/service_content_export.php";
     const SERVICE_IMAGE_UPLOAD_URL = "../../public/upload_to_drive.php";
-    const FALLBACK = window.__MOVING_SERVICE_CONTENT_BOOTSTRAP__ || {};
     const PUBLIC_PAGE_URL = String(window.__MOVING_SERVICE_CONTENT_PAGE_URL__ || "../../dich-vu-chuyen-don.html");
+    const FIXED_SERVICES = Object.freeze([
+        { service_key: "chuyen-nha", sort_order: 1 },
+        { service_key: "chuyen-van-phong", sort_order: 2 },
+        { service_key: "chuyen-kho-bai", sort_order: 3 },
+    ]);
 
     const refs = {
         runtime: document.getElementById("service-content-runtime"),
@@ -18,6 +21,7 @@
         sectionRows: [],
         serviceRows: [],
     };
+    let runtimeConfirmHandler = null;
 
     function escapeHtml(value) {
         return String(value ?? "")
@@ -30,13 +34,6 @@
 
     function normalizeText(value) {
         return String(value || "").replace(/\s+/g, " ").trim();
-    }
-
-    function normalizeMultiline(value) {
-        return String(value || "")
-            .split(/\r\n|\r|\n/)
-            .map((item) => normalizeText(item))
-            .filter(Boolean);
     }
 
     function getProjectBaseUrl() {
@@ -58,15 +55,74 @@
         return new URL(`public/assets/${cleaned}`, getProjectBaseUrl()).toString();
     }
 
-    function showRuntime(type, message) {
+    function showRuntime(type, message, options = {}) {
+        const allowHtml = options.allowHtml === true;
         refs.runtime.className = `flash service-content-runtime ${type === "success" ? "" : "flash-error"}`;
-        refs.runtime.textContent = message;
+        if (allowHtml) {
+            refs.runtime.innerHTML = String(message || "");
+        } else {
+            refs.runtime.textContent = String(message || "");
+        }
         refs.runtime.style.display = "block";
     }
 
     function hideRuntime() {
         refs.runtime.style.display = "none";
         refs.runtime.textContent = "";
+        refs.runtime.innerHTML = "";
+        runtimeConfirmHandler = null;
+    }
+
+    function showInlineValidationError(title, errors = []) {
+        const normalizedErrors = Array.isArray(errors)
+            ? errors.map((item) => normalizeText(item)).filter(Boolean)
+            : [];
+        const detail = normalizedErrors.length ? ` ${normalizedErrors.join(" ")}` : "";
+        showRuntime("error", `${title}.${detail}`.trim());
+    }
+
+    function showInlineConfirm(message, onConfirm, options = {}) {
+        runtimeConfirmHandler = typeof onConfirm === "function" ? onConfirm : null;
+        const confirmLabel = escapeHtml(options.confirmLabel || "Xác nhận lưu");
+        const cancelLabel = escapeHtml(options.cancelLabel || "Hủy");
+        const html = `
+            <div style="display:grid; gap:12px;">
+                <div>${escapeHtml(message)}</div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn btn-primary" data-runtime-confirm>${confirmLabel}</button>
+                    <button type="button" class="btn btn-outline" data-runtime-cancel>${cancelLabel}</button>
+                </div>
+            </div>
+        `;
+        showRuntime("success", html, { allowHtml: true });
+
+        const confirmBtn = refs.runtime.querySelector("[data-runtime-confirm]");
+        const cancelBtn = refs.runtime.querySelector("[data-runtime-cancel]");
+
+        confirmBtn?.addEventListener("click", async () => {
+            const handler = runtimeConfirmHandler;
+            runtimeConfirmHandler = null;
+            if (!(confirmBtn instanceof HTMLButtonElement) || !(cancelBtn instanceof HTMLButtonElement)) {
+                return;
+            }
+
+            setButtonBusy(confirmBtn, true, '<i class="fas fa-spinner fa-spin"></i>Đang xác nhận...');
+            cancelBtn.disabled = true;
+
+            try {
+                await handler?.();
+            } catch (error) {
+                showRuntime("error", error?.message || "Không thể xử lý xác nhận lưu.");
+            } finally {
+                setButtonBusy(confirmBtn, false, "");
+                cancelBtn.disabled = false;
+            }
+        });
+
+        cancelBtn?.addEventListener("click", () => {
+            runtimeConfirmHandler = null;
+            showRuntime("error", "Đã hủy thao tác lưu.", { scroll: false });
+        });
     }
 
     function setButtonBusy(button, isBusy, busyText) {
@@ -76,18 +132,6 @@
         }
         button.disabled = isBusy;
         button.innerHTML = isBusy ? busyText : button.dataset.originalHtml;
-    }
-
-    function getFallbackHero() {
-        return FALLBACK.hero || {};
-    }
-
-    function getFallbackServicesSection() {
-        return FALLBACK.services_section || {};
-    }
-
-    function getFallbackServices() {
-        return Array.isArray(FALLBACK.services) ? FALLBACK.services : [];
     }
 
     function getSectionRow(sectionKey) {
@@ -201,46 +245,43 @@
 
     function getHeroData() {
         const row = getSectionRow("hero");
-        const fallback = getFallbackHero();
         return {
-            eyebrow: normalizeText(row?.eyebrow || fallback.eyebrow),
-            title: normalizeText(row?.title || fallback.title),
-            description: normalizeText(row?.description || fallback.description),
-            primary_cta_label: normalizeText(row?.primary_cta_label || fallback.primary_cta_label),
-            primary_cta_url: normalizeText(row?.primary_cta_url || fallback.primary_cta_url),
-            secondary_cta_label: normalizeText(row?.secondary_cta_label || fallback.secondary_cta_label),
-            secondary_cta_url: normalizeText(row?.secondary_cta_url || fallback.secondary_cta_url),
+            eyebrow: normalizeText(row?.eyebrow),
+            title: normalizeText(row?.title),
+            description: normalizeText(row?.description),
+            primary_cta_label: normalizeText(row?.primary_cta_label),
+            primary_cta_url: normalizeText(row?.primary_cta_url),
+            secondary_cta_label: normalizeText(row?.secondary_cta_label),
+            secondary_cta_url: normalizeText(row?.secondary_cta_url),
         };
     }
 
     function getServicesSectionData() {
         const row = getSectionRow("services_section");
-        const fallback = getFallbackServicesSection();
         return {
-            eyebrow: normalizeText(row?.eyebrow || fallback.eyebrow),
-            title: normalizeText(row?.title || fallback.title),
-            description: normalizeText(row?.description || fallback.description),
+            eyebrow: normalizeText(row?.eyebrow),
+            title: normalizeText(row?.title),
+            description: normalizeText(row?.description),
         };
     }
 
     function getServicesData() {
-        const fallbackServices = getFallbackServices();
-        return fallbackServices.map((fallback, index) => {
-            const row = getServiceRow(fallback.service_key);
+        return FIXED_SERVICES.map((baseService) => {
+            const row = getServiceRow(baseService.service_key);
             return {
-                service_key: fallback.service_key,
-                is_visible: normalizeText(row?.is_visible || fallback.is_visible || "1") !== "0",
-                label: normalizeText(row?.label || fallback.label),
-                title: normalizeText(row?.title || fallback.title),
-                summary: normalizeText(row?.summary || fallback.summary),
-                image: normalizeText(row?.image || fallback.image),
-                image_alt: normalizeText(row?.image_alt || fallback.image_alt),
-                service_items: row ? rowItemsToTextarea(row) : (Array.isArray(fallback.service_items) ? fallback.service_items.join("\n") : ""),
-                booking_label: normalizeText(row?.booking_label || fallback.booking_label),
-                booking_url: normalizeText(row?.booking_url || fallback.booking_url),
-                pricing_label: normalizeText(row?.pricing_label || fallback.pricing_label),
-                pricing_url: normalizeText(row?.pricing_url || fallback.pricing_url),
-                sort_order: Number(row?.sort_order || fallback.sort_order || index + 1),
+                service_key: baseService.service_key,
+                is_visible: normalizeText(row?.is_visible || "1") !== "0",
+                label: normalizeText(row?.label),
+                title: normalizeText(row?.title),
+                summary: normalizeText(row?.summary),
+                image: normalizeText(row?.image),
+                image_alt: normalizeText(row?.image_alt),
+                service_items: row ? rowItemsToTextarea(row) : "",
+                booking_label: normalizeText(row?.booking_label),
+                booking_url: normalizeText(row?.booking_url),
+                pricing_label: normalizeText(row?.pricing_label),
+                pricing_url: normalizeText(row?.pricing_url),
+                sort_order: Number(row?.sort_order || baseService.sort_order),
             };
         }).sort((left, right) => left.sort_order - right.sort_order);
     }
@@ -395,32 +436,6 @@
         }).join("");
     }
 
-    async function exportPublicJson(successMessage) {
-        const response = await fetch(EXPORT_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                hero: getHeroData(),
-                services_section: getServicesSectionData(),
-                services: getServicesData().map((service) => ({
-                    ...service,
-                    is_visible: service.is_visible ? "1" : "0",
-                    service_items: normalizeMultiline(service.service_items),
-                })),
-            }),
-        });
-
-        const payload = await response.json().catch(() => ({}));
-        if (!response.ok || payload.success === false) {
-            throw new Error(payload.message || "Không export được JSON public.");
-        }
-
-        if (successMessage) {
-            showRuntime("success", successMessage);
-        }
-        return payload;
-    }
-
     async function uploadServiceImage(file, serviceKey) {
         if (!(file instanceof File)) {
             throw new Error("Không có file ảnh hợp lệ để tải lên.");
@@ -450,90 +465,71 @@
         };
     }
 
-    async function finalizeSave(successMessage) {
-        try {
-            await exportPublicJson(successMessage);
-        } catch (error) {
-            showRuntime("error", `${successMessage} Tuy nhiên export JSON public thất bại: ${error.message}`);
-        }
-    }
-
-    async function bootstrapIfNeeded() {
-        const sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
-        const serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
-        if (sectionRows.length || serviceRows.length) {
-            state.sectionRows = sectionRows;
-            state.serviceRows = serviceRows;
-            return false;
-        }
-
-        const now = new Date().toISOString();
-        const hero = getFallbackHero();
-        const servicesSection = getFallbackServicesSection();
-        const fallbackServices = getFallbackServices();
-
-        await window.adminApi.saveMovingServicePageSection({
-            page_slug: PAGE_SLUG,
-            section_key: "hero",
-            ...hero,
-            updated_at: now,
-        });
-
-        await window.adminApi.saveMovingServicePageSection({
-            page_slug: PAGE_SLUG,
-            section_key: "services_section",
-            eyebrow: servicesSection.eyebrow,
-            title: servicesSection.title,
-            description: servicesSection.description,
-            updated_at: now,
-        });
-
-        for (const service of fallbackServices) {
-            await window.adminApi.saveMovingServicePageCard({
-                page_slug: PAGE_SLUG,
-                service_key: service.service_key,
-                is_visible: service.is_visible,
-                label: service.label,
-                title: service.title,
-                summary: service.summary,
-                image: service.image,
-                image_alt: service.image_alt,
-                service_items_json: JSON.stringify(Array.isArray(service.service_items) ? service.service_items : []),
-                booking_label: service.booking_label,
-                booking_url: service.booking_url,
-                pricing_label: service.pricing_label,
-                pricing_url: service.pricing_url,
-                sort_order: service.sort_order,
-                updated_at: now,
-            });
-        }
-
-        state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
-        state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
-        await exportPublicJson();
-        return true;
-    }
-
-    async function refreshData(options = {}) {
-        const allowBootstrap = options.allowBootstrap !== false;
+    async function refreshData() {
         showRuntime("success", "Đang tải dữ liệu nội dung dịch vụ...");
 
         await window.adminApi.ensureMovingServiceContentTables();
         state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
         state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
 
-        let bootstrapped = false;
-        if (allowBootstrap && !state.sectionRows.length && !state.serviceRows.length) {
-            bootstrapped = await bootstrapIfNeeded();
-        }
-
         populateForms();
         renderServiceCards();
 
-        if (bootstrapped) {
-            showRuntime("success", "KRUD đang trống, đã bootstrap dữ liệu ban đầu từ HTML hiện tại và services-hub.json.");
-        } else {
-            hideRuntime();
+        if (!state.sectionRows.length && !state.serviceRows.length) {
+            showRuntime("error", "KRUD chưa có dữ liệu nội dung cho trang chuyển dọn. Hãy tạo bản ghi trực tiếp trong admin để trang public có dữ liệu hiển thị.");
+            return;
+        }
+
+        hideRuntime();
+    }
+
+    async function persistHero(payload) {
+        setButtonBusy(refs.saveHeroBtn, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
+        showRuntime("success", "Đang lưu nội dung Hero...");
+        try {
+            const existing = getSectionRow("hero");
+            await window.adminApi.saveMovingServicePageSection(payload, existing);
+            state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
+            populateForms();
+            showRuntime("success", "Đã lưu nội dung Hero. Trang public sẽ đọc dữ liệu mới trực tiếp từ KRUD.");
+        } catch (error) {
+            showRuntime("error", error.message || "Không thể lưu Hero.");
+        } finally {
+            setButtonBusy(refs.saveHeroBtn, false, "");
+        }
+    }
+
+    async function persistServicesSection(payload) {
+        setButtonBusy(refs.saveServicesSectionBtn, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
+        showRuntime("success", "Đang lưu khối dịch vụ...");
+        try {
+            const existing = getSectionRow("services_section");
+            await window.adminApi.saveMovingServicePageSection(payload, existing);
+            state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
+            populateForms();
+            showRuntime("success", "Đã lưu tiêu đề khối dịch vụ. Trang public sẽ đọc dữ liệu mới trực tiếp từ KRUD.");
+        } catch (error) {
+            showRuntime("error", error.message || "Không thể lưu tiêu đề khối dịch vụ.");
+        } finally {
+            setButtonBusy(refs.saveServicesSectionBtn, false, "");
+        }
+    }
+
+    async function persistServiceCard(form, payload, serviceKey) {
+        const button = form.querySelector('button[type="submit"]');
+        setButtonBusy(button, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
+        showRuntime("success", `Đang lưu nhóm dịch vụ ${serviceKey}...`);
+
+        try {
+            const existing = getServiceRow(serviceKey);
+            await window.adminApi.saveMovingServicePageCard(payload, existing);
+            state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
+            renderServiceCards();
+            showRuntime("success", `Đã lưu nhóm dịch vụ ${serviceKey}. Trang public sẽ đọc dữ liệu mới trực tiếp từ KRUD.`);
+        } catch (error) {
+            showRuntime("error", error.message || "Không thể lưu nhóm dịch vụ.");
+        } finally {
+            setButtonBusy(button, false, "");
         }
     }
 
@@ -543,26 +539,11 @@
         
         const errors = validateSectionPayload(payload);
         if (errors.length) {
-            alert("Dữ liệu không hợp lệ:\n- " + errors.join("\n- "));
+            showInlineValidationError("Dữ liệu Hero không hợp lệ", errors);
             return;
         }
 
-        if (!confirm("Bạn có chắc chắn muốn cập nhật nội dung Hero này không?")) {
-            return;
-        }
-
-        setButtonBusy(refs.saveHeroBtn, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
-        try {
-            const existing = getSectionRow("hero");
-            await window.adminApi.saveMovingServicePageSection(payload, existing);
-            state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
-            populateForms();
-            await finalizeSave("Đã lưu nội dung Hero.");
-        } catch (error) {
-            showRuntime("error", error.message || "Không thể lưu Hero.");
-        } finally {
-            setButtonBusy(refs.saveHeroBtn, false, "");
-        }
+        showInlineConfirm("Xác nhận lưu nội dung Hero này?", () => persistHero(payload));
     }
 
     async function handleServicesSectionSubmit(event) {
@@ -571,26 +552,11 @@
 
         const errors = validateSectionPayload(payload);
         if (errors.length) {
-            alert("Dữ liệu không hợp lệ:\n- " + errors.join("\n- "));
+            showInlineValidationError("Dữ liệu khối dịch vụ không hợp lệ", errors);
             return;
         }
 
-        if (!confirm("Cập nhật tiêu đề và mô tả cho khối dịch vụ?")) {
-            return;
-        }
-
-        setButtonBusy(refs.saveServicesSectionBtn, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
-        try {
-            const existing = getSectionRow("services_section");
-            await window.adminApi.saveMovingServicePageSection(payload, existing);
-            state.sectionRows = await window.adminApi.listMovingServicePageSections(PAGE_SLUG);
-            populateForms();
-            await finalizeSave("Đã lưu tiêu đề khối dịch vụ.");
-        } catch (error) {
-            showRuntime("error", error.message || "Không thể lưu tiêu đề khối dịch vụ.");
-        } finally {
-            setButtonBusy(refs.saveServicesSectionBtn, false, "");
-        }
+        showInlineConfirm("Xác nhận lưu tiêu đề và mô tả cho khối dịch vụ?", () => persistServicesSection(payload));
     }
 
     async function handleServiceCardSubmit(event) {
@@ -600,34 +566,20 @@
             return;
         }
 
-        const button = form.querySelector('button[type="submit"]');
         const serviceKey = normalizeText(form.dataset.serviceForm);
         const sortOrder = Number(form.dataset.sortOrder || 0);
 
         const payload = buildServicePayload(form, serviceKey, sortOrder);
         const errors = validateServicePayload(payload);
         if (errors.length) {
-            alert(`Nhóm ${serviceKey} có lỗi dữ liệu:\n- ` + errors.join("\n- "));
+            showInlineValidationError(`Nhóm ${serviceKey} có lỗi dữ liệu`, errors);
             return;
         }
 
-        if (!confirm(`Xác nhận lưu thay đổi cho dịch vụ [${payload.label}]?`)) {
-            return;
-        }
-
-        setButtonBusy(button, true, '<i class="fas fa-spinner fa-spin"></i>Đang lưu...');
-
-        try {
-            const existing = getServiceRow(serviceKey);
-            await window.adminApi.saveMovingServicePageCard(payload, existing);
-            state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
-            renderServiceCards();
-            await finalizeSave(`Đã lưu nhóm dịch vụ ${serviceKey}.`);
-        } catch (error) {
-            showRuntime("error", error.message || "Không thể lưu nhóm dịch vụ.");
-        } finally {
-            setButtonBusy(button, false, "");
-        }
+        showInlineConfirm(
+            `Xác nhận lưu thay đổi cho dịch vụ [${payload.label || serviceKey}]?`,
+            () => persistServiceCard(form, payload, serviceKey)
+        );
     }
 
     async function handleServiceImageUpload(event) {
@@ -687,7 +639,7 @@
             await window.adminApi.saveMovingServicePageCard(payload, existing);
             state.serviceRows = await window.adminApi.listMovingServicePageCards(PAGE_SLUG);
             renderServiceCards();
-            await finalizeSave(`Đã tải ảnh lên folder web của Chuyển Dọn và lưu nhóm dịch vụ ${serviceKey}.`);
+            showRuntime("success", `Đã tải ảnh lên folder web của Chuyển Dọn và lưu nhóm dịch vụ ${serviceKey}. Trang public sẽ đọc ảnh mới trực tiếp từ KRUD.`);
         } catch (error) {
             if (imageField instanceof HTMLInputElement) {
                 imageField.value = previousImage;
