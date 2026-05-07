@@ -2,95 +2,73 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/slidebar.php';
-require_once __DIR__ . '/get_don-hang.php';
+require_once __DIR__ . '/get_hoadon.php';
 
 $admin = admin_require_login();
-$id = (int) ($_GET['id'] ?? 0);
+$id    = (int) ($_GET['id'] ?? 0);
 
 $detail = get_hoadon_by_id($id);
-$row = $detail['row'] ?? null;
-$error = (string) ($detail['error'] ?? '');
+$row    = $detail['row'] ?? null;
+$error  = (string) ($detail['error'] ?? '');
 
+/* ── Lịch sử làm việc ── */
 $workHistory = [];
 if ($row) {
-    $whResult = get_work_history_by_datlich_id($id);
+    $whResult   = get_work_history_by_datlich_id($id);
     $rawHistory = $whResult['rows'] ?? [];
-
-    // Gộp các row theo ngày giống JS
-    $groups = [];
+    $groups     = [];
     foreach ($rawHistory as $rh) {
         $date = substr((string) ($rh['ngay_lam'] ?? ''), 0, 10);
-        if ($date === '')
-            continue;
-
+        if ($date === '') continue;
         if (!isset($groups[$date])) {
-            $groups[$date] = [
-                'ngay_lam' => $date,
-                'start' => '',
-                'end' => '',
-                'note' => '',
-                'isAuto' => false
-            ];
+            $groups[$date] = ['ngay_lam' => $date, 'start' => '', 'end' => '', 'note' => '', 'isAuto' => false];
         }
-
-        if (!empty($rh['gio_bat_dau_trong_ngay']))
-            $groups[$date]['start'] = $rh['gio_bat_dau_trong_ngay'];
-        if (!empty($rh['gio_ket_thuc_trong_ngay']))
-            $groups[$date]['end'] = $rh['gio_ket_thuc_trong_ngay'];
-        if (!empty($rh['ghichu_cv_ngay']))
-            $groups[$date]['note'] = $rh['ghichu_cv_ngay'];
-        if (($rh['is_auto_end'] ?? 0) == 1)
-            $groups[$date]['isAuto'] = true;
+        if (!empty($rh['gio_bat_dau_trong_ngay']))  $groups[$date]['start']  = $rh['gio_bat_dau_trong_ngay'];
+        if (!empty($rh['gio_ket_thuc_trong_ngay'])) $groups[$date]['end']    = $rh['gio_ket_thuc_trong_ngay'];
+        if (!empty($rh['ghichu_cv_ngay']))           $groups[$date]['note']   = $rh['ghichu_cv_ngay'];
+        if (($rh['is_auto_end'] ?? 0) == 1)          $groups[$date]['isAuto'] = true;
     }
-
-    // Sắp xếp theo ngày tăng dần để hiển thị Ngày 1, Ngày 2...
     ksort($groups);
     $workHistory = array_values($groups);
 }
 
+/* ── Trạng thái & tiến độ ── */
 $statusText = trim((string) ($row['trangthai'] ?? ''));
-if ($statusText === '') {
-    $statusText = 'N/A';
-}
+if ($statusText === '') $statusText = 'N/A';
 
 $progressValue = (float) str_replace(',', '.', (string) ($row['tien_do'] ?? '0'));
-if (!is_finite($progressValue)) {
-    $progressValue = 0.0;
-}
+if (!is_finite($progressValue)) $progressValue = 0.0;
 $progressValue = max(0.0, min(100.0, $progressValue));
-$progressText = rtrim(rtrim(number_format($progressValue, 1, '.', ''), '0'), '.');
-if ($progressText === '') {
-    $progressText = '0';
-}
+$progressText  = rtrim(rtrim(number_format($progressValue, 1, '.', ''), '0'), '.');
+if ($progressText === '') $progressText = '0';
 
+/* ── Công việc ── */
 $jobItems = [];
-$jobsRaw = trim((string) ($row['cong_viec'] ?? ''));
+$jobsRaw  = trim((string) ($row['cong_viec'] ?? ''));
 if ($jobsRaw !== '') {
     $parts = preg_split('/\s*[\.\x{3002}]\s*/u', $jobsRaw) ?: [];
     foreach ($parts as $part) {
         $text = trim((string) $part);
         $text = preg_replace('/^[,;:\-\s]+/u', '', $text) ?? $text;
-        if ($text !== '') {
-            $jobItems[] = $text;
-        }
+        if ($text !== '') $jobItems[] = $text;
     }
 }
 
+/* ── Badge ── */
 $statusMeta = hoadon_status_meta($statusText);
-$statusKey = $statusMeta['key'] ?? 'other';
+$statusKey  = $statusMeta['key'] ?? 'other';
+$badgeClass = match($statusKey) {
+    'cancelled'  => 'danger',
+    'completed'  => 'success',
+    'in_progress'=> 'warning',
+    'confirmed'  => 'success',
+    default      => '',
+};
 
-$badgeClass = '';
-if ($statusKey === 'cancelled') {
-    $badgeClass = 'danger';
-} elseif ($statusKey === 'completed') {
-    $badgeClass = 'success';
-} elseif ($statusKey === 'in_progress') {
-    $badgeClass = 'warning';
-} elseif ($statusKey === 'confirmed') {
-    $badgeClass = 'success';
-}
+$totalDays     = max(1, (int) ($row['so_ngay'] ?? 1));
+$percentPerDay = number_format(100 / $totalDays, 2, '.', '');
 
-admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
+admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admin);
 ?>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,21 +79,21 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 
 <style>
     :root {
-        --bg: #fff5f7;
+        --bg: #f4faf4;
         --surface: #ffffff;
-        --surface-soft: #fdf2f8;
-        --text: #4a044e;
-        --muted: #be185d;
-        --primary: #ec4899;
-        --success: #db2777;
-        --warning: #f472b6;
-        --danger: #9d174d;
-        --border: #fce7f3;
-        --shadow: 0 20px 45px rgba(131, 24, 67, 0.08);
-        --accent-peach: #ffe4e6;
-        --accent-lavender: #fdf2f8;
-        --accent-mint: #f0fdf4;
-        --accent-rose: #fce7f3;
+        --surface-soft: #eff6ff;
+        --text: #1a4d2e;
+        --muted: #1a4d2e;
+        --primary: #2e7d32;
+        --success: #0284c7;
+        --warning: #38bdf8;
+        --danger: #b91c1c;
+        --border: #c8e6c9;
+        --shadow: 0 20px 45px rgba(30, 58, 138, 0.1);
+        --accent-peach: #c8e6c9;
+        --accent-lavender: #f4faf4;
+        --accent-mint: #f0fdfa;
+        --accent-rose: #c8e6c9;
         --anim: 260ms cubic-bezier(.2, .7, .2, 1);
         --radius-xl: 22px;
         --radius-lg: 16px;
@@ -124,12 +102,12 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 
     .admin-main,
     .admin-main>main {
-        background: radial-gradient(circle at 20% -10%, #ffdceb 0, transparent 42%),
-            radial-gradient(circle at 95% 120%, #ffe8f5 0, transparent 38%),
+        background: radial-gradient(circle at 20% -10%, #d0e8ff 0, transparent 42%),
+            radial-gradient(circle at 95% 120%, #c8e6c9 0, transparent 38%),
             radial-gradient(circle at 85% 15%, rgb(248, 248, 248) 0, transparent 35%),
             radial-gradient(circle at 8% 88%, rgb(255, 255, 255) 0, transparent 30%),
             var(--bg) !important;
-        font-family: "Be Vietnam Pro", sans-serif;
+        font-family: "Quicksand", sans-serif;
         color: var(--text);
     }
 
@@ -137,9 +115,9 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         width: min(1240px, 100%);
         margin: 20px auto;
         border-radius: var(--radius-xl);
-        background: linear-gradient(180deg, #ffffff 0%, #fff8fc 62%, #fff3f9 100%);
-        border: 1px solid rgba(200, 88, 143, 0.2);
-        box-shadow: 0 24px 48px rgba(196, 83, 138, 0.18), 0 6px 20px rgba(138, 170, 209, 0.12);
+        background: linear-gradient(180deg, #ffffff 0%, #f7fbff 62%, #f0f7ff 100%);
+        border: 1px solid rgba(37, 99, 235, 0.15);
+        box-shadow: 0 24px 48px rgba(30, 58, 138, 0.12), 0 6px 20px rgba(138, 170, 209, 0.12);
         overflow: visible;
         animation: showCard 520ms var(--anim) forwards;
     }
@@ -169,10 +147,10 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         gap: 14px;
         align-items: center;
         padding: 20px 24px;
-        background: linear-gradient(102deg, #f369a7 0%, #ef86b4 58%, #ffa9d4 100%);
+        background: linear-gradient(102deg, #1a4d2e 0%, #2e7d32 58%, #43a047 100%);
         color: #fff;
         border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-        box-shadow: 0 10px 24px rgba(169, 63, 114, 0.3);
+        box-shadow: 0 10px 24px rgba(30, 58, 138, 0.25);
     }
 
     .topbar-logo {
@@ -185,7 +163,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         border-radius: 14px;
         border: 1px solid rgba(255, 255, 255, 0.42);
         background: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 10px 22px rgba(166, 58, 110, 0.24);
+        box-shadow: 0 10px 22px rgba(30, 58, 138, 0.2);
         backdrop-filter: blur(4px);
         transition: transform var(--anim), background var(--anim), border-color var(--anim);
         text-decoration: none;
@@ -201,7 +179,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         width: 74px;
         height: 50px;
         object-fit: contain;
-        filter: drop-shadow(0 4px 8px rgba(169, 63, 114, 0.35));
+        filter: drop-shadow(0 4px 8px rgba(30, 58, 138, 0.35));
     }
 
     .topbar-title {
@@ -230,7 +208,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
         background: var(--surface);
-        box-shadow: 0 12px 26px rgba(226, 113, 168, 0.12), 0 2px 8px rgba(191, 200, 219, 0.1);
+        box-shadow: 0 12px 26px rgba(37, 99, 235, 0.12), 0 2px 8px rgba(191, 200, 219, 0.1);
         padding: 14px;
         min-height: 205px;
         display: flex;
@@ -253,7 +231,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         margin: 0;
         font-size: 16px;
         font-weight: 800;
-        color: #6f2d52;
+        color: #1a4d2e;
     }
 
     .badge {
@@ -262,25 +240,25 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         font-size: 11px;
         font-weight: 800;
         letter-spacing: .2px;
-        background: #ffe6f2;
-        color: #a83f72;
-        border: 1px solid #f7c8de;
+        background: #dbeafe;
+        color: #2e7d32;
+        border: 1px solid #bfdbfe;
         white-space: nowrap;
     }
 
     .badge.success {
-        background: linear-gradient(135deg, #ffe3f1, #dff8ef);
-        color: #8a3462;
+        background: linear-gradient(135deg, #dbeafe, #dff8ef);
+        color: #2e7d32;
     }
 
     .badge.warning {
-        background: linear-gradient(135deg, #ffe9f4, #ffe9d5);
-        color: #ad4f7e;
+        background: linear-gradient(135deg, #eff6ff, #ffe9d5);
+        color: #1a4d2e;
     }
 
     .badge.danger {
-        background: #ffd7e8;
-        color: #9e2f61;
+        background: #fee2e2;
+        color: #b91c1c;
     }
 
     .field-label {
@@ -308,10 +286,10 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
     }
 
     .invoice-hero {
-        background: linear-gradient(118deg, #f99bbd 0%, #f9c7dc 48%, #f9dbe7 72%, #ffe9d4 100%);
+        background: linear-gradient(118deg, #43a047 0%, #60a5fa 48%, #93c5fd 72%, #bfdbfe 100%);
         border-radius: 16px;
         padding: 16px;
-        color: #3d2333;
+        color: #ffffff;
     }
 
     .invoice-main {
@@ -350,21 +328,21 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         font-weight: 800;
         background: rgba(255, 255, 255, 0.25);
         border: 1px solid rgba(255, 255, 255, 0.35);
-        color: #3d2333;
+        color: #ffffff;
     }
 
     .invoice-status-badge.success {
-        background-color: #d94a8a;
+        background-color: #0284c7;
         color: #fff;
     }
 
     .invoice-status-badge.warning {
-        background-color: #f08ab6;
+        background-color: #38bdf8;
         color: #fff;
     }
 
     .invoice-status-badge.danger {
-        background-color: #c93b78;
+        background-color: #1a4d2e;
         color: #fff;
     }
 
@@ -384,7 +362,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         padding: 7px;
         flex: 0 0 auto;
         border: 2px solid #000;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(122, 34, 82, 0.28);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(30, 58, 138, 0.28);
     }
 
     .invoice-progress-core {
@@ -392,7 +370,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         height: 100%;
         border-radius: 50%;
         background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0) 44%),
-            linear-gradient(150deg, rgba(245, 179, 179, 0.94) 0%, rgba(241, 138, 138, 0.93) 100%);
+            linear-gradient(150deg, rgba(163, 191, 245, 0.94) 0%, rgba(138, 188, 241, 0.93) 100%);
         border: 2px solid #000;
         display: grid;
         place-content: center;
@@ -423,8 +401,8 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         display: flex;
         gap: 9px;
         align-items: flex-start;
-        border: 1px solid rgba(255, 227, 239, 0.6);
-        background: rgba(195, 19, 107, 0.22);
+        border: 1px solid rgba(224, 242, 254, 0.6);
+        background: rgba(37, 99, 235, 0.15);
         border-radius: 12px;
         padding: 10px 12px;
         min-height: 96px;
@@ -456,7 +434,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         margin: 0;
         font-size: 11px;
         font-weight: 600;
-        opacity: .85;
+        color: rgba(255, 255, 255, 0.85);
     }
 
     .invoice-item-content h4 {
@@ -465,37 +443,38 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         font-weight: 800;
         line-height: 1.15;
         word-break: break-word;
+        color: #ffffff;
     }
 
     .invoice-item-content span {
         font-size: 11px;
         font-weight: 600;
-        opacity: .9;
+        color: rgba(255, 255, 255, 0.9);
     }
 
     #panelJobs {
         padding: 0;
         overflow: hidden;
         gap: 0;
-        border-color: #ec3d95;
+        border-color: #43a047;
     }
 
     .jobs-header {
         padding: 12px 14px;
-        background: linear-gradient(135deg, #ee7cb9 0%, #ffe9f5 65%, #ffd8fc 100%);
-        border-bottom: 1px solid #f2d7e5;
+        background: linear-gradient(135deg, #1a4d2e 0%, #f4faf4 65%, #eff6ff 100%);
+        border-bottom: 1px solid #c8e6c9;
     }
 
     .jobs-title {
         margin: 0;
         font-size: 27px;
         font-weight: 800;
-        color: #6f2d52;
+        color: #1a4d2e;
     }
 
     .jobs-body {
         padding: 12px;
-        background: linear-gradient(180deg, #fcfcfc 0%, #fff4fb 70%, #fceeff 100%);
+        background: linear-gradient(180deg, #fcfcfc 0%, #f4faf4 70%, #eff6ff 100%);
     }
 
     .jobs-meta {
@@ -511,8 +490,8 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
     }
 
     .invoice-extra-item {
-        border: 1px solid #e665a9;
-        background: #ffeef7;
+        border: 1px solid #43a047;
+        background: #f4faf4;
         border-radius: 8px;
         padding: 8px 10px;
     }
@@ -529,8 +508,8 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
     }
 
     .invoice-media-item {
-        border: 1px solid #e665a9;
-        background: #ffeef7;
+        border: 1px solid #43a047;
+        background: #f4faf4;
         border-radius: 8px;
         padding: 8px 10px;
         display: flex;
@@ -541,7 +520,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
     }
 
     .invoice-media-item .field-label {
-        color: #be185d;
+        color: #1a4d2e;
         font-size: 10px;
         margin: 0;
         font-weight: 600;
@@ -559,7 +538,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
     }
 
     .invoice-media-item .media-empty-label {
-        color: #be185d;
+        color: #1a4d2e;
         font-size: 11px;
         text-align: center;
         padding: 8px 0;
@@ -571,7 +550,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         margin: 0;
         padding: 8px;
         border-radius: 10px;
-        background: linear-gradient(145deg, #fafafa 0%, #d8b4f1 100%);
+        background: linear-gradient(145deg, #fafafa 0%, #a5d6a7 100%);
         display: grid;
         gap: 8px;
         counter-reset: job-item;
@@ -585,8 +564,8 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         font-size: 13px;
         font-weight: 600;
         line-height: 1.45;
-        color: #6d2f50;
-        border: 1px solid #c21178;
+        color: #1a4d2e;
+        border: 1px solid #1a4d2e;
         border-radius: 10px;
         padding: 10px;
         background: #fff;
@@ -597,7 +576,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         flex: 0 0 22px;
         height: 22px;
         border-radius: 999px;
-        background: #de4f90;
+        background: #43a047;
         color: #fff;
         font-size: 12px;
         font-weight: 800;
@@ -607,16 +586,16 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
     }
 
     #panelTime {
-        background: linear-gradient(180deg, #f5cfe6 0%, #f0f0f0 58%, #fbf0f8 100%) !important;
-        border-color: #d45e9d !important;
+        background: linear-gradient(180deg, #a5d6a7 0%, #f4faf4 58%, #eff6ff 100%) !important;
+        border-color: #43a047 !important;
     }
 
     .progress-inner {
         height: 100%;
         width: 0;
         transition: width 420ms ease;
-        background: linear-gradient(90deg, #d94688 0%, #ea6fa5 55%, #77e2c0 100%);
-        box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(165, 53, 113, 0.26);
+        background: linear-gradient(90deg, #1a4d2e 0%, #43a047 55%, #7dd3fc 100%);
+        box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(30, 58, 138, 0.2);
     }
 
     #panelCustomer,
@@ -624,7 +603,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         padding: 0;
         overflow: hidden;
         gap: 0;
-        border-color: #c75b94;
+        border-color: #1a4d2e;
     }
 
     .profile-head {
@@ -633,15 +612,15 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         align-items: center;
         gap: 10px;
         padding: 12px 14px;
-        border-bottom: 1px solid #f2dbe7;
-        background: linear-gradient(135deg, #e496c1 0%, #fff1f8 55%, #f0b3d8 100%);
+        border-bottom: 1px solid #c8e6c9;
+        background: linear-gradient(135deg, #2e7d32 0%, #f4faf4 55%, #a5d6a7 100%);
     }
 
     .profile-title {
         margin: 0;
         font-size: 18px;
         font-weight: 800;
-        color: #6f2d52;
+        color: #1a4d2e;
     }
 
     .profile-body {
@@ -657,8 +636,8 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         height: 88px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #f6d6e6;
-        background: #fdeaf4;
+        border: 3px solid #a5d6a7;
+        background: #f4faf4;
     }
 
     .profile-main {
@@ -670,7 +649,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         margin: 0;
         font-size: 22px;
         font-weight: 800;
-        color: #633148;
+        color: #1a4d2e;
     }
 
     .profile-contact,
@@ -678,7 +657,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         margin: 0;
         font-size: 14px;
         font-weight: 700;
-        color: #633148;
+        color: #1a4d2e;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -692,8 +671,8 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         width: 18px;
         height: 18px;
         border-radius: 999px;
-        background: #ffe7f3;
-        color: #d24f8f;
+        background: #c8e6c9;
+        color: #2e7d32;
         font-size: 11px;
         line-height: 1;
         font-weight: 800;
@@ -724,15 +703,15 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         align-items: center;
         padding: 8px 12px;
         border-radius: 10px;
-        background: linear-gradient(135deg, #fff0f7 0%, #ffeef8 65%, #eaf8f3 100%);
+        background: linear-gradient(135deg, #f4faf4 0%, #eff6ff 65%, #f0fdfa 100%);
         font-size: 13px;
         font-weight: 700;
-        color: #8e4467;
-        border: 1px solid #f0d0e0;
+        color: #1a4d2e;
+        border: 1px solid #a5d6a7;
     }
 
     #panelMedia {
-        border-color: #f1d5e4;
+        border-color: #c8e6c9;
     }
 
     .review-split {
@@ -742,10 +721,10 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
     }
 
     .review-box {
-        border: 1px solid #efd1e1;
+        border: 1px solid #a5d6a7;
         border-radius: 12px;
         padding: 10px;
-        background: linear-gradient(180deg, #fff7fc 0%, #fff7fe 68%, #f6f1ff 100%);
+        background: linear-gradient(180deg, #f4faf4 0%, #f7fbff 68%, #f0f7ff 100%);
         display: grid;
         gap: 10px;
     }
@@ -761,7 +740,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         margin: 0;
         font-size: 14px;
         font-weight: 800;
-        color: #6f2d52;
+        color: #1a4d2e;
     }
 
     .review-display {
@@ -769,7 +748,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         gap: 6px;
         padding: 8px;
         border-radius: 10px;
-        border: 1px solid #f1d4e3;
+        border: 1px solid #a5d6a7;
         background: #fff;
     }
 
@@ -778,7 +757,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
         margin: 0;
         font-size: 13px;
         font-weight: 600;
-        color: #7c4760;
+        color: #2e7d32;
         word-break: break-word;
     }
 
@@ -789,7 +768,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
     }
 
     th {
-        background: #e779c1;
+        background: #2e7d32;
         color: #000;
         padding: 6px 8px;
         text-align: left;
@@ -797,8 +776,8 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 
     td {
         padding: 6px 8px;
-        border-bottom: 1px solid #efd3e9;
-        color: #1f3853;
+        border-bottom: 1px solid #c8e6c9;
+        color: #1a4d2e;
         font-weight: 600;
     }
 
@@ -986,11 +965,11 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 <div class="modal-card">
     <header class="topbar">
         <a class="topbar-logo" href="index.php" aria-label="Quay lại">
-            <img src="../assets/logo.png" alt="Logo" />
+            <img src="../assets/images/logo1.jpg" alt="Logo Chăm Sóc Vườn" />
         </a>
-        <h1 class="topbar-title">Chi tiết đơn hàng mẹ và bé</h1>
-        <a class="topbar-logo" href="#" aria-label="Logo Mẹ và Bé">
-            <img src="../assets/logomvb1.png" alt="Logo" />
+        <h1 class="topbar-title">Chi tiết đơn Chăm Sóc Vườn</h1>
+        <a class="topbar-logo" href="../index.html" aria-label="Trang chủ">
+            <img src="../assets/images/logo2.jpg" alt="Logo" />
         </a>
     </header>
 
@@ -1101,7 +1080,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                             <span id="progressText"><?= $progressText ?>.00%</span>
                         </div>
                         <div
-                            style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:#fff;border:1px solid #ad3f74;">
+                            style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:#fff;border:1px solid #2e7d32;">
                             <div class="progress-inner" style="width:<?= $progressText ?>%;"></div>
                         </div>
                         <?php
@@ -1109,16 +1088,16 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                         $percentPerDay = number_format(100 / $totalDays, 2, '.', '');
                         ?>
                         <p id="progressHint" class="hint"
-                            style="font-size:12px;margin-top:-2px; color: #7c4760; font-weight: 700;">
+                            style="font-size:12px;margin-top:-2px; color: #1a4d2e; font-weight: 700;">
                             Mỗi ngày cộng <?= $percentPerDay ?>% (tổng <?= $totalDays ?> ngày). Tiến độ cộng dồn theo từng
                             ngày làm việc.
                         </p>
                     </div>
 
                     <div
-                        style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;margin-bottom:8px;">
+                        style="border:1px solid #bfdbfe;border-radius:8px;overflow:hidden;background:#f4faf4;margin-bottom:8px;">
                         <div
-                            style="display:grid;grid-template-columns:repeat(3,1fr);background:#e779c1;color:#000;font-size:11px;font-weight:800;text-align:center;">
+                            style="display:grid;grid-template-columns:repeat(3,1fr);background:#2e7d32;color:#fff;font-size:11px;font-weight:800;text-align:center;">
                              <span class="compact-mobile" style="padding:7px 5px;border-right:1px solid rgba(0,0,0,0.05);">Dự kiến BĐ</span>
                             <span class="compact-mobile" style="padding:7px 5px;border-right:1px solid rgba(0,0,0,0.05);">Dự kiến KT</span>
                             <span class="compact-mobile" style="padding:7px 5px;">Số ngày</span>
@@ -1126,9 +1105,9 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                         <div
                             style="display:grid;grid-template-columns:repeat(3,1fr);font-size:11px;font-weight:700;text-align:center;">
                              <span class="compact-mobile"
-                                style="padding:7px 5px;border-right:1px solid #efd3e9; color: #1f3853;"><?= ($d1 = strtotime($row['ngay_bat_dau_kehoach'] ?? '')) ? date('d/m/Y', $d1) : '---' ?></span>
+                                style="padding:7px 5px;border-right:1px solid #bfdbfe; color: #1a4d2e;"><?= ($d1 = strtotime($row['ngay_bat_dau_kehoach'] ?? '')) ? date('d/m/Y', $d1) : '---' ?></span>
                             <span class="compact-mobile"
-                                style="padding:7px 5px;border-right:1px solid #efd3e9; color: #1f3853;"><?= ($d2 = strtotime($row['ngay_ket_thuc_kehoach'] ?? '')) ? date('d/m/Y', $d2) : '---' ?></span>
+                                style="padding:7px 5px;border-right:1px solid #bfdbfe; color: #1a4d2e;"><?= ($d2 = strtotime($row['ngay_ket_thuc_kehoach'] ?? '')) ? date('d/m/Y', $d2) : '---' ?></span>
                             <span class="compact-mobile" style="padding:7px 5px; color: #1f3853;"><?= $totalDays ?> ngày</span>
                         </div>
                     </div>
@@ -1139,37 +1118,37 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                     </div>
 
                     <div
-                        style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe; margin-bottom: 8px;">
+                        style="border:1px solid #bfdbfe;border-radius:8px;overflow:hidden;background:#f4faf4; margin-bottom: 8px;">
                         <div
-                            style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:800;">
+                            style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#2e7d32;color:#ffffff;font-size:12px;font-weight:800;">
                              <span class="compact-mobile" style="padding:7px 10px;">Thời gian dự kiến</span>
                             <span class="compact-mobile" style="padding:7px 10px;">Thời gian thực tế</span>
                         </div>
                         <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));">
-                              <div style="border-right:1px solid #efd3e9;">
+                              <div style="border-right:1px solid #bfdbfe;">
                                 <div class="time-line-row compact-mobile" style="display:flex; justify-content: space-between; align-items: center; gap:8px;padding:7px 10px;font-size:12px;">
-                                    <span style="color:#000000;font-weight:700;">Bắt đầu</span>
+                                    <span style="color:#1a4d2e;font-weight:700;">Bắt đầu</span>
                                     <span
-                                        style="color:#1f3853;font-weight:800;"><?= ($t1 = strtotime($row['gio_bat_dau_kehoach'] ?? '')) ? date('H:i', $t1) : '--:--' ?></span>
+                                        style="color:#1a4d2e;font-weight:800;"><?= ($t1 = strtotime($row['gio_bat_dau_kehoach'] ?? '')) ? date('H:i', $t1) : '--:--' ?></span>
                                 </div>
                                 <div class="time-line-row compact-mobile"
-                                    style="display:flex; justify-content: space-between; align-items: center; gap:8px;padding:7px 10px;border-top:1px solid #efd3e9;font-size:12px;">
-                                    <span style="color:#000000;font-weight:700;">Kết thúc</span>
+                                    style="display:flex; justify-content: space-between; align-items: center; gap:8px;padding:7px 10px;border-top:1px solid #bfdbfe;font-size:12px;">
+                                    <span style="color:#1a4d2e;font-weight:700;">Kết thúc</span>
                                     <span
-                                        style="color:#1f3853;font-weight:800;"><?= ($t2 = strtotime($row['gio_ket_thuc_kehoach'] ?? '')) ? date('H:i', $t2) : '--:--' ?></span>
+                                        style="color:#1a4d2e;font-weight:800;"><?= ($t2 = strtotime($row['gio_ket_thuc_kehoach'] ?? '')) ? date('H:i', $t2) : '--:--' ?></span>
                                 </div>
                             </div>
                             <div>
                                 <div class="time-line-row compact-mobile" style="display:flex; justify-content: space-between; align-items: center; gap:8px;padding:7px 10px;font-size:12px;">
-                                    <span style="color:#000000;font-weight:700;">Bắt đầu</span>
+                                    <span style="color:#1a4d2e;font-weight:700;">Bắt đầu</span>
                                     <span
-                                        style="color:#1f3853;font-weight:800;"><?= ($tt1 = strtotime($row['thoigian_batdau_thucte'] ?? '')) ? date('d/m/Y H:i:s', $tt1) : '---' ?></span>
+                                        style="color:#1a4d2e;font-weight:800;"><?= ($tt1 = strtotime($row['thoigian_batdau_thucte'] ?? '')) ? date('d/m/Y H:i:s', $tt1) : '---' ?></span>
                                 </div>
                                 <div class="time-line-row compact-mobile"
-                                    style="display:flex; justify-content: space-between; align-items: center; gap:8px;padding:7px 10px;border-top:1px solid #efd3e9;font-size:12px;">
-                                    <span style="color:#000000;font-weight:700;">Kết thúc</span>
+                                    style="display:flex; justify-content: space-between; align-items: center; gap:8px;padding:7px 10px;border-top:1px solid #bfdbfe;font-size:12px;">
+                                    <span style="color:#1a4d2e;font-weight:700;">Kết thúc</span>
                                     <span
-                                        style="color:#1f3853;font-weight:800;"><?= ($tt2 = strtotime($row['thoigian_ketthuc_thucte'] ?? '')) ? date('d/m/Y H:i:s', $tt2) : '---' ?></span>
+                                        style="color:#1a4d2e;font-weight:800;"><?= ($tt2 = strtotime($row['thoigian_ketthuc_thucte'] ?? '')) ? date('d/m/Y H:i:s', $tt2) : '---' ?></span>
                                 </div>
                             </div>
                         </div>
@@ -1181,7 +1160,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                             <?php if ($workHistory): ?>
                                 <table style="width:100%;border-collapse:collapse;font-size:12px;">
                                     <thead>
-                                        <tr style="background:#e779c1;color:#000;">
+                                        <tr style="background:#2e7d32;color:#fff;">
                                             <th style="padding:6px 8px;text-align:left;">Ngày thứ</th>
                                             <th style="padding:6px 8px;text-align:left;">Ngày làm</th>
                                             <th style="padding:6px 8px;text-align:left;">Bắt đầu</th>
@@ -1200,8 +1179,8 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                                                 $endDisplay .= ' <i class="fa fa-info-circle text-warning" title="NCC quên nhấn Kết Thúc" style="cursor:pointer;color:#f0ba2c;"></i>';
                                             }
                                             ?>
-                                            <tr style="border-bottom: 1px solid #f0d4e3;">
-                                                <td style="padding:5px 8px;font-weight:700;color:#c21178;">Ngày <?= $stt++ ?></td>
+                                            <tr style="border-bottom: 1px solid #bfdbfe;">
+                                                <td style="padding:5px 8px;font-weight:700;color:#1a4d2e;">Ngày <?= $stt++ ?></td>
                                                 <td style="padding:5px 8px;"><?= ($d = strtotime($wh['ngay_lam'] ?? '')) ? date('d/m/Y', $d) : '---' ?></td>
                                                 <td style="padding:5px 8px;"><?= ($s = strtotime($wh['start'] ?? '')) ? date('H:i:s', $s) : '---' ?></td>
                                                 <td style="padding:5px 8px;"><?= ($e = strtotime($wh['end'] ?? '')) ? date('H:i:s', $e) : '---' ?></td>
@@ -1211,7 +1190,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                                     </tbody>
                                 </table>
                             <?php else: ?>
-                                <p style="font-size:12px;color:#8b5f74;margin:0;">Chưa có lịch sử làm việc.</p>
+                                <p style="font-size:12px;color:#2e7d32;margin:0;">Chưa có lịch sử làm việc.</p>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -1226,7 +1205,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                         <div style="position:relative; width:88px; height:88px; flex-shrink:0;">
                             <span id="avatarCustomerEmpty" style="display:none; position:absolute; inset:0; display:grid; place-items:center; font-size:10px; background:#f0f0f0; border-radius:50%;">---</span>
                             <iframe id="avatarCustomerEl" class="profile-avatar" style="display:none; position:absolute; width:100%; height:100%; border:0; border-radius:50%;" allowfullscreen></iframe>
-                            <img id="avatarCustomerImg" class="profile-avatar" src="../<?= admin_h($row['avatar_khachhang'] ?? 'assets/logomvb.png') ?>" alt="Customer" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                            <img id="avatarCustomerImg" class="profile-avatar" src="../assets/images/logo2.jpg" alt="Customer" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
                         </div>
                         <div class="profile-main">
                             <h3 class="profile-name"><?= admin_h($row['tenkhachhang'] ?? '---') ?></h3>
@@ -1252,7 +1231,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                         <div style="position:relative; width:88px; height:88px; flex-shrink:0;">
                             <span id="avatarStaffEmpty" style="display:none; position:absolute; inset:0; display:grid; place-items:center; font-size:10px; background:#f0f0f0; border-radius:50%;">---</span>
                             <iframe id="avatarStaffEl" class="profile-avatar" style="display:none; position:absolute; width:100%; height:100%; border:0; border-radius:50%;" allowfullscreen></iframe>
-                            <img id="avatarStaffImg" class="profile-avatar" src="../<?= admin_h($row['avatar_ncc'] ?? 'assets/logomvb.png') ?>" alt="Staff" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                            <img id="avatarStaffImg" class="profile-avatar" src="../assets/images/logo2.jpg" alt="Staff" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
                         </div>
                         <div class="profile-main">
                             <h3 class="profile-name"><?= admin_h($row['tenncc'] ?? '---') ?></h3>

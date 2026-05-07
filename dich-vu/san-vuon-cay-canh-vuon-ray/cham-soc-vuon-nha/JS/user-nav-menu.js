@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   /**
    * CẤU HÌNH & TRẠNG THÁI
    */
@@ -23,7 +23,7 @@
   };
 
   const assetUrl = (path) => {
-    if (!path) return new URL('assets/logomvb.png', projectBase).href;
+    if (!path) return new URL('assets/images/logo2.jpg', projectBase).href;
     if (/^https?:\/\//i.test(path)) return path;
     return new URL(String(path).replace(/^\/+/, ''), projectBase).href;
   };

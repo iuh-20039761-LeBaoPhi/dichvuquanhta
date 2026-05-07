@@ -29,7 +29,7 @@ if (!function_exists('admin_api_list_table')) {
     function admin_api_list_table(string $table): array
     {
         $url = 'https://api.dvqt.vn/list/';
-        $payload = json_encode(['table' => $table], JSON_UNESCAPED_UNICODE);
+        $payload = json_encode(['table' => $table, 'limit' => 10000], JSON_UNESCAPED_UNICODE);
 
         if ($payload === false) {
             return ['rows' => [], 'error' => 'Khong tao duoc payload API.'];

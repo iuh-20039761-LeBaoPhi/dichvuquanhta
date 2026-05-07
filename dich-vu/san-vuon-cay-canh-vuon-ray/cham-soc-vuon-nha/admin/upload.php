@@ -3,7 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
-$scriptUrl = "https://script.google.com/macros/s/AKfycbzTT7c7pINUsAd9k3z_zP-TBaR7h0s1GXd4ylsWOhBFeijeD3z37el1pzVRfiuJb7DFag/exec";
+$scriptUrl = "https://script.google.com/macros/s/AKfycbxtMgHP8YRAaDO1U_4oqYjFEWUgSjemT2jk1q9baoW6KXz2ggfR-bfmLnuZSiZkIAMAuA/exec";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['file'])) {
     echo json_encode(['success' => false, 'message' => 'Yêu cầu không hợp lệ']);
@@ -23,7 +23,7 @@ if ($file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($tmpPath)) {
 // Encode base64 và gửi lên Google Drive qua Apps Script
 $fileContent = base64_encode(file_get_contents($tmpPath));
 // thay đổi $folderKey sao cho lưu đúng vào thư mục 
-$folderKey = 1;
+$folderKey = 4;
 $data = json_encode([
     'name' => $name,
     'file' => $fileContent,

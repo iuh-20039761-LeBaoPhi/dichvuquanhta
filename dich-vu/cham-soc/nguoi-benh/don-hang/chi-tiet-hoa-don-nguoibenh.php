@@ -1481,7 +1481,7 @@ include 'layout-header.php';
 						<span class="profile-status badge success">Khách hàng</span>
 					</div>
 					<div class="profile-body">
-						<img id="customerAvatarImg" class="profile-avatar" src="assets/logo-cham-soc-benh-nhan.png"
+						<img id="customerAvatarImg" class="profile-avatar" src="../assets/logo-cham-soc-benh-nhan.png"
 							alt="Khách hàng">
 						<iframe id="customerAvatar" class="profile-avatar" src="" frameborder="0"
 							style="display:none;"></iframe>
@@ -1504,7 +1504,7 @@ include 'layout-header.php';
 						<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
 					</div>
 					<div class="profile-body">
-						<img id="staffAvatarImg" class="profile-avatar" src="assets/logo-cham-soc-benh-nhan.png"
+						<img id="staffAvatarImg" class="profile-avatar" src="../assets/logo-cham-soc-benh-nhan.png"
 							alt="Nhà Cung Cấp">
 						<iframe id="staffAvatar" class="profile-avatar" src="" frameborder="0"
 							style="display:none;"></iframe>
