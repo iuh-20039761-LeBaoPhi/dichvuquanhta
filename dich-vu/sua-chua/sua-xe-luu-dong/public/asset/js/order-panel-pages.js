@@ -2715,12 +2715,20 @@
         if (isGoogleDrive) {
           preview = document.createElement("div");
           preview.className = "ratio ratio-1x1 border rounded overflow-hidden bg-light position-relative";
+          preview.id = "drive-review-" + actor + "-" + index;
           preview.innerHTML = `
             <iframe src="https://drive.google.com/file/d/${item}/preview" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>
-            <a href="https://drive.google.com/file/d/${item}/view" target="_blank" class="position-absolute top-0 end-0 m-1 btn btn-sm btn-dark opacity-50" style="padding: 2px 5px; font-size: 10px; z-index: 10;" title="Mở trong tab mới">
-              <i class="fas fa-external-link-alt"></i>
-            </a>
           `;
+          
+          // Check if file exists
+          var checker = new Image();
+          checker.onerror = function() {
+              var p = document.getElementById("drive-review-" + actor + "-" + index);
+              if (p) {
+                  p.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted small">Không có tệp</div>';
+              }
+          };
+          checker.src = "https://drive.google.com/thumbnail?id=" + item + "&sz=w200";
         } else if (isVideo) {
           preview = document.createElement("video");
           preview.controls = true;
@@ -2998,16 +3006,22 @@
         } else {
           var grid = document.createElement("div");
           grid.className = "row g-2";
-          anhIds.forEach(function (id) {
+          anhIds.forEach(function (id, idx) {
             var col = document.createElement("div");
             col.className = "col-6 col-md-4";
+            var containerId = "drive-img-" + id + "-" + idx;
             col.innerHTML =
-              '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm bg-light position-relative">' +
+              '<div id="' + containerId + '" class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm bg-light position-relative">' +
               '<iframe src="https://drive.google.com/file/d/' + id + '/preview" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>' +
-              '<a href="https://drive.google.com/file/d/' + id + '/view" target="_blank" class="position-absolute top-0 end-0 m-1 btn btn-sm btn-dark opacity-50" style="padding: 2px 5px; font-size: 10px; z-index: 10;" title="Mở trong tab mới">' +
-              '<i class="fas fa-external-link-alt"></i>' +
-              '</a>' +
               "</div>";
+            
+            var checker = new Image();
+            checker.onerror = function() {
+                var el = document.getElementById(containerId);
+                if (el) el.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted small">Không có ảnh</div>';
+            };
+            checker.src = "https://drive.google.com/thumbnail?id=" + id + "&sz=w200";
+
             grid.appendChild(col);
           });
           imgMount.appendChild(grid);
@@ -3020,14 +3034,23 @@
           videoMount.innerHTML =
             '<p class="text-muted small">Không có video hiện trường</p>';
         } else {
-          videoIds.forEach(function (id) {
+          videoIds.forEach(function (id, idx) {
             var wrapper = document.createElement("div");
             wrapper.className =
               "mb-2 border rounded overflow-hidden shadow-sm bg-light";
+            var containerId = "drive-video-" + id + "-" + idx;
             wrapper.innerHTML =
-              '<div class="ratio ratio-16x9">' +
+              '<div id="' + containerId + '" class="ratio ratio-16x9">' +
               '<iframe src="https://drive.google.com/file/d/' + id + '/preview" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>' +
               "</div>";
+
+            var checker = new Image();
+            checker.onerror = function() {
+                var el = document.getElementById(containerId);
+                if (el) el.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted small py-4">Không có video</div>';
+            };
+            checker.src = "https://drive.google.com/thumbnail?id=" + id + "&sz=w200";
+
             videoMount.appendChild(wrapper);
           });
         }

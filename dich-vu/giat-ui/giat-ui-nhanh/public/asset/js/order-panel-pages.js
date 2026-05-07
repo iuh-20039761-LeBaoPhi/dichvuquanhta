@@ -2246,18 +2246,24 @@
 
     if (anhIds.length > 0) {
       containerImages.className = "row g-2";
-      anhIds.forEach(function (id) {
+      anhIds.forEach(function (id, idx) {
         const previewUrl = "https://drive.google.com/file/d/" + id + "/preview";
         const fullUrl = "https://drive.google.com/file/d/" + id + "/view";
         const col = document.createElement("div");
         col.className = "col-4";
+        const containerId = "drive-img-" + id + "-" + idx;
         col.innerHTML =
-          '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm position-relative">' +
+          '<div id="' + containerId + '" class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm position-relative">' +
           '<iframe src="' + previewUrl + '" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>' +
-          '<a href="' + fullUrl + '" target="_blank" class="position-absolute top-0 end-0 m-1 btn btn-sm btn-dark opacity-50" style="padding: 2px 5px; font-size: 10px; z-index:10;" title="Mở trong tab mới">' +
-          '<i class="fas fa-external-link-alt"></i>' +
-          '</a>' +
           "</div>";
+
+        var checker = new Image();
+        checker.onerror = function() {
+            var el = document.getElementById(containerId);
+            if (el) el.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted small text-center px-1">Không có ảnh</div>';
+        };
+        checker.src = "https://drive.google.com/thumbnail?id=" + id + "&sz=w200";
+
         containerImages.appendChild(col);
       });
     } else {
@@ -2266,11 +2272,20 @@
     }
 
     if (videoIds.length > 0) {
-      videoIds.forEach((id) => {
+      videoIds.forEach((id, idx) => {
         const url = "https://drive.google.com/file/d/" + id + "/preview";
         const wrapper = document.createElement("div");
         wrapper.className = "ratio ratio-16x9 mb-2 border rounded overflow-hidden shadow-sm";
-        wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
+        const containerId = "drive-video-" + id + "-" + idx;
+        wrapper.innerHTML = `<div id="${containerId}" class="h-100"><iframe src="${url}" allow="autoplay" style="border:none; width:100%; height:100%;"></iframe></div>`;
+        
+        var checker = new Image();
+        checker.onerror = function() {
+            var el = document.getElementById(containerId);
+            if (el) el.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted small py-4">Không có video</div>';
+        };
+        checker.src = "https://drive.google.com/thumbnail?id=" + id + "&sz=w200";
+
         containerVideos.appendChild(wrapper);
       });
     } else {
@@ -2889,12 +2904,19 @@
           
           const wrapper = document.createElement("div");
           wrapper.className = "ratio ratio-1x1 mb-2 border rounded overflow-hidden shadow-sm position-relative";
+          const containerId = "drive-review-" + actor + "-" + index;
+          wrapper.id = containerId;
           wrapper.innerHTML = `
             <iframe src="${previewUrl}" style="border:0; width:100%; height:100%;" allow="autoplay" loading="lazy"></iframe>
-            <a href="${fullUrl}" target="_blank" class="position-absolute top-0 end-0 m-1 btn btn-sm btn-dark opacity-50" style="padding: 2px 5px; font-size: 10px;" title="Mở trong tab mới">
-              <i class="fas fa-external-link-alt"></i>
-            </a>
           `;
+
+          var checker = new Image();
+          checker.onerror = function() {
+              var el = document.getElementById(containerId);
+              if (el) el.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted small">Không có tệp</div>';
+          };
+          checker.src = "https://drive.google.com/thumbnail?id=" + item + "&sz=w200";
+
           grid.appendChild(wrapper);
           return;
         }
