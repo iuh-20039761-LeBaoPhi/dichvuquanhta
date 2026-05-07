@@ -103,13 +103,23 @@
       return leafletPromise;
     }
 
+    let isInitializing = false;
     function init() {
       if (map) {
         map.invalidateSize();
         return Promise.resolve();
       }
+      
+      if (isInitializing && leafletPromise) {
+        return leafletPromise.then(() => init());
+      }
 
+      isInitializing = true;
       return ensureLeaflet().then(() => {
+        if (map) {
+          isInitializing = false;
+          return;
+        }
         const mapEl = getFirstElementById(["osmMap", "mapPickerEl"]);
         if (!mapEl) return;
 
@@ -123,30 +133,20 @@
         map.on("click", function (e) {
           pick(e.latlng.lat, e.latlng.lng);
         });
+
+        isInitializing = false;
       });
     }
 
     function pick(lat, lng) {
-      if (map) {
-        if (marker) map.removeLayer(marker);
-        marker = L.marker([lat, lng]).addTo(map);
-        map.panTo([lat, lng]);
-      }
+      if (!map) return;
+
+      if (marker) map.removeLayer(marker);
+      marker = L.marker([lat, lng]).addTo(map);
+      map.panTo([lat, lng]);
 
       const addr = getAddressInput();
       if (!addr) return;
-
-      addr.dataset.lat = lat;
-      addr.dataset.lng = lng;
-
-      const latDisplay = document.getElementById("latDisplay");
-      const lngDisplay = document.getElementById("lngDisplay");
-      const toaDoHienThi = document.getElementById("toaDoHienThi");
-      if(latDisplay && lngDisplay && toaDoHienThi) {
-        latDisplay.innerText = `Lat: ${lat.toFixed(6)}`;
-        lngDisplay.innerText = `Lng: ${lng.toFixed(6)}`;
-        toaDoHienThi.style.setProperty('display', 'flex', 'important');
-      }
 
       addr.placeholder = "Đang tải địa chỉ...";
       addr.value = "";
@@ -163,11 +163,24 @@
 
           if (!data || !data.address) {
             addr.value = (data && data.display_name) || "";
-            addr.dispatchEvent(new Event("change", { bubbles: true }));
             return;
           }
 
           addr.value = buildDetailedAddress(data.address, data.display_name);
+          addr.dataset.lat = String(lat);
+          addr.dataset.lng = String(lng);
+          
+          const latDisplay = document.getElementById("latDisplay");
+          const lngDisplay = document.getElementById("lngDisplay");
+          const toaDoHienThi = document.getElementById("toaDoHienThi");
+          if (latDisplay && lngDisplay && toaDoHienThi) {
+            latDisplay.innerText = `Lat: ${Number(lat).toFixed(6)}`;
+            lngDisplay.innerText = `Lng: ${Number(lng).toFixed(6)}`;
+            toaDoHienThi.style.setProperty('display', 'flex', 'important');
+          }
+
+          addr.dataset.fromPick = "true";
+          addr.dispatchEvent(new Event("input", { bubbles: true }));
           addr.dispatchEvent(new Event("change", { bubbles: true }));
           if (addr.value) {
             if (currentPopup) map.closePopup(currentPopup);
@@ -176,13 +189,27 @@
               .setContent(`<small>${addr.value}</small>`);
             currentPopup.openOn(map);
           }
+          setTimeout(() => { addr.dataset.fromPick = "false"; }, 100);
         })
         .catch(() => {
           addr.placeholder = "Số nhà, đường, phường/xã, quận/huyện...";
-          addr.dataset.lat = lat;
-          addr.dataset.lng = lng;
           addr.value = `Vĩ độ ${lat.toFixed(6)}, Kinh độ ${lng.toFixed(6)}`;
+          addr.dataset.lat = String(lat);
+          addr.dataset.lng = String(lng);
+
+          const latDisplay = document.getElementById("latDisplay");
+          const lngDisplay = document.getElementById("lngDisplay");
+          const toaDoHienThi = document.getElementById("toaDoHienThi");
+          if (latDisplay && lngDisplay && toaDoHienThi) {
+            latDisplay.innerText = `Lat: ${Number(lat).toFixed(6)}`;
+            lngDisplay.innerText = `Lng: ${Number(lng).toFixed(6)}`;
+            toaDoHienThi.style.setProperty('display', 'flex', 'important');
+          }
+
+          addr.dataset.fromPick = "true";
+          addr.dispatchEvent(new Event("input", { bubbles: true }));
           addr.dispatchEvent(new Event("change", { bubbles: true }));
+          setTimeout(() => { addr.dataset.fromPick = "false"; }, 100);
         });
     }
 
@@ -285,17 +312,30 @@
      *   opts.autoOpen = true  → tự mở bản đồ nếu đang ẩn trước khi fetch (dùng khi điền tự động từ tài khoản)
      *   (mặc định)           → fetch ngay, setView, hiện popup (dùng khi người dùng bấm/blur)
      */
-    function lookup(query, { autoOpen = false, live = false } = {}) {
+    function lookup(query, { live = false } = {}) {
       if (!query || query.length < 5) return;
 
       // ── Hàm cập nhật marker & tọa độ sau khi có kết quả ──
       function _applyLocation(lat, lng, showPopup, popupText) {
         init().then(() => {
           if (!map) return;
-          if (live) {
-            map.panTo([lat, lng], { animate: true, duration: 0.5 });
+          
+          // Đảm bảo kích thước map chuẩn trước khi pan
+          map.invalidateSize();
+
+          const setViewAction = () => {
+            if (live) {
+              map.panTo([lat, lng], { animate: true, duration: 0.5 });
+            } else {
+              map.setView([lat, lng], 16, { animate: false });
+            }
+          };
+
+          // Nếu map vừa được tạo, đợi một chút để DOM ổn định
+          if (isInitializing) {
+             setTimeout(setViewAction, 100);
           } else {
-            map.setView([lat, lng], 16, { animate: false });
+             setViewAction();
           }
           if (marker) map.removeLayer(marker);
           if (currentPopup) map.closePopup(currentPopup);
@@ -309,11 +349,6 @@
               .setContent(popupContent);
             
             currentPopup.openOn(map);
-
-            // Dự phòng lần 2: Đảm bảo popup mở sau khi modal ổn định hoàn toàn
-            setTimeout(() => {
-              if (map && currentPopup) currentPopup.openOn(map);
-            }, 800);
           }
 
           // Cập nhật tọa độ hiển thị
@@ -388,11 +423,19 @@
           div.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            
+            // Đặt cờ hiệu để chặn sự kiện change/lookup thừa
+            addrEl.dataset.fromPick = "true";
             addrEl.value = item.display_name;
+            
             const lat = parseFloat(item.lat);
             const lng = parseFloat(item.lon);
+            
             _applyLocation(lat, lng, true, item.display_name); // Hiện popup với địa chỉ đầy đủ
             list.style.display = 'none';
+            
+            // Reset cờ hiệu sau một khoảng thời gian ngắn
+            setTimeout(() => { addrEl.dataset.fromPick = "false"; }, 500);
           });
 
           list.appendChild(div);
@@ -454,28 +497,6 @@
         return;
       }
 
-      // ── Chế độ AUTO-OPEN: mở bản đồ trước, rồi fetch ──
-      if (autoOpen) {
-        const box = getFirstElementById(['osmMapWrapper', 'mapPickerBox']);
-        const btn = document.getElementById('nutmobando');
-        if (box && (box.style.display === 'none' || box.style.display === '')) {
-          box.style.display = 'block';
-          if (btn) {
-            btn.innerHTML = '<i class="fas fa-times me-1"></i> Đóng bản đồ';
-            btn.classList.add('active');
-          }
-          setTimeout(() => {
-            init().then(() => {
-              if (map) map.invalidateSize();
-              _doFetch();
-            });
-          }, 300);
-        } else {
-          _doFetch();
-        }
-        return;
-      }
-
       // ── Chế độ THƯỜNG: fetch ngay ──
       _doFetch();
     }
@@ -526,17 +547,16 @@
       addrInput.dataset.lookupBound = "true";
 
       // Khi người dùng đang gõ → pan bản đồ theo real-time (chỉ khi bản đồ đang mở)
-      addrInput.addEventListener("input", function () {
+      addrInput.addEventListener("input", function (e) {
+        if (!e.isTrusted || this.dataset.fromPick === "true") return;
         mapPicker.lookup(this.value, { live: true });
       });
 
       addrInput.addEventListener("change", function (e) {
+        if (this.dataset.fromPick === "true") return;
+        // Chỉ thực hiện lookup khi người dùng tự nhập (tránh xung đột lúc mở form)
         if (e.isTrusted) {
-          // Người dùng tự nhập → chỉ lookup bình thường (không tự mở bản đồ)
           mapPicker.lookup(this.value);
-        } else {
-          // Điền tự động từ tài khoản → mở bản đồ và hiển thị vị trí
-          mapPicker.lookup(this.value, { autoOpen: true });
         }
       });
     }
