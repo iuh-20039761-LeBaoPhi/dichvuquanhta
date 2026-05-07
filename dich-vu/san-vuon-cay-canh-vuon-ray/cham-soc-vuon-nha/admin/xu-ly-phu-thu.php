@@ -33,17 +33,23 @@ function phu_thu_build_data(array $post): array
     ];
 
     if ($loai === 'le') {
-        $data['ngay']         = ($post['ngay'] !== '') ? (int) $post['ngay'] : null;
-        $data['thang']        = ($post['thang'] !== '') ? (int) $post['thang'] : null;
-        $data['nam']          = ($post['nam'] !== '') ? (int) $post['nam'] : null;
+        $ngay  = isset($post['ngay'])  && $post['ngay']  !== '' ? (int)$post['ngay']  : null;
+        $thang = isset($post['thang']) && $post['thang'] !== '' ? (int)$post['thang'] : null;
+        $nam   = isset($post['nam'])   && $post['nam']   !== '' ? (int)$post['nam']   : null;
+        // Validate ranges
+        $data['ngay']         = ($ngay  !== null && $ngay  >= 1  && $ngay  <= 31) ? $ngay  : null;
+        $data['thang']        = ($thang !== null && $thang >= 1  && $thang <= 12) ? $thang : null;
+        $data['nam']          = ($nam   !== null && $nam   >= 2000 && $nam <= 2100) ? $nam  : null;
         $data['gio_bat_dau']  = null;
         $data['gio_ket_thuc'] = null;
     } else {
         $data['ngay']         = null;
         $data['thang']        = null;
         $data['nam']          = null;
-        $data['gio_bat_dau']  = ($post['gio_bat_dau'] !== '') ? trim((string) $post['gio_bat_dau']) : null;
-        $data['gio_ket_thuc'] = ($post['gio_ket_thuc'] !== '') ? trim((string) $post['gio_ket_thuc']) : null;
+        $gioBatDau  = isset($post['gio_bat_dau'])  && $post['gio_bat_dau']  !== '' ? trim((string)$post['gio_bat_dau'])  : null;
+        $gioKetThuc = isset($post['gio_ket_thuc']) && $post['gio_ket_thuc'] !== '' ? trim((string)$post['gio_ket_thuc']) : null;
+        $data['gio_bat_dau']  = $gioBatDau;
+        $data['gio_ket_thuc'] = $gioKetThuc;
     }
 
     return $data;
@@ -62,7 +68,7 @@ if ($action === 'sua') {
     $data = phu_thu_build_data($_POST);
     if ($data['ten'] === '') phu_thu_redirect('Tên phụ thu không được trống.', false);
     $result = admin_api_update_table('phu_thu_dac_biet', $id, $data);
-    phu_thu_redirect($result['success'] ? 'Cập nhật thành công!' : $result['message'], $result['success'], 'edit_id=' . $id);
+    phu_thu_redirect($result['success'] ? 'Cập nhật thành công!' : $result['message'], $result['success'], $result['success'] ? '' : 'edit_id=' . $id);
 }
 
 if ($action === 'xoa') {

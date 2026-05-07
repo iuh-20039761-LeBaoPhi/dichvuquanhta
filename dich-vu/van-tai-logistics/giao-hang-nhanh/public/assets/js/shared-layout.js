@@ -321,6 +321,7 @@
         dashboard: `${projectBase}public/nha-cung-cap/dashboard-giaohang.html`,
         orders: `${projectBase}public/nha-cung-cap/don-hang-giaohang.html`,
         profile: `${projectBase}public/nha-cung-cap/ho-so-giaohang.html`,
+        vehicles: `${projectBase}public/nha-cung-cap/quan-ly-xe-giaohang.html`,
       },
     };
 
@@ -341,6 +342,12 @@
           group.profile,
           session,
         );
+        if (group.vehicles) {
+          group.vehicles = window.GiaoHangNhanhCore.appendAuthParamsToUrl(
+            group.vehicles,
+            session,
+          );
+        }
       });
     }
 
@@ -381,6 +388,11 @@
           href: accountLinks.provider.profile,
           icon: "fas fa-id-card",
           label: "Hồ sơ cá nhân",
+        },
+        {
+          href: accountLinks.provider.vehicles,
+          icon: "fas fa-truck-fast",
+          label: "Quản lý xe",
         },
       );
     }

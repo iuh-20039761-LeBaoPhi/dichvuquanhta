@@ -14,11 +14,19 @@
           orders: "don-hang-giaohang.html",
           detail: "chi-tiet-don-hang-giaohang.html",
           profile: "ho-so-giaohang.html",
+          vehicles: "quan-ly-xe-giaohang.html",
         };
 
   const storageKeys = {
     orders: "ghn-shipper-orders",
   };
+  const fallbackVehicleCatalog = [
+    { key: "xe_may", label: "Xe máy" },
+    { key: "xe_4_banh_nho", label: "Xe 4 bánh nhỏ" },
+    { key: "xe_4_banh_vua", label: "Xe 4 bánh vừa" },
+    { key: "xe_4_banh_lon", label: "Xe 4 bánh lớn" },
+  ];
+  let shipperVehicleCatalogPromise = null;
   const AUTO_CANCEL_REASON =
     "Đơn đã quá khung giờ lấy hàng mà chưa có shipper nhận.";
   const SERVICE_AUTO_CANCEL_FALLBACK_MINUTES = {
@@ -80,6 +88,153 @@
       return localAuth.normalizePhone(value);
     }
     return String(value || "").replace(/\D/g, "");
+  }
+
+  function normalizeVehicleKey(value) {
+    if (localAuth && typeof localAuth.normalizeVehicleKey === "function") {
+      return localAuth.normalizeVehicleKey(value);
+    }
+    return normalizeText(value).toLowerCase();
+  }
+
+  function getVehicleTypeLabel(value) {
+    if (localAuth && typeof localAuth.getVehicleTypeLabel === "function") {
+      return localAuth.getVehicleTypeLabel(value);
+    }
+    const normalizedKey = normalizeVehicleKey(value);
+    const matched = fallbackVehicleCatalog.find((item) => item.key === normalizedKey);
+    return matched?.label || normalizeText(value) || "Chưa cập nhật";
+  }
+
+  function pickPrimaryVehicle(vehicles) {
+    if (localAuth && typeof localAuth.pickPrimaryShipperVehicle === "function") {
+      return localAuth.pickPrimaryShipperVehicle(vehicles);
+    }
+    return (Array.isArray(vehicles) ? vehicles : [])[0] || null;
+  }
+
+  function resolveVehicleCatalogUrl() {
+    if (core.publicBasePath) {
+      return `${core.publicBasePath}data/pricing-data.json`;
+    }
+
+    const path = String(window.location.pathname || "").replace(/\\/g, "/");
+    const marker = "/giao-hang-nhanh/";
+    const markerIndex = path.toLowerCase().lastIndexOf(marker);
+    const projectBasePath =
+      markerIndex !== -1 ? path.slice(0, markerIndex + marker.length) : "/";
+    return `${projectBasePath}public/data/pricing-data.json`;
+  }
+
+  async function loadShipperVehicleCatalog() {
+    if (shipperVehicleCatalogPromise) return shipperVehicleCatalogPromise;
+
+    shipperVehicleCatalogPromise = (async () => {
+      try {
+        const response = await fetch(resolveVehicleCatalogUrl(), {
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const parsed = await response.json();
+        const sourceVehicles = Array.isArray(parsed?.phuong_tien)
+          ? parsed.phuong_tien
+          : [];
+        const catalog = sourceVehicles
+          .map((item) => {
+            const key = normalizeVehicleKey(item?.key);
+            if (!key || key === "auto") return null;
+            return {
+              key,
+              label: normalizeText(item?.label || item?.ten || getVehicleTypeLabel(key)),
+            };
+          })
+          .filter(Boolean);
+        return catalog.length ? catalog : fallbackVehicleCatalog;
+      } catch (error) {
+        console.warn("Không thể tải danh mục xe GHN từ pricing-data.json:", error);
+        return fallbackVehicleCatalog;
+      }
+    })();
+
+    return shipperVehicleCatalogPromise;
+  }
+
+  function getVehicleSummaryText(primaryVehicle, vehicles, fallbackValue = "") {
+    if (primaryVehicle) {
+      return `${primaryVehicle.ten_hien_thi} · ${getVehicleTypeLabel(primaryVehicle.loai_xe)}`;
+    }
+    if (Array.isArray(vehicles) && vehicles.length) {
+      return `${vehicles.length} xe đã cấu hình`;
+    }
+    return getVehicleTypeLabel(fallbackValue);
+  }
+
+  function buildVehicleSelectOptions(catalog, selectedKey) {
+    return (Array.isArray(catalog) ? catalog : fallbackVehicleCatalog)
+      .map((item) => {
+        const key = normalizeVehicleKey(item.key);
+        const selected = key === normalizeVehicleKey(selectedKey) ? "selected" : "";
+        return `<option value="${escapeHtml(key)}" ${selected}>${escapeHtml(item.label)}</option>`;
+      })
+      .join("");
+  }
+
+  function renderShipperVehicleCards(vehicles) {
+    const list = Array.isArray(vehicles) ? vehicles : [];
+    if (!list.length) {
+      return `
+        <div class="customer-empty">
+          Chưa có xe nào cho shipper này. Hãy thêm ít nhất 1 xe để nhận đơn đúng loại.
+        </div>
+      `;
+    }
+
+    return list
+      .map((vehicle) => {
+        const isActive = vehicle.trang_thai === "hoat_dong";
+        const vehicleTitle = vehicle.ten_hien_thi || getVehicleTypeLabel(vehicle.loai_xe);
+        return `
+          <article class="customer-profile-card vehicle-management-card">
+            <div class="vehicle-management-card-head">
+              <div>
+                <p class="vehicle-management-card-label">${escapeHtml(getVehicleTypeLabel(vehicle.loai_xe))}</p>
+                <h3 class="vehicle-management-card-plate">${escapeHtml(vehicle.bien_so || "Chưa có biển số")}</h3>
+              </div>
+              <div class="customer-active-filters vehicle-management-card-badges">
+                ${
+                  Number(vehicle.la_mac_dinh || 0) === 1
+                    ? '<span class="customer-chip customer-chip-muted">Mặc định</span>'
+                    : ""
+                }
+                <span class="customer-chip customer-chip-muted">${escapeHtml(isActive ? "Hoạt động" : "Tạm ngưng")}</span>
+              </div>
+            </div>
+            <div class="customer-profile-fact-list vehicle-management-facts">
+              <div><span>Tên gợi nhớ</span><strong>${escapeHtml(vehicleTitle)}</strong></div>
+              <div><span>Loại xe</span><strong>${escapeHtml(getVehicleTypeLabel(vehicle.loai_xe))}</strong></div>
+              <div><span>Trạng thái</span><strong>${escapeHtml(isActive ? "Hoạt động" : "Tạm ngưng")}</strong></div>
+            </div>
+            <div class="customer-inline-actions vehicle-management-actions">
+              <button type="button" class="customer-btn customer-btn-ghost customer-btn-sm" data-vehicle-action="edit" data-vehicle-id="${escapeHtml(vehicle.id)}">
+                Sửa
+              </button>
+              <button type="button" class="customer-btn customer-btn-ghost customer-btn-sm" data-vehicle-action="default" data-vehicle-id="${escapeHtml(vehicle.id)}">
+                Đặt mặc định
+              </button>
+              <button type="button" class="customer-btn customer-btn-ghost customer-btn-sm" data-vehicle-action="toggle-status" data-vehicle-id="${escapeHtml(vehicle.id)}" data-next-status="${escapeHtml(isActive ? "tam_ngung" : "hoat_dong")}">
+                ${isActive ? "Tạm ngưng" : "Kích hoạt"}
+              </button>
+              <button type="button" class="customer-btn customer-btn-danger customer-btn-sm" data-vehicle-action="delete" data-vehicle-id="${escapeHtml(vehicle.id)}">
+                Xóa
+              </button>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
   }
 
   function hasProviderCapability(user) {
@@ -771,6 +926,9 @@
             record.vehicle_type ||
             session?.vehicle_type ||
             "",
+          vehicle_type_label: getVehicleTypeLabel(
+            record.vehicle_type || session?.vehicle_type || session?.loai_phuong_tien || "",
+          ),
           shipper_vehicle:
             record.shipper_vehicle ||
             record.vehicle_type ||
@@ -798,8 +956,11 @@
     const vehicle =
       session?.vehicle_type ||
       session?.loai_phuong_tien ||
-      session?.shipper_vehicle ||
       "";
+    const vehicleLabel =
+      session?.vehicle_type_label ||
+      session?.loai_phuong_tien_label ||
+      getVehicleTypeLabel(vehicle);
 
     return {
       shipper_id: session?.id || session?.username || "",
@@ -808,7 +969,8 @@
       phone: session?.phone || session?.so_dien_thoai || "",
       email: session?.email || "",
       vehicle_type: vehicle,
-      shipper_vehicle: vehicle,
+      vehicle_type_label: vehicleLabel,
+      shipper_vehicle: session?.shipper_vehicle || vehicleLabel,
       attachments: [],
       shipper_reports: [],
       feedback_media: [],
@@ -1216,6 +1378,17 @@
     );
   }
 
+  function getBodyValue(body, fieldName) {
+    if (!body) return "";
+    if (typeof FormData !== "undefined" && body instanceof FormData) {
+      return body.get(fieldName);
+    }
+    if (typeof body === "object") {
+      return body[fieldName];
+    }
+    return "";
+  }
+
   async function requestLocalData(action, options = {}) {
     const session = getCurrentSessionUser();
 
@@ -1322,6 +1495,11 @@
 
     if (action === "profile") {
       const remoteProfile = await fetchCurrentKrudShipper(session).catch(() => null);
+      const vehicles = localAuth && typeof localAuth.listKrudShipperVehicles === "function"
+        ? await localAuth.listKrudShipperVehicles(session.id).catch(() => [])
+        : [];
+      const vehicleCatalog = await loadShipperVehicleCatalog();
+      const primaryVehicle = pickPrimaryVehicle(vehicles);
       if (remoteProfile) {
         updateAuthStorage((currentUser) => ({
           ...currentUser,
@@ -1353,14 +1531,33 @@
               currentUser.address,
           ),
           vehicle_type: normalizeText(
-            remoteProfile.vehicle_type ||
+            primaryVehicle?.loai_xe ||
+              remoteProfile.vehicle_type ||
               remoteProfile.loai_phuong_tien ||
               currentUser.vehicle_type,
           ),
           loai_phuong_tien: normalizeText(
-            remoteProfile.loai_phuong_tien ||
+            primaryVehicle?.loai_xe ||
+              remoteProfile.loai_phuong_tien ||
               remoteProfile.vehicle_type ||
               currentUser.loai_phuong_tien,
+          ),
+          vehicle_type_label: getVehicleTypeLabel(
+            primaryVehicle?.loai_xe ||
+              remoteProfile.vehicle_type ||
+              remoteProfile.loai_phuong_tien ||
+              currentUser.vehicle_type,
+          ),
+          loai_phuong_tien_label: getVehicleTypeLabel(
+            primaryVehicle?.loai_xe ||
+              remoteProfile.loai_phuong_tien ||
+              remoteProfile.vehicle_type ||
+              currentUser.loai_phuong_tien,
+          ),
+          shipper_vehicle: normalizeText(
+            primaryVehicle?.ten_hien_thi ||
+              currentUser.shipper_vehicle ||
+              getVehicleTypeLabel(primaryVehicle?.loai_xe),
           ),
           trangthai: normalizeText(
             remoteProfile.trangthai ||
@@ -1429,11 +1626,30 @@
             latestSession.address ||
             "",
           loai_phuong_tien:
+            primaryVehicle?.loai_xe ||
             remoteProfile?.loai_phuong_tien ||
             remoteProfile?.vehicle_type ||
             latestSession.vehicle_type ||
             latestSession.loai_phuong_tien ||
             "",
+          vehicle_type:
+            primaryVehicle?.loai_xe ||
+            remoteProfile?.vehicle_type ||
+            remoteProfile?.loai_phuong_tien ||
+            latestSession.vehicle_type ||
+            latestSession.loai_phuong_tien ||
+            "",
+          vehicle_type_label: getVehicleTypeLabel(
+            primaryVehicle?.loai_xe ||
+              remoteProfile?.vehicle_type ||
+              remoteProfile?.loai_phuong_tien ||
+              latestSession.vehicle_type ||
+              latestSession.loai_phuong_tien,
+          ),
+          shipper_vehicle:
+            primaryVehicle?.ten_hien_thi ||
+            latestSession.shipper_vehicle ||
+            getVehicleTypeLabel(primaryVehicle?.loai_xe),
           trangthai:
             remoteProfile?.trangthai ||
             remoteProfile?.trang_thai ||
@@ -1474,7 +1690,59 @@
             latestSession.created_at ||
             new Date().toISOString(),
         },
+        vehicles,
+        primary_vehicle: primaryVehicle,
+        vehicle_catalog: vehicleCatalog,
         stats,
+      };
+    }
+
+    if (action === "save-vehicle") {
+      if (!localAuth) {
+        throw new Error("Hệ thống tài khoản xe chưa sẵn sàng.");
+      }
+      const body = options.body;
+      const vehicleId = normalizeText(
+        getBodyValue(body, "vehicle_id") || getBodyValue(body, "id") || "",
+      );
+      const payload = {
+        ten_hien_thi: String(getBodyValue(body, "ten_hien_thi") || "").trim(),
+        bien_so: String(getBodyValue(body, "bien_so") || getBodyValue(body, "license_plate") || "").trim(),
+        loai_xe: String(getBodyValue(body, "loai_xe") || "").trim(),
+        trang_thai: String(getBodyValue(body, "trang_thai") || "hoat_dong").trim(),
+        la_mac_dinh: getBodyValue(body, "la_mac_dinh"),
+      };
+
+      const result = vehicleId
+        ? await localAuth.updateKrudShipperVehicle(vehicleId, session.id, payload)
+        : await localAuth.createKrudShipperVehicle(session.id, payload);
+
+      const latestSession = getCurrentSessionUser() || session;
+      return {
+        status: "success",
+        vehicle: result?.vehicle || null,
+        vehicles: result?.vehicles || [],
+        primary_vehicle: pickPrimaryVehicle(result?.vehicles || []),
+        session: latestSession,
+      };
+    }
+
+    if (action === "delete-vehicle") {
+      if (!localAuth) {
+        throw new Error("Hệ thống tài khoản xe chưa sẵn sàng.");
+      }
+      const body = options.body;
+      const vehicleId = normalizeText(
+        getBodyValue(body, "vehicle_id") || getBodyValue(body, "id") || options.vehicleId || "",
+      );
+      if (!vehicleId) {
+        throw new Error("Thiếu mã xe để xóa.");
+      }
+      const result = await localAuth.deleteKrudShipperVehicle(vehicleId, session.id);
+      return {
+        status: "success",
+        vehicles: result?.vehicles || [],
+        primary_vehicle: pickPrimaryVehicle(result?.vehicles || []),
       };
     }
 
@@ -1485,9 +1753,6 @@
       const email = String(formData?.get("email") || session.email || "").trim();
       const address = String(
         formData?.get("dia_chi") || session.address || session.dia_chi || "",
-      ).trim();
-      const vehicleType = String(
-        formData?.get("loai_phuong_tien") || "",
       ).trim();
       const safeToken = (value, fallback = "unknown") =>
         String(value == null ? "" : value)
@@ -1572,8 +1837,6 @@
             email,
             address,
             dia_chi: address,
-            vehicle_type: vehicleType,
-            loai_phuong_tien: vehicleType,
             link_avatar: avatarLink || session.link_avatar || "",
             link_cccd_truoc: cccdFrontLink || session.link_cccd_truoc || "",
             link_cccd_sau: cccdBackLink || session.link_cccd_sau || "",
@@ -1594,8 +1857,6 @@
         email,
         address,
         dia_chi: address,
-        vehicle_type: vehicleType,
-        loai_phuong_tien: vehicleType,
         link_avatar: avatarLink || currentUser.link_avatar || "",
         link_cccd_truoc: cccdFrontLink || currentUser.link_cccd_truoc || "",
         link_cccd_sau: cccdBackLink || currentUser.link_cccd_sau || "",
@@ -1701,6 +1962,7 @@
       '<li><a href="../khach-hang/danh-sach-don-hang-giaohang.html"><i class="fas fa-box"></i> Đơn hàng của tôi</a></li>',
       `<li><a href="${routes.orders}"><i class="fas fa-clipboard-list"></i> Đơn hàng của khách</a></li>`,
       `<li><a href="${routes.profile}"><i class="fas fa-id-card"></i> Hồ sơ cá nhân</a></li>`,
+      `<li><a href="${routes.vehicles}"><i class="fas fa-truck-fast"></i> Quản lý xe</a></li>`,
     ];
 
     if (loginItem) {
@@ -2032,17 +2294,384 @@
     }
   }
 
+  async function initVehicles() {
+    renderLoading("Đang tải danh sách xe của shipper...");
+    const data = await portalApiRequest("profile");
+    const { content } = getPageRoot();
+    const profile = data.profile || {};
+    const stats = data.stats || {};
+    const vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
+    const primaryVehicle = data.primary_vehicle || pickPrimaryVehicle(vehicles);
+    const vehicleCatalog =
+      Array.isArray(data.vehicle_catalog) && data.vehicle_catalog.length
+        ? data.vehicle_catalog
+        : fallbackVehicleCatalog;
+    const name = profile.ho_ten || profile.fullname || "Nhà cung cấp";
+    const phone = profile.so_dien_thoai || profile.phone || "Chưa cập nhật";
+    const avatarSrc = resolveProfileMediaSource(
+      profile.link_anh_dai_dien ||
+        profile.link_avatar ||
+        profile.avatar ||
+        profile.avatar_name ||
+        profile.avatartenfile,
+    );
+    const statusMeta = getProfileStatusMeta(profile);
+    const defaultVehicleText = primaryVehicle?.ten_hien_thi || "Chưa cấu hình";
+    const activeVehicles = vehicles.filter((item) => item?.trang_thai === "hoat_dong").length;
+    const pausedVehicles = Math.max(vehicles.length - activeVehicles, 0);
+
+    content.innerHTML = `
+      <section class="customer-portal-profile customer-portal-profile-rich">
+        <div class="customer-profile-hero">
+          <div class="customer-profile-hero-main">
+            <div class="customer-profile-avatar-wrapper customer-profile-avatar-wrapper-rich">
+              ${
+                avatarSrc
+                  ? `<img class="customer-profile-avatar-image" src="${escapeHtml(avatarSrc)}" alt="${escapeHtml(name)}" />`
+                  : `<div class="customer-profile-avatar-large">${escapeHtml(String(name || "N").trim().charAt(0).toUpperCase() || "N")}</div>`
+              }
+            </div>
+            <div class="customer-profile-hero-info">
+              <p class="customer-profile-eyebrow">Quản lý xe nhận đơn</p>
+              <h2>${escapeHtml(name)}</h2>
+            </div>
+          </div>
+          <div class="customer-profile-hero-actions">
+            <span class="customer-profile-status-badge ${escapeHtml(statusMeta.className)}">${escapeHtml(statusMeta.label)}</span>
+            <p class="customer-profile-hero-note">${escapeHtml(statusMeta.note)}</p>
+          </div>
+          </div>
+
+        <div class="vehicle-management-summary">
+          <article class="vehicle-management-metric">
+            <span>Tổng số xe</span>
+            <strong>${formatNumber(vehicles.length)}</strong>
+          </article>
+          <article class="vehicle-management-metric">
+            <span>Xe hoạt động</span>
+            <strong>${formatNumber(activeVehicles)}</strong>
+          </article>
+          <article class="vehicle-management-metric">
+            <span>Xe tạm ngưng</span>
+            <strong>${formatNumber(pausedVehicles)}</strong>
+          </article>
+          <article class="vehicle-management-metric">
+            <span>Xe mặc định</span>
+            <strong>${primaryVehicle ? "1" : "0"}</strong>
+          </article>
+        </div>
+
+        <div class="vehicle-management-grid">
+          <div class="vehicle-management-form-column">
+            <article class="customer-profile-card">
+              <div class="customer-profile-card-head">
+                <i class="fas fa-truck-fast"></i>
+                <h3>Quản lý xe nhận đơn</h3>
+              </div>
+              <p class="customer-panel-subtext">
+                Thêm các xe bạn dùng để nhận đơn. Xe mặc định sẽ được ưu tiên khi nhận đơn.
+              </p>
+              <form id="shipper-vehicle-form" class="customer-form-stack">
+                <input type="hidden" name="vehicle_id" value="" />
+                <div class="customer-profile-form-grid">
+                  <div class="customer-form-group">
+                    <span>Tên gợi nhớ</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-tag"></i>
+                      <input name="ten_hien_thi" required placeholder="Ví dụ: Xe nội thành, Xe dự phòng..." />
+                    </div>
+                  </div>
+                  <div class="customer-form-group">
+                    <span>Biển số xe</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-id-card"></i>
+                      <input name="bien_so" required placeholder="Ví dụ: 51H-123.45" />
+                    </div>
+                  </div>
+                  <div class="customer-form-group">
+                    <span>Loại xe</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-truck"></i>
+                      <select name="loai_xe" required>
+                        ${buildVehicleSelectOptions(vehicleCatalog, primaryVehicle?.loai_xe || profile.loai_phuong_tien || profile.vehicle_type || "xe_may")}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="customer-form-group customer-form-group-vehicle-status">
+                    <span>Trạng thái</span>
+                    <div class="customer-form-field">
+                      <i class="fas fa-signal"></i>
+                      <select name="trang_thai">
+                        <option value="hoat_dong">Hoạt động</option>
+                        <option value="tam_ngung">Tạm ngưng</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <label class="customer-vehicle-form-default-toggle">
+                  <input type="checkbox" name="la_mac_dinh" value="1" ${vehicles.length ? "" : "checked"} />
+                  Đặt làm xe mặc định
+                </label>
+                <div class="customer-inline-actions">
+                  <button class="customer-btn customer-btn-primary" type="submit" id="shipper-vehicle-submit-btn">
+                    <i class="fas fa-plus"></i> Thêm xe
+                  </button>
+                  <button class="customer-btn customer-btn-ghost" type="button" id="shipper-vehicle-cancel-btn" hidden>
+                    Hủy sửa
+                  </button>
+                </div>
+              </form>
+              <p class="customer-form-helper customer-form-helper-compact">
+                <i class="fas fa-circle-info"></i> Bấm <strong>Sửa</strong> ở danh sách bên phải để nạp lại dữ liệu vào biểu mẫu này.
+              </p>
+            </article>
+          </div>
+          <div class="vehicle-management-list-column">
+            <article class="customer-profile-card vehicle-management-list-card">
+              <div class="customer-profile-card-head">
+                <i class="fas fa-list-check"></i>
+                <h3>Danh sách xe đã khai báo</h3>
+              </div>
+              <div class="vehicle-management-toolbar">
+                <label class="vehicle-management-search">
+                  <i class="fas fa-search"></i>
+                  <input id="shipper-vehicle-search" type="search" placeholder="Tìm theo biển số hoặc tên gợi nhớ" />
+                </label>
+                <label class="vehicle-management-filter">
+                  <span>Lọc</span>
+                  <select id="shipper-vehicle-status-filter">
+                    <option value="all">Tất cả</option>
+                    <option value="hoat_dong">Hoạt động</option>
+                    <option value="tam_ngung">Tạm ngưng</option>
+                    <option value="default">Xe mặc định</option>
+                  </select>
+                </label>
+              </div>
+              <div class="vehicle-management-list-meta">
+                <strong id="shipper-vehicle-list-count">${formatNumber(vehicles.length)} xe</strong>
+              </div>
+              <div class="vehicle-management-list-shell">
+                <div id="shipper-vehicle-list" class="customer-form-stack vehicle-management-list">
+                  ${renderShipperVehicleCards(vehicles)}
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    `;
+
+    const vehicleForm = document.getElementById("shipper-vehicle-form");
+    const vehicleList = document.getElementById("shipper-vehicle-list");
+    if (!vehicleForm || !vehicleList) return;
+
+    const vehicleIndex = new Map(
+      vehicles.map((item) => [String(item.id || ""), item]),
+    );
+    const vehicleIdInput = vehicleForm.querySelector('input[name="vehicle_id"]');
+    const vehicleNameInput = vehicleForm.querySelector('input[name="ten_hien_thi"]');
+    const vehiclePlateInput = vehicleForm.querySelector('input[name="bien_so"]');
+    const vehicleTypeSelect = vehicleForm.querySelector('select[name="loai_xe"]');
+    const vehicleStatusSelect = vehicleForm.querySelector('select[name="trang_thai"]');
+    const vehicleDefaultInput = vehicleForm.querySelector('input[name="la_mac_dinh"]');
+    const vehicleSubmitButton = document.getElementById("shipper-vehicle-submit-btn");
+    const vehicleCancelButton = document.getElementById("shipper-vehicle-cancel-btn");
+    const vehicleSearchInput = document.getElementById("shipper-vehicle-search");
+    const vehicleStatusFilter = document.getElementById("shipper-vehicle-status-filter");
+    const vehicleCountNode = document.getElementById("shipper-vehicle-list-count");
+
+    const applyVehicleFilters = () => {
+      const searchText = String(vehicleSearchInput?.value || "").trim().toLowerCase();
+      const statusFilter = String(vehicleStatusFilter?.value || "all").trim();
+      const filteredVehicles = vehicles.filter((vehicle) => {
+        const matchSearch =
+          !searchText ||
+          [
+            vehicle.ten_hien_thi,
+            vehicle.bien_so,
+            getVehicleTypeLabel(vehicle.loai_xe),
+          ]
+            .join(" ")
+            .toLowerCase()
+            .includes(searchText);
+        let matchStatus = true;
+        if (statusFilter === "hoat_dong" || statusFilter === "tam_ngung") {
+          matchStatus = String(vehicle.trang_thai || "") === statusFilter;
+        } else if (statusFilter === "default") {
+          matchStatus = Number(vehicle.la_mac_dinh || 0) === 1;
+        }
+        return matchSearch && matchStatus;
+      });
+      if (vehicleCountNode) {
+        vehicleCountNode.textContent =
+          filteredVehicles.length === vehicles.length
+            ? `${formatNumber(vehicles.length)} xe`
+            : `${formatNumber(filteredVehicles.length)}/${formatNumber(vehicles.length)} xe`;
+      }
+      vehicleList.innerHTML = renderShipperVehicleCards(filteredVehicles);
+    };
+
+    const resetVehicleForm = () => {
+      vehicleForm.reset();
+      if (vehicleIdInput) vehicleIdInput.value = "";
+      if (vehicleTypeSelect) {
+        vehicleTypeSelect.value = normalizeVehicleKey(
+          primaryVehicle?.loai_xe ||
+            profile.loai_phuong_tien ||
+            profile.vehicle_type ||
+            "xe_may",
+        );
+      }
+      if (vehicleStatusSelect) {
+        vehicleStatusSelect.value = "hoat_dong";
+      }
+      if (vehicleDefaultInput) {
+        vehicleDefaultInput.checked = vehicles.length === 0;
+      }
+      if (vehicleSubmitButton) {
+        vehicleSubmitButton.innerHTML = '<i class="fas fa-plus"></i> Thêm xe';
+      }
+      if (vehicleCancelButton) {
+        vehicleCancelButton.hidden = true;
+      }
+    };
+
+    applyVehicleFilters();
+    vehicleSearchInput?.addEventListener("input", applyVehicleFilters);
+    vehicleStatusFilter?.addEventListener("change", applyVehicleFilters);
+
+    vehicleForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      try {
+        if (vehicleSubmitButton) {
+          vehicleSubmitButton.disabled = true;
+          vehicleSubmitButton.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Đang lưu xe';
+        }
+        await portalApiRequest("save-vehicle", {
+          method: "POST",
+          body: new FormData(vehicleForm),
+        });
+        showToast(
+          vehicleIdInput?.value
+            ? "Đã cập nhật xe của shipper."
+            : "Đã thêm xe mới cho shipper.",
+          "success",
+        );
+        resetVehicleForm();
+        await initVehicles();
+      } catch (error) {
+        showToast(error.message || "Không thể lưu xe lúc này.", "error");
+      } finally {
+        if (vehicleSubmitButton) {
+          vehicleSubmitButton.disabled = false;
+          if (!vehicleIdInput?.value) {
+            vehicleSubmitButton.innerHTML = '<i class="fas fa-plus"></i> Thêm xe';
+          }
+        }
+      }
+    });
+
+    vehicleCancelButton?.addEventListener("click", () => {
+      resetVehicleForm();
+    });
+
+    vehicleList.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-vehicle-action]");
+      if (!button) return;
+      const vehicleId = String(button.dataset.vehicleId || "");
+      const actionName = String(button.dataset.vehicleAction || "");
+      const vehicle = vehicleIndex.get(vehicleId);
+      if (!vehicle) {
+        showToast("Không tìm thấy xe để xử lý.", "error");
+        return;
+      }
+
+      if (actionName === "edit") {
+        if (vehicleIdInput) vehicleIdInput.value = vehicle.id || "";
+        if (vehicleNameInput) vehicleNameInput.value = vehicle.ten_hien_thi || "";
+        if (vehiclePlateInput) vehiclePlateInput.value = vehicle.bien_so || "";
+        if (vehicleTypeSelect) vehicleTypeSelect.value = normalizeVehicleKey(vehicle.loai_xe);
+        if (vehicleStatusSelect) vehicleStatusSelect.value = vehicle.trang_thai || "hoat_dong";
+        if (vehicleDefaultInput) vehicleDefaultInput.checked = Number(vehicle.la_mac_dinh || 0) === 1;
+        if (vehicleSubmitButton) {
+          vehicleSubmitButton.innerHTML = '<i class="fas fa-save"></i> Cập nhật xe';
+        }
+        if (vehicleCancelButton) {
+          vehicleCancelButton.hidden = false;
+        }
+        vehicleNameInput?.focus();
+        return;
+      }
+
+      try {
+        if (actionName === "delete") {
+          const confirmed = window.confirm(
+            `Xóa xe "${vehicle.ten_hien_thi}" khỏi danh sách nhận đơn?`,
+          );
+          if (!confirmed) return;
+          await portalApiRequest("delete-vehicle", {
+            method: "POST",
+            body: { vehicle_id: vehicle.id },
+          });
+          showToast("Đã xóa xe khỏi danh sách shipper.", "success");
+          await initVehicles();
+          return;
+        }
+
+        if (actionName === "default") {
+          await portalApiRequest("save-vehicle", {
+            method: "POST",
+            body: {
+              vehicle_id: vehicle.id,
+              la_mac_dinh: 1,
+            },
+          });
+          showToast("Đã đổi xe mặc định.", "success");
+          await initVehicles();
+          return;
+        }
+
+        if (actionName === "toggle-status") {
+          await portalApiRequest("save-vehicle", {
+            method: "POST",
+            body: {
+              vehicle_id: vehicle.id,
+              trang_thai: button.dataset.nextStatus || "hoat_dong",
+            },
+          });
+          showToast("Đã cập nhật trạng thái xe.", "success");
+          await initVehicles();
+        }
+      } catch (error) {
+        showToast(error.message || "Không thể cập nhật xe lúc này.", "error");
+      }
+    });
+  }
+
   async function initProfile() {
     renderLoading("Đang tải hồ sơ nhà cung cấp...");
     const data = await portalApiRequest("profile");
     const { content } = getPageRoot();
     const profile = data.profile || {};
     const stats = data.stats || {};
+    const vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
+    const primaryVehicle = data.primary_vehicle || pickPrimaryVehicle(vehicles);
+    const vehicleCatalog =
+      Array.isArray(data.vehicle_catalog) && data.vehicle_catalog.length
+        ? data.vehicle_catalog
+        : fallbackVehicleCatalog;
     const name = profile.ho_ten || profile.fullname || "Nhà cung cấp";
     const phone = profile.so_dien_thoai || profile.phone || "Chưa cập nhật";
     const email = profile.email || "Chưa cập nhật email";
-    const vehicleType =
-      profile.loai_phuong_tien || profile.vehicle_type || "Chưa cập nhật";
+    const hasConfiguredVehicles = vehicles.length > 0;
+    const defaultVehicleText = hasConfiguredVehicles
+      ? getVehicleSummaryText(primaryVehicle, vehicles, "")
+      : "Chưa cấu hình";
+    const activeVehicles = vehicles.filter(
+      (item) => item?.trang_thai === "hoat_dong",
+    ).length;
+    const pausedVehicles = Math.max(vehicles.length - activeVehicles, 0);
     const initial = getProfileInitial(name);
     const statusMeta = getProfileStatusMeta(profile);
     const createdAtLabel = profile.created_at
@@ -2081,8 +2710,6 @@
               <h2>${escapeHtml(name)}</h2>
               <div class="customer-profile-meta-list">
                 <span><i class="fas fa-id-badge"></i> ${escapeHtml(profile.username || "Shipper")}</span>
-                <span><i class="fas fa-phone"></i> ${escapeHtml(phone)}</span>
-                <span><i class="fas fa-truck-fast"></i> ${escapeHtml(vehicleType)}</span>
               </div>
             </div>
           </div>
@@ -2127,10 +2754,10 @@
                     </div>
                   </div>
                   <div class="customer-form-group">
-                    <span>Loại phương tiện</span>
+                    <span>Xe mặc định</span>
                     <div class="customer-form-field">
                       <i class="fas fa-truck"></i>
-                      <input name="loai_phuong_tien" value="${escapeHtml(profile.loai_phuong_tien || profile.vehicle_type || "")}" placeholder="Ví dụ: Xe máy, xe tải nhỏ..." />
+                      <input value="${escapeHtml(defaultVehicleText)}" readonly disabled aria-readonly="true" />
                     </div>
                   </div>
                   <div class="customer-form-group customer-form-group-wide">
@@ -2142,7 +2769,7 @@
                   </div>
                 </div>
                 <p class="customer-form-helper customer-form-helper-compact">
-                  <i class="fas fa-circle-info"></i> Số điện thoại là định danh tài khoản tài xế, hiện không thể chỉnh sửa tại đây.
+                  <i class="fas fa-circle-info"></i> Số điện thoại là định danh tài khoản tài xế. Xe nhận đơn được quản lý ở danh sách riêng bên dưới.
                 </p>
               </article>
 
@@ -2205,6 +2832,21 @@
                 </div>
               </article>
             </form>
+
+            <article class="customer-profile-card">
+              <div class="customer-profile-card-head">
+                <i class="fas fa-truck-fast"></i>
+                <h3>Quản lý xe nhận đơn</h3>
+              </div>
+              <p class="customer-panel-subtext">
+                Danh sách xe nhận đơn đã được tách sang trang riêng để bạn dễ thêm xe, cập nhật trạng thái và đổi xe mặc định.
+              </p>
+              <div class="customer-inline-actions">
+                <a class="customer-btn customer-btn-primary" href="${routes.vehicles}">
+                  <i class="fas fa-truck-fast"></i> Mở trang quản lý xe
+                </a>
+              </div>
+            </article>
           </div>
 
           <aside class="customer-profile-side-column">
@@ -2223,12 +2865,13 @@
             <article class="customer-profile-card">
               <div class="customer-profile-card-head">
                 <i class="fas fa-route"></i>
-                <h3>Tóm tắt phương tiện</h3>
+                <h3>Tình trạng xe</h3>
               </div>
               <div class="customer-profile-fact-list">
-                <div><span>Trạng thái</span><strong>${escapeHtml(statusMeta.label)}</strong></div>
-                <div><span>Loại phương tiện</span><strong>${escapeHtml(vehicleType)}</strong></div>
-                <div><span>Email</span><strong>${escapeHtml(email)}</strong></div>
+                <div><span>Xe mặc định</span><strong>${escapeHtml(defaultVehicleText)}</strong></div>
+                <div><span>Tổng số xe</span><strong>${escapeHtml(String(vehicles.length))}</strong></div>
+                <div><span>Xe hoạt động</span><strong>${escapeHtml(String(activeVehicles))}</strong></div>
+                <div><span>Xe tạm ngưng</span><strong>${escapeHtml(String(pausedVehicles))}</strong></div>
               </div>
             </article>
 
@@ -2323,6 +2966,156 @@
       });
     }
 
+    const vehicleForm = document.getElementById("shipper-vehicle-form");
+    const vehicleList = document.getElementById("shipper-vehicle-list");
+    if (vehicleForm && vehicleList) {
+      const vehicleIndex = new Map(
+        vehicles.map((item) => [String(item.id || ""), item]),
+      );
+      const vehicleIdInput = vehicleForm.querySelector('input[name="vehicle_id"]');
+      const vehicleNameInput = vehicleForm.querySelector('input[name="ten_hien_thi"]');
+      const vehiclePlateInput = vehicleForm.querySelector('input[name="bien_so"]');
+      const vehicleTypeSelect = vehicleForm.querySelector('select[name="loai_xe"]');
+      const vehicleStatusSelect = vehicleForm.querySelector('select[name="trang_thai"]');
+      const vehicleDefaultInput = vehicleForm.querySelector('input[name="la_mac_dinh"]');
+      const vehicleSubmitButton = document.getElementById("shipper-vehicle-submit-btn");
+      const vehicleCancelButton = document.getElementById("shipper-vehicle-cancel-btn");
+
+      const resetVehicleForm = () => {
+        vehicleForm.reset();
+        if (vehicleIdInput) vehicleIdInput.value = "";
+        if (vehicleTypeSelect) {
+          vehicleTypeSelect.value = normalizeVehicleKey(
+            primaryVehicle?.loai_xe ||
+              profile.loai_phuong_tien ||
+              profile.vehicle_type ||
+              "xe_may",
+          );
+        }
+        if (vehicleStatusSelect) {
+          vehicleStatusSelect.value = "hoat_dong";
+        }
+        if (vehicleDefaultInput) {
+          vehicleDefaultInput.checked = vehicles.length === 0;
+        }
+        if (vehicleSubmitButton) {
+          vehicleSubmitButton.innerHTML = '<i class="fas fa-plus"></i> Thêm xe';
+        }
+        if (vehicleCancelButton) {
+          vehicleCancelButton.hidden = true;
+        }
+      };
+
+      vehicleForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+          if (vehicleSubmitButton) {
+            vehicleSubmitButton.disabled = true;
+            vehicleSubmitButton.innerHTML =
+              '<i class="fas fa-spinner fa-spin"></i> Đang lưu xe';
+          }
+          const result = await portalApiRequest("save-vehicle", {
+            method: "POST",
+            body: new FormData(vehicleForm),
+          });
+          showToast(
+            vehicleIdInput?.value
+              ? "Đã cập nhật xe của shipper."
+              : "Đã thêm xe mới cho shipper.",
+            "success",
+          );
+          resetVehicleForm();
+          await initProfile();
+          return result;
+        } catch (error) {
+          showToast(error.message || "Không thể lưu xe lúc này.", "error");
+        } finally {
+          if (vehicleSubmitButton) {
+            vehicleSubmitButton.disabled = false;
+            if (!vehicleIdInput?.value) {
+              vehicleSubmitButton.innerHTML = '<i class="fas fa-plus"></i> Thêm xe';
+            }
+          }
+        }
+      });
+
+      vehicleCancelButton?.addEventListener("click", () => {
+        resetVehicleForm();
+      });
+
+      vehicleList.addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-vehicle-action]");
+        if (!button) return;
+        const vehicleId = String(button.dataset.vehicleId || "");
+        const actionName = String(button.dataset.vehicleAction || "");
+        const vehicle = vehicleIndex.get(vehicleId);
+        if (!vehicle) {
+          showToast("Không tìm thấy xe để xử lý.", "error");
+          return;
+        }
+
+        if (actionName === "edit") {
+          if (vehicleIdInput) vehicleIdInput.value = vehicle.id || "";
+          if (vehicleNameInput) vehicleNameInput.value = vehicle.ten_hien_thi || "";
+          if (vehiclePlateInput) vehiclePlateInput.value = vehicle.bien_so || "";
+          if (vehicleTypeSelect) vehicleTypeSelect.value = normalizeVehicleKey(vehicle.loai_xe);
+          if (vehicleStatusSelect) vehicleStatusSelect.value = vehicle.trang_thai || "hoat_dong";
+          if (vehicleDefaultInput) vehicleDefaultInput.checked = Number(vehicle.la_mac_dinh || 0) === 1;
+          if (vehicleSubmitButton) {
+            vehicleSubmitButton.innerHTML = '<i class="fas fa-save"></i> Cập nhật xe';
+          }
+          if (vehicleCancelButton) {
+            vehicleCancelButton.hidden = false;
+          }
+          vehicleNameInput?.focus();
+          return;
+        }
+
+        try {
+          if (actionName === "delete") {
+            const confirmed = window.confirm(
+              `Xóa xe "${vehicle.ten_hien_thi}" khỏi danh sách nhận đơn?`,
+            );
+            if (!confirmed) return;
+            await portalApiRequest("delete-vehicle", {
+              method: "POST",
+              body: { vehicle_id: vehicle.id },
+            });
+            showToast("Đã xóa xe khỏi danh sách shipper.", "success");
+            await initProfile();
+            return;
+          }
+
+          if (actionName === "default") {
+            await portalApiRequest("save-vehicle", {
+              method: "POST",
+              body: {
+                vehicle_id: vehicle.id,
+                la_mac_dinh: 1,
+              },
+            });
+            showToast("Đã đổi xe mặc định.", "success");
+            await initProfile();
+            return;
+          }
+
+          if (actionName === "toggle-status") {
+            await portalApiRequest("save-vehicle", {
+              method: "POST",
+              body: {
+                vehicle_id: vehicle.id,
+                trang_thai: button.dataset.nextStatus || "hoat_dong",
+              },
+            });
+            showToast("Đã cập nhật trạng thái xe.", "success");
+            await initProfile();
+          }
+        } catch (error) {
+          showToast(error.message || "Không thể cập nhật xe lúc này.", "error");
+        }
+      });
+    }
+
     const passwordForm = document.getElementById("shipper-password-form");
     if (passwordForm) {
       passwordForm.addEventListener("submit", async (event) => {
@@ -2385,6 +3178,9 @@
         break;
       case "profile":
         await initProfile();
+        break;
+      case "vehicles":
+        await initVehicles();
         break;
       default:
         throw new Error("Trang nhà cung cấp không hợp lệ.");

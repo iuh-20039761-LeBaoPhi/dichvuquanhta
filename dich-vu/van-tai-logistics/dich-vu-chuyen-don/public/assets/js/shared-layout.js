@@ -44,6 +44,7 @@
     "dashboard-chuyendon.html": "account",
     "danh-sach-don-hang-chuyendon.html": "account",
     "ho-so-chuyendon.html": "account",
+    "quan-ly-xe-chuyendon.html": "account",
   };
 
   function toDirectoryUrl(path) {
@@ -370,6 +371,7 @@
         dashboard: withAuthParams(`${projectBase}nha-cung-cap/dashboard-chuyendon.html`),
         orders: withAuthParams(`${projectBase}nha-cung-cap/danh-sach-don-hang-chuyendon.html`),
         profile: withAuthParams(`${projectBase}nha-cung-cap/ho-so-chuyendon.html`),
+        vehicles: withAuthParams(`${projectBase}nha-cung-cap/quan-ly-xe-chuyendon.html`),
       },
     };
   }
@@ -468,6 +470,7 @@
               ? `
                 <li><a href="${links.provider.orders}"><i class="fas fa-clipboard-list"></i> Đơn hàng của khách</a></li>
                 <li><a href="${links.provider.profile}"><i class="fas fa-id-card"></i> Hồ sơ cá nhân</a></li>
+                <li><a href="${links.provider.vehicles}"><i class="fas fa-truck-fast"></i> Quản lý xe</a></li>
               `
               : ""
           }

@@ -476,16 +476,38 @@
     }
 
     async function geocodeAddress(address) {
-      const endpoint = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=vn&q=${encodeURIComponent(address)}`;
-      const res = await fetch(endpoint, {
-        headers: { "Accept-Language": "vi" },
-      });
+      const tryGeocode = async (query) => {
+        const endpoint = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=vn&q=${encodeURIComponent(query)}`;
+        const res = await fetch(endpoint, {
+          headers: {
+            "Accept-Language": "vi",
+            "User-Agent": "DichVuQuanhTa-SuaXe-BookingApp/1.0"
+          },
+        });
 
-      if (!res.ok) {
-        throw new Error("Không thể geocode địa chỉ khách hàng");
+        if (res.status === 429) {
+          throw new Error("Hệ thống bản đồ đang bận (429), vui lòng thử lại sau giây lát");
+        }
+
+        if (!res.ok) {
+          throw new Error("Không thể kết nối với dịch vụ bản đồ");
+        }
+
+        return await res.json();
+      };
+
+      let data = await tryGeocode(address);
+
+      // Fallback: Nếu không tìm thấy địa chỉ cụ thể (số nhà/hẻm), thử tìm theo đường/phường
+      if ((!data || data.length === 0) && address.includes(",")) {
+        const segments = address.split(",").map(s => s.trim()).filter(Boolean);
+        if (segments.length > 1) {
+          // Bỏ đoạn đầu tiên (thường là số nhà/hẻm) và thử lại
+          const fallbackQuery = segments.slice(1).join(", ");
+          data = await tryGeocode(fallbackQuery);
+        }
       }
 
-      const data = await res.json();
       const first = data && data[0];
       if (!first) {
         throw new Error("Không tìm thấy tọa độ từ địa chỉ đã nhập");
@@ -527,9 +549,16 @@
         if (addressInput) {
           delete addressInput.dataset.lat;
           delete addressInput.dataset.lng;
+          delete addressInput.dataset.lastAttemptedAddress;
         }
         return;
       }
+
+      // Neu khong force va dia chi khong doi so voi lan cuoi (ke ca neu loi)
+      if (!force && addressInput.dataset.lastAttemptedAddress === addressText) {
+        return;
+      }
+      addressInput.dataset.lastAttemptedAddress = addressText;
 
       const token = ++transportCalcToken;
       setTransportFeeDisplay(null, { pending: true });
@@ -597,7 +626,7 @@
       }
     }
 
-    function scheduleRecalculateTransportFee(delay = 700) {
+    function scheduleRecalculateTransportFee(delay = 1200) {
       if (addressCalcTimer) {
         clearTimeout(addressCalcTimer);
       }

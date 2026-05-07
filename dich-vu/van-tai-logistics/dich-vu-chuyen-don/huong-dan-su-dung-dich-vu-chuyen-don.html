@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Hướng dẫn sử dụng dịch vụ chuyển dọn từ đăng nhập, chọn dịch vụ, đặt lịch, theo dõi đơn, xử lý của nhà cung cấp đến hoàn thành và đánh giá."
+      content="Hướng dẫn sử dụng dịch vụ chuyển dọn theo đúng luồng hiện tại: chọn dịch vụ, đặt lịch, theo dõi đơn, nhà cung cấp xử lý, quản lý xe và đánh giá sau hoàn thành."
     />
     <link rel="canonical" href="huong-dan-su-dung-dich-vu-chuyen-don.html" />
     <meta property="og:type" content="website" />
@@ -52,46 +52,55 @@
           </span>
           <h1>Hướng dẫn sử dụng dịch vụ chuyển dọn</h1>
           <p>
-            Tài liệu này giúp bạn đi đúng luồng từ lúc đăng nhập, chọn nhóm dịch
-            vụ phù hợp, gửi yêu cầu đặt lịch, theo dõi tiến độ trong tài khoản
-            đến khi đơn hàng hoàn thành và mở đánh giá.
+            Tài liệu này giúp bạn đi đúng luồng: chọn nhóm dịch vụ phù hợp, gửi
+            yêu cầu đặt lịch, xem đơn hàng của khách hàng, theo dõi và xử lý
+            đơn từ phía nhà cung cấp, quản lý xe xử lý đơn và mở đánh giá sau
+            khi hoàn thành.
           </p>
+
+          <div class="guide-highlight">
+            <strong>Phạm vi tài liệu công khai:</strong> Trang này chỉ hướng dẫn
+            các luồng đang mở cho khách hàng và nhà cung cấp như đặt đơn, xem
+            danh sách đơn, xem chi tiết đơn, cập nhật trạng thái, quản lý hồ sơ
+            và đánh giá. Các công cụ nội bộ như quản trị giá, quản trị nội dung
+            hoặc cấu hình vận hành không nằm trong phạm vi hướng dẫn công khai này.
+          </div>
 
           <nav class="step-nav guide-tab-nav" aria-label="Các bước hướng dẫn">
             <button
               class="step-nav-item guide-tab-trigger is-active"
-              data-guide-tab="dang-nhap"
-              type="button"
-            >
-              1. Đăng nhập
-            </button>
-            <button
-              class="step-nav-item guide-tab-trigger"
               data-guide-tab="chon-dich-vu"
               type="button"
             >
-              2. Chọn dịch vụ
+              1. Chọn dịch vụ
             </button>
             <button
               class="step-nav-item guide-tab-trigger"
               data-guide-tab="dat-lich"
               type="button"
             >
-              3. Đặt lịch
+              2. Đặt lịch
             </button>
             <button
               class="step-nav-item guide-tab-trigger"
               data-guide-tab="theo-doi"
               type="button"
             >
-              4. Theo dõi
+              3. Khách hàng: Quản lý đơn
             </button>
             <button
               class="step-nav-item guide-tab-trigger"
               data-guide-tab="xu-ly-nha-cung-cap"
               type="button"
             >
-              5. Nhà cung cấp xử lý
+              4. Nhà cung cấp: Xử lý đơn
+            </button>
+            <button
+              class="step-nav-item guide-tab-trigger"
+              data-guide-tab="xac-minh-phuong-tien"
+              type="button"
+            >
+              5. Xác minh và quản lý xe
             </button>
             <button
               class="step-nav-item guide-tab-trigger"
@@ -103,49 +112,9 @@
           </nav>
         </header>
 
-        <section id="dang-nhap" class="guide-card guide-panel is-active">
+        <section id="chon-dich-vu" class="guide-card guide-panel is-active">
           <div class="section-header">
             <div class="section-number">1</div>
-            <h2 class="section-title">Đăng nhập để quản lý yêu cầu chuyển dọn</h2>
-          </div>
-          <p>
-            Bạn vẫn có thể xem trang dịch vụ hoặc mở form đặt lịch ngay. Tuy
-            nhiên, nếu muốn theo dõi đầy đủ lịch sử đơn hàng, tiến độ triển khai
-            và phần đánh giá sau hoàn thành, bạn nên đăng nhập tài khoản khách
-            hàng trước.
-          </p>
-
-          <div class="logic-grid">
-            <article class="logic-item">
-              <i class="fa-solid fa-user-lock"></i>
-              <h4>Đi qua cổng đăng nhập dùng chung</h4>
-              <p>
-                Hệ thống chuyển sang trang đăng nhập chung của Dịch Vụ Quanh Ta
-                với dịch vụ chuyển dọn đã được chọn sẵn.
-              </p>
-            </article>
-            <article class="logic-item">
-              <i class="fa-solid fa-id-card"></i>
-              <h4>Sau khi vào tài khoản</h4>
-              <p>
-                Bạn có thể mở tổng quan khách hàng, danh sách đơn hàng, chi tiết
-                từng yêu cầu và hồ sơ cá nhân ngay trong khu khách hàng.
-              </p>
-            </article>
-            <article class="logic-item">
-              <i class="fa-solid fa-mobile-screen-button"></i>
-              <h4>Khi nào nên đăng nhập ngay</h4>
-              <p>
-                Nên đăng nhập trước nếu bạn cần theo dõi dài hạn nhiều đơn hàng
-                hoặc muốn quay lại cập nhật đánh giá sau khi hoàn thành.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <section id="chon-dich-vu" class="guide-card guide-panel">
-          <div class="section-header">
-            <div class="section-number">2</div>
             <h2 class="section-title">Chọn đúng dịch vụ trước khi gửi yêu cầu</h2>
           </div>
           <p>
@@ -350,11 +319,11 @@
 
         <section id="dat-lich" class="guide-card guide-panel">
           <div class="section-header">
-            <div class="section-number">3</div>
-            <h2 class="section-title">Gửi yêu cầu đặt lịch theo form 5 bước</h2>
+            <div class="section-number">2</div>
+            <h2 class="section-title">Gửi yêu cầu đặt lịch theo biểu mẫu 5 bước</h2>
           </div>
           <p>
-            Sau khi chọn đúng nhóm dịch vụ, bạn đi tiếp theo form đặt lịch hiện
+            Sau khi chọn đúng nhóm dịch vụ, bạn đi tiếp theo biểu mẫu đặt lịch hiện
             có. Đây là bước gửi yêu cầu để hệ thống ghi nhận nhu cầu, lộ trình,
             điều kiện thực tế và phần giá <strong>tạm tính</strong>. Đây chưa
             phải bước chốt giá cuối cùng.
@@ -372,10 +341,10 @@
             <figure class="guide-screenshot">
               <img
                 src="public/assets/images/guide/chuyen-don-dat-lich-chon-dich-vu-pc.png"
-                alt="Màn hình PC chọn dịch vụ trong form đặt lịch chuyển dọn"
+                alt="Màn hình máy tính chọn dịch vụ trong biểu mẫu đặt lịch chuyển dọn"
                 loading="lazy"
               />
-              <figcaption>PC - Chọn dịch vụ</figcaption>
+              <figcaption>Máy tính - Chọn dịch vụ</figcaption>
             </figure>
             <figure class="guide-screenshot">
               <img
@@ -388,18 +357,18 @@
             <figure class="guide-screenshot">
               <img
                 src="public/assets/images/guide/chuyen-don-dat-lich-tom-tat-tablet.png"
-                alt="Màn hình tablet xem tóm tắt thông tin đặt lịch chuyển dọn"
+                alt="Màn hình máy tính bảng xem tóm tắt thông tin đặt lịch chuyển dọn"
                 loading="lazy"
               />
-              <figcaption>Tablet - Tóm tắt</figcaption>
+              <figcaption>Máy tính bảng - Tóm tắt</figcaption>
             </figure>
             <figure class="guide-screenshot">
               <img
                 src="public/assets/images/guide/chuyen-don-dat-lich-xac-nhan-mobile.png"
-                alt="Màn hình mobile xác nhận gửi yêu cầu đặt lịch chuyển dọn"
+                alt="Màn hình điện thoại xác nhận gửi yêu cầu đặt lịch chuyển dọn"
                 loading="lazy"
               />
-              <figcaption>Mobile - Xác nhận</figcaption>
+              <figcaption>Điện thoại - Xác nhận</figcaption>
             </figure>
           </div>
 
@@ -448,19 +417,21 @@
 
         <section id="theo-doi" class="guide-card guide-panel">
           <div class="section-header">
-            <div class="section-number">4</div>
-            <h2 class="section-title">Theo dõi đơn từ dashboard đến chi tiết đơn</h2>
+            <div class="section-number">3</div>
+            <h2 class="section-title">Khách hàng: Xem đơn hàng của mình</h2>
           </div>
           <p>
-            Sau khi gửi yêu cầu thành công, bạn có thể quay lại khu khách hàng
-            để xem tổng quan đơn mới, mở danh sách đơn hàng hoặc đi thẳng vào
-            chi tiết đơn để theo dõi tiến độ chi tiết hơn.
+            Sau khi gửi yêu cầu thành công, bạn có thể vào khu khách hàng để
+            xem các đơn của chính mình qua 3 màn hình chính:
+            <strong>màn hình tổng quan khách hàng</strong>,
+            <strong>danh sách đơn hàng</strong> và
+            <strong>chi tiết đơn hàng</strong>.
           </p>
 
           <div class="logic-grid">
             <article class="logic-item">
               <i class="fa-solid fa-chart-line"></i>
-              <h4>Dashboard khách hàng</h4>
+              <h4>Màn hình tổng quan khách hàng</h4>
               <p>
                 Xem nhanh tổng số yêu cầu, số đơn đang mở, các đơn hoàn thành
                 và vài đơn gần nhất cần theo dõi.
@@ -493,14 +464,43 @@
             </article>
           </div>
 
+          <div class="guide-check-grid">
+            <article class="guide-check-card">
+              <h4>Các trạng thái khách hàng cần hiểu</h4>
+              <ul class="guide-check-list">
+                <li><strong>Chờ nhà cung cấp nhận:</strong> yêu cầu đã gửi lên hệ thống nhưng chưa có đơn vị tiếp nhận.</li>
+                <li><strong>Đã nhận đơn:</strong> nhà cung cấp đã tiếp nhận và chuẩn bị xử lý.</li>
+                <li><strong>Đang triển khai:</strong> đơn vị thực hiện đã bắt đầu làm việc ngoài hiện trường.</li>
+                <li><strong>Đã hoàn thành:</strong> yêu cầu đã kết thúc và phần đánh giá được mở cho khách hàng.</li>
+                <li><strong>Đã hủy:</strong> yêu cầu không tiếp tục triển khai nữa.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Đơn chưa được nhận và quá hạn</h4>
+              <ul class="guide-check-list">
+                <li>Nếu yêu cầu vẫn chờ tiếp nhận quá thời gian quy định, hệ thống có thể tự động hủy đơn.</li>
+                <li>Trường hợp này chủ yếu áp với đơn chưa có nhà cung cấp nhận xử lý.</li>
+                <li>Khi đơn đã bị hủy, khách hàng vẫn xem lại được lịch sử yêu cầu trong tài khoản.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Khi nào khách hàng không còn hủy được</h4>
+              <ul class="guide-check-list">
+                <li>Khi đơn đã có nhà cung cấp nhận hoặc đã bắt đầu triển khai, khách hàng thường không còn hủy trực tiếp từ chi tiết đơn.</li>
+                <li>Sau giai đoạn đó, khách hàng chủ yếu theo dõi tiến độ, báo cáo hiện trường và mốc hoàn tất của đơn.</li>
+                <li>Khi đơn đã hoàn thành, khách hàng chỉ còn xem lại thông tin và gửi đánh giá nếu hệ thống cho phép.</li>
+              </ul>
+            </article>
+          </div>
+
           <div class="guide-screenshot-grid" aria-label="Ảnh minh họa khu khách hàng theo dõi đơn chuyển dọn">
             <figure class="guide-screenshot">
               <img
                 src="public/assets/images/guide/chuyen-don-khach-hang-dashboard-pc.png"
-                alt="Màn hình PC dashboard khách hàng dịch vụ chuyển dọn"
+                alt="Màn hình máy tính tổng quan khách hàng dịch vụ chuyển dọn"
                 loading="lazy"
               />
-              <figcaption>PC - Dashboard khách hàng</figcaption>
+              <figcaption>Máy tính - Tổng quan khách hàng</figcaption>
             </figure>
             <figure class="guide-screenshot">
               <img
@@ -513,36 +513,73 @@
             <figure class="guide-screenshot">
               <img
                 src="public/assets/images/guide/chuyen-don-khach-hang-chi-tiet-hoa-don-tablet.png"
-                alt="Màn hình tablet chi tiết hóa đơn chuyển dọn của khách hàng"
+                alt="Màn hình máy tính bảng chi tiết hóa đơn chuyển dọn của khách hàng"
                 loading="lazy"
               />
-              <figcaption>Tablet - Chi tiết hóa đơn</figcaption>
+              <figcaption>Máy tính bảng - Chi tiết hóa đơn</figcaption>
             </figure>
             <figure class="guide-screenshot">
               <img
                 src="public/assets/images/guide/chuyen-don-khach-hang-theo-doi-timeline-mobile.png"
-                alt="Màn hình mobile theo dõi timeline đơn hàng chuyển dọn"
+                alt="Màn hình điện thoại theo dõi tiến độ đơn hàng chuyển dọn"
                 loading="lazy"
               />
-              <figcaption>Mobile - Timeline đơn</figcaption>
+              <figcaption>Điện thoại - Tiến độ đơn</figcaption>
             </figure>
           </div>
 
+          <div class="guide-check-grid">
+            <article class="guide-check-card">
+              <h4>Chức năng khách hàng trên màn hình tổng quan</h4>
+              <ul class="guide-check-list">
+                <li>Xem nhanh tổng số yêu cầu, số đơn đang mở và số đơn đã hoàn thành.</li>
+                <li>Mở nhanh các đơn gần nhất để kiểm tra tình trạng xử lý.</li>
+                <li>Đi vào danh sách đơn hàng hoặc chi tiết đơn chỉ với một lần bấm.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Chức năng trong danh sách đơn hàng</h4>
+              <ul class="guide-check-list">
+                <li>Xem toàn bộ các đơn bạn đã tạo trong dịch vụ chuyển dọn.</li>
+                <li>Tìm lại đơn cần xem theo mã đơn, trạng thái hoặc thời gian tạo.</li>
+                <li>Mở đúng chi tiết đơn để xem lộ trình, giá tạm tính và các hạng mục đã chọn.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Chức năng trong chi tiết đơn hàng</h4>
+              <ul class="guide-check-list">
+                <li>Xem địa chỉ điểm đi, điểm đến, thời gian thực hiện và điều kiện tiếp cận.</li>
+                <li>Xem ảnh, video đã tải lên khi đặt đơn và báo cáo hiện trường từ nhà cung cấp.</li>
+                <li>Theo dõi các mốc như tạo đơn, đã có đơn vị nhận, đang triển khai, hoàn thành hoặc đã hủy.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Chức năng hỗ trợ ngoài nghiệp vụ chính</h4>
+              <ul class="guide-check-list">
+                <li>Tự hủy đơn khi đơn còn đủ điều kiện hủy.</li>
+                <li>Gửi đánh giá, nhận xét và tệp minh họa sau khi đơn đã hoàn thành.</li>
+                <li>Xem lại báo cáo ảnh, video mà nhà cung cấp cập nhật trong lúc xử lý đơn.</li>
+              </ul>
+            </article>
+          </div>
+
           <ul class="feature-list">
-            <li>Nút <strong>Hủy đơn</strong> chỉ hiện khi bạn vẫn còn được phép tự hủy trên chi tiết đơn.</li>
-            <li>Khi đơn đã có đơn vị nhận hoặc đã bắt đầu triển khai, bạn thường không còn hủy trực tiếp từ phía khách hàng.</li>
-            <li>Trong chi tiết đơn, bạn cũng thấy báo cáo ảnh/video mà nhà cung cấp cập nhật trong lúc xử lý.</li>
+            <li>Nên mở chi tiết đơn khi cần kiểm tra tiến độ, báo cáo hiện trường hoặc các mốc trạng thái mới nhất.</li>
+            <li>Khi đơn đã có đơn vị nhận hoặc đã bắt đầu triển khai, khách hàng thường không còn hủy trực tiếp từ phía chi tiết đơn.</li>
+            <li>Sau khi hoàn thành, khách hàng có thể xem lại báo cáo ảnh/video và gửi đánh giá nếu hệ thống cho phép.</li>
           </ul>
         </section>
 
         <section id="xu-ly-nha-cung-cap" class="guide-card guide-panel">
           <div class="section-header">
-            <div class="section-number">5</div>
-            <h2 class="section-title">Các mốc nhà cung cấp xử lý mà khách hàng sẽ thấy</h2>
+            <div class="section-number">4</div>
+            <h2 class="section-title">Nhà cung cấp: Xem và xử lý đơn hàng</h2>
           </div>
           <p>
-            Đây là các nhãn hiển thị phía khách hàng trong quá trình đơn vị thực
-            hiện tiếp nhận và triển khai yêu cầu chuyển dọn của bạn.
+            Dành cho các đơn vị vận chuyển: Đây là cách nhà cung cấp xem các
+            yêu cầu đang chờ xử lý, mở danh sách đơn hàng, vào chi tiết từng
+            đơn, kiểm tra thông tin khách hàng, quản lý xe xử lý đơn và cập nhật
+            các mốc trạng thái theo đúng tiến độ triển khai.
           </p>
 
           <div class="guide-status-grid">
@@ -592,10 +629,10 @@
             <figure class="guide-screenshot">
               <img
                 src="public/assets/images/guide/chuyen-don-nha-cung-cap-dashboard-pc.png"
-                alt="Màn hình PC dashboard nhà cung cấp dịch vụ chuyển dọn"
+                alt="Màn hình máy tính tổng quan nhà cung cấp dịch vụ chuyển dọn"
                 loading="lazy"
               />
-              <figcaption>PC - Dashboard nhà cung cấp</figcaption>
+              <figcaption>Máy tính - Tổng quan nhà cung cấp</figcaption>
             </figure>
             <figure class="guide-screenshot">
               <img
@@ -608,10 +645,10 @@
             <figure class="guide-screenshot">
               <img
                 src="public/assets/images/guide/chuyen-don-nha-cung-cap-chi-tiet-don-hang-tablet.png"
-                alt="Màn hình tablet chi tiết đơn hàng nhà cung cấp chuyển dọn"
+                alt="Màn hình máy tính bảng chi tiết đơn hàng nhà cung cấp chuyển dọn"
                 loading="lazy"
               />
-              <figcaption>Tablet - Chi tiết đơn</figcaption>
+              <figcaption>Máy tính bảng - Chi tiết đơn</figcaption>
             </figure>
             <figure class="guide-screenshot">
               <img
@@ -619,8 +656,71 @@
                 alt="Màn hình mobile nhà cung cấp cập nhật trạng thái đơn chuyển dọn"
                 loading="lazy"
               />
-              <figcaption>Mobile - Xử lý trạng thái</figcaption>
+              <figcaption>Điện thoại - Xử lý trạng thái</figcaption>
             </figure>
+          </div>
+
+          <div class="guide-check-grid">
+            <article class="guide-check-card">
+              <h4>Chức năng nhà cung cấp trên màn hình tổng quan</h4>
+              <ul class="guide-check-list">
+                <li>Xem nhanh số yêu cầu mới, số đơn đang triển khai và số đơn đã hoàn tất.</li>
+                <li>Mở nhanh danh sách đơn hàng hoặc các đơn gần nhất cần xử lý.</li>
+                <li>Theo dõi nhịp vận hành trong ngày để không bỏ sót yêu cầu mới.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Chức năng trong danh sách đơn hàng</h4>
+              <ul class="guide-check-list">
+                <li>Xem các đơn đang mở, đơn đã nhận, đơn đang triển khai và đơn đã hoàn thành.</li>
+                <li>Tìm lại đơn theo mã đơn, khách hàng, trạng thái hoặc thời gian thực hiện.</li>
+                <li>Mở chi tiết từng đơn để kiểm tra thông tin trước khi nhận xử lý.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Chức năng trong chi tiết đơn hàng</h4>
+              <ul class="guide-check-list">
+                <li>Xem thông tin liên hệ, địa chỉ, lộ trình, điều kiện tiếp cận và hạng mục phát sinh.</li>
+                <li>Nhận đơn, bắt đầu triển khai, hoàn thành hoặc dừng xử lý theo quyền đang có.</li>
+                <li>Cập nhật báo cáo hiện trường bằng hình ảnh hoặc video để khách hàng theo dõi.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Chức năng hỗ trợ ngoài nghiệp vụ chính</h4>
+              <ul class="guide-check-list">
+                <li>Hoàn tất hồ sơ xác minh trước khi bắt đầu nhận đơn thường xuyên trên hệ thống.</li>
+                <li>Mở mục <strong>Quản lý xe</strong> trong menu người dùng để thêm xe, sửa xe, đặt xe mặc định, tạm ngưng xe và xóa xe không còn sử dụng.</li>
+                <li>Nếu chưa có xe phù hợp hoặc xe đang tạm ngưng, nhà cung cấp sẽ không thể nhận đơn tương ứng.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="guide-check-grid">
+            <article class="guide-check-card">
+              <h4>Các trường hợp không thể nhận đơn</h4>
+              <ul class="guide-check-list">
+                <li>Chưa khai báo xe nào trong mục <strong>Quản lý xe</strong>.</li>
+                <li>Xe đã khai báo nhưng đang ở trạng thái <strong>Tạm ngưng</strong>.</li>
+                <li>Loại xe hiện có không phù hợp với yêu cầu phương tiện của đơn.</li>
+                <li>Hồ sơ nhà cung cấp chưa đủ điều kiện để nhận đơn thường xuyên trên hệ thống.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Nếu có nhiều xe cùng phù hợp</h4>
+              <ul class="guide-check-list">
+                <li>Nhà cung cấp có thể chọn xe cụ thể để gắn với đơn khi nhận xử lý.</li>
+                <li>Xe mặc định được ưu tiên khi thao tác nhanh, nhưng vẫn phải đúng loại xe của đơn.</li>
+                <li>Một loại xe có thể có nhiều xe khác nhau và được phân biệt bằng biển số.</li>
+              </ul>
+            </article>
+            <article class="guide-check-card">
+              <h4>Sau khi đã nhận đơn</h4>
+              <ul class="guide-check-list">
+                <li>Nhà cung cấp vẫn tiếp tục thực hiện các bước <strong>Bắt đầu triển khai</strong> và <strong>Hoàn thành</strong> theo tiến độ thực tế.</li>
+                <li>Đơn đã được nhận sẽ không còn bị coi là đơn chờ tiếp nhận ban đầu nữa.</li>
+                <li>Nếu đơn đã có đơn vị nhận, phần theo dõi sẽ tập trung vào tiến độ triển khai và báo cáo hiện trường.</li>
+              </ul>
+            </article>
           </div>
 
           <div class="guide-note">
@@ -632,10 +732,73 @@
           </div>
         </section>
 
+        <section id="xac-minh-phuong-tien" class="guide-card guide-panel">
+          <div class="section-header">
+            <div class="section-number">5</div>
+            <h2 class="section-title">Xác minh hồ sơ và quản lý xe</h2>
+          </div>
+          <p>
+            Để bắt đầu nhận đơn, nhà cung cấp cần hoàn tất hồ sơ xác minh và 
+            khai báo danh sách xe xử lý đơn trong mục <strong>Quản lý xe</strong> của menu người dùng.
+          </p>
+
+          <div class="logic-grid">
+            <article class="logic-item">
+              <i class="fa-solid fa-user-check"></i>
+              <h4>Xác minh hồ sơ</h4>
+              <p>
+                Tải lên ảnh CCCD mặt trước, mặt sau và ảnh đại diện rõ nét để 
+                hệ thống phê duyệt quyền nhận đơn.
+              </p>
+            </article>
+            <article class="logic-item">
+              <i class="fa-solid fa-truck-pickup"></i>
+              <h4>Thêm xe xử lý</h4>
+              <p>
+                Khai báo tên xe, biển số và loại xe (500kg, 1.5 tấn...). Xe này sẽ 
+                được dùng để khớp với yêu cầu của khách hàng.
+              </p>
+            </article>
+            <article class="logic-item">
+              <i class="fa-solid fa-star"></i>
+              <h4>Xe mặc định</h4>
+              <p>
+                Bạn có thể đặt một chiếc xe làm mặc định để hệ thống tự động 
+                ưu tiên chọn khi bạn thao tác nhận đơn nhanh.
+              </p>
+            </article>
+            <article class="logic-item">
+              <i class="fa-solid fa-gears"></i>
+              <h4>Trạng thái xe</h4>
+              <p>
+                Bật/tắt trạng thái hoạt động của từng xe để kiểm soát phương tiện 
+                nào đang sẵn sàng ra quân.
+              </p>
+            </article>
+          </div>
+
+          <div class="guide-highlight">
+            <strong>Mẹo:</strong> Nhà cung cấp nên cập nhật hồ sơ cá nhân và xác minh trước, sau đó mở mục
+            <strong>Quản lý xe</strong> trong menu người dùng để khai báo các xe xử lý đơn.
+          </div>
+
+          <ul class="feature-list">
+            <li>Nhà cung cấp nên hoàn tất hồ sơ xác minh trước để tránh bị gián đoạn ở bước nhận đơn.</li>
+            <li>Nên khai báo đủ xe đang dùng để hệ thống và người vận hành nội bộ nhìn đúng năng lực xử lý thực tế.</li>
+            <li>Xe mặc định sẽ được ưu tiên khi nhà cung cấp thao tác nhận đơn nhanh.</li>
+            <li>Nếu xe tạm nghỉ hoặc không còn sử dụng, nên chuyển trạng thái để tránh chọn nhầm khi nhận đơn.</li>
+            <li>Nếu không có xe phù hợp với loại xe khách hàng yêu cầu, nhà cung cấp sẽ không thể nhận đơn.</li>
+          </ul>
+
+          <div class="guide-note">
+            Xe mặc định chỉ là xe được ưu tiên trước khi nhận đơn. Nếu xe đó đang tạm ngưng hoặc không đúng loại xe yêu cầu, hệ thống vẫn sẽ không cho nhận đơn bằng xe đó.
+          </div>
+        </section>
+
         <section id="hoan-thanh-danh-gia" class="guide-card guide-panel">
           <div class="section-header">
             <div class="section-number">6</div>
-            <h2 class="section-title">Hoàn thành đơn hàng và gửi đánh giá</h2>
+            <h2 class="section-title">Hoàn thành đơn hàng và gửi nhận xét, đánh giá</h2>
           </div>
           <p>
             Khi đơn đã ở trạng thái <strong>Đã hoàn thành</strong>, phần đánh
@@ -665,14 +828,14 @@
               <h4>Ảnh và video đánh giá</h4>
               <p>
                 Nếu cần minh họa rõ hơn, bạn có thể tải thêm ảnh hoặc video hiện
-                trường ở phần phản hồi khách hàng.
+                trường ở phần phản hồi của khách hàng.
               </p>
             </article>
             <article class="logic-item">
               <i class="fa-solid fa-floppy-disk"></i>
               <h4>Kết quả sau khi lưu</h4>
               <p>
-                Hệ thống lưu lại số sao, phản hồi và media đánh giá ngay trong
+                Hệ thống lưu lại số sao, phản hồi và ảnh, video đánh giá ngay trong
                 chi tiết đơn để bạn xem lại bất cứ lúc nào.
               </p>
             </article>
@@ -727,7 +890,7 @@
 
         if (!mainTriggers.length || !mainPanels.length) return;
 
-        const defaultMainTab = "dang-nhap";
+        const defaultMainTab = "chon-dich-vu";
         const defaultServiceTab = "chi-tiet-chuyen-nha";
 
         function activateMain(tabId, updateHash) {

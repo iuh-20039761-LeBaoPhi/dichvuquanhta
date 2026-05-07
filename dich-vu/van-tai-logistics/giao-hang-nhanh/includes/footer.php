@@ -56,19 +56,19 @@ $footerLinks = [
 
         <div class="app-download">
           <h3>Tải Ứng Dụng</h3>
-          <div class="app-buttons">
-            <a href="#" class="btn-app">
-              <span class="icon">🍎</span>
-              <div class="text">
-                <span class="sub">Download on the</span>
-                <span class="main">App Store</span>
+          <div class="dvqt-store-badges">
+            <a href="#" class="dvqt-store-badge is-app-store">
+              <i class="fab fa-apple" aria-hidden="true"></i>
+              <div class="dvqt-store-badge__text">
+                <span class="dvqt-store-badge__subtitle">Download on</span>
+                <span class="dvqt-store-badge__title">App Store</span>
               </div>
             </a>
-            <a href="#" class="btn-app">
-              <span class="icon">🤖</span>
-              <div class="text">
-                <span class="sub">GET IT ON</span>
-                <span class="main">Google Play</span>
+            <a href="#" class="dvqt-store-badge is-google-play">
+              <i class="fab fa-google-play" aria-hidden="true"></i>
+              <div class="dvqt-store-badge__text">
+                <span class="dvqt-store-badge__subtitle">Get it on</span>
+                <span class="dvqt-store-badge__title">Google Play</span>
               </div>
             </a>
           </div>

@@ -63,32 +63,27 @@ if (isset($_GET['sodienthoai']) && isset($_GET['password'])) {
     clear_session_data();
     $u = $_GET['sodienthoai'];
     $p = $_GET['password'];
+
+    // Xác định base path để script src đúng dù được include từ bất kỳ thư mục nào
+    $scriptPath = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+    $depth = substr_count(trim($scriptPath, '/'), '/');
+    $basePath = str_repeat('../', $depth);
     ?>
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <title>Xác thực thông tin</title>
-        <script src="../../../../public/asset/js/dvqt-app.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const u = '<?php echo addslashes((string)$u); ?>';
                 const p = '<?php echo addslashes((string)$p); ?>';
                 
                 try {
-                    if (typeof DVQTApp !== 'undefined') {
-                        // Lưu cookie và ghi đè path=/ để dùng chung toàn hệ thống
-                        DVQTApp.setCookie('dvqt_u', u, 7);
-                        DVQTApp.setCookie('dvqt_p', p, 7);
-                        console.log('Cookies updated via DVQTApp');
-                    } else {
-                        // Fallback nếu không nạp được script
-                        const expires = new Date();
-                        expires.setTime(expires.getTime() + (7 * 24 * 60 * 60 * 1000));
-                        document.cookie = "dvqt_u=" + encodeURIComponent(u) + ";expires=" + expires.toUTCString() + ";path=/";
-                        document.cookie = "dvqt_p=" + encodeURIComponent(p) + ";expires=" + expires.toUTCString() + ";path=/";
-                        console.log('Cookies updated via fallback');
-                    }
+                    const expires = new Date();
+                    expires.setTime(expires.getTime() + (7 * 24 * 60 * 60 * 1000));
+                    document.cookie = "dvqt_u=" + encodeURIComponent(u) + ";expires=" + expires.toUTCString() + ";path=/";
+                    document.cookie = "dvqt_p=" + encodeURIComponent(p) + ";expires=" + expires.toUTCString() + ";path=/";
                 } catch (e) {
                     console.error('Lỗi khi lưu cookie:', e);
                 }
@@ -104,7 +99,7 @@ if (isset($_GET['sodienthoai']) && isset($_GET['password'])) {
         </script>
     </head>
     <body style="background:#f4f7fb; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
-        <div style="text-align:center; color:#5a7ae4; background:white; padding:40px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+        <div style="text-align:center; color:#1a4d2e; background:white; padding:40px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
             <div style="margin-bottom:20px;">
                 <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 2s linear infinite;">
                     <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
@@ -233,10 +228,25 @@ if ($action === 'current') {
 
 // Nếu dùng require_once trong file PHP và chưa đăng nhập
 if (empty($_SESSION['logged_in']) || !isset($_SESSION['user'])) {
-    if (!headers_sent()) {
-        header('Content-Type: application/json; charset=utf-8');
+    // Nếu là AJAX request → trả JSON
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    $isApiAction = $action !== '';
+    $acceptsJson = strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
+
+    if ($isAjax || $isApiAction || $acceptsJson) {
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+        }
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Chưa đăng nhập']);
+        exit;
     }
-    echo json_encode(['success' => false, 'message' => 'Chưa đăng nhập']);
+
+    // Nếu là trang PHP thông thường → redirect về trang chủ để đăng nhập
+    if (!headers_sent()) {
+        $returnUrl = urlencode($_SERVER['REQUEST_URI'] ?? '');
+        header('Location: ../index.html?login=1&return=' . $returnUrl);
+    }
     exit;
 }
 

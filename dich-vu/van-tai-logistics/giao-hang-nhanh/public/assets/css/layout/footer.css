@@ -83,51 +83,6 @@ footer {
   margin-bottom: 15px;
 }
 
-.app-buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.btn-app {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 8px 14px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  min-width: 150px;
-  transition: all 0.3s ease;
-}
-
-.btn-app:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: #ff7a00;
-}
-
-.btn-app .icon {
-  font-size: 22px;
-}
-
-.btn-app .text {
-  display: flex;
-  flex-direction: column;
-}
-
-.btn-app .sub {
-  font-size: 9px;
-  color: #d0d8f0;
-  text-transform: uppercase;
-}
-
-.btn-app .main {
-  font-size: 14px;
-  color: #fff;
-  font-weight: 700;
-}
-
 /* Links column */
 .footer-links {
   list-style: none;
@@ -214,13 +169,8 @@ footer {
     padding: 0 16px;
   }
 
-  .app-buttons {
+  .dvqt-store-badges {
     display: grid;
     grid-template-columns: 1fr;
-  }
-
-  .btn-app {
-    width: 100%;
-    min-width: 0;
   }
 }

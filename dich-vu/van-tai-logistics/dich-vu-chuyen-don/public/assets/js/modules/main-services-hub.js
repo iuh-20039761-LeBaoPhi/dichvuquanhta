@@ -49,10 +49,10 @@ import core from "./core/app-core.js";
       /\/dich-vu-chuyen-don\/dich-vu-chuyen-don\.html$/i.test(pagePath) ||
       /dich-vu-chuyen-don\.html$/i.test(pagePath);
     if (isServicePage) {
-      if (core && typeof core.toAssetsUrl === "function") {
-        return core.toAssetsUrl("js/data/dich-vu-chuyen-don-page.json");
+      if (core && typeof core.toProjectUrl === "function") {
+        return core.toProjectUrl("public/service_content.php");
       }
-      return "public/assets/js/data/dich-vu-chuyen-don-page.json";
+      return "public/service_content.php";
     }
     if (core && typeof core.toAssetsUrl === "function") {
       return core.toAssetsUrl("js/data/services-hub.json");
@@ -286,14 +286,18 @@ import core from "./core/app-core.js";
     renderOtherServices();
     if (!root || typeof window.fetch !== "function") return;
 
-    fetch(resolveConfigUrl())
+    fetch(resolveConfigUrl(), { cache: "no-store" })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Cannot load services hub data");
         }
         return response.json();
       })
-      .then((config) => {
+      .then((payload) => {
+        const config =
+          payload && typeof payload === "object" && payload.data
+            ? payload.data
+            : payload;
         renderPageHero(config);
         renderServiceHub(root, config);
       })

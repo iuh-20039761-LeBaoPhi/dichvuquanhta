@@ -771,6 +771,33 @@
                       <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
                       <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi' hoặc nhập thủ công"
                         class="form-control" />
+                      <div id="addressSuggestions" class="list-group" style="z-index: 9999; display: none; max-height: 220px; overflow-y: auto; position: absolute; left: 0; top: 100%;"></div>
+                      <style>
+                        .input-group { position: relative; }
+                        #addressSuggestions {
+                          position: absolute;
+                          left: 0;
+                          top: 100%;
+                          width: 100%;
+                          background: #fff;
+                          border: 1px solid #d1d5db;
+                          border-top: none;
+                          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+                          z-index: 9999;
+                          max-height: 220px;
+                          overflow-y: auto;
+                          padding: 0;
+                        }
+                        #addressSuggestions .list-group-item {
+                          cursor: pointer;
+                          white-space: normal;
+                          font-size: 1rem;
+                          padding: 8px 12px;
+                        }
+                        #addressSuggestions .list-group-item:hover, #addressSuggestions .list-group-item:focus {
+                          background: #f3f4f6;
+                        }
+                      </style>
                     </div>
                     <div class="d-flex gap-2 mt-2">
                       <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
@@ -1259,42 +1286,92 @@
         );
       }
 
-      // [Thêm mới] Tự động tìm tọa độ khi người dùng gõ địa chỉ thủ công
+      // [Thêm mới] Gợi ý địa chỉ, tự động focus bản đồ, cập nhật phí di chuyển
       var lookupAddressTimeout = null;
       $(document).on('input', '#customerAddress', function () {
         var query = $(this).val().trim();
         if (query.length < 5) return;
-
         clearTimeout(lookupAddressTimeout);
         lookupAddressTimeout = setTimeout(async function () {
           try {
             var res = await fetch(
-              'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1',
+              'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=5',
               { headers: { 'Accept-Language': 'vi' } }
             );
             var data = await res.json();
+            var $suggestions = $('#addressSuggestions');
+            $suggestions.empty();
             if (data && data.length > 0) {
-              var lat = Number(data[0].lat);
-              var lng = Number(data[0].lon);
-
-              // Cập nhật vị trí nhưng KHÔNG được gán ngược lại ô input (tránh làm gián đoạn việc gõ)
-              CUSTOMER_LOCATION = { lat: lat, lng: lng };
-
-              if (mapPickerMap) {
-                if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
-                mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
-                mapPickerMap.setView([lat, lng], 16);
-                mapPickerMarker.bindPopup('<small>' + (data[0].display_name) + '</small>');
-              }
-
-              if (typeof window.recalculateDistanceAndPrice === 'function') {
-                window.recalculateDistanceAndPrice();
-              }
+              data.forEach(function(item) {
+                var $item = $('<button type="button" class="list-group-item list-group-item-action"></button>');
+                $item.text(item.display_name);
+                $item.data('lat', item.lat);
+                $item.data('lng', item.lon);
+                $item.data('address', item.display_name);
+                $item.on('mousedown', function(e) {
+                  e.preventDefault();
+                  $('#customerAddress').val(item.display_name);
+                  $suggestions.hide();
+                  var lat = Number(item.lat);
+                  var lng = Number(item.lon);
+                  CUSTOMER_LOCATION = { lat: lat, lng: lng };
+                  if (typeof ensureMapPickerInit === 'function') ensureMapPickerInit();
+                  if (mapPickerMap) {
+                    if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+                    mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
+                    mapPickerMap.setView([lat, lng], 16);
+                    mapPickerMarker.bindPopup('<small>' + (item.display_name) + '</small>').openPopup();
+                  }
+                  if (typeof window.recalculateDistanceAndPrice === 'function') window.recalculateDistanceAndPrice();
+                });
+                $suggestions.append($item);
+              });
+              $suggestions.show();
+            } else {
+              $suggestions.hide();
             }
           } catch (e) {
             console.warn('Address lookup error:', e);
+            $('#addressSuggestions').hide();
           }
-        }, 1000); // Đợi 1 giây sau khi ngừng gõ để tránh gọi API quá nhiều
+        }, 1000);
+      });
+
+      // Hàm tự động focus bản đồ về đúng vị trí theo địa chỉ hiện tại trong ô nhập
+      async function autoFocusMapToCurrentAddress() {
+        var query = $('#customerAddress').val().trim();
+        if (query.length < 5) return;
+        try {
+          var res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1', { headers: { 'Accept-Language': 'vi' } });
+          var data = await res.json();
+          if (data && data.length > 0) {
+            var lat = Number(data[0].lat);
+            var lng = Number(data[0].lon);
+            CUSTOMER_LOCATION = { lat: lat, lng: lng };
+            if (typeof ensureMapPickerInit === 'function') ensureMapPickerInit();
+            if (mapPickerMap) {
+              if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+              mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
+              mapPickerMap.setView([lat, lng], 16);
+              mapPickerMarker.bindPopup('<small>' + (data[0].display_name) + '</small>').openPopup();
+            }
+            if (typeof window.recalculateDistanceAndPrice === 'function') window.recalculateDistanceAndPrice();
+          }
+        } catch (e) {
+          // Không làm gì nếu lỗi
+        }
+      }
+
+      // Ẩn gợi ý khi blur hoặc chọn
+      $(document).on('blur', '#customerAddress', function () {
+        setTimeout(function() { $('#addressSuggestions').hide(); }, 200);
+        setTimeout(function() { autoFocusMapToCurrentAddress(); }, 250);
+      });
+      // Ẩn gợi ý khi click ngoài
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#addressSuggestions, #customerAddress').length) {
+          $('#addressSuggestions').hide();
+        }
       });
 
       $(document).ready(async function () {
@@ -1394,18 +1471,20 @@
 
             if (requestId !== DISTANCE_REQUEST_ID) return;
 
-            // DISTANCE_KM = Number(distanceKm.toFixed(2));
-            DISTANCE_KM = 0; // Luôn để 0 để ẩn tính phí di chuyển
-            
-            /*
-            renderDistanceInfo(
-              'Quãng đường ước tính: ' +
-              DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
-              ' km. Phí di chuyển: ' +
-              formatMoney(DISTANCE_KM * 5000) +
-              '.'
-            );
-            */
+            DISTANCE_KM = Number(distanceKm.toFixed(2));
+            // Hiện dòng phí di chuyển nếu có quãng đường
+            if (DISTANCE_KM > 0) {
+              $('#travelFeeRow').removeClass('d-none').css('display', 'flex');
+            } else {
+              $('#travelFeeRow').addClass('d-none');
+            }
+            // renderDistanceInfo(
+            //   'Quãng đường ước tính: ' +
+            //   DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+            //   ' km. Phí di chuyển: ' +
+            //   formatMoney(DISTANCE_KM * 5000) +
+            //   '.'
+            // );
           } catch (error) {
             if (requestId !== DISTANCE_REQUEST_ID) return;
 
