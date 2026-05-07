@@ -149,9 +149,11 @@
     }
 
     if (addressInput && mapped.address) {
-      addressInput.value = mapped.address;
-      addressInput.dispatchEvent(new Event("input", { bubbles: true }));
-      addressInput.dispatchEvent(new Event("change", { bubbles: true }));
+      if (addressInput.value !== mapped.address) {
+        addressInput.value = mapped.address;
+        addressInput.dispatchEvent(new Event("input", { bubbles: true }));
+        addressInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
     }
   }
 
@@ -314,11 +316,11 @@
     bindServiceBookingRedirect();
 
     // Fill on load
-    tryAutoFill().then(function () {
-      if (isStandaloneBookingPage()) {
-        ensureStandaloneBookingAccess();
-      }
-    });
+    if (isStandaloneBookingPage()) {
+      ensureStandaloneBookingAccess();
+    } else {
+      tryAutoFill();
+    }
 
     // Handle modal show event for dynamic loading or lazy filling
     document.addEventListener("shown.bs.modal", function (event) {
