@@ -35,6 +35,7 @@
     fast: 60,
     standard: 120,
   };
+  const VEHICLES_PER_PAGE = 4;
 
   function getLoginRedirect() {
     return typeof core.getPortalLoginRedirect === "function"
@@ -388,8 +389,41 @@
   function parseDateMs(value) {
     const normalized = normalizeText(value);
     if (!normalized) return 0;
+    const localMatch = normalized.match(
+      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?)?$/,
+    );
+    if (localMatch) {
+      const day = Number(localMatch[1] || 0);
+      const month = Number(localMatch[2] || 0);
+      const year = Number(localMatch[3] || 0);
+      const hour = Number(localMatch[4] || 0);
+      const minute = Number(localMatch[5] || 0);
+      const second = Number(localMatch[6] || 0);
+      const localTimestamp = new Date(
+        year,
+        month - 1,
+        day,
+        hour,
+        minute,
+        second,
+      ).getTime();
+      return Number.isFinite(localTimestamp) ? localTimestamp : 0;
+    }
     const timestamp = new Date(normalized).getTime();
     return Number.isFinite(timestamp) ? timestamp : 0;
+  }
+
+  function normalizeDateForDateTime(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) return "";
+    const localMatch = normalized.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (localMatch) {
+      const day = String(Number(localMatch[1] || 0)).padStart(2, "0");
+      const month = String(Number(localMatch[2] || 0)).padStart(2, "0");
+      const year = String(Number(localMatch[3] || 0));
+      return `${year}-${month}-${day}`;
+    }
+    return normalized.slice(0, 10);
   }
 
   function normalizeServiceType(value) {
@@ -413,7 +447,7 @@
   }
 
   function buildLocalDateTimeMs(dateValue, timeValue) {
-    const dateText = normalizeText(dateValue).slice(0, 10);
+    const dateText = normalizeDateForDateTime(dateValue);
     const timeText = normalizeText(timeValue);
     if (!dateText || !timeText) return 0;
     const timestamp = new Date(`${dateText}T${timeText}`).getTime();
@@ -464,6 +498,78 @@
       SERVICE_AUTO_CANCEL_FALLBACK_MINUTES[serviceType] ||
       SERVICE_AUTO_CANCEL_FALLBACK_MINUTES.fast;
     return createdMs + fallbackMinutes * 60 * 1000;
+  }
+
+  function resolvePickupSortMs(source) {
+    const order = source && typeof source === "object" ? source : {};
+    const serviceMeta =
+      order.service_meta && typeof order.service_meta === "object"
+        ? order.service_meta
+        : {};
+    const pickupDate = normalizeText(
+      order.ngay_lay_hang ||
+        order.pickup_date ||
+        serviceMeta.pickup_date ||
+        "",
+    );
+    const explicitPickupTime = buildLocalDateTimeMs(
+      pickupDate,
+      normalizeText(
+        order.gio_bat_dau_lay_hang ||
+          order.pickup_slot_start ||
+          order.gio_ket_thuc_lay_hang ||
+          serviceMeta.pickup_slot_start ||
+          serviceMeta.pickup_slot_end ||
+          "",
+      ),
+    );
+    if (explicitPickupTime) return explicitPickupTime;
+
+    const slotTokens = extractTimeTokens(
+      order.ten_khung_gio_lay_hang ||
+        order.khung_gio_lay_hang ||
+        order.pickup_slot_label ||
+        order.pickup_slot ||
+        serviceMeta.pickup_slot_label ||
+        "",
+    );
+    const slotPickupTime = buildLocalDateTimeMs(pickupDate, slotTokens[0] || "");
+    if (slotPickupTime) return slotPickupTime;
+
+    const pickupTimeMs = parseDateMs(order.pickup_time || "");
+    if (pickupTimeMs) return pickupTimeMs;
+
+    const pickupDateMs = parseDateMs(pickupDate);
+    if (pickupDateMs) return pickupDateMs;
+
+    return parseDateMs(order.created_at || order.created_date || "");
+  }
+
+  function compareOrderDetailsByPickupDesc(left, right) {
+    const leftPickupMs = resolvePickupSortMs(left?.order || {});
+    const rightPickupMs = resolvePickupSortMs(right?.order || {});
+    if (rightPickupMs !== leftPickupMs) {
+      return rightPickupMs - leftPickupMs;
+    }
+    const leftCreatedMs = parseDateMs(left?.order?.created_at || left?.order?.created_date || "");
+    const rightCreatedMs = parseDateMs(right?.order?.created_at || right?.order?.created_date || "");
+    if (rightCreatedMs !== leftCreatedMs) {
+      return rightCreatedMs - leftCreatedMs;
+    }
+    return Number(right?.order?.id || 0) - Number(left?.order?.id || 0);
+  }
+
+  function formatPickupLabel(order) {
+    const pickupTime = normalizeText(order?.pickup_time || "");
+    if (pickupTime) return formatDateTime(pickupTime);
+    const pickupDate = normalizeText(
+      order?.ngay_lay_hang || order?.pickup_date || "",
+    );
+    if (!pickupDate) return "--";
+    const pickupMs = parseDateMs(pickupDate);
+    return pickupMs
+      ? new Date(pickupMs).toLocaleDateString("vi-VN")
+      : escapeHtml(pickupDate);
   }
 
   function hasAcceptedOrAssignedOrder(order) {
@@ -1004,7 +1110,7 @@
       nextOrder.shipping_fee || nextOrder.total_fee || 0,
     );
     nextOrder.cod_amount = Number(nextOrder.cod_amount || nextOrder.cod_value || 0);
-    nextOrder.created_at = nextOrder.created_at || new Date().toISOString();
+    nextOrder.created_at = normalizeText(nextOrder.created_at || "");
     nextOrder.ngay_lay_hang = normalizeText(
       nextOrder.ngay_lay_hang || nextOrder.pickup_date || "",
     );
@@ -1162,26 +1268,38 @@
   }
 
   async function getAllOrderDetails(session) {
-    const listFn = getKrudListFn();
-    if (session && listFn) {
+    const fetchAllRows =
+      (localAuth && typeof localAuth.fetchAllKrudRows === "function"
+        ? localAuth.fetchAllKrudRows
+        : null) ||
+      (typeof core.fetchAllKrudRows === "function"
+        ? core.fetchAllKrudRows
+        : null);
+    if (session && typeof fetchAllRows === "function") {
       try {
-        const response = await listFn({
+        const rows = await fetchAllRows({
           table: "giaohangnhanh_dat_lich",
-          page: 1,
-          limit: 500,
+          limit: 200,
+          maxPages: 10,
+          sort: {
+            ngay_lay_hang: "desc",
+            id: "desc",
+          },
+          dedupeBy: (row) =>
+            row?.id ||
+            row?.ma_don_hang_noi_bo ||
+            row?.ma_don_hang ||
+            row?.order_code ||
+            "",
         });
-        const rows = await autoCancelPendingKrudRows(extractRows(response));
-        const krudDetails = rows
+        const normalizedRows = await autoCancelPendingKrudRows(rows);
+        const krudDetails = normalizedRows
           .filter((row) => shouldProviderSeeOrder(row, session))
           .map((detail) => normalizeKrudOrderDetail(detail, session));
 
         if (krudDetails.length) {
           krudDetails.forEach((detail) => persistOrderDetail(detail, session));
-          return krudDetails.sort((left, right) => {
-            const leftTime = new Date(left?.order?.created_at || 0).getTime();
-            const rightTime = new Date(right?.order?.created_at || 0).getTime();
-            return rightTime - leftTime;
-          });
+          return krudDetails.sort(compareOrderDetailsByPickupDesc);
         }
       } catch (error) {
         console.warn("Không thể tải đơn NCC từ KRUD, fallback local:", error);
@@ -1192,11 +1310,7 @@
       readJson(storageKeys.orders, []) || []
     ).map((detail) => normalizeLocalOrderDetail(detail, session))
      .filter((item) => shouldProviderSeeOrder(item.order, session));
-    return localDetails.sort((left, right) => {
-      const leftTime = new Date(left?.order?.created_at || 0).getTime();
-      const rightTime = new Date(right?.order?.created_at || 0).getTime();
-      return rightTime - leftTime;
-    });
+    return localDetails.sort(compareOrderDetailsByPickupDesc);
   }
 
   function persistOrderDetail(detail, session) {
@@ -1342,15 +1456,22 @@
     }
 
     const tableName = localAuth?.krudTables?.shipper;
-    const listFn = getKrudListFn();
-    if (!tableName || !listFn) return null;
+    const fetchAllRows =
+      (localAuth && typeof localAuth.fetchAllKrudRows === "function"
+        ? localAuth.fetchAllKrudRows
+        : null) ||
+      (typeof core.fetchAllKrudRows === "function"
+        ? core.fetchAllKrudRows
+        : null);
+    if (!tableName || typeof fetchAllRows !== "function") return null;
 
-    const response = await listFn({
+    const rows = await fetchAllRows({
       table: tableName,
-      page: 1,
       limit: 200,
+      maxPages: 10,
+      sort: { id: "desc" },
+      dedupeBy: "id",
     });
-    const rows = extractRows(response);
     const sessionId = normalizeText(session.id || "");
     const sessionUsername = normalizeText(session.username || "").toLowerCase();
     const sessionPhone = normalizePhone(
@@ -1458,14 +1579,14 @@
           return false;
         }
 
-        const created = new Date(order.created_at || 0);
+        const pickupMs = resolvePickupSortMs(order);
         if (dateFrom) {
-          const from = new Date(`${dateFrom}T00:00:00`);
-          if (created < from) return false;
+          const from = new Date(`${dateFrom}T00:00:00`).getTime();
+          if (!pickupMs || pickupMs < from) return false;
         }
         if (dateTo) {
-          const to = new Date(`${dateTo}T23:59:59`);
-          if (created > to) return false;
+          const to = new Date(`${dateTo}T23:59:59`).getTime();
+          if (!pickupMs || pickupMs > to) return false;
         }
         return true;
       });
@@ -2045,6 +2166,30 @@
     return `<div class="customer-pagination">${buttons.join("")}</div>`;
   }
 
+  function normalizePageNumber(value, fallback = 1) {
+    const page = Number.parseInt(String(value || ""), 10);
+    return Number.isFinite(page) && page > 0 ? page : fallback;
+  }
+
+  function buildPaginationModel(currentPage, totalPages) {
+    if (totalPages <= 1) return [];
+
+    const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+    const normalizedPages = Array.from(pages)
+      .filter((page) => page >= 1 && page <= totalPages)
+      .sort((left, right) => left - right);
+
+    const model = [];
+    normalizedPages.forEach((page, index) => {
+      if (index > 0 && page - normalizedPages[index - 1] > 1) {
+        model.push("ellipsis");
+      }
+      model.push(page);
+    });
+
+    return model;
+  }
+
   function renderInfoList(items) {
     return `<dl class="customer-info-list">${items
       .map(
@@ -2138,7 +2283,7 @@
                 <div class="customer-order-meta customer-order-meta-compact">
                   <span><b>Người nhận</b><span class="customer-order-meta-value">${escapeHtml(order.receiver_name || "Chưa cập nhật")}</span></span>
                   <span><b>COD</b><span class="customer-order-meta-value">${formatCurrency(order.cod_amount || 0)}</span></span>
-                  <span><b>Tạo</b><span class="customer-order-meta-value">${formatDateTime(order.created_at)}</span></span>
+                  <span><b>Ngày lấy</b><span class="customer-order-meta-value">${formatPickupLabel(order)}</span></span>
                 </div>
               </article>`,
                   )
@@ -2175,8 +2320,8 @@
     const activeFilters = [];
     if (filters.search) activeFilters.push(`Từ khóa: ${filters.search}`);
     if (filters.status) activeFilters.push(`Trạng thái: ${statusLabels[filters.status] || filters.status}`);
-    if (filters.date_from) activeFilters.push(`Từ ngày: ${filters.date_from}`);
-    if (filters.date_to) activeFilters.push(`Đến ngày: ${filters.date_to}`);
+    if (filters.date_from) activeFilters.push(`Từ ngày lấy: ${filters.date_from}`);
+    if (filters.date_to) activeFilters.push(`Đến ngày lấy: ${filters.date_to}`);
     const currentPage = Number(pagination.page || 1);
     const totalPages = Number(pagination.total_pages || 1);
     const totalResults = Number(pagination.total_records || items.length || 0);
@@ -2260,7 +2405,7 @@
                   <span><b>Người gửi</b><span class="customer-order-meta-value">${escapeHtml(order.sender_name || "--")}</span></span>
                   <span><b>Người nhận</b><span class="customer-order-meta-value">${escapeHtml(order.receiver_name || "--")} · ${escapeHtml(order.receiver_phone || "--")}</span></span>
                   <span><b>COD</b><span class="customer-order-meta-value">${formatCurrency(order.cod_amount)}</span></span>
-                  <span><b>Tạo</b><span class="customer-order-meta-value">${formatDateTime(order.created_at)}</span></span>
+                  <span><b>Ngày lấy</b><span class="customer-order-meta-value">${formatPickupLabel(order)}</span></span>
                 </div>
               </article>`,
                   )
@@ -2455,6 +2600,10 @@
                   ${renderShipperVehicleCards(vehicles)}
                 </div>
               </div>
+              <div class="customer-pagination-wrap vehicle-management-pagination-wrap" id="shipper-vehicle-pagination-wrap" hidden>
+                <p class="customer-panel-subtext vehicle-management-pagination-summary" id="shipper-vehicle-pagination-summary"></p>
+                <div class="customer-pagination" id="shipper-vehicle-pagination"></div>
+              </div>
             </article>
           </div>
         </div>
@@ -2479,6 +2628,10 @@
     const vehicleSearchInput = document.getElementById("shipper-vehicle-search");
     const vehicleStatusFilter = document.getElementById("shipper-vehicle-status-filter");
     const vehicleCountNode = document.getElementById("shipper-vehicle-list-count");
+    const vehiclePaginationWrap = document.getElementById("shipper-vehicle-pagination-wrap");
+    const vehiclePaginationSummary = document.getElementById("shipper-vehicle-pagination-summary");
+    const vehiclePaginationNode = document.getElementById("shipper-vehicle-pagination");
+    let currentVehiclePage = 1;
 
     const applyVehicleFilters = () => {
       const searchText = String(vehicleSearchInput?.value || "").trim().toLowerCase();
@@ -2502,13 +2655,63 @@
         }
         return matchSearch && matchStatus;
       });
+      const totalPages = Math.max(1, Math.ceil(filteredVehicles.length / VEHICLES_PER_PAGE));
+      currentVehiclePage = normalizePageNumber(
+        Math.min(currentVehiclePage, totalPages),
+        1,
+      );
+      const startIndex = filteredVehicles.length
+        ? (currentVehiclePage - 1) * VEHICLES_PER_PAGE
+        : 0;
+      const paginatedVehicles = filteredVehicles.slice(
+        startIndex,
+        startIndex + VEHICLES_PER_PAGE,
+      );
       if (vehicleCountNode) {
         vehicleCountNode.textContent =
           filteredVehicles.length === vehicles.length
             ? `${formatNumber(vehicles.length)} xe`
             : `${formatNumber(filteredVehicles.length)}/${formatNumber(vehicles.length)} xe`;
       }
-      vehicleList.innerHTML = renderShipperVehicleCards(filteredVehicles);
+      vehicleList.innerHTML = renderShipperVehicleCards(paginatedVehicles);
+
+      if (!vehiclePaginationWrap || !vehiclePaginationSummary || !vehiclePaginationNode) {
+        return;
+      }
+
+      if (filteredVehicles.length <= VEHICLES_PER_PAGE) {
+        vehiclePaginationWrap.hidden = true;
+        vehiclePaginationSummary.textContent = "";
+        vehiclePaginationNode.innerHTML = "";
+        return;
+      }
+
+      vehiclePaginationWrap.hidden = false;
+      vehiclePaginationSummary.textContent = `Trang ${currentVehiclePage}/${totalPages} • ${formatNumber(filteredVehicles.length)} xe`;
+      const paginationModel = buildPaginationModel(currentVehiclePage, totalPages);
+      vehiclePaginationNode.innerHTML = `
+        ${
+          currentVehiclePage > 1
+            ? '<button type="button" class="customer-page-btn" data-page-action="prev">Trước</button>'
+            : ""
+        }
+        ${paginationModel
+          .map((entry) =>
+            entry === "ellipsis"
+              ? '<span class="customer-page-btn customer-page-btn-ellipsis" aria-hidden="true">…</span>'
+              : `<button type="button" class="customer-page-btn ${
+                  entry === currentVehiclePage ? "is-active" : ""
+                }" data-page="${entry}" ${
+                  entry === currentVehiclePage ? 'aria-current="page"' : ""
+                }>${entry}</button>`,
+          )
+          .join("")}
+        ${
+          currentVehiclePage < totalPages
+            ? '<button type="button" class="customer-page-btn" data-page-action="next">Sau</button>'
+            : ""
+        }
+      `;
     };
 
     const resetVehicleForm = () => {
@@ -2537,8 +2740,33 @@
     };
 
     applyVehicleFilters();
-    vehicleSearchInput?.addEventListener("input", applyVehicleFilters);
-    vehicleStatusFilter?.addEventListener("change", applyVehicleFilters);
+    vehicleSearchInput?.addEventListener("input", () => {
+      currentVehiclePage = 1;
+      applyVehicleFilters();
+    });
+    vehicleStatusFilter?.addEventListener("change", () => {
+      currentVehiclePage = 1;
+      applyVehicleFilters();
+    });
+    vehiclePaginationNode?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-page], [data-page-action]");
+      if (!button) return;
+
+      const action = String(button.getAttribute("data-page-action") || "").trim();
+      if (action === "prev") {
+        currentVehiclePage = Math.max(1, currentVehiclePage - 1);
+      } else if (action === "next") {
+        currentVehiclePage += 1;
+      } else {
+        currentVehiclePage = normalizePageNumber(button.getAttribute("data-page"), 1);
+      }
+
+      applyVehicleFilters();
+      document.querySelector(".vehicle-management-list-card")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
 
     vehicleForm.addEventListener("submit", async (event) => {
       event.preventDefault();

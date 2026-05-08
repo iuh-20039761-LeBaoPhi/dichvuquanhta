@@ -2477,6 +2477,23 @@
   margin-top: 14px;
 }
 
+.vehicle-management-pagination-wrap {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.vehicle-management-pagination-summary {
+  margin: 0;
+  text-align: center;
+}
+
+.customer-page-btn.customer-page-btn-ellipsis {
+  pointer-events: none;
+  background: transparent;
+  box-shadow: none;
+}
+
 @media (max-width: 1100px) {
   .vehicle-management-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));

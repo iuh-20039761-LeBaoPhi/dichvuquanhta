@@ -575,19 +575,29 @@
     }
 
     if (typeof window.crud === "function") {
-      return (payload) =>
-        window.crud("list", payload.table, {
+      return (payload) => {
+        const options = {
+          ...payload,
           p: payload.page || 1,
           limit: payload.limit || 100,
-        });
+        };
+        delete options.table;
+        delete options.page;
+        return window.crud("list", payload.table, options);
+      };
     }
 
     if (typeof window.krud === "function") {
-      return (payload) =>
-        window.krud("list", payload.table, {
+      return (payload) => {
+        const options = {
+          ...payload,
           p: payload.page || 1,
           limit: payload.limit || 100,
-        });
+        };
+        delete options.table;
+        delete options.page;
+        return window.krud("list", payload.table, options);
+      };
     }
 
     return null;
@@ -607,6 +617,91 @@
     }
 
     return [];
+  }
+
+  function resolveDedupeValue(row, dedupeBy) {
+    if (!dedupeBy) return "";
+    if (typeof dedupeBy === "function") {
+      return normalizeText(dedupeBy(row));
+    }
+    if (Array.isArray(dedupeBy)) {
+      return normalizeText(
+        dedupeBy.map((key) => normalizeText(row?.[key])).join("|"),
+      );
+    }
+    return normalizeText(row?.[dedupeBy]);
+  }
+
+  async function fetchAllKrudRows(options = {}) {
+    await ensureKrudReady();
+    const {
+      table = "",
+      where = [],
+      sort = { id: "desc" },
+      limit = 200,
+      maxPages = 10,
+      listFn = null,
+      fetchPage = null,
+      dedupeBy = null,
+      stopWhenNoNewRows = dedupeBy != null,
+    } = options || {};
+
+    const parsedLimit = Number.parseInt(String(limit || 200), 10);
+    const parsedMaxPages = Number.parseInt(String(maxPages || 10), 10);
+    const normalizedLimit =
+      Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : 200;
+    const normalizedMaxPages =
+      Number.isFinite(parsedMaxPages) && parsedMaxPages > 0
+        ? parsedMaxPages
+        : 10;
+    const effectiveListFn =
+      typeof listFn === "function" ? listFn : getKrudListFn();
+    const executor =
+      typeof fetchPage === "function"
+        ? fetchPage
+        : typeof effectiveListFn === "function"
+          ? (page) =>
+              effectiveListFn({
+                table,
+                where,
+                page,
+                limit: normalizedLimit,
+                sort,
+              })
+          : null;
+
+    if (typeof executor !== "function") {
+      throw new Error("Không tìm thấy hàm KRUD list.");
+    }
+
+    const rows = [];
+    const seen = dedupeBy ? new Set() : null;
+
+    for (let page = 1; page <= normalizedMaxPages; page += 1) {
+      const response = await Promise.resolve(executor(page));
+      const batch = Array.isArray(response) ? response : extractRows(response);
+      if (!batch.length) break;
+
+      let addedInBatch = 0;
+      batch.forEach((row) => {
+        if (!seen) {
+          rows.push(row);
+          addedInBatch += 1;
+          return;
+        }
+
+        const dedupeValue = resolveDedupeValue(row, dedupeBy).toUpperCase();
+        if (dedupeValue && seen.has(dedupeValue)) return;
+        if (dedupeValue) seen.add(dedupeValue);
+        rows.push(row);
+        addedInBatch += 1;
+      });
+
+      if (batch.length < normalizedLimit) break;
+      if (stopWhenNoNewRows && addedInBatch === 0) break;
+    }
+
+    return rows;
   }
 
   function extractInsertId(result) {
@@ -630,34 +725,15 @@
   }
 
   async function listSharedUsers() {
-    await ensureKrudReady();
-    const listFn = getKrudListFn();
-    if (!listFn) {
-      throw new Error("Không tìm thấy hàm KRUD list.");
-    }
-
-    const rows = [];
-    const limit = 200;
-    const maxPages = 10;
-
-    for (let page = 1; page <= maxPages; page += 1) {
-      const response = await Promise.resolve(
-        listFn({
-          table: dvqtUserTable,
-          page,
-          limit,
-          sort: {
-            id: "desc",
-          },
-        }),
-      );
-      const batch = extractRows(response);
-      if (!batch.length) break;
-      rows.push(...batch);
-      if (batch.length < limit) break;
-    }
-
-    return rows;
+    return fetchAllKrudRows({
+      table: dvqtUserTable,
+      limit: 200,
+      maxPages: 10,
+      sort: {
+        id: "desc",
+      },
+      dedupeBy: "id",
+    });
   }
 
   async function listAllKrudUsers() {
@@ -675,32 +751,15 @@
   }
 
   async function listKrudShipperVehicles(shipperId = "") {
-    await ensureKrudReady();
-    const listFn = getKrudListFn();
-    if (!listFn) {
-      throw new Error("Không tìm thấy hàm KRUD list.");
-    }
-
-    const rows = [];
-    const limit = 200;
-    const maxPages = 10;
-
-    for (let page = 1; page <= maxPages; page += 1) {
-      const response = await Promise.resolve(
-        listFn({
-          table: ghnShipperVehicleTable,
-          page,
-          limit,
-          sort: {
-            id: "desc",
-          },
-        }),
-      );
-      const batch = extractRows(response);
-      if (!batch.length) break;
-      rows.push(...batch);
-      if (batch.length < limit) break;
-    }
+    const rows = await fetchAllKrudRows({
+      table: ghnShipperVehicleTable,
+      limit: 200,
+      maxPages: 10,
+      sort: {
+        id: "desc",
+      },
+      dedupeBy: (row) => row?.id || row?.local_id || row?.bien_so || "",
+    });
 
     const normalizedShipperId = normalizeText(shipperId);
     const vehicles = rows
@@ -1401,6 +1460,7 @@
     getDashboardPath,
     listAllKrudUsers,
     listKrudShipperVehicles,
+    fetchAllKrudRows,
     createKrudShipperVehicle,
     updateKrudShipperVehicle,
     deleteKrudShipperVehicle,

@@ -204,7 +204,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 <table class="table align-middle mb-0 ghn-admin-orders-table-grid" id="adminOrderTable">
                     <thead class="bg-light text-muted small text-uppercase">
                         <tr>
-                            <th class="ps-4 ghn-admin-orders-col-code">Mã đơn / Ngày đặt</th>
+                            <th class="ps-4 ghn-admin-orders-col-code">Mã đơn</th>
                             <th class="ghn-admin-orders-col-sender">Khách hàng</th>
                             <th class="ghn-admin-orders-col-recipient">Người nhận</th>
                             <th class="ghn-admin-orders-col-service">Dịch vụ / Ngày lấy</th>
@@ -260,12 +260,64 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         }
         function fmtMoney(v) { return Number(v || 0).toLocaleString('vi-VN') + 'đ'; }
         function orderFeeValue(order) { return Number(order?.tong_cuoc || order?.shipping_fee || 0); }
+        function normalizeText(v) { return String(v || '').replace(/\s+/g,' ').trim(); }
+        function parseDateMs(v) {
+            const raw = normalizeText(v);
+            if (!raw) return 0;
+            const localMatch = raw.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?)?$/);
+            if (localMatch) {
+                const day = Number(localMatch[1] || 0);
+                const month = Number(localMatch[2] || 0);
+                const year = Number(localMatch[3] || 0);
+                const hour = Number(localMatch[4] || 0);
+                const minute = Number(localMatch[5] || 0);
+                const second = Number(localMatch[6] || 0);
+                const localTimestamp = new Date(year, month - 1, day, hour, minute, second).getTime();
+                return Number.isFinite(localTimestamp) ? localTimestamp : 0;
+            }
+            const timestamp = new Date(raw).getTime();
+            return Number.isFinite(timestamp) ? timestamp : 0;
+        }
         function fmtDate(v) {
             if (!v) return '--';
-            const d = new Date(v);
-            return isNaN(d) ? esc(v) : d.toLocaleDateString('vi-VN');
+            const parsedMs = parseDateMs(v);
+            return parsedMs ? new Date(parsedMs).toLocaleDateString('vi-VN') : esc(v);
         }
-        function normalizeText(v) { return String(v || '').replace(/\s+/g,' ').trim(); }
+        function fmtDateTime(v) {
+            if (!v) return '--';
+            const parsedMs = parseDateMs(v);
+            return parsedMs ? new Date(parsedMs).toLocaleString('vi-VN') : esc(v);
+        }
+        function extractRows(payload, depth = 0) {
+            if (depth > 4 || payload == null) return [];
+            if (Array.isArray(payload)) return payload;
+            if (typeof payload !== 'object') return [];
+
+            const candidateKeys = ['data', 'items', 'rows', 'list', 'result', 'payload'];
+            for (const key of candidateKeys) {
+                if (!(key in payload)) continue;
+                const value = payload[key];
+                if (Array.isArray(value)) return value;
+                const nested = extractRows(value, depth + 1);
+                if (nested.length) return nested;
+            }
+
+            return [];
+        }
+        function getOrderIdentity(order) {
+            const explicitKey = normalizeText(
+                order?.ma_don_hang_noi_bo || order?.order_code || order?.ma_don_hang || order?.id || ''
+            );
+            if (explicitKey) return explicitKey.toUpperCase();
+
+            return [
+                normalizeText(order?.ho_ten_nguoi_gui || order?.nguoi_gui_ho_ten || ''),
+                normalizeText(order?.so_dien_thoai_nguoi_gui || order?.nguoi_gui_so_dien_thoai || ''),
+                normalizeText(order?.ho_ten_nguoi_nhan || order?.nguoi_nhan_ho_ten || ''),
+                normalizeText(order?.so_dien_thoai_nguoi_nhan || order?.nguoi_nhan_so_dien_thoai || ''),
+                normalizeText(order?.created_at || order?.created_date || '')
+            ].join('|').toUpperCase();
+        }
         function startOfToday() {
             const now = new Date();
             return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -275,9 +327,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         }
         function orderCreatedMs(order) {
             const raw = normalizeText(order?.created_at || order?.created_date || '');
-            if (!raw) return 0;
-            const date = new Date(raw);
-            return isNaN(date.getTime()) ? 0 : date.getTime();
+            return parseDateMs(raw);
+        }
+        function orderPickupMs(order) {
+            const raw = normalizeText(order?.ngay_lay_hang || order?.pickup_date || '');
+            return parseDateMs(raw);
         }
         function parseDateFilterMs(v, mode) {
             const raw = String(v || '').trim();
@@ -286,11 +340,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             const date = new Date(raw + suffix);
             return isNaN(date.getTime()) ? null : date.getTime();
         }
-        function compareOrdersByCreatedDesc(left, right) {
-            const leftCreatedMs = orderCreatedMs(left);
-            const rightCreatedMs = orderCreatedMs(right);
-            if (rightCreatedMs !== leftCreatedMs) {
-                return rightCreatedMs - leftCreatedMs;
+        function compareOrdersByPickupDesc(left, right) {
+            const leftPickupMs = orderPickupMs(left);
+            const rightPickupMs = orderPickupMs(right);
+            if (rightPickupMs !== leftPickupMs) {
+                return rightPickupMs - leftPickupMs;
             }
             return Number(right?.id || 0) - Number(left?.id || 0);
         }
@@ -300,33 +354,29 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
         }
 
         async function fetchAllOrdersFromApi() {
+            const fetchAllRows = window.GiaoHangNhanhCore?.fetchAllKrudRows;
+            if (typeof fetchAllRows !== 'function') return [];
+
             if (typeof window.DVQTKrud?.listTable === 'function') {
-                const rows = await window.DVQTKrud.listTable(TABLE);
-                return Array.isArray(rows) ? rows : [];
-            }
-
-            const rows = [];
-            const limit = 200;
-            const maxPages = 20;
-            for (let page = 1; page <= maxPages; page += 1) {
-                let batch = [];
-                if (typeof window.krudList === 'function') {
-                    const res = await window.krudList({
-                        table: TABLE,
+                return fetchAllRows({
+                    limit: 200,
+                    maxPages: 50,
+                    dedupeBy: getOrderIdentity,
+                    fetchPage: (page) => window.DVQTKrud.listTable(TABLE, {
                         page,
-                        limit,
-                        sort: { created_at: 'desc', id: 'desc' },
-                    });
-                    batch = Array.isArray(res) ? res : (res?.data || res?.items || []);
-                } else if (typeof window.crud === 'function') {
-                    batch = await window.crud('list', TABLE, { p: page, limit });
-                }
-
-                if (!Array.isArray(batch) || !batch.length) break;
-                rows.push(...batch);
-                if (batch.length < limit) break;
+                        limit: 200,
+                        sort: { ngay_lay_hang: 'desc', id: 'desc' },
+                    }),
+                });
             }
-            return rows;
+
+            return fetchAllRows({
+                table: TABLE,
+                limit: 200,
+                maxPages: 50,
+                sort: { ngay_lay_hang: 'desc', id: 'desc' },
+                dedupeBy: getOrderIdentity,
+            });
         }
 
         /* ── Trạng thái ── */
@@ -412,13 +462,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 const recvName    = esc(normalizeText(o.ho_ten_nguoi_nhan || o.nguoi_nhan_ho_ten || ''));
                 const recvPhone   = esc(normalizeText(o.so_dien_thoai_nguoi_nhan || o.nguoi_nhan_so_dien_thoai || ''));
                 const svc  = esc(normalizeText(o.ten_dich_vu || o.dich_vu || ''));
-                const date = fmtDate(o.ngay_lay_hang || o.created_at);
+                const date = fmtDate(o.ngay_lay_hang || o.pickup_date);
                 const fee  = fmtMoney(orderFeeValue(o));
                 const url  = DETAIL_URL + encodeURIComponent(code || o.id);
                 return `<tr>
                     <td class="ps-4">
                         <div class="fw-bold small ghn-admin-order-code">${esc(disp)}</div>
-                        <div class="text-muted ghn-admin-order-date">${fmtDate(o.created_at || o.ngay_lay_hang)}</div>
                     </td>
                     <td>
                         <div class="fw-semibold small text-dark">${senderName || '--'}</div>
@@ -461,6 +510,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     <div class="mc-row"><span>Người gửi</span><strong>${sender || '--'}</strong></div>
                     <div class="mc-row"><span>Người nhận</span><strong>${recv || '--'}</strong></div>
                     <div class="mc-row"><span>Shipper</span><strong>${ncc || 'Chưa nhận'}</strong></div>
+                    <div class="mc-row"><span>Ngày lấy</span><strong>${fmtDate(o.ngay_lay_hang || o.pickup_date)}</strong></div>
                     <div class="mc-row text-primary"><span>Cước ship</span><strong>${fee}</strong></div>
                     <div class="mt-2">
                         <a href="${url}" class="btn btn-sm btn-light border w-100 fw-bold">
@@ -488,10 +538,10 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             const toTime = parseDateFilterMs(document.getElementById('orderToDate')?.value, 'end');
             let list = allOrders.filter(o => {
                 if (fromTime == null && toTime == null) return true;
-                const createdMs = orderCreatedMs(o);
-                if (!createdMs) return false;
-                if (fromTime != null && createdMs < fromTime) return false;
-                if (toTime != null && createdMs > toTime) return false;
+                const pickupMs = orderPickupMs(o);
+                if (!pickupMs) return false;
+                if (fromTime != null && pickupMs < fromTime) return false;
+                if (toTime != null && pickupMs > toTime) return false;
                 return true;
             });
 
@@ -563,7 +613,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
             try {
                 const rows = await fetchAllOrdersFromApi();
-                allOrders = Array.isArray(rows) ? rows.sort(compareOrdersByCreatedDesc) : [];
+                allOrders = Array.isArray(rows) ? rows.sort(compareOrdersByPickupDesc) : [];
                 filterOrders();
             } catch (err) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Lỗi: ${esc(err.message || 'Không thể tải dữ liệu')}</td></tr>`;

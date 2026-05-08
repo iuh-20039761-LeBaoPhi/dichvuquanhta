@@ -248,19 +248,29 @@
     }
 
     if (typeof window.crud === "function") {
-      return (payload) =>
-        window.crud("list", payload.table, {
+      return (payload) => {
+        const options = {
+          ...payload,
           p: payload.page || 1,
           limit: payload.limit || 100,
-        });
+        };
+        delete options.table;
+        delete options.page;
+        return window.crud("list", payload.table, options);
+      };
     }
 
     if (typeof window.krud === "function") {
-      return (payload) =>
-        window.krud("list", payload.table, {
+      return (payload) => {
+        const options = {
+          ...payload,
           p: payload.page || 1,
           limit: payload.limit || 100,
-        });
+        };
+        delete options.table;
+        delete options.page;
+        return window.krud("list", payload.table, options);
+      };
     }
 
     return null;
@@ -288,6 +298,80 @@
     }
 
     return [];
+  }
+
+  function resolveDedupeValue(row, dedupeBy) {
+    if (!dedupeBy) return "";
+    if (typeof dedupeBy === "function") {
+      return normalizeText(dedupeBy(row));
+    }
+    if (Array.isArray(dedupeBy)) {
+      return normalizeText(
+        dedupeBy.map((key) => normalizeText(row?.[key])).join("|"),
+      );
+    }
+    return normalizeText(row?.[dedupeBy]);
+  }
+
+  async function fetchAllKrudRows(options = {}) {
+    const {
+      table = "",
+      where = [],
+      sort = { id: "desc" },
+      limit = 200,
+      maxPages = 10,
+      listFn = null,
+      fetchPage = null,
+      dedupeBy = null,
+      stopWhenNoNewRows = dedupeBy != null,
+    } = options || {};
+
+    const effectiveLimit = toPositiveInteger(limit, 200);
+    const effectiveMaxPages = toPositiveInteger(maxPages, 10);
+    const executor =
+      typeof fetchPage === "function"
+        ? fetchPage
+        : typeof listFn === "function"
+          ? (page) =>
+              listFn({
+                table,
+                where,
+                page,
+                limit: effectiveLimit,
+                sort,
+              })
+          : null;
+
+    if (typeof executor !== "function") return [];
+
+    const rows = [];
+    const seen = dedupeBy ? new Set() : null;
+
+    for (let page = 1; page <= effectiveMaxPages; page += 1) {
+      const response = await Promise.resolve(executor(page));
+      const batch = Array.isArray(response) ? response : extractRows(response);
+      if (!batch.length) break;
+
+      let addedInBatch = 0;
+      batch.forEach((row) => {
+        if (!seen) {
+          rows.push(row);
+          addedInBatch += 1;
+          return;
+        }
+
+        const dedupeValue = resolveDedupeValue(row, dedupeBy).toUpperCase();
+        if (dedupeValue && seen.has(dedupeValue)) return;
+        if (dedupeValue) seen.add(dedupeValue);
+        rows.push(row);
+        addedInBatch += 1;
+      });
+
+      if (batch.length < effectiveLimit) break;
+      if (stopWhenNoNewRows && addedInBatch === 0) break;
+    }
+
+    return rows;
   }
 
   function toPositiveNumber(value, fallback = 0) {
@@ -975,6 +1059,7 @@
     bindPortalLogoutActions,
     extractRows,
     getKrudListFn,
+    fetchAllKrudRows,
     getStatusLabel,
     normalizeServiceType,
     getServiceLabel,

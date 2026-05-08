@@ -143,14 +143,12 @@
 
 @media (max-width: 767px) {
   .dvqt-store-badges {
-    width: 100%;
-    flex-direction: column;
+    width: fit-content;
+    max-width: 100%;
   }
 
   .dvqt-store-badge {
-    width: 100%;
-    flex-basis: auto;
-    min-width: 0;
+    max-width: 182px;
   }
 }
 

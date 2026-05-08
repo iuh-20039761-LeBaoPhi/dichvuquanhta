@@ -3804,6 +3804,71 @@ body[data-page="provider-vehicles"] .vehicle-management-actions {
   margin-top: 14px;
 }
 
+body[data-page="provider-vehicles"] .vehicle-management-pagination {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-pagination-summary {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-pagination-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-pagination-controls .customer-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid #d8e4dc;
+  background: #ffffff;
+  color: #2d6a4f;
+  font: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-pagination-controls .customer-page-btn:hover {
+  border-color: rgba(45, 106, 79, 0.32);
+  background: #f4faf6;
+  box-shadow: 0 8px 18px rgba(45, 106, 79, 0.08);
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-pagination-controls .customer-page-btn.is-active {
+  border-color: #2d6a4f;
+  background: #2d6a4f;
+  color: #ffffff;
+}
+
+body[data-page="provider-vehicles"] .vehicle-management-pagination-controls .customer-page-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  color: #74837a;
+  font-weight: 700;
+}
+
 :is(body[data-page="provider-vehicles"]) .customer-profile-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

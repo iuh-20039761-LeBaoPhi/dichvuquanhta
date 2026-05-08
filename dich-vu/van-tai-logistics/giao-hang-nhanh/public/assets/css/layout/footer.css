@@ -169,8 +169,4 @@ footer {
     padding: 0 16px;
   }
 
-  .dvqt-store-badges {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
 }

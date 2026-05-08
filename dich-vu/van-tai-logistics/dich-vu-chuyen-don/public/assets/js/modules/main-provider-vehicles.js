@@ -14,6 +14,7 @@ const providerVehiclesModule = (function (window, document) {
 
   const root = document.getElementById("provider-vehicles-root");
   if (!root || !store) return;
+  const VEHICLES_PER_PAGE = 4;
 
   function escapeHtml(value) {
     if (typeof core.escapeHtml === "function") {
@@ -119,6 +120,30 @@ const providerVehiclesModule = (function (window, document) {
       })
       .filter(Boolean)
       .join("");
+  }
+
+  function normalizePageNumber(value, fallback = 1) {
+    const page = Number.parseInt(String(value || ""), 10);
+    return Number.isFinite(page) && page > 0 ? page : fallback;
+  }
+
+  function buildPaginationModel(currentPage, totalPages) {
+    if (totalPages <= 1) return [];
+
+    const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+    const normalizedPages = Array.from(pages)
+      .filter((page) => page >= 1 && page <= totalPages)
+      .sort((left, right) => left - right);
+
+    const model = [];
+    normalizedPages.forEach((page, index) => {
+      if (index > 0 && page - normalizedPages[index - 1] > 1) {
+        model.push("ellipsis");
+      }
+      model.push(page);
+    });
+
+    return model;
   }
 
   function renderProviderVehicleCards(vehicles) {
@@ -346,6 +371,10 @@ const providerVehiclesModule = (function (window, document) {
                     ${renderProviderVehicleCards(vehicles)}
                   </div>
                 </div>
+                <div class="vehicle-management-pagination" id="provider-vehicle-pagination-wrap" hidden>
+                  <p class="vehicle-management-pagination-summary" id="provider-vehicle-pagination-summary"></p>
+                  <div class="vehicle-management-pagination-controls" id="provider-vehicle-pagination"></div>
+                </div>
               </article>
             </div>
           </div>
@@ -370,6 +399,7 @@ const providerVehiclesModule = (function (window, document) {
     const vehicleSearchInput = root.querySelector("#provider-vehicle-search");
     const vehicleStatusFilter = root.querySelector("#provider-vehicle-status-filter");
     const vehicleCountNode = root.querySelector("#provider-vehicle-list-count");
+    let currentVehiclePage = 1;
 
     const applyVehicleFilters = () => {
       const searchText = String(vehicleSearchInput?.value || "").trim().toLowerCase();
@@ -394,13 +424,65 @@ const providerVehiclesModule = (function (window, document) {
         }
         return matchSearch && matchStatus;
       });
+      const totalPages = Math.max(1, Math.ceil(filteredVehicles.length / VEHICLES_PER_PAGE));
+      currentVehiclePage = Math.min(currentVehiclePage, totalPages);
+      currentVehiclePage = normalizePageNumber(currentVehiclePage, 1);
+      const startIndex = filteredVehicles.length
+        ? (currentVehiclePage - 1) * VEHICLES_PER_PAGE
+        : 0;
+      const paginatedVehicles = filteredVehicles.slice(
+        startIndex,
+        startIndex + VEHICLES_PER_PAGE,
+      );
+      const paginationWrapNode = root.querySelector("#provider-vehicle-pagination-wrap");
+      const paginationSummaryNode = root.querySelector("#provider-vehicle-pagination-summary");
+      const paginationNode = root.querySelector("#provider-vehicle-pagination");
+
       if (vehicleCountNode) {
         vehicleCountNode.textContent =
           filteredVehicles.length === vehicles.length
             ? `${vehicles.length} xe`
             : `${filteredVehicles.length}/${vehicles.length} xe`;
       }
-      vehicleList.innerHTML = renderProviderVehicleCards(filteredVehicles);
+      vehicleList.innerHTML = renderProviderVehicleCards(paginatedVehicles);
+
+      if (!paginationWrapNode || !paginationSummaryNode || !paginationNode) {
+        return;
+      }
+
+      if (filteredVehicles.length <= VEHICLES_PER_PAGE) {
+        paginationWrapNode.hidden = true;
+        paginationSummaryNode.textContent = "";
+        paginationNode.innerHTML = "";
+        return;
+      }
+
+      paginationWrapNode.hidden = false;
+      paginationSummaryNode.textContent = `Trang ${currentVehiclePage}/${totalPages} • ${filteredVehicles.length} xe`;
+      const paginationModel = buildPaginationModel(currentVehiclePage, totalPages);
+      paginationNode.innerHTML = `
+        ${
+          currentVehiclePage > 1
+            ? '<button type="button" class="customer-page-btn" data-page-action="prev">Trước</button>'
+            : ""
+        }
+        ${paginationModel
+          .map((entry) =>
+            entry === "ellipsis"
+              ? '<span class="customer-page-ellipsis" aria-hidden="true">…</span>'
+              : `<button type="button" class="customer-page-btn ${
+                  entry === currentVehiclePage ? "is-active" : ""
+                }" data-page="${entry}" ${
+                  entry === currentVehiclePage ? 'aria-current="page"' : ""
+                }>${entry}</button>`,
+          )
+          .join("")}
+        ${
+          currentVehiclePage < totalPages
+            ? '<button type="button" class="customer-page-btn" data-page-action="next">Sau</button>'
+            : ""
+        }
+      `;
     };
 
     const resetVehicleForm = () => {
@@ -450,8 +532,36 @@ const providerVehiclesModule = (function (window, document) {
 
     resetVehicleForm();
     applyVehicleFilters();
-    vehicleSearchInput?.addEventListener("input", applyVehicleFilters);
-    vehicleStatusFilter?.addEventListener("change", applyVehicleFilters);
+    vehicleSearchInput?.addEventListener("input", () => {
+      currentVehiclePage = 1;
+      applyVehicleFilters();
+    });
+    vehicleStatusFilter?.addEventListener("change", () => {
+      currentVehiclePage = 1;
+      applyVehicleFilters();
+    });
+
+    root
+      .querySelector("#provider-vehicle-pagination")
+      ?.addEventListener("click", function (event) {
+        const button = event.target.closest("[data-page], [data-page-action]");
+        if (!button) return;
+
+        const action = String(button.getAttribute("data-page-action") || "").trim();
+        if (action === "prev") {
+          currentVehiclePage = Math.max(1, currentVehiclePage - 1);
+        } else if (action === "next") {
+          currentVehiclePage += 1;
+        } else {
+          currentVehiclePage = normalizePageNumber(button.getAttribute("data-page"), 1);
+        }
+
+        applyVehicleFilters();
+        root.querySelector(".vehicle-management-list-card")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      });
 
     vehicleSubmitButton?.addEventListener("click", async function () {
       if (

@@ -919,7 +919,7 @@
       order.order_code = formatSystemOrderCode(order.id, order.created_at);
     }
 
-    order.created_at = order.created_at || new Date().toISOString();
+    order.created_at = normalizeText(order.created_at || "");
     order.cancel_reason = normalizeText(
       order.cancel_reason || order.ly_do_huy || "",
     );
