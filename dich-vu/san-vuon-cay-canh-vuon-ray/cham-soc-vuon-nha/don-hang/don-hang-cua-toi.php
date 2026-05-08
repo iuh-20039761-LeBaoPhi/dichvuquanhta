@@ -202,7 +202,7 @@ include 'layout-header.php';
     .stat-value { font-size: 1.4rem; font-weight: 700; line-height: 1; margin-top: 4px; color: var(--pg); }
     .filter-box { border: 1px solid var(--border); border-radius: 16px; background: #fff; padding: 16px; box-shadow: 0 2px 8px rgba(26,77,46,.04); }
     .table-wrap { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(26,77,46,.04); }
-    .jobs-table { --bs-table-bg: transparent; --bs-table-hover-bg: #f9fdf9; margin-bottom: 0; min-width: 980px; vertical-align: middle; }
+    .jobs-table { --bs-table-bg: transparent; --bs-table-hover-bg: #f9fdf9; margin-bottom: 0; min-width: 720px; vertical-align: middle; }
     .jobs-table thead th { background: var(--lime); color: var(--pg); white-space: nowrap; font-weight: 700; padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: .78rem; text-transform: uppercase; letter-spacing: .6px; }
     .jobs-table tbody td { padding: 12px 14px; border-color: #f0f4f0; }
     .id-badge { min-width: 48px; text-align: center; font-weight: 700; border-radius: 20px; }

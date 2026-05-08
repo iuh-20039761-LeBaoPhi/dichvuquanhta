@@ -24,7 +24,7 @@
 
     body {
       font-family: "Quicksand", sans-serif;
-      padding-top: 96px;
+      padding-top: 0;
       background-color: var(--nature-white);
       overflow-x: hidden;
     }
@@ -32,7 +32,7 @@
     /* --- HERO SECTION (ĐỒNG NHẤT VỚI DỊCH VỤ) --- */
     .hero-section {
       background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-      padding: 120px 0 80px;
+      padding: 50px 0 80px;
       position: relative;
       overflow: hidden;
     }
@@ -62,60 +62,129 @@
     .contact-info-panel {
       border: 1px solid rgba(26, 77, 46, 0.1);
       background: #ffffff;
-      border-radius: 45px;
-      padding: 40px;
-      box-shadow: 0 20px 40px rgba(26, 77, 46, 0.05);
+      border-radius: 28px;
+      padding: 36px;
+      box-shadow: 0 8px 32px rgba(26, 77, 46, 0.07);
       height: 100%;
     }
 
     .contact-info-title {
       font-family: 'Playfair Display', serif;
       color: var(--primary-green);
-      font-size: 2.5rem;
-      margin-bottom: 30px;
+      font-size: 2rem;
+      margin-bottom: 24px;
     }
 
     .contact-info-card {
       display: flex;
-      align-items: center;
-      gap: 20px;
+      align-items: flex-start;
+      gap: 16px;
       background: var(--nature-white);
-      border-radius: 25px;
-      padding: 20px;
-      margin-bottom: 20px;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
       transition: var(--transition);
       border: 1px solid transparent;
     }
 
     .contact-info-card:hover {
-      border-color: var(--primary-green);
+      border-color: rgba(26,77,46,.15);
       background: #fff;
-      transform: translateX(10px);
+      transform: translateX(6px);
+      box-shadow: 0 4px 16px rgba(26,77,46,.07);
     }
 
     .contact-info-icon {
-      width: 50px; height: 50px;
-      border-radius: 15px;
+      width: 44px; height: 44px;
+      border-radius: 12px;
       background: var(--primary-green);
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .contact-info-card h4 {
       font-weight: 700;
       color: var(--primary-green);
-      margin: 0;
-      font-size: 1.1rem;
+      margin: 0 0 5px;
+      font-size: .95rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
     }
 
     .contact-info-card p, .contact-info-card a {
       margin: 0;
-      color: #636e72;
+      color: #4a5568;
       text-decoration: none;
+      font-size: .92rem;
+      line-height: 1.6;
     }
+    .contact-info-card a:hover { color: var(--primary-green); }
+
+    /* Card địa chỉ đặc biệt */
+    .contact-address-card {
+      background: linear-gradient(135deg, #f0fff4 0%, #fff 100%);
+      border: 1.5px solid rgba(26,77,46,.12);
+      border-radius: 16px;
+      padding: 0;
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(26,77,46,.07);
+      transition: var(--transition);
+    }
+    .contact-address-card:hover {
+      box-shadow: 0 8px 24px rgba(26,77,46,.12);
+      transform: translateY(-2px);
+    }
+    .contact-address-body {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 18px 14px;
+    }
+    .contact-address-map {
+      width: 100%;
+      height: 160px;
+      border: none;
+      display: block;
+      border-top: 1px solid rgba(26,77,46,.08);
+    }
+    .contact-address-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(26,77,46,.08);
+      color: var(--primary-green);
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 99px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .contact-address-text {
+      font-size: .9rem;
+      color: #4a5568;
+      line-height: 1.65;
+      margin: 0;
+    }
+    .contact-address-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--primary-green);
+      text-decoration: none;
+      transition: gap .2s;
+    }
+    .contact-address-link:hover { gap: 8px; color: var(--accent-green); }
 
     /* --- FORM CARD --- */
     .contact-form-card {
@@ -189,7 +258,8 @@
 
     @media (max-width: 768px) {
       .hero-section h1 { font-size: 2.5rem; }
-      .contact-form-card, .contact-info-panel { padding: 30px; border-radius: 30px; }
+      .contact-form-card, .contact-info-panel { padding: 22px; border-radius: 20px; }
+      .contact-address-map { height: 140px; }
     }
   </style>
 </head>
@@ -212,19 +282,43 @@
           <div class="contact-info-panel">
             <h2 class="contact-info-title">Thông Tin Liên Hệ</h2>
 
-            <div class="contact-info-card">
-              <div class="contact-info-icon"><i class="fas fa-map-marker-alt"></i></div>
-              <div>
-                <h4>Văn phòng chính</h4>
-                <p>123 Đường ABC, Quận 1, TP. Hồ Chí Minh</p>
+            <div class="contact-address-card">
+              <div class="contact-address-body">
+                <div class="contact-info-icon" style="background:var(--primary-green);">
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="contact-address-tag">
+                    <i class="fas fa-building" style="font-size:.65rem;"></i> Văn phòng chính
+                  </div>
+                  <p class="contact-address-text">
+                    Biệt thự Liên Phương 2, Lô 28, Đường Số 3<br>
+                    Công viên Phần Mềm Quang Trung<br>
+                    Phường Tân Chánh Hiệp, Quận 12<br>
+                    Thành phố Hồ Chí Minh
+                  </p>
+                  <a href="https://maps.google.com/?q=Công+viên+Phần+Mềm+Quang+Trung,+Quận+12,+TP.HCM"
+                     target="_blank" rel="noopener" class="contact-address-link">
+                    <i class="fas fa-directions"></i> Xem đường đi
+                    <i class="fas fa-arrow-right" style="font-size:.7rem;"></i>
+                  </a>
+                </div>
               </div>
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.4851!2d106.6298!3d10.8539!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529b1b7b3b3b3%3A0x0!2zQ8O0bmcgdmnDqm4gUGjhuqduIE3hu4FtIFF1YW5nIFRydW5n!5e0!3m2!1svi!2svn!4v1"
+                class="contact-address-map"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Bản đồ văn phòng Chăm Sóc Vườn Nhà">
+              </iframe>
             </div>
 
             <div class="contact-info-card">
               <div class="contact-info-icon"><i class="fas fa-phone"></i></div>
               <div>
                 <h4>Hotline hỗ trợ</h4>
-                <p><a href="tel:0775472347">0775472347</a></p>
+                <p><a href="tel:0775472347">0337 099 459</a></p>
               </div>
             </div>
 

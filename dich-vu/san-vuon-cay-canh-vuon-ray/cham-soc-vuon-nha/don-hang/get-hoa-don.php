@@ -11,7 +11,10 @@ function get_filtered_invoices() {
         return ['error' => 'Chưa đăng nhập', 'data' => []];
     }
 
-    $id_dichvu = (int)($user['id_dichvu'] ?? 0);
+    $id_dichvu_raw = (string)($user['id_dichvu'] ?? '');
+    $id_dichvu_list = array_map('trim', explode(',', $id_dichvu_raw));
+    // NCC được xác định khi id_dichvu chứa '5' (nhất quán với layout-header.php và chi-tiet-hoa-don.php)
+    $is_provider = in_array('5', $id_dichvu_list, true);
     $userPhone = preg_replace('/\D/', '', $user['sodienthoai'] ?? '');
 
     $url = 'https://api.dvqt.vn/list/';
@@ -46,10 +49,11 @@ function get_filtered_invoices() {
 
     foreach ($allData as $item) {
         $isMatch = false;
-        if ($id_dichvu === 1) {
+        if ($is_provider) {
             // Nhà cung cấp: lấy đơn hàng trạng thái null OR khớp số điện thoại NCC
+            // Lưu ý: khi NCC nhận việc, số điện thoại được lưu vào field "sdtncc" (không phải "sodienthoaincc")
             $trangthai = $item['trangthai'] ?? null;
-            $phoneNCC = preg_replace('/\D/', '', $item['sodienthoaincc'] ?? '');
+            $phoneNCC = preg_replace('/\D/', '', $item['sdtncc'] ?? $item['sodienthoaincc'] ?? '');
             if ($trangthai === null || $trangthai === '' || $phoneNCC === $userPhone) {
                 $isMatch = true;
             }

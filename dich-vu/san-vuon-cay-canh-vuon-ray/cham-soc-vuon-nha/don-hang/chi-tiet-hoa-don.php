@@ -66,7 +66,7 @@ include 'layout-header.php';
 		font-size: 18px;
 		font-weight: 800;
 		margin-bottom: 12px;
-		color: #1158c2;
+		color: #1a4d2e;
 	}
 
 	#appDialogMessage {
@@ -94,7 +94,7 @@ include 'layout-header.php';
 	}
 
 	.appDialogBtnPrimary {
-		background: linear-gradient(135deg, #2e7d32, var(--primary));
+		background: linear-gradient(135deg, #2e7d32, #1a4d2e);
 		color: white;
 		box-shadow: 0 4px 12px rgba(26, 77, 46, 0.25);
 	}
@@ -321,36 +321,39 @@ include 'layout-header.php';
 	.profile-title,
 	.review-title {
 		margin: 0;
-		font-size: 18px;
+		font-size: 16px;
 		font-weight: 800;
-		color: #15314f;
+		color: var(--primary);
 	}
 
 	.badge {
-		padding: 5px 10px;
+		padding: 4px 10px;
 		border-radius: 999px;
 		font-size: 11px;
-		font-weight: 800;
+		font-weight: 700;
 		letter-spacing: .2px;
-		background: #e6eeff;
-		color: #3f69a8;
-		border: 1px solid #d1dfef;
+		background: var(--surface-soft);
+		color: var(--primary);
+		border: 1px solid var(--border);
 		white-space: nowrap;
 	}
 
 	.badge.success {
-		background: linear-gradient(135deg, #e6fffa, #b2f5ea);
-		color: #2c7a7b;
+		background: #e8f5e9;
+		color: #2e7d32;
+		border-color: #a5d6a7;
 	}
 
 	.badge.warning {
-		background: linear-gradient(135deg, #fffaf0, #feebc8);
-		color: #9c4221;
+		background: #fff8e1;
+		color: #e65100;
+		border-color: #ffe082;
 	}
 
 	.badge.danger {
-		background: #fed7d7;
-		color: #9b2c2c;
+		background: #ffebee;
+		color: #c62828;
+		border-color: #ffcdd2;
 	}
 
 	/* --- Fields --- */
@@ -361,17 +364,17 @@ include 'layout-header.php';
 	}
 
 	.field {
-		border: 1px dashed #d9e6f3;
+		border: 1px solid var(--border);
 		border-radius: 10px;
-		padding: 8px 10px;
+		padding: 9px 12px;
 		background: var(--surface-soft);
 	}
 
 	.field-label {
 		font-size: 11px;
-		font-weight: 800;
-		color: var(--primary);
-		margin: 0 0 4px;
+		font-weight: 700;
+		color: var(--muted);
+		margin: 0 0 3px;
 		text-transform: uppercase;
 		letter-spacing: .5px;
 	}
@@ -381,7 +384,7 @@ include 'layout-header.php';
 		font-size: 14px;
 		font-weight: 700;
 		word-break: break-word;
-		color: #1f3853;
+		color: var(--text);
 	}
 
 	/* --- Invoice Specific --- */
@@ -611,7 +614,7 @@ include 'layout-header.php';
 
 	.jobs-body {
 		padding: 12px;
-		background: linear-gradient(180deg, #fcfcfc 0%, #f4f8ff 70%, #eef4ff 100%);
+		background: #fafffe;
 	}
 
 	#invoiceJob {
@@ -619,9 +622,9 @@ include 'layout-header.php';
 		margin: 0;
 		padding: 8px;
 		border-radius: 10px;
-		background: linear-gradient(145deg, #fafafa 0%, #b4d0f1 100%);
+		background: var(--surface-soft);
 		display: grid;
-		gap: 8px;
+		gap: 6px;
 		counter-reset: job-item;
 	}
 
@@ -631,13 +634,13 @@ include 'layout-header.php';
 		align-items: flex-start;
 		gap: 8px;
 		font-size: 14px;
-		font-weight: 700;
+		font-weight: 600;
 		line-height: 1.45;
-		color: #2f546d;
+		color: var(--text);
 		background: #fff;
-		border: 1px solid #4f92de;
-		border-radius: 10px;
-		padding: 10px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		padding: 9px 12px;
 	}
 
 	#invoiceJob li::before {
@@ -645,9 +648,9 @@ include 'layout-header.php';
 		flex: 0 0 22px;
 		height: 22px;
 		border-radius: 999px;
-		background: #4f92de;
+		background: var(--primary);
 		color: #fff;
-		font-size: 12px;
+		font-size: 11px;
 		font-weight: 800;
 		display: inline-flex;
 		align-items: center;
@@ -665,7 +668,7 @@ include 'layout-header.php';
 		border: 1px solid var(--border);
 		border-top: 0;
 		border-radius: 0 0 14px 14px;
-		background: linear-gradient(180deg, #ffffff 0%, #f5f6fa 100%);
+		background: #fafffe;
 		padding: 12px;
 		display: grid;
 		gap: 10px;
@@ -680,7 +683,7 @@ include 'layout-header.php';
 
 	.invoice-extra-item,
 	.invoice-media-item {
-		border: 1px solid var(--primary);
+		border: 1px solid var(--border);
 		background: var(--surface-soft);
 		border-radius: 8px;
 		padding: 8px 10px;
@@ -688,7 +691,7 @@ include 'layout-header.php';
 	}
 
 	.invoice-media-item .field-label {
-		color: var(--primary);
+		color: var(--muted);
 	}
 
 	.invoice-media-frame {
@@ -751,18 +754,18 @@ include 'layout-header.php';
 
 	.profile-name {
 		margin: 0;
-		font-size: 22px;
+		font-size: 20px;
 		font-weight: 800;
 		line-height: 1.25;
-		color: #1d3650;
+		color: var(--primary);
 	}
 
 	.profile-contact,
 	.profile-row {
 		margin: 0;
-		font-size: 14px;
-		font-weight: 700;
-		color: #2f4961;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text);
 		display: flex;
 		align-items: center;
 		gap: 8px;
@@ -777,10 +780,9 @@ include 'layout-header.php';
 		width: 18px;
 		height: 18px;
 		border-radius: 999px;
-		background: #e7f1ff;
-		color: #4f7dd2;
-		font-size: 11px;
-		line-height: 1;
+		background: var(--surface-soft);
+		color: var(--primary);
+		font-size: 10px;
 		font-weight: 800;
 		flex: 0 0 18px;
 	}
@@ -827,12 +829,11 @@ include 'layout-header.php';
 
 	.progress-bar-container {
 		width: 100%;
-		height: 21px;
+		height: 18px;
 		border-radius: 999px;
 		overflow: hidden;
-		background: linear-gradient(180deg, #dce6f8 0%, #ffffff 100%);
-		border: 1px solid #0e2f75;
-		box-shadow: inset 0 1px 2px rgb(255, 255, 255);
+		background: var(--surface-soft);
+		border: 1px solid var(--border);
 	}
 
 	.progress-inner {
@@ -1045,8 +1046,8 @@ include 'layout-header.php';
 	.review-time {
 		margin: 0;
 		font-size: 13px;
-		font-weight: 700;
-		color: #475c7c;
+		font-weight: 600;
+		color: var(--text);
 		word-break: break-word;
 	}
 
@@ -1061,18 +1062,18 @@ include 'layout-header.php';
 		width: 100%;
 		height: 120px;
 		object-fit: cover;
-		border-radius: 10px;
-		border: 1px solid #dbe7f2;
-		background: #f4f8fc;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		background: var(--surface-soft);
 	}
 
 	.media-empty {
 		grid-column: 1 / -1;
 		font-size: 12px;
-		font-weight: 800;
-		color: #4d638d;
-		background: linear-gradient(135deg, #f0f6ff 0%, #ecf3fb 100%);
-		border: 1px solid #d4e0f2;
+		font-weight: 700;
+		color: var(--muted);
+		background: var(--surface-soft);
+		border: 1px solid var(--border);
 		padding: 8px 10px;
 		border-radius: 8px;
 	}
@@ -1178,18 +1179,18 @@ include 'layout-header.php';
 	}
 
 	#appDialogTitle {
-		font-size: 18px;
+		font-size: 17px;
 		font-weight: 800;
-		margin-bottom: 12px;
-		color: #1158c2;
+		margin-bottom: 10px;
+		color: var(--primary);
 	}
 
 	#appDialogMessage {
 		font-size: 14px;
-		margin-bottom: 24px;
-		color: #4a5568;
+		margin-bottom: 20px;
+		color: var(--text);
 		line-height: 1.6;
-		font-weight: 700;
+		font-weight: 500;
 	}
 
 	.appDialogButtons {

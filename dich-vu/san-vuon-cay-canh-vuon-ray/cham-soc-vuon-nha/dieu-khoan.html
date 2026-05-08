@@ -24,13 +24,13 @@
       color: #2d3436;
       background-color: var(--nature-white);
       line-height: 1.7;
-      padding-top: 96px;
+      padding-top: 0;
     }
 
     /* --- HERO SECTION --- */
     .hero-terms {
       background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-      padding: 160px 0 100px;
+      padding: 60px 0 100px;
       position: relative;
       overflow: hidden;
       text-align: center;
@@ -163,8 +163,8 @@
 
   <section class="hero-terms">
     <div class="container position-relative">
-      <h1>Điều khoản sử dụng <br> <span style="color: var(--accent-green)">Chăm Sóc Vườn Nhà</span></h1>
-      <p class="lead text-muted mb-4 fw-medium fs-4">Minh bạch trong dịch vụ — Tin cậy trong hợp tác</p>
+      <h1>Điều khoản & <br> <span style="color: var(--accent-green)">Chính sách dịch vụ</span></h1>
+      <p class="lead text-muted mb-4 fw-medium fs-4">Minh bạch trong tính giá — Rõ ràng trong cam kết</p>
       <div class="custom-underline"></div>
     </div>
   </section>
@@ -173,94 +173,241 @@
     <div class="terms-card">
       
       <div class="term-section">
-        <h3><i class="fas fa-file-invoice-dollar"></i> 1. Phí Dịch Vụ & Thuế VAT</h3>
+        <h3><i class="fas fa-info-circle"></i> 1. Giới thiệu dịch vụ</h3>
         <div class="term-content">
-          <p>Để đảm bảo chất lượng kỹ thuật và tuân thủ quy định pháp luật, hệ thống áp dụng cơ chế tính phí minh bạch như sau:</p>
-          
-          <div class="payment-highlight shadow-sm border-0" style="background: linear-gradient(135deg, #e8f3d6 0%, #ffffff 100%); position: relative; overflow: hidden;">
-            <div style="position: absolute; right: -20px; top: -20px; font-size: 8rem; color: rgba(26, 77, 46, 0.05); z-index: 0;"><i class="fas fa-receipt"></i></div>
-            
+          <p><strong>Chăm Sóc Vườn Nhà</strong> là nền tảng kết nối khách hàng với đội ngũ nhân viên chăm sóc cảnh quan chuyên nghiệp. Hệ thống cho phép đặt lịch trực tuyến, tính giá tự động minh bạch và theo dõi tiến độ công việc theo thời gian thực.</p>
+          <ul>
+            <li>Đặt lịch chăm sóc vườn nhà, sân vườn, tiểu cảnh trực tuyến 24/7.</li>
+            <li>Hệ thống tự động tính giá dựa trên diện tích, loại dịch vụ, số ngày và khoảng cách.</li>
+            <li>Nhân viên nhận việc, cập nhật tiến độ và ghi nhận kết quả trực tiếp trên ứng dụng.</li>
+            <li>Khách hàng theo dõi đơn hàng, đánh giá và lưu lịch sử chăm sóc vườn.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="term-section">
+        <h3><i class="fas fa-calculator"></i> 2. Cách tính giá dịch vụ</h3>
+        <div class="term-content">
+          <p>Hệ thống hỗ trợ hai phương thức tính giá tùy theo từng loại dịch vụ:</p>
+
+          <div class="payment-highlight shadow-sm border-0" style="background: linear-gradient(135deg, #e8f3d6 0%, #ffffff 100%); position: relative; overflow: hidden; margin-bottom: 20px;">
+            <div style="position: absolute; right: -20px; top: -20px; font-size: 8rem; color: rgba(26,77,46,.05); z-index: 0;"><i class="fas fa-ruler-combined"></i></div>
             <div style="position: relative; z-index: 1;">
-              <div class="price-box" style="background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); border-left: 5px solid var(--primary-green);">
-                <span class="price-label">Thuế Giá Trị Gia Tăng (VAT)</span>
-                <span class="price-value" style="font-size: 1.3rem;">10%</span>
+              <p class="fw-bold mb-3" style="color:var(--primary-green)"><i class="fas fa-th-large me-2"></i>Phương thức 1 — Tính theo diện tích (m²)</p>
+              <div class="price-box" style="border-left: 4px solid var(--primary-green);">
+                <span class="price-label">Công thức</span>
+                <span class="price-value">Đơn giá/m² × Diện tích × Hệ số mức độ</span>
               </div>
+              <p class="small text-muted mt-2 mb-3">Áp dụng cho các dịch vụ cắt cỏ, bón phân, phun thuốc, cải tạo đất... Hệ thống tự ước tính số nhân viên và số giờ cần thiết dựa trên diện tích nhập vào.</p>
 
-              <div class="mt-4 text-center">
-                <div class="d-inline-block p-1 mb-2" style="background: linear-gradient(90deg, var(--primary-green), var(--accent-green)); border-radius: 50px;">
-                    <div class="px-4 py-1" style="background: white; border-radius: 50px;">
-                        <span style="color: var(--primary-green); font-weight: 800; font-size: 0.8rem;">CÔNG THỨC TỔNG TIỀN</span>
-                    </div>
+              <p class="fw-bold mb-2" style="color:var(--primary-green)">Hệ số mức độ chăm sóc:</p>
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <div class="price-box text-center flex-column" style="border-radius:12px;">
+                    <span class="price-label">Nhẹ</span>
+                    <span class="price-value">× 0.8</span>
+                    <span class="small text-muted">Bảo dưỡng định kỳ</span>
+                  </div>
                 </div>
-                <div class="py-3 px-4" style="background: var(--primary-green); color: white; border-radius: 20px; box-shadow: 0 10px 20px rgba(26, 77, 46, 0.2);">
-                    <span style="font-family: 'Playfair Display', serif; font-size: 1.4rem; letter-spacing: 1px;">
-                        TỔNG = (Dịch vụ + Phụ phí) + 10% VAT
-                    </span>
+                <div class="col-md-4">
+                  <div class="price-box text-center flex-column" style="border-radius:12px; border-color: var(--primary-green);">
+                    <span class="price-label">Tiêu chuẩn</span>
+                    <span class="price-value">× 1.0</span>
+                    <span class="small text-muted">Mặc định</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="price-box text-center flex-column" style="border-radius:12px;">
+                    <span class="price-label">Sâu</span>
+                    <span class="price-value">× 1.3</span>
+                    <span class="small text-muted">Cải tạo toàn diện</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="term-section">
-        <h3><i class="fas fa-hourglass-half"></i> 2. Phụ phí gia hạn thời gian</h3>
-        <div class="term-content">
-          <p>Nếu khối lượng công việc thực tế cần nhiều thời gian hơn dự kiến, khách hàng có thể đăng ký thêm trực tiếp:</p>
-          <div class="price-box" style="border-radius: 20px;">
-            <span class="price-label"><i class="far fa-clock me-2"></i>Đăng ký thêm 30 phút</span>
-            <span class="price-value">80.000 VNĐ</span>
-          </div>
-          <div class="price-box" style="border-radius: 20px;">
-            <span class="price-label"><i class="fas fa-history me-2"></i>Đăng ký thêm 01 giờ</span>
-            <span class="price-value">150.000 VNĐ</span>
-          </div>
-          <p class="small italic text-muted mt-2">* Nhân viên sẽ xác nhận sự đồng ý của Gia chủ trước khi tiến hành tính phí phát sinh.</p>
-        </div>
-      </div>
-
-      <div class="term-section">
-        <h3><i class="fas fa-truck-fast"></i> 3. Phí vận chuyển & Khoảng cách</h3>
-        <div class="term-content">
-          <p>Phí di chuyển của Nhân viên được tối ưu hóa dựa trên khoảng cách thực tế:</p>
-          <div class="row g-3">
-            <div class="col-md-6">
-                <div class="p-3 text-center" style="background: var(--soft-lime); border-radius: 20px; border: 1px dashed var(--primary-green);">
-                    <h6 class="fw-bold mb-1" style="color: var(--primary-green);">Dưới 2 km</h6>
-                    <span class="badge bg-success px-3">MIỄN PHÍ</span>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="p-3 text-center" style="background: #ffffff; border-radius: 20px; border: 1px solid #eee;">
-                    <h6 class="fw-bold mb-1" style="color: var(--primary-green);">Trên 2 km</h6>
-                    <span class="text-danger fw-bold">15.000 VNĐ / 1 km</span>
-                </div>
+          <div class="payment-highlight shadow-sm border-0" style="background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); position: relative; overflow: hidden;">
+            <div style="position: absolute; right: -20px; top: -20px; font-size: 8rem; color: rgba(26,77,46,.05); z-index: 0;"><i class="fas fa-box-open"></i></div>
+            <div style="position: relative; z-index: 1;">
+              <p class="fw-bold mb-3" style="color:var(--primary-green)"><i class="fas fa-box-open me-2"></i>Phương thức 2 — Tính theo gói dịch vụ</p>
+              <div class="price-box" style="border-left: 4px solid #f57f17;">
+                <span class="price-label">Công thức</span>
+                <span class="price-value">Giá gói cố định × Số ngày</span>
+              </div>
+              <p class="small text-muted mt-2">Áp dụng cho các gói chăm sóc định kỳ, gói cắt tỉa nghệ thuật, gói bảo dưỡng tiểu cảnh... Mỗi gói có giá, số giờ và số nhân viên cố định.</p>
             </div>
           </div>
-          <p class="small text-muted mt-3"><i>(Khoảng cách tính từ vị trí Nhân viên theo dữ liệu thời gian thực của Google Maps)</i></p>
+
+          <div class="mt-4 text-center">
+            <div class="d-inline-block p-1 mb-2" style="background: linear-gradient(90deg, var(--primary-green), var(--accent-green)); border-radius: 50px;">
+              <div class="px-4 py-1" style="background: white; border-radius: 50px;">
+                <span style="color: var(--primary-green); font-weight: 800; font-size: 0.8rem;">CÔNG THỨC TỔNG TIỀN</span>
+              </div>
+            </div>
+            <div class="py-3 px-4" style="background: var(--primary-green); color: white; border-radius: 20px; box-shadow: 0 10px 20px rgba(26,77,46,.2);">
+              <span style="font-family: 'Playfair Display', serif; font-size: 1.2rem; letter-spacing: 1px;">
+                TỔNG = Tiền dịch vụ + Phụ thu + Phí di chuyển
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="term-section">
-        <h3><i class="fas fa-user-check"></i> 4. Trách nhiệm Nhân viên</h3>
+        <h3><i class="fas fa-route"></i> 3. Phí di chuyển</h3>
+        <div class="term-content">
+          <p>Phí di chuyển được tính tự động dựa trên khoảng cách thực tế từ <strong>văn phòng Quang Trung, Quận 12, TP.HCM</strong> đến địa chỉ vườn của khách hàng. Hệ thống ưu tiên dùng tuyến đường thực tế (OSRM routing), nếu không khả dụng sẽ dùng khoảng cách đường chim bay.</p>
+          <div class="price-box" style="border-radius: 14px; border-left: 4px solid var(--primary-green);">
+            <span class="price-label"><i class="fas fa-road me-2"></i>Đơn giá di chuyển</span>
+            <span class="price-value">5.000 đ / km</span>
+          </div>
+          <div class="price-box" style="border-radius: 14px;">
+            <span class="price-label"><i class="fas fa-map-marker-alt me-2"></i>Khoảng cách = 0</span>
+            <span class="price-value" style="color:#2e7d32;">Không tính phí</span>
+          </div>
+          <p class="small text-muted mt-2">* Khách hàng có thể nhập địa chỉ thủ công, dùng GPS tự động hoặc chọn trên bản đồ. Khoảng cách và phí di chuyển hiển thị ngay trên form đặt lịch trước khi xác nhận.</p>
+        </div>
+      </div>
+
+      <div class="term-section">
+        <h3><i class="fas fa-tags"></i> 4. Phụ thu đặc biệt</h3>
+        <div class="term-content">
+          <p>Hệ thống tự động áp dụng phụ thu dựa trên ngày và giờ bắt đầu dịch vụ. Phụ thu được cộng vào tiền dịch vụ trước khi tính tổng.</p>
+
+          <div class="row g-3 mt-1">
+            <div class="col-12">
+              <div class="p-3" style="background: #fce4ec; border-radius: 16px; border: 1.5px solid #f48fb1;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span style="width:36px;height:36px;border-radius:10px;background:#c62828;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;"><i class="fas fa-flag"></i></span>
+                  <span class="fw-bold" style="color:#b71c1c;">Phụ thu ngày lễ</span>
+                </div>
+                <span class="fw-bold" style="color:#b71c1c;">Tỷ lệ: +30% trên tiền dịch vụ</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="price-box mt-3" style="border-radius: 14px; border-left: 4px solid var(--primary-green);">
+            <span class="price-label">Công thức phụ thu</span>
+            <span class="price-value">Tiền dịch vụ × Tỷ lệ phụ thu (%)</span>
+          </div>
+          <p class="small text-muted mt-2">* Các mức phụ thu cụ thể do quản trị viên cập nhật theo từng thời điểm. Khách hàng sẽ thấy phụ thu được hiển thị rõ ràng trong phần chi tiết tính tiền trước khi xác nhận đặt lịch.</p>
+        </div>
+      </div>
+
+      <div class="term-section">
+        <h3><i class="fas fa-calendar-alt"></i> 5. Đặt lịch & Thời gian</h3>
         <div class="term-content">
           <ul>
-            <li>Thực hiện công việc theo đúng tiêu chuẩn kỹ thuật cảnh quan và vệ sinh khu vực sau khi làm.</li>
-            <li>Cam kết sử dụng vật tư nông nghiệp hữu cơ, an toàn cho môi trường và sức khỏe.</li>
-            <li>Chịu trách nhiệm bảo trì hoặc bồi thường nếu xảy ra hư hại cây trồng do lỗi kỹ thuật chủ quan.</li>
+            <li>Khách hàng chọn ngày bắt đầu, ngày kết thúc và khung giờ phục vụ. Hệ thống tự tính tổng số ngày làm việc.</li>
+            <li>Một số dịch vụ có khung giờ cố định (sáng, chiều, tối); một số cho phép nhập giờ tùy chỉnh.</li>
+            <li>Giờ kết thúc được tính tự động dựa trên diện tích hoặc gói dịch vụ đã chọn.</li>
+            <li>Tiền dịch vụ = Đơn giá một ngày × Tổng số ngày.</li>
+            <li>Hủy lịch miễn phí trước ít nhất <strong>4 giờ</strong> so với giờ bắt đầu dịch vụ.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="term-section">
+        <h3><i class="fas fa-user-hard-hat"></i> 6. Nhân viên nhận việc & Tiến độ</h3>
+        <div class="term-content">
+          <ul>
+            <li>Sau khi đặt lịch thành công, nhân viên có thể xem và nhận đơn trên hệ thống.</li>
+            <li>Nhân viên được xác định dựa trên tài khoản đăng nhập và danh mục dịch vụ được phân công.</li>
+            <li>Nhân viên cập nhật trạng thái: <strong>Chờ nhận → Đã nhận → Đang thực hiện → Hoàn thành</strong>.</li>
+            <li>Thời gian bắt đầu và kết thúc thực tế được ghi nhận tự động khi nhân viên bấm xác nhận.</li>
+            <li>Tiến độ hoàn thành (%) được cập nhật theo từng ngày làm việc trong lịch sử công việc.</li>
+            <li>Đơn hàng quá hạn (đã qua ngày kết thúc kế hoạch mà chưa có nhân viên nhận) sẽ tự động chuyển trạng thái <strong>Quá hạn</strong>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="term-section">
+        <h3><i class="fas fa-images"></i> 7. Tệp đính kèm & Lưu trữ</h3>
+        <div class="term-content">
+          <ul>
+            <li>Khách hàng có thể đính kèm ảnh và video hiện trạng vườn khi đặt lịch (chụp trực tiếp hoặc tải từ thiết bị).</li>
+            <li>Tệp được upload lên <strong>Google Drive</strong> và liên kết với đơn hàng. Tên file được đặt theo cấu trúc: <code>mã đơn _ tên dịch vụ _ thời gian _ tên file</code>.</li>
+            <li>Nhân viên cũng có thể đính kèm ảnh/video kết quả sau khi hoàn thành công việc.</li>
+            <li>Tất cả tệp đính kèm được hiển thị trong trang chi tiết đơn hàng để cả hai bên đối chiếu.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="term-section">
+        <h3><i class="fas fa-star"></i> 8. Đánh giá dịch vụ</h3>
+        <div class="term-content">
+          <ul>
+            <li>Khách hàng có thể đánh giá chất lượng dịch vụ sau khi đơn hàng hoàn thành.</li>
+            <li>Nhân viên phụ trách cũng có thể ghi nhận đánh giá từ phía nhà cung cấp.</li>
+            <li>Đánh giá chỉ được phép thực hiện trong thời hạn quy định sau ngày hoàn thành.</li>
+            <li>Mọi đánh giá được lưu trữ và hiển thị trong lịch sử đơn hàng.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="term-section">
+        <h3><i class="fas fa-shield-alt"></i> 9. Bảo mật & Quyền riêng tư</h3>
+        <div class="term-content">
+          <ul>
+            <li>Thông tin cá nhân (họ tên, số điện thoại, email, địa chỉ) chỉ được dùng để phục vụ đặt lịch và liên hệ.</li>
+            <li>Hình ảnh và video vườn nhà của khách hàng được bảo mật, không chia sẻ cho bên thứ ba.</li>
+            <li>Khách hàng có quyền yêu cầu xóa dữ liệu cá nhân bằng cách liên hệ trực tiếp qua email hoặc hotline.</li>
           </ul>
         </div>
       </div>
 
       <div class="term-section" style="margin-bottom: 0;">
-        <h3><i class="fas fa-shield-alt"></i> 5. Quyền lợi khách hàng & Bảo mật</h3>
+        <h3><i class="fas fa-handshake"></i> 10. Cam kết dịch vụ</h3>
         <div class="term-content">
           <ul>
-            <li>Được yêu cầu báo cáo tình trạng cây trồng định kỳ sau mỗi buổi chăm sóc.</li>
-            <li>Được quyền thay đổi hoặc hủy lịch miễn phí trước ít nhất 4 giờ so với thời điểm bắt đầu.</li>
-            <li>Mọi hình ảnh về khuôn viên vườn và thông tin cá nhân đều được bảo mật tuyệt đối.</li>
+            <li>Nhân viên thực hiện đúng danh sách công việc đã chọn trong đơn hàng, đúng khung giờ đã đặt.</li>
+            <li>Sử dụng vật tư nông nghiệp hữu cơ, an toàn cho cây trồng, con người và môi trường.</li>
+            <li>Dọn dẹp vệ sinh khu vực sau khi hoàn thành công việc.</li>
+            <li>Chịu trách nhiệm bồi thường nếu xảy ra hư hại cây trồng do lỗi kỹ thuật chủ quan của nhân viên.</li>
+            <li>Mọi phát sinh ngoài phạm vi đơn hàng phải được khách hàng đồng ý trước khi thực hiện và tính phí.</li>
           </ul>
         </div>
+      </div>
+
+      <!-- Thông tin liên hệ -->
+      <div style="margin-top: 48px; padding-top: 32px; border-top: 2px solid var(--soft-lime);">
+        <p class="text-center mb-4" style="color: var(--accent-green); font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .8px;">
+          <i class="fas fa-leaf me-2"></i>Liên hệ với chúng tôi
+        </p>
+        <div class="row g-3 justify-content-center">
+          <div class="col-md-5">
+            <a href="tel:0337099459" class="d-flex align-items-center gap-3 p-3 text-decoration-none"
+               style="background: var(--soft-lime); border-radius: 14px; border: 1.5px solid rgba(26,77,46,.12); transition: all .2s;"
+               onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(26,77,46,.12)'"
+               onmouseout="this.style.transform='';this.style.boxShadow=''">
+              <span style="width:44px;height:44px;border-radius:12px;background:var(--primary-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">
+                <i class="fas fa-phone"></i>
+              </span>
+              <div>
+                <div style="font-size:.75rem;font-weight:700;color:var(--accent-green);text-transform:uppercase;letter-spacing:.4px;">Hotline hỗ trợ</div>
+                <div style="font-size:1.1rem;font-weight:800;color:var(--primary-green);">0337 099 459</div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-5">
+            <a href="mailto:dichvuquanhta.vn@gmail.com" class="d-flex align-items-center gap-3 p-3 text-decoration-none"
+               style="background: var(--soft-lime); border-radius: 14px; border: 1.5px solid rgba(26,77,46,.12); transition: all .2s;"
+               onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(26,77,46,.12)'"
+               onmouseout="this.style.transform='';this.style.boxShadow=''">
+              <span style="width:44px;height:44px;border-radius:12px;background:var(--primary-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <div>
+                <div style="font-size:.75rem;font-weight:700;color:var(--accent-green);text-transform:uppercase;letter-spacing:.4px;">Email báo giá</div>
+                <div style="font-size:.95rem;font-weight:800;color:var(--primary-green);">dichvuquanhta.vn@gmail.com</div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <p class="text-center mt-4 mb-0 small" style="color:#888;">
+          Thứ 2 – Thứ 6: 8:00 – 17:30 &nbsp;·&nbsp; Thứ 7 – Chủ Nhật: 8:00 – 12:00
+        </p>
       </div>
 
     </div>

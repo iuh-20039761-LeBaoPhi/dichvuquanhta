@@ -1,5 +1,12 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3"> 
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3" style="position:fixed;top:0;left:0;right:0;z-index:1050;">
   <style>
+    /* Đảm bảo wrapper #site-header không chiếm không gian */
+    #site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1050; }
+
+    /* Các trang dùng shared-header cần padding-top bằng chiều cao navbar */
+    body:not(.booking-embedded-mode):not([data-no-header-offset]) {
+      padding-top: 85px;
+    }
     :root {
       /* MÀU XANH CẢNH QUAN CAO CẤP */
       --primary-green: #1a4d2e; 
@@ -16,7 +23,17 @@
       transition: all 0.3s ease;
       border-bottom: 1px solid rgba(26, 77, 46, 0.05);
       z-index: 1050;
-      min-height: 85px; 
+      min-height: 85px;
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar > .container-fluid,
+    .navbar > .container-lg {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
     }
 
     .brand-wrapper {
@@ -42,36 +59,50 @@
 
     .navbar-nav .nav-link {
       color: var(--text-dark) !important;
-      position: relative !important; 
-      padding: 0.5rem 0.8rem !important;
-      transition: color 0.3s ease;
-      border-radius: 8px;
-      overflow: hidden; 
-      font-size: 1rem; 
+      position: relative !important;
+      padding: 0.45rem 1rem !important;
+      transition: color .25s ease, background .25s ease;
+      border-radius: 10px;
+      overflow: hidden;
+      font-size: .97rem;
       white-space: nowrap;
     }
 
+    /* Underline indicator */
     .navbar-nav .nav-link::after {
       content: '';
       position: absolute;
       width: 0;
-      height: 2px;
-      bottom: 5px;
+      height: 2.5px;
+      bottom: 4px;
       left: 50%;
-      background-color: var(--primary-green);
-      transition: all 0.3s ease;
+      background: var(--primary-green);
+      border-radius: 99px;
+      transition: width .28s ease;
       transform: translateX(-50%);
       z-index: 1;
     }
 
-    .navbar-nav .nav-link:hover::after,
-    .navbar-nav .nav-link.active::after {
-      width: 60%;
-    }
-
+    /* Hover */
     .navbar-nav .nav-link:hover {
       color: var(--primary-green) !important;
-      background-color: var(--soft-lime);
+      background: var(--soft-lime);
+    }
+    .navbar-nav .nav-link:hover::after {
+      width: 50%;
+    }
+
+    /* ── ACTIVE — nổi bật pill xanh ── */
+    .navbar-nav .nav-link.active {
+      color: var(--primary-green) !important;
+      background: var(--soft-lime) !important;
+      font-weight: 800 !important;
+      box-shadow: 0 2px 10px rgba(26,77,46,.12);
+    }
+    .navbar-nav .nav-link.active::after {
+      width: 55%;
+      background: var(--primary-green);
+      height: 2.5px;
     }
 
     /* --- HIỆU ỨNG RIPPLE --- */
@@ -236,9 +267,15 @@
         width: 45px;
         height: 45px;
         position: relative;
+        align-self: center;
+        margin-left: auto;
+        flex-shrink: 0;
         transition: var(--transition);
         border-radius: 12px !important;
         background: var(--soft-lime) !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .navbar-collapse {
@@ -279,14 +316,23 @@
       }
 
       .navbar-nav .nav-link {
-        padding: 14px 20px !important;
-        font-size: 1.1rem;
+        padding: 13px 20px !important;
+        font-size: 1.05rem;
         background: rgba(26, 77, 46, 0.03);
-        margin-bottom: 5px;
+        margin-bottom: 4px;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        border-radius: 12px !important;
       }
+
+      .navbar-nav .nav-link.active {
+        background: var(--soft-lime) !important;
+        color: var(--primary-green) !important;
+        font-weight: 800 !important;
+        border-left: 3px solid var(--primary-green) !important;
+      }
+      .navbar-nav .nav-link.active::after { display: none; }
 
       .navbar-nav .nav-link::before {
         content: '\f105'; /* Icon mũi tên */
@@ -333,7 +379,7 @@
     }
   </style>
 
-  <div class="container-fluid container-lg">
+  <div class="container-fluid container-lg" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
     <div class="d-flex align-items-center">
       <div class="brand-wrapper">
         <a href="../../../index.html">
@@ -417,16 +463,38 @@
   </div>
 
   <script>
-    document.querySelectorAll('.nav-link').forEach(button => {
+    // ── Set active nav link theo data-nav-active của body ──
+    (function () {
+      var activeKey = document.body.getAttribute('data-nav-active') || '';
+      if (activeKey) {
+        document.querySelectorAll('.nav-link[data-nav-key]').forEach(function (link) {
+          if (link.getAttribute('data-nav-key') === activeKey) {
+            link.classList.add('active');
+          }
+        });
+      }
+      // Fallback: so sánh href với URL hiện tại
+      if (!activeKey) {
+        var currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(function (link) {
+          var href = (link.getAttribute('href') || '').split('/').pop();
+          if (href && href === currentPath) {
+            link.classList.add('active');
+          }
+        });
+      }
+    })();
+
+    // ── Ripple effect khi click ──
+    document.querySelectorAll('.nav-link').forEach(function (button) {
       button.addEventListener('click', function (e) {
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        let ripples = document.createElement('span');
-        ripples.style.left = x + 'px'; ripples.style.top = y + 'px';
-        ripples.classList.add('ripple');
-        this.appendChild(ripples);
-        setTimeout(() => { ripples.remove(); }, 600);
+        var rect = this.getBoundingClientRect();
+        var ripple = document.createElement('span');
+        ripple.style.left = (e.clientX - rect.left) + 'px';
+        ripple.style.top  = (e.clientY - rect.top)  + 'px';
+        ripple.classList.add('ripple');
+        this.appendChild(ripple);
+        setTimeout(function () { ripple.remove(); }, 600);
       });
     });
   </script>

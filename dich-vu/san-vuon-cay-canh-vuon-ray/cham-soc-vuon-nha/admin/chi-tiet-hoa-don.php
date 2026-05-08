@@ -78,524 +78,221 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <style>
+    /* ── Đồng bộ design system xanh lá ── */
     :root {
-        --bg: #f4faf4;
+        --bg: #f4f8f4;
         --surface: #ffffff;
-        --surface-soft: #eff6ff;
         --text: #1a4d2e;
-        --muted: #1a4d2e;
+        --muted: #5a7060;
         --primary: #2e7d32;
-        --success: #0284c7;
-        --warning: #38bdf8;
-        --danger: #b91c1c;
         --border: #c8e6c9;
-        --shadow: 0 20px 45px rgba(30, 58, 138, 0.1);
-        --accent-peach: #c8e6c9;
-        --accent-lavender: #f4faf4;
-        --accent-mint: #f0fdfa;
-        --accent-rose: #c8e6c9;
-        --anim: 260ms cubic-bezier(.2, .7, .2, 1);
-        --radius-xl: 22px;
-        --radius-lg: 16px;
-        --radius-md: 12px;
+        --shadow: 0 8px 24px rgba(13,43,20,.10);
+        --anim: 260ms cubic-bezier(.2,.7,.2,1);
+        --radius-xl: 18px;
+        --radius-lg: 14px;
+        --radius-md: 10px;
     }
 
-    .admin-main,
-    .admin-main>main {
-        background: radial-gradient(circle at 20% -10%, #d0e8ff 0, transparent 42%),
-            radial-gradient(circle at 95% 120%, #c8e6c9 0, transparent 38%),
-            radial-gradient(circle at 85% 15%, rgb(248, 248, 248) 0, transparent 35%),
-            radial-gradient(circle at 8% 88%, rgb(255, 255, 255) 0, transparent 30%),
-            var(--bg) !important;
-        font-family: "Quicksand", sans-serif;
+    .admin-main, .admin-main > main {
+        background: var(--bg) !important;
+        font-family: 'Inter', system-ui, sans-serif;
         color: var(--text);
     }
 
     .modal-card {
-        width: min(1240px, 100%);
-        margin: 20px auto;
+        width: min(1200px, 100%);
+        margin: 0 auto 32px;
         border-radius: var(--radius-xl);
-        background: linear-gradient(180deg, #ffffff 0%, #f7fbff 62%, #f0f7ff 100%);
-        border: 1px solid rgba(37, 99, 235, 0.15);
-        box-shadow: 0 24px 48px rgba(30, 58, 138, 0.12), 0 6px 20px rgba(138, 170, 209, 0.12);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
         overflow: visible;
-        animation: showCard 520ms var(--anim) forwards;
+        animation: showCard 380ms var(--anim) forwards;
     }
-
     @keyframes showCard {
-        from {
-            transform: translateY(8px);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
+        from { transform: translateY(6px); opacity: 0; }
+        to   { transform: translateY(0);   opacity: 1; }
     }
 
     /* Style for iframes as avatars */
-    .profile-avatar {
-        display: block;
-        margin: 0;
-        border: 0;
-    }
+    .profile-avatar { display: block; margin: 0; border: 0; }
 
+    /* ── Topbar trong card ── */
     .topbar {
         display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        gap: 14px;
-        align-items: center;
-        padding: 20px 24px;
-        background: linear-gradient(102deg, #1a4d2e 0%, #2e7d32 58%, #43a047 100%);
+        grid-template-columns: auto minmax(0,1fr) auto;
+        gap: 14px; align-items: center;
+        padding: 18px 22px;
+        background: linear-gradient(102deg, var(--g800) 0%, var(--g600) 60%, var(--g400) 100%);
         color: #fff;
         border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-        box-shadow: 0 10px 24px rgba(30, 58, 138, 0.25);
+        box-shadow: 0 6px 20px rgba(13,43,20,.18);
     }
-
     .topbar-logo {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 98px;
-        height: 66px;
-        padding: 6px;
-        border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.42);
-        background: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 10px 22px rgba(30, 58, 138, 0.2);
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 88px; height: 58px; padding: 5px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,.35);
+        background: rgba(255,255,255,.18);
         backdrop-filter: blur(4px);
-        transition: transform var(--anim), background var(--anim), border-color var(--anim);
+        transition: transform var(--anim), background var(--anim);
         text-decoration: none;
     }
-
-    .topbar-logo:hover {
-        transform: translateY(-2px);
-        background: rgba(255, 255, 255, 0.3);
-        border-color: rgba(255, 255, 255, 0.56);
-    }
-
-    .topbar-logo img {
-        width: 74px;
-        height: 50px;
-        object-fit: contain;
-        filter: drop-shadow(0 4px 8px rgba(30, 58, 138, 0.35));
-    }
-
+    .topbar-logo:hover { transform: translateY(-2px); background: rgba(255,255,255,.28); }
+    .topbar-logo img { width: 68px; height: 46px; object-fit: contain; }
     .topbar-title {
         margin: 0;
-        font-size: clamp(1.05rem, 1.5vw, 1.5rem);
-        font-weight: 800;
-        letter-spacing: .2px;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: #fff;
+        font-size: clamp(1rem,1.4vw,1.35rem);
+        font-weight: 800; text-align: center;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff;
     }
 
-    .content {
-        padding: 18px;
-    }
+    .content { padding: 18px; }
 
     .grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0,1fr));
         gap: 14px;
     }
-
     .panel {
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
         background: var(--surface);
-        box-shadow: 0 12px 26px rgba(37, 99, 235, 0.12), 0 2px 8px rgba(191, 200, 219, 0.1);
-        padding: 14px;
-        min-height: 205px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+        box-shadow: 0 2px 8px rgba(13,43,20,.06);
+        padding: 14px; min-height: 180px;
+        display: flex; flex-direction: column; gap: 10px;
     }
-
-    .panel-wide {
-        grid-column: 1 / -1;
-    }
-
-    .panel-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-    }
-
-    .panel-title {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 800;
-        color: #1a4d2e;
-    }
+    .panel-wide { grid-column: 1 / -1; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .panel-title { margin: 0; font-size: 15px; font-weight: 800; color: var(--g800); }
 
     .badge {
-        padding: 5px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: .2px;
-        background: #dbeafe;
-        color: #2e7d32;
-        border: 1px solid #bfdbfe;
-        white-space: nowrap;
+        padding: 4px 10px; border-radius: 99px;
+        font-size: 11px; font-weight: 700; letter-spacing: .2px;
+        background: var(--g50); color: var(--g700);
+        border: 1px solid var(--g100); white-space: nowrap;
     }
-
-    .badge.success {
-        background: linear-gradient(135deg, #dbeafe, #dff8ef);
-        color: #2e7d32;
-    }
-
-    .badge.warning {
-        background: linear-gradient(135deg, #eff6ff, #ffe9d5);
-        color: #1a4d2e;
-    }
-
-    .badge.danger {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
+    .badge.success { background: var(--g50); color: var(--g700); border-color: var(--g200); }
+    .badge.warning { background: #fff8e1; color: #e65100; border-color: #ffe082; }
+    .badge.danger  { background: #ffebee; color: #c62828; border-color: #ffcdd2; }
 
     .field-label {
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--muted);
-        margin: 0 0 4px;
-        text-transform: uppercase;
-        letter-spacing: .5px;
+        font-size: 11px; font-weight: 700; color: var(--muted);
+        margin: 0 0 3px; text-transform: uppercase; letter-spacing: .5px;
     }
+    .field-value { margin: 0; font-size: 14px; font-weight: 600; word-break: break-word; color: var(--text); }
 
-    .field-value {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        word-break: break-word;
-    }
-
-    #panelInvoice {
-        padding: 0;
-        min-height: auto;
-        border: 0;
-        box-shadow: none;
-        background: transparent;
-    }
-
+    #panelInvoice { padding: 0; min-height: auto; border: 0; box-shadow: none; background: transparent; }
     .invoice-hero {
-        background: linear-gradient(118deg, #43a047 0%, #60a5fa 48%, #93c5fd 72%, #bfdbfe 100%);
-        border-radius: 16px;
-        padding: 16px;
-        color: #ffffff;
+        background: linear-gradient(118deg, var(--g800) 0%, var(--g600) 50%, var(--g400) 100%);
+        border-radius: var(--radius-lg); padding: 18px; color: #fff;
     }
-
-    .invoice-main {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 14px;
-    }
-
-    .invoice-headline {
-        display: grid;
-        gap: 10px;
-        flex: 1;
-    }
-
-    .invoice-title-line {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .invoice-order-title {
-        margin: 0;
-        font-size: clamp(1.1rem, 2vw, 1.7rem);
-        font-weight: 800;
-    }
-
+    .invoice-main { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .invoice-headline { display: grid; gap: 8px; flex: 1; }
+    .invoice-title-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .invoice-order-title { margin: 0; font-size: clamp(1.1rem,2vw,1.6rem); font-weight: 800; }
     .invoice-status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 5px 12px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 800;
-        background: rgba(255, 255, 255, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        color: #ffffff;
+        display: inline-flex; align-items: center;
+        padding: 4px 12px; border-radius: 99px;
+        font-size: 11px; font-weight: 700;
+        background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.35); color: #fff;
     }
-
-    .invoice-status-badge.success {
-        background-color: #0284c7;
-        color: #fff;
-    }
-
-    .invoice-status-badge.warning {
-        background-color: #38bdf8;
-        color: #fff;
-    }
-
-    .invoice-status-badge.danger {
-        background-color: #1a4d2e;
-        color: #fff;
-    }
-
-    .invoice-subtitle {
-        margin: 0;
-        font-size: 19px;
-        font-weight: 600;
-        opacity: .95;
-    }
+    .invoice-status-badge.success { background: rgba(255,255,255,.25); }
+    .invoice-status-badge.warning { background: rgba(255,200,0,.3); }
+    .invoice-status-badge.danger  { background: rgba(220,38,38,.3); }
+    .invoice-subtitle { margin: 0; font-size: 17px; font-weight: 600; opacity: .92; }
 
     .invoice-progress-ring {
         --p: 0;
-        width: 122px;
-        height: 122px;
-        border-radius: 50%;
-        background: conic-gradient(from -90deg, #5eb4f2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.34) 0);
-        padding: 7px;
-        flex: 0 0 auto;
-        border: 2px solid #000;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(30, 58, 138, 0.28);
+        width: 116px; height: 116px; border-radius: 50%;
+        background: conic-gradient(from -90deg, rgba(255,255,255,.9) calc(var(--p)*1%), rgba(255,255,255,.2) 0);
+        padding: 7px; flex: 0 0 auto;
+        box-shadow: 0 6px 20px rgba(13,43,20,.25);
     }
-
     .invoice-progress-core {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0) 44%),
-            linear-gradient(150deg, rgba(163, 191, 245, 0.94) 0%, rgba(138, 188, 241, 0.93) 100%);
-        border: 2px solid #000;
-        display: grid;
-        place-content: center;
-        text-align: center;
-        backdrop-filter: blur(4px);
-        color: #fff;
+        width: 100%; height: 100%; border-radius: 50%;
+        background: linear-gradient(150deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 100%);
+        display: grid; place-content: center; text-align: center;
+        backdrop-filter: blur(4px); color: #fff;
     }
+    .invoice-progress-core strong { font-size: 30px; line-height: 1; color: #fff; font-weight: 800; }
+    .invoice-progress-core small  { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.8); }
 
-    .invoice-progress-core strong {
-        font-size: 34px;
-        line-height: 1;
-        color: #383cb0;
-    }
-
-    .invoice-progress-core small {
-        font-size: 12px;
-        font-weight: 700;
-        color: #f9f3ff;
-    }
-
-    .invoice-summary {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-    }
-
+    .invoice-summary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
     .invoice-item {
-        display: flex;
-        gap: 9px;
-        align-items: flex-start;
-        border: 1px solid rgba(224, 242, 254, 0.6);
-        background: rgba(37, 99, 235, 0.15);
-        border-radius: 12px;
-        padding: 10px 12px;
-        min-height: 96px;
+        display: flex; gap: 9px; align-items: flex-start;
+        border: 1px solid rgba(255,255,255,.2);
+        background: rgba(255,255,255,.12);
+        border-radius: 12px; padding: 10px 12px; min-height: 88px;
     }
-
     .invoice-item-icon {
-        width: 27px;
-        height: 27px;
-        border-radius: 999px;
-        border: 1px solid rgba(91, 4, 4, 0.4);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        font-weight: 800;
-        background: rgba(255, 255, 255, 0.576);
-        color: #060606;
-        flex: 0 0 27px;
-        margin-top: 2px;
+        width: 26px; height: 26px; border-radius: 99px;
+        border: 1px solid rgba(255,255,255,.4);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 800;
+        background: rgba(255,255,255,.25); color: #fff;
+        flex: 0 0 26px; margin-top: 2px;
     }
+    .invoice-item-content { display: grid; gap: 2px; min-width: 0; }
+    .invoice-item-content p  { margin: 0; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.8); }
+    .invoice-item-content h4 { margin: 0; font-size: clamp(1rem,1.5vw,1.7rem); font-weight: 800; line-height: 1.15; word-break: break-word; color: #fff; }
+    .invoice-item-content span { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.85); }
 
-    .invoice-item-content {
-        display: grid;
-        gap: 2px;
-        min-width: 0;
-    }
-
-    .invoice-item-content p {
-        margin: 0;
-        font-size: 11px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.85);
-    }
-
-    .invoice-item-content h4 {
-        margin: 0;
-        font-size: clamp(1.05rem, 1.6vw, 1.9rem);
-        font-weight: 800;
-        line-height: 1.15;
-        word-break: break-word;
-        color: #ffffff;
-    }
-
-    .invoice-item-content span {
-        font-size: 11px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.9);
-    }
-
-    #panelJobs {
-        padding: 0;
-        overflow: hidden;
-        gap: 0;
-        border-color: #43a047;
-    }
-
+    #panelJobs { padding: 0; overflow: hidden; gap: 0; border-color: var(--g200); }
     .jobs-header {
-        padding: 12px 14px;
-        background: linear-gradient(135deg, #1a4d2e 0%, #f4faf4 65%, #eff6ff 100%);
-        border-bottom: 1px solid #c8e6c9;
+        padding: 12px 16px;
+        background: linear-gradient(135deg, var(--g50) 0%, #fff 100%);
+        border-bottom: 1px solid var(--border);
     }
+    .jobs-title { margin: 0; font-size: 20px; font-weight: 800; color: var(--g800); }
+    .jobs-body { padding: 12px; background: #fafffe; }
+    .jobs-meta { padding: 10px; border-top: 1px solid var(--border); background: #fff; }
 
-    .jobs-title {
-        margin: 0;
-        font-size: 27px;
-        font-weight: 800;
-        color: #1a4d2e;
-    }
+    .invoice-extra-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+    .invoice-extra-item { border: 1px solid var(--border); background: var(--g25); border-radius: 8px; padding: 8px 10px; }
+    .invoice-extra-item.full-width { grid-column: 1 / -1; }
 
-    .jobs-body {
-        padding: 12px;
-        background: linear-gradient(180deg, #fcfcfc 0%, #f4faf4 70%, #eff6ff 100%);
-    }
-
-    .jobs-meta {
-        padding: 10px;
-        border-top: 1px solid #ffffff;
-        background: #ffffff;
-    }
-
-    .invoice-extra-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-    }
-
-    .invoice-extra-item {
-        border: 1px solid #43a047;
-        background: #f4faf4;
-        border-radius: 8px;
-        padding: 8px 10px;
-    }
-
-    .invoice-extra-item.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .invoice-media-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-        margin: 4px;
-    }
-
+    .invoice-media-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin: 4px; }
     .invoice-media-item {
-        border: 1px solid #43a047;
-        background: #f4faf4;
-        border-radius: 8px;
-        padding: 8px 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        overflow: hidden;
-        min-height: 72px;
+        border: 1px solid var(--border); background: var(--g25);
+        border-radius: 8px; padding: 8px 10px;
+        display: flex; flex-direction: column; gap: 6px; overflow: hidden; min-height: 72px;
     }
-
-    .invoice-media-item .field-label {
-        color: #1a4d2e;
-        font-size: 10px;
-        margin: 0;
-        font-weight: 600;
-    }
-
+    .invoice-media-item .field-label { color: var(--g700); font-size: 10px; margin: 0; font-weight: 600; }
     .invoice-media-item img,
     .invoice-media-item video,
-    .invoice-media-item iframe {
-        width: 100%;
-        flex: 1;
-        object-fit: cover;
-        border-radius: 5px;
-        background: rgba(0, 0, 0, 0.04);
-        display: block;
-    }
-
-    .invoice-media-item .media-empty-label {
-        color: #1a4d2e;
-        font-size: 11px;
-        text-align: center;
-        padding: 8px 0;
-        flex: 1;
-    }
+    .invoice-media-item iframe { width: 100%; flex: 1; object-fit: cover; border-radius: 5px; background: rgba(0,0,0,.04); display: block; }
+    .invoice-media-item .media-empty-label { color: var(--muted); font-size: 11px; text-align: center; padding: 8px 0; flex: 1; }
 
     #invoiceJob {
-        list-style: none;
-        margin: 0;
-        padding: 8px;
-        border-radius: 10px;
-        background: linear-gradient(145deg, #fafafa 0%, #a5d6a7 100%);
-        display: grid;
-        gap: 8px;
-        counter-reset: job-item;
+        list-style: none; margin: 0; padding: 8px;
+        border-radius: 10px; background: var(--g25);
+        display: grid; gap: 6px; counter-reset: job-item;
     }
-
     #invoiceJob li {
         counter-increment: job-item;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 1.45;
-        color: #1a4d2e;
-        border: 1px solid #1a4d2e;
-        border-radius: 10px;
-        padding: 10px;
-        background: #fff;
+        display: flex; align-items: center; gap: 8px;
+        font-size: 13px; font-weight: 600; line-height: 1.45; color: var(--g800);
+        border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; background: #fff;
     }
-
     #invoiceJob li::before {
         content: counter(job-item);
-        flex: 0 0 22px;
-        height: 22px;
-        border-radius: 999px;
-        background: #43a047;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 800;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        flex: 0 0 22px; height: 22px; border-radius: 99px;
+        background: var(--g400); color: #fff;
+        font-size: 11px; font-weight: 800;
+        display: inline-flex; align-items: center; justify-content: center;
     }
 
     #panelTime {
-        background: linear-gradient(180deg, #a5d6a7 0%, #f4faf4 58%, #eff6ff 100%) !important;
-        border-color: #43a047 !important;
+        background: linear-gradient(180deg, var(--g50) 0%, #fff 60%) !important;
+        border-color: var(--g200) !important;
     }
 
     .progress-inner {
-        height: 100%;
-        width: 0;
+        height: 100%; width: 0;
         transition: width 420ms ease;
-        background: linear-gradient(90deg, #1a4d2e 0%, #43a047 55%, #7dd3fc 100%);
-        box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(30, 58, 138, 0.2);
+        background: linear-gradient(90deg, var(--g800) 0%, var(--g400) 100%);
+        box-shadow: inset 0 -1px 0 rgba(255,255,255,.2);
     }
 
     #panelCustomer,
@@ -603,7 +300,7 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
         padding: 0;
         overflow: hidden;
         gap: 0;
-        border-color: #1a4d2e;
+        border-color: var(--g200);
     }
 
     .profile-head {
@@ -611,56 +308,56 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
         justify-content: space-between;
         align-items: center;
         gap: 10px;
-        padding: 12px 14px;
-        border-bottom: 1px solid #c8e6c9;
-        background: linear-gradient(135deg, #2e7d32 0%, #f4faf4 55%, #a5d6a7 100%);
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(135deg, var(--g50) 0%, #fff 100%);
     }
 
     .profile-title {
         margin: 0;
-        font-size: 18px;
+        font-size: 15px;
         font-weight: 800;
-        color: #1a4d2e;
+        color: var(--g800);
     }
 
     .profile-body {
-        padding: 14px;
+        padding: 16px;
         display: grid;
-        grid-template-columns: 88px 1fr;
+        grid-template-columns: 80px 1fr;
         gap: 14px;
         align-items: start;
     }
 
     .profile-avatar {
-        width: 88px;
-        height: 88px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #a5d6a7;
-        background: #f4faf4;
+        border: 2px solid var(--g100);
+        background: var(--g25);
     }
 
     .profile-main {
         display: grid;
-        gap: 4px;
+        gap: 5px;
     }
 
     .profile-name {
         margin: 0;
-        font-size: 22px;
+        font-size: 18px;
         font-weight: 800;
-        color: #1a4d2e;
+        color: var(--g800);
     }
 
     .profile-contact,
     .profile-row {
         margin: 0;
-        font-size: 14px;
-        font-weight: 700;
-        color: #1a4d2e;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 7px;
     }
 
     .profile-row::before,
@@ -670,29 +367,20 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
         justify-content: center;
         width: 18px;
         height: 18px;
-        border-radius: 999px;
-        background: #c8e6c9;
-        color: #2e7d32;
-        font-size: 11px;
-        line-height: 1;
+        border-radius: 99px;
+        background: var(--g50);
+        color: var(--g600);
+        font-size: 10px;
         font-weight: 800;
         flex: 0 0 18px;
     }
 
-    .contact-email::before {
-        content: '✉';
-    }
-
-    .contact-phone::before {
-        content: '✆';
-    }
-
-    .contact-address::before {
-        content: '⌂';
-    }
+    .contact-email::before  { content: '✉'; }
+    .contact-phone::before  { content: '✆'; }
+    .contact-address::before { content: '⌂'; }
 
     .profile-foot {
-        padding: 0 14px 14px;
+        padding: 0 16px 14px;
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
@@ -701,18 +389,16 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
     .profile-pill {
         display: inline-flex;
         align-items: center;
-        padding: 8px 12px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #f4faf4 0%, #eff6ff 65%, #f0fdfa 100%);
-        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        background: var(--g25);
+        font-size: 12px;
         font-weight: 700;
-        color: #1a4d2e;
-        border: 1px solid #a5d6a7;
+        color: var(--g700);
+        border: 1px solid var(--g100);
     }
 
-    #panelMedia {
-        border-color: #c8e6c9;
-    }
+    #panelMedia { border-color: var(--g200); }
 
     .review-split {
         display: grid;
@@ -721,10 +407,10 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
     }
 
     .review-box {
-        border: 1px solid #a5d6a7;
-        border-radius: 12px;
-        padding: 10px;
-        background: linear-gradient(180deg, #f4faf4 0%, #f7fbff 68%, #f0f7ff 100%);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+        background: var(--g25);
         display: grid;
         gap: 10px;
     }
@@ -738,17 +424,17 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
 
     .review-title {
         margin: 0;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 800;
-        color: #1a4d2e;
+        color: var(--g800);
     }
 
     .review-display {
         display: grid;
         gap: 6px;
-        padding: 8px;
-        border-radius: 10px;
-        border: 1px solid #a5d6a7;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
         background: #fff;
     }
 
@@ -757,7 +443,7 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
         margin: 0;
         font-size: 13px;
         font-weight: 600;
-        color: #2e7d32;
+        color: var(--text);
         word-break: break-word;
     }
 
@@ -768,20 +454,24 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
     }
 
     th {
-        background: #2e7d32;
-        color: #000;
-        padding: 6px 8px;
+        background: var(--g600);
+        color: #fff;
+        padding: 8px 10px;
         text-align: left;
+        font-weight: 700;
+        letter-spacing: .3px;
     }
 
     td {
-        padding: 6px 8px;
-        border-bottom: 1px solid #c8e6c9;
-        color: #1a4d2e;
+        padding: 7px 10px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
         font-weight: 600;
     }
 
-    /* --- iPad Responsive (Targeting Tablets only) --- */
+    tr:hover td { background: var(--g25); }
+
+    /* --- iPad Responsive --- */
     @media (min-width: 769px) and (max-width: 1060px) {
         .invoice-main {
             flex-direction: row !important;
@@ -789,176 +479,53 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
             align-items: center !important;
             gap: 20px !important;
         }
-
         .invoice-summary {
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 10px !important;
         }
-
-        .invoice-summary .invoice-item:last-child {
-            grid-column: span 2 !important;
-        }
-
+        .invoice-summary .invoice-item:last-child { grid-column: span 2 !important; }
         .grid, .info-grid, .invoice-extra-grid, .invoice-media-grid, .review-split {
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
         }
-
         .profile-body {
             display: flex !important;
             flex-direction: row !important;
             align-items: center !important;
-            justify-content: flex-start !important;
-            gap: 20px !important;
-            padding: 12px !important;
+            gap: 16px !important;
         }
-
-        .profile-main {
-            flex: 1 !important;
-            min-width: 0 !important;
-        }
-
-        .time-line-row {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 2px !important;
-            padding: 8px 12px !important;
-        }
-
-        .time-line-row span:last-child {
-            font-size: 11px !important;
-            line-height: 1.2;
-        }
-
-        .invoice-progress-ring {
-            margin: 0 !important;
-            flex-shrink: 0 !important;
-        }
-
-        .invoice-hero {
-            padding: 12px !important;
-        }
-
-        .invoice-item {
-            padding: 8px !important;
-            min-height: auto !important;
-            gap: 6px !important;
-        }
+        .profile-main { flex: 1 !important; min-width: 0 !important; }
+        .invoice-progress-ring { margin: 0 !important; flex-shrink: 0 !important; }
     }
 
     @media (max-width: 1060px) {
-
-        .grid,
-        .info-grid,
-        .invoice-extra-grid,
-        .invoice-media-grid,
-        .review-split {
+        .grid, .info-grid, .invoice-extra-grid, .invoice-media-grid, .review-split {
             grid-template-columns: 1fr;
         }
-
-        .invoice-summary {
-            grid-template-columns: 1fr;
-            gap: 2px;
-        }
-
-        .profile-body {
-            grid-template-columns: 1fr 80px;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .profile-avatar {
-            grid-column: 2;
-            grid-row: 1;
-            width: 72px;
-            height: 72px;
-        }
-
-        .profile-main {
-            grid-column: 1;
-            grid-row: 1;
-            text-align: left;
-        }
-
-        .invoice-main {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .invoice-progress-ring {
-            margin-inline: auto;
-        }
+        .invoice-summary { grid-template-columns: 1fr; gap: 6px; }
+        .profile-body { grid-template-columns: 1fr 72px; align-items: center; gap: 10px; }
+        .profile-avatar { grid-column: 2; grid-row: 1; width: 64px; height: 64px; }
+        .profile-main { grid-column: 1; grid-row: 1; }
+        .invoice-main { flex-direction: column; align-items: flex-start; }
+        .invoice-progress-ring { margin-inline: auto; }
     }
 
     @media (max-width: 768px) {
-        :root {
-            --radius-xl: 4px;
-            --radius-lg: 3px;
-            --radius-md: 2px;
-        }
-
-        .admin-main,
-        .admin-main>main {
-            padding: 2px !important;
-        }
-
-        .modal-card {
-            width: calc(100% - 0px); /* Bám sát cạnh viền */
-            margin: 0px auto !important; /* Căn chỉnh lại margin để sát cạnh */
-            border-radius: var(--radius-md);
-        }
-
-        .topbar { padding: 4px; gap: 4px; }
-        .content { padding: 2px; }
-        .grid { gap: 4px; }
-        .panel { padding: 4px; gap: 4px; }
-        .invoice-hero { padding: 6px; }
-        .invoice-main { gap: 4px; margin-bottom: 2px; }
-        .invoice-headline { gap: 2px; }
-        .invoice-title-line { gap: 4px; }
-        .invoice-summary { gap: 4px; }
-        .invoice-item { padding: 4px; gap: 4px; min-height: auto; }
-        .jobs-header, .jobs-body, .jobs-meta { padding: 4px; }
-        .invoice-extra-grid, .invoice-media-grid { gap: 4px; }
-        .invoice-extra-item, .invoice-media-item { padding: 4px; }
-        .profile-head, .profile-body { padding: 2px; gap: 4px; }
-        .profile-foot { padding: 0 4px 4px; gap: 4px; }
-        .profile-pill { padding: 2px 6px; }
-        .review-split, .review-box, .review-display { gap: 4px; padding: 4px; }
-        th, td { padding: 4px; }
-        .compact-mobile { padding: 2px !important; gap: 4px !important; margin: 2px !important; }
-        
-        .topbar-title {
-            white-space: normal !important;
-            overflow: visible !important;
-            text-overflow: clip !important;
-            line-height: 1.2;
-            font-size: 14px !important;
-        }
-
-        .time-line-row {
-            /* Basic resets to override inline d-flex if needed */
-        }
-
-        @media (max-width: 768px) {
-            .time-line-row {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                gap: 0 !important;
-                padding: 4px 6px !important;
-            }
-            .time-line-row span:last-child {
-                font-size: 10px !important;
-                word-break: break-all !important;
-            }
-            /* Override profile-body flex adjustment for mobile specifically */
-            .profile-body.compact-mobile {
-                display: flex !important;
-                align-items: center !important;
-                gap: 15px !important;
-                padding: 4px !important;
-            }
-        }
+        .admin-main, .admin-main > main { padding: 8px !important; }
+        .modal-card { margin: 0 auto !important; }
+        .topbar { padding: 10px 12px; gap: 8px; }
+        .topbar-title { font-size: 14px !important; white-space: normal !important; overflow: visible !important; line-height: 1.3; }
+        .content { padding: 10px; }
+        .grid { gap: 8px; }
+        .panel { padding: 10px; gap: 8px; }
+        .invoice-hero { padding: 10px; }
+        .invoice-main { gap: 8px; margin-bottom: 8px; }
+        .invoice-summary { gap: 6px; }
+        .invoice-item { padding: 8px; min-height: auto; }
+        .jobs-header, .jobs-body, .jobs-meta { padding: 10px; }
+        .profile-head, .profile-body { padding: 10px; }
+        .profile-foot { padding: 0 10px 10px; }
+        .review-split { grid-template-columns: 1fr; }
+        th, td { padding: 6px 8px; }
     }
 </style>
 
