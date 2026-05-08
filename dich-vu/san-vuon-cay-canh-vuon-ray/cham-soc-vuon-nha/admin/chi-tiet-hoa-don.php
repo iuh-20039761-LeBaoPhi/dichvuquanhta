@@ -965,7 +965,7 @@ admin_render_layout_start('Chi Tiết Đơn Chăm Sóc Vườn', 'orders', $admi
 <div class="modal-card">
     <header class="topbar">
         <a class="topbar-logo" href="index.php" aria-label="Quay lại">
-            <img src="../assets/images/logo1.jpg" alt="Logo Chăm Sóc Vườn" />
+            <img src="../assets/images/logo1.png" alt="Logo Chăm Sóc Vườn" />
         </a>
         <h1 class="topbar-title">Chi tiết đơn Chăm Sóc Vườn</h1>
         <a class="topbar-logo" href="../index.html" aria-label="Trang chủ">

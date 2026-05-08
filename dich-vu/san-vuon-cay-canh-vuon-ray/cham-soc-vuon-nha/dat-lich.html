@@ -263,6 +263,149 @@
     .customer-info-box .btn-success { background: linear-gradient(135deg, #43a047, #2e7d32) !important; border: none !important; border-radius: 12px !important; font-weight: 700; }
     .customer-info-box .btn-warning { background: linear-gradient(135deg, #ffa726, #e65100) !important; border: none !important; border-radius: 12px !important; font-weight: 700; color: #fff !important; }
 
+    /* ── ROUTE BOX (kiểu Be/Grab) ── */
+    .route-box {
+      background: #f8fff9;
+      border: 1px solid #c8e6c9;
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .route-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .route-dot {
+      width: 20px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .route-dot span {
+      display: block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid;
+    }
+    .route-dot-origin span {
+      background: #e8f5e9;
+      border-color: #43a047;
+    }
+    .route-dot-dest span {
+      background: #1a4d2e;
+      border-color: #1a4d2e;
+    }
+    .route-line-connector {
+      display: flex;
+      align-items: center;
+      padding: 2px 0;
+      margin-left: 9px;
+    }
+    .route-line {
+      width: 2px;
+      height: 18px;
+      background: repeating-linear-gradient(
+        to bottom,
+        #a5d6a7 0px, #a5d6a7 4px,
+        transparent 4px, transparent 8px
+      );
+      margin: 0;
+    }
+    .route-input-wrap { flex: 1; position: relative; }
+    .route-input {
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      padding: 6px 8px !important;
+      font-size: .9rem !important;
+      font-weight: 600;
+      color: var(--pg);
+    }
+    .route-input:focus {
+      background: #fff !important;
+      border-radius: 10px !important;
+      box-shadow: 0 0 0 2px rgba(67,160,71,.2) !important;
+    }
+    .route-input[readonly] { color: #888; font-weight: 500; cursor: default; }
+
+    /* Spinner */
+    .addr-spinner {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #43a047;
+      font-size: .85rem;
+      pointer-events: none;
+    }
+
+    /* Dropdown gợi ý địa chỉ */
+    .addr-suggestions {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #fff;
+      border: 1px solid #c8e6c9;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(26,77,46,.12);
+      z-index: 9999;
+      list-style: none;
+      margin: 0; padding: 6px 0;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .addr-suggestions li {
+      padding: 10px 14px;
+      font-size: .88rem;
+      font-weight: 500;
+      color: #2d3436;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background .15s;
+      line-height: 1.4;
+      border-bottom: 1px solid #f0f4f0;
+    }
+    .addr-suggestions li:last-child { border-bottom: none; }
+    .addr-suggestions li:hover,
+    .addr-suggestions li.addr-active { background: #f1f8e9; }
+
+    /* Icon vị trí */
+    .addr-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #e8f5e9;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: #66bb6a;
+      font-size: .85rem;
+    }
+    /* Text block */
+    .addr-text { flex: 1; min-width: 0; }
+    .addr-main { font-weight: 700; color: var(--pg); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .addr-sub  { font-size: .76rem; color: #888; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Khoảng cách */
+    .addr-km {
+      font-size: .75rem;
+      font-weight: 600;
+      color: #888;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .addr-suggestions .addr-no-result {
+      padding: 12px 14px;
+      font-size: .85rem;
+      color: #aaa;
+      text-align: center;
+      cursor: default;
+    }
+
     /* ── SHIFT / ERRORS ── */
     #shiftInfoBox { border-radius: 12px; font-size: .88rem; border-color: #a5d6a7; background: #f1f8e9; color: var(--pg); }
     #timeError { border-radius: 12px; font-size: .88rem; }
@@ -305,9 +448,10 @@
     .review-action-row .btn { padding: 13px 0 !important; font-size: .95rem !important; border-radius: 50px !important; font-weight: 700; }
     .review-btn-edit { background: #eceff1; border: 1px solid #cfd8dc !important; color: #546e7a; font-weight: 700; }
     .review-btn-edit:hover { background: #cfd8dc; color: #37474f; }
+    .review-btn-home { background: #fff; border: 1px solid #c8e6c9 !important; color: var(--ag); font-weight: 700; }
+    .review-btn-home:hover { background: #e8f5e9; color: var(--pg); border-color: #a5d6a7 !important; }
     .review-btn-save { background: linear-gradient(135deg, #43a047, #1b5e20) !important; border: none !important; color: #fff; font-weight: 800; box-shadow: 0 6px 20px rgba(27,94,32,.3); }
     .review-btn-save:hover { background: linear-gradient(135deg, #388e3c, #1a4d2e) !important; transform: translateY(-1px); }
-
     /* ── RESPONSIVE ── */
     @media (max-width: 991.98px) {
       body { padding-top: 86px; }
@@ -455,11 +599,51 @@
 
                   <div class="mt-3 pt-3 border-top">
                     <label class="form-label">Địa chỉ của bạn <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                      <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
-                      <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi' hoặc nhập thủ công"
-                        class="form-control" />
+
+                    <!-- ── ROUTE BOX: điểm đi / điểm đến kiểu Be ── -->
+                    <div class="route-box mb-2">
+                      <!-- Điểm đi (địa chỉ hiện tại của khách) -->
+                      <div class="route-row" id="routeOriginRow">
+                        <div class="route-dot route-dot-origin">
+                          <span></span>
+                        </div>
+                        <div class="route-input-wrap position-relative">
+                          <input type="text" id="routeOrigin"
+                            placeholder="Nhập địa chỉ hiện tại của bạn..."
+                            class="form-control route-input"
+                            autocomplete="off" />
+                          <span id="originLoadingSpinner" class="addr-spinner d-none">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                          </span>
+                          <ul id="originSuggestions" class="addr-suggestions d-none"></ul>
+                        </div>
+                      </div>
+
+                      <!-- Đường kẻ nối -->
+                      <div class="route-line-connector">
+                        <div class="route-line"></div>
+                      </div>
+
+                      <!-- Điểm đến (địa chỉ khách hàng) -->
+                      <div class="route-row" id="routeDestRow">
+                        <div class="route-dot route-dot-dest">
+                          <span></span>
+                        </div>
+                        <div class="route-input-wrap position-relative">
+                          <input type="text" id="customerAddress"
+                            placeholder="Nhập địa chỉ vườn cần chăm sóc..."
+                            class="form-control route-input"
+                            autocomplete="off" />
+                          <!-- Spinner loading -->
+                          <span id="addrLoadingSpinner" class="addr-spinner d-none">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                          </span>
+                          <!-- Dropdown gợi ý -->
+                          <ul id="addressSuggestions" class="addr-suggestions d-none"></ul>
+                        </div>
+                      </div>
                     </div>
+
                     <div class="d-flex gap-2 mt-2">
                       <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
                         <i class="fas fa-location-dot me-1"></i>Lấy vị trí
@@ -473,8 +657,10 @@
                       <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #bcdcff">
                       </div>
                       <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
-                      <div id="distanceInfo" class="form-text mt-1 text-muted d-none">Quãng đường và phí di chuyển sẽ được tính
-                        tự động sau khi chọn vị trí.</div>
+                    </div>
+                    <div id="distanceInfo" class="form-text mt-2 d-flex align-items-center gap-1" style="color:var(--ag);">
+                      <i class="fas fa-route" style="color:#66bb6a;font-size:.8rem;"></i>
+                      <span>Chọn địa chỉ để tính phí di chuyển.</span>
                     </div>
                   </div>
                 </div>
@@ -651,6 +837,10 @@
                 </div>
 
                 <div class="d-flex justify-content-center gap-2 mt-3">
+                  <a href="index.html" class="btn rounded-pill fw-bold"
+                    style="background:#fff; border:1px solid #c8e6c9; color:var(--ag); padding:14px 22px;">
+                    <i class="fas fa-house me-1"></i>Trang chủ
+                  </a>
                   <button type="submit" class="btn text-white rounded-pill fw-bold"
                     style="background-color: #2e7d32; border: none">
                     <i class="fas fa-check me-1"></i>Xem Lại Thông Tin
@@ -947,42 +1137,188 @@
         );
       }
 
+      // ── Autocomplete địa chỉ Việt Nam ──
+      // Dùng Nominatim với chế độ prefix search (structured) để gợi ý từ 2-3 ký tự
+      // Kết hợp tính khoảng cách từ vị trí văn phòng
+
+      var ADDR_OFFICE = { lat: 10.853880, lng: 106.629830 }; // Quang Trung, Q12
+
+      function haversineKmAddr(lat1, lng1, lat2, lng2) {
+        var R = 6371;
+        var dLat = (lat2 - lat1) * Math.PI / 180;
+        var dLng = (lng2 - lng1) * Math.PI / 180;
+        var a = Math.sin(dLat/2)*Math.sin(dLat/2)
+              + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)
+              * Math.sin(dLng/2)*Math.sin(dLng/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      }
+
+      function fmtKm(km) {
+        if (km < 1) return Math.round(km * 1000) + ' m';
+        return km.toFixed(1).replace('.', ',') + ' km';
+      }
+
+      // Format 1 item từ Nominatim addressdetails thành { main, sub, label, lat, lng, km }
+      function fmtNominatimItem(item, refLat, refLng) {
+        var a   = item.address || {};
+        var lat = Number(item.lat);
+        var lng = Number(item.lon);
+
+        // Tên chính — ưu tiên: địa điểm > đường > phường > quận
+        var main = a.amenity || a.shop || a.tourism || a.leisure || a.office
+                || a.road || a.pedestrian || a.footway || a.path
+                || a.suburb || a.neighbourhood || a.quarter
+                || a.city_district || a.district
+                || (item.display_name || '').split(',')[0].trim();
+
+        // Số nhà nếu có
+        if (a.house_number && a.road && main === a.road) {
+          main = a.house_number + ' ' + a.road;
+        }
+
+        // Dòng phụ: phường + quận + tỉnh/thành
+        var subParts = [];
+        var ward = a.suburb || a.neighbourhood || a.quarter;
+        var dist = a.city_district || a.district || a.county;
+        var city = a.city || a.town || a.state;
+        if (ward && ward !== main) subParts.push(ward);
+        if (dist && dist !== main) subParts.push(dist);
+        if (city)                  subParts.push(city);
+        var sub = subParts.join(', ');
+
+        // Label điền vào ô: gọn, bỏ "Việt Nam"
+        var allParts = (item.display_name || '').split(',')
+          .map(function(s){ return s.trim(); })
+          .filter(function(s){ return s && s !== 'Việt Nam' && s !== 'Vietnam'; });
+        var label = allParts.slice(0, 5).join(', ');
+
+        // Khoảng cách
+        var km = (refLat && refLng) ? haversineKmAddr(refLat, refLng, lat, lng) : null;
+
+        return { main: main, sub: sub, label: label, lat: lat, lng: lng, km: km };
+      }
+
+      // Fetch Nominatim với prefix search — hoạt động từ 2 ký tự
+      async function fetchAddrSuggestions(query, refLat, refLng) {
+        // Thêm "Việt Nam" vào query để ưu tiên kết quả VN
+        var q = query + ' Việt Nam';
+        var url = 'https://nominatim.openstreetmap.org/search'
+          + '?format=json&q=' + encodeURIComponent(q)
+          + '&limit=8&countrycodes=vn&addressdetails=1&accept-language=vi';
+        var res = await fetch(url, { headers: { 'Accept-Language': 'vi' } });
+        var data = await res.json();
+        if (!Array.isArray(data)) return [];
+        return data.map(function(item){ return fmtNominatimItem(item, refLat, refLng); })
+                   .filter(function(f){ return f.main; });
+      }
+
+      // ── Render dropdown gợi ý dùng chung ──
+      function renderSuggestions($ul, items, onSelect) {
+        $ul.empty();
+        if (!items || items.length === 0) {
+          $ul.append('<li class="addr-no-result"><i class="fas fa-search-location me-1"></i>Không tìm thấy địa chỉ phù hợp</li>');
+          $ul.removeClass('d-none');
+          return;
+        }
+        items.forEach(function (fmt) {
+          var kmHtml = fmt.km != null
+            ? '<span class="addr-km">' + fmtKm(fmt.km) + '</span>'
+            : '';
+          var $li = $('<li class="addr-item"></li>').html(
+            '<span class="addr-icon"><i class="fas fa-map-marker-alt"></i></span>' +
+            '<span class="addr-text">' +
+              '<span class="addr-main">' + $('<span>').text(fmt.main).html() + '</span>' +
+              (fmt.sub ? '<span class="addr-sub">' + $('<span>').text(fmt.sub).html() + '</span>' : '') +
+            '</span>' +
+            kmHtml
+          );
+          $li.on('mousedown', function (e) {
+            e.preventDefault();
+            onSelect(fmt);
+            $ul.addClass('d-none').empty();
+          });
+          $ul.append($li);
+        });
+        $ul.removeClass('d-none');
+      }
+
       // [Thêm mới] Tự động tìm tọa độ khi người dùng gõ địa chỉ thủ công
       var lookupAddressTimeout = null;
       $(document).on('input', '#customerAddress', function () {
         var query = $(this).val().trim();
-        if (query.length < 5) return;
 
+        if (query.length < 2) {
+          $('#addressSuggestions').addClass('d-none').empty();
+          $('#addrLoadingSpinner').addClass('d-none');
+          return;
+        }
+
+        $('#addrLoadingSpinner').removeClass('d-none');
         clearTimeout(lookupAddressTimeout);
         lookupAddressTimeout = setTimeout(async function () {
           try {
-            var res = await fetch(
-              'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1',
-              { headers: { 'Accept-Language': 'vi' } }
-            );
-            var data = await res.json();
-            if (data && data.length > 0) {
-              var lat = Number(data[0].lat);
-              var lng = Number(data[0].lon);
+            var refLat = CUSTOMER_LOCATION ? CUSTOMER_LOCATION.lat : ADDR_OFFICE.lat;
+            var refLng = CUSTOMER_LOCATION ? CUSTOMER_LOCATION.lng : ADDR_OFFICE.lng;
+            var items = await fetchAddrSuggestions(query, refLat, refLng);
+            $('#addrLoadingSpinner').addClass('d-none');
 
-              // Cập nhật vị trí nhưng KHÔNG được gán ngược lại ô input (tránh làm gián đoạn việc gõ)
-              CUSTOMER_LOCATION = { lat: lat, lng: lng };
-
-              if (mapPickerMap) {
-                if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
-                mapPickerMarker = L.marker([lat, lng]).addTo(mapPickerMap);
-                mapPickerMap.setView([lat, lng], 16);
-                mapPickerMarker.bindPopup('<small>' + (data[0].display_name) + '</small>');
+            renderSuggestions($('#addressSuggestions'), items, function (fmt) {
+              $('#customerAddress').val(fmt.label);
+              if (fmt.lat && fmt.lng) {
+                CUSTOMER_LOCATION = { lat: fmt.lat, lng: fmt.lng };
+                if (mapPickerMap) {
+                  if (mapPickerMarker) mapPickerMap.removeLayer(mapPickerMarker);
+                  mapPickerMarker = L.marker([fmt.lat, fmt.lng]).addTo(mapPickerMap);
+                  mapPickerMap.setView([fmt.lat, fmt.lng], 16);
+                  mapPickerMarker.bindPopup('<small>' + $('<span>').text(fmt.label).html() + '</small>');
+                }
+                if (typeof window.recalculateDistanceAndPrice === 'function') {
+                  window.recalculateDistanceAndPrice();
+                }
               }
-
-              if (typeof window.recalculateDistanceAndPrice === 'function') {
-                window.recalculateDistanceAndPrice();
-              }
-            }
+            });
           } catch (e) {
+            $('#addrLoadingSpinner').addClass('d-none');
             console.warn('Address lookup error:', e);
           }
-        }, 1000); // Đợi 1 giây sau khi ngừng gõ để tránh gọi API quá nhiều
+        }, 400);
+      });
+
+      // Ẩn dropdown khi click ra ngoài
+      $(document).on('click', function (e) {
+        if (!$(e.target).closest('#routeDestRow').length) {
+          $('#addressSuggestions').addClass('d-none').empty();
+        }
+        if (!$(e.target).closest('#routeOriginRow').length) {
+          $('#originSuggestions').addClass('d-none').empty();
+        }
+      });
+
+      // ── Autocomplete cho ô điểm đi ──
+      var lookupOriginTimeout = null;
+      $(document).on('input', '#routeOrigin', function () {
+        var query = $(this).val().trim();
+        if (query.length < 2) {
+          $('#originSuggestions').addClass('d-none').empty();
+          $('#originLoadingSpinner').addClass('d-none');
+          return;
+        }
+
+        $('#originLoadingSpinner').removeClass('d-none');
+        clearTimeout(lookupOriginTimeout);
+        lookupOriginTimeout = setTimeout(async function () {
+          try {
+            var items = await fetchAddrSuggestions(query, ADDR_OFFICE.lat, ADDR_OFFICE.lng);
+            $('#originLoadingSpinner').addClass('d-none');
+
+            renderSuggestions($('#originSuggestions'), items, function (fmt) {
+              $('#routeOrigin').val(fmt.label);
+            });
+          } catch (e) {
+            $('#originLoadingSpinner').addClass('d-none');
+            console.warn('Origin lookup error:', e);
+          }
+        }, 400);
       });
 
       $(document).ready(async function () {
@@ -1005,10 +1341,11 @@
         function renderDistanceInfo(message, isError) {
           var $distanceInfo = $('#distanceInfo');
           if (!$distanceInfo.length) return;
+          // Cập nhật span text bên trong (giữ icon)
+          $distanceInfo.find('span').text(message);
           $distanceInfo
-            .text(message)
             .toggleClass('text-danger', !!isError)
-            .toggleClass('text-muted', !isError);
+            .css('color', isError ? '' : 'var(--ag)');
         }
 
         // Chuc nang: xu ly nghiep vu cho haversineKm.
@@ -1056,12 +1393,13 @@
 
           if (!CUSTOMER_LOCATION) {
             DISTANCE_KM = 0;
-            // renderDistanceInfo('Quãng đường và phí di chuyển sẽ được tính tự động sau khi chọn vị trí.');
+            $('#travelFeeRow').addClass('d-none');
+            renderDistanceInfo('Chọn địa chỉ để tính phí di chuyển.');
             updateTotalPrice();
             return;
           }
 
-          // renderDistanceInfo('Đang tính quãng đường thực tế từ vị trí nhân sự đến địa chỉ của bạn...');
+          renderDistanceInfo('Đang tính quãng đường...');
 
           try {
             var office = OFFICE_COORDS;
@@ -1073,7 +1411,6 @@
             }
 
             var distanceKm;
-
             try {
               distanceKm = await getRouteDistanceKm(office, CUSTOMER_LOCATION);
             } catch (routeError) {
@@ -1082,23 +1419,17 @@
 
             if (requestId !== DISTANCE_REQUEST_ID) return;
 
-            // DISTANCE_KM = Number(distanceKm.toFixed(2));
-            DISTANCE_KM = 0; // Luôn để 0 để ẩn tính phí di chuyển
-            
-            /*
-            renderDistanceInfo(
-              'Quãng đường ước tính: ' +
-              DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
-              ' km. Phí di chuyển: ' +
-              formatMoney(DISTANCE_KM * 5000) +
-              '.'
-            );
-            */
+            DISTANCE_KM = Number(distanceKm.toFixed(2));
+
+            var feeText = DISTANCE_KM > 0
+              ? 'Quãng đường: ' + DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' km — Phí di chuyển: ' + formatMoney(DISTANCE_KM * 5000)
+              : 'Địa chỉ trong khu vực, không tính phí di chuyển.';
+            renderDistanceInfo(feeText, false);
+
           } catch (error) {
             if (requestId !== DISTANCE_REQUEST_ID) return;
-
             DISTANCE_KM = 0;
-            // renderDistanceInfo('Không thể tính quãng đường tự động lúc này. Tạm tính phí di chuyển = 0 đ.', true);
+            renderDistanceInfo('Không thể tính quãng đường. Phí di chuyển tạm tính = 0 đ.', true);
           }
 
           updateTotalPrice();
@@ -1730,7 +2061,15 @@
           }
           $('#holidayRow').addClass('d-none'); // Gộp chung vào nightRow (phụ thu)
 
-          $('#travelFee').text(formatMoney(travelFee));
+          // Hiển thị phí di chuyển
+          if (travelFee > 0) {
+            $('#travelFeeRow').removeClass('d-none').css('display', 'flex');
+            $('#travelFee').text(formatMoney(travelFee));
+          } else {
+            $('#travelFeeRow').addClass('d-none');
+            $('#travelFee').text('0 đ');
+          }
+
           $('#totalPrice').val(formatMoney(finalPrice));
 
           LAST_CALC_RESULT = {

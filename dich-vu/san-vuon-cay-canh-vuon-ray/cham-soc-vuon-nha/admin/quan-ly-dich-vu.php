@@ -66,66 +66,56 @@ admin_render_layout_start('Quản Lý Dịch Vụ', 'services', $admin);
 ?>
 
 <style>
-    .admin-main, .admin-main > main { background: var(--white) !important; }
-
     .page-title-box {
-        background: #fff; padding: 20px 24px; border-radius: 20px;
-        border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(26,77,46,.05);
-        margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;
+        background: var(--white); padding: 18px 22px; border-radius: var(--r-xl);
+        border: 1px solid var(--border-soft); box-shadow: var(--shadow-sm);
+        margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
     }
-    .page-title-box h2 { font-family: 'Playfair Display', serif; color: var(--pg); font-size: 1.4rem; font-weight: 700; margin: 0; }
 
-    .btn-primary {
-        background: linear-gradient(135deg, var(--accent), var(--sidebar-b)) !important;
-        border-color: var(--sidebar-b) !important; border-radius: 12px;
-        padding: 9px 22px; font-weight: 700; box-shadow: 0 4px 12px rgba(26,77,46,.2); transition: all .2s;
-    }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(26,77,46,.28); }
-
-    .card { border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(26,77,46,.04); }
-    .search-card { background: #fff; border: 1px solid var(--border); }
-    .table-container { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+    .card { border-radius: var(--r-lg); border: 1px solid var(--border-soft); box-shadow: var(--shadow-sm); }
+    .search-card { background: var(--white); }
+    .table-container { background: var(--white); border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--border-soft); }
 
     .table thead th {
-        background: var(--lime); color: var(--pg); font-weight: 700;
-        text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.8px;
-        padding: 14px 16px; border-bottom: 1px solid var(--border); white-space: nowrap;
+        background: var(--g25); color: var(--muted); font-weight: 700;
+        text-transform: uppercase; font-size: .7rem; letter-spacing: .8px;
+        padding: 12px 16px; border-bottom: 1px solid var(--border); white-space: nowrap;
     }
-    .table tbody td { padding: 14px 16px; border-color: #f0f4f0; vertical-align: middle; }
-    .table-hover tbody tr:hover { background: #f9fdf9; }
+    .table tbody td { padding: 13px 16px; border-color: var(--border-soft); vertical-align: middle; }
+    .table-hover tbody tr:hover { background: var(--g25); }
 
     .service-img-wrapper {
-        width: 52px; height: 52px; border-radius: 12px; overflow: hidden;
-        border: 2px solid var(--border); box-shadow: 0 2px 6px rgba(26,77,46,.1);
+        width: 52px; height: 52px; border-radius: var(--r-md); overflow: hidden;
+        border: 2px solid var(--border); box-shadow: var(--shadow-sm);
     }
     .badge-includes {
-        background: var(--lime); color: var(--pg); padding: 4px 12px;
-        border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid var(--border);
+        background: var(--g50); color: var(--g700); padding: 4px 12px;
+        border-radius: 99px; font-size: .75rem; font-weight: 700; border: 1px solid var(--g100);
     }
     .action-buttons .btn {
-        width: 34px; height: 34px; padding: 0;
+        width: 32px; height: 32px; padding: 0;
         display: inline-flex; align-items: center; justify-content: center;
-        border-radius: 10px; margin-left: 4px; transition: all .2s;
+        border-radius: var(--r-sm); margin-left: 4px; transition: all .18s;
     }
     @media (max-width: 767.98px) {
         .service-item-mobile {
-            background: #fff; border-radius: 16px; padding: 14px; margin-bottom: 12px;
-            border: 1px solid var(--border); display: flex; gap: 14px; position: relative;
-            box-shadow: 0 2px 8px rgba(26,77,46,.05);
+            background: var(--white); border-radius: var(--r-lg); padding: 14px; margin-bottom: 10px;
+            border: 1px solid var(--border-soft); display: flex; gap: 14px; position: relative;
+            box-shadow: var(--shadow-sm);
         }
-        .mobile-img { width: 68px; height: 68px; border-radius: 12px; object-fit: cover; }
-        .mobile-info h6 { color: var(--pg); font-weight: 700; margin-bottom: 4px; }
-        .btn-edit-mobile { position: absolute; top: 14px; right: 14px; color: var(--pg); }
+        .mobile-img { width: 64px; height: 64px; border-radius: var(--r-md); object-fit: cover; }
+        .mobile-info h6 { color: var(--g800); font-weight: 700; margin-bottom: 4px; }
+        .btn-edit-mobile { position: absolute; top: 14px; right: 14px; color: var(--g700); }
     }
 </style>
 
 <div class="page-title-box">
     <div>
-        <h2 class="h4 mb-0 fw-bold" style="color: #1a4d2e;">Quản lý dịch vụ</h2>
-        <p class="text-muted small mb-0">Danh sách các dịch vụ đang cung cấp</p>
+        <h2 class="h5 mb-0 fw-bold" style="color:var(--g800);">Quản lý dịch vụ vườn</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin:2px 0 0;">Danh sách các dịch vụ chăm sóc vườn đang cung cấp</p>
     </div>
-    <a href="them-dich-vu.php" class="btn btn-primary shadow-sm">
-        <i class="bi bi-plus-lg me-2"></i>Thêm dịch vụ
+    <a href="them-dich-vu.php" class="btn btn-primary btn-sm px-3 fw-bold" style="border-radius:var(--r-sm);">
+        <i class="bi bi-plus-lg me-1"></i>Thêm dịch vụ
     </a>
 </div>
 

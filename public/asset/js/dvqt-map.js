@@ -8,6 +8,7 @@ window.mapPicker = (function () {
     let map = null;
     let marker = null;
     let timer = null;
+    let suggestStylesReady = false;
 
     /**
      * Tự động dò tìm các phần tử DOM liên quan dựa trên các ID phổ biến.
@@ -20,6 +21,100 @@ window.mapPicker = (function () {
             box: document.getElementById('mapPickerBox'),
             mapEl: document.getElementById('mapPickerEl')
         };
+    }
+
+    function escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function ensureSuggestStyles() {
+        if (suggestStylesReady) return;
+        const style = document.createElement('style');
+        style.textContent = [
+            '.map-suggest-box{position:relative;margin-top:6px;border:1px solid #e2e8f0;background:#fff;border-radius:10px;box-shadow:0 8px 24px rgba(15,23,42,0.08);max-height:220px;overflow:auto;display:none;z-index:999}',
+            '.map-suggest-item{padding:8px 12px;cursor:pointer;font-size:0.92rem;line-height:1.35;color:#0f172a}',
+            '.map-suggest-item:hover{background:#f1f5f9}',
+            '.map-suggest-empty{padding:10px 12px;color:#64748b;font-size:0.85rem}'
+        ].join('');
+        document.head.appendChild(style);
+        suggestStylesReady = true;
+    }
+
+    function getSuggestId(addr) {
+        const base = (addr && addr.id) ? addr.id : 'addr';
+        return 'mapPickerSuggest_' + base;
+    }
+
+    function ensureSuggestBox(addr) {
+        if (!addr) return null;
+        const id = getSuggestId(addr);
+        let box = document.getElementById(id);
+        if (!box) {
+            box = document.createElement('div');
+            box.id = id;
+            box.className = 'map-suggest-box';
+            box.setAttribute('role', 'listbox');
+            const host = addr.closest('.input-group') || addr;
+            host.insertAdjacentElement('afterend', box);
+        }
+        ensureSuggestStyles();
+        return box;
+    }
+
+    function hideSuggestions(addr) {
+        const box = addr ? document.getElementById(getSuggestId(addr)) : null;
+        if (box) box.style.display = 'none';
+    }
+
+    function formatSuggestion(item) {
+        if (!item) return '';
+        if (item.display_name) return item.display_name.split(', ').slice(0, 6).join(', ');
+        return '';
+    }
+
+    function renderSuggestions(addr, items) {
+        const box = ensureSuggestBox(addr);
+        if (!box) return;
+        box.innerHTML = '';
+
+        if (!items || !items.length) {
+            const empty = document.createElement('div');
+            empty.className = 'map-suggest-empty';
+            empty.textContent = 'Không tìm thấy vị trí phù hợp.';
+            box.appendChild(empty);
+            box.style.display = 'block';
+            return;
+        }
+
+        items.slice(0, 3).forEach(item => {
+            const label = formatSuggestion(item);
+            const el = document.createElement('div');
+            el.className = 'map-suggest-item';
+            el.textContent = label || item.display_name || '';
+            el.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                applySuggestion(addr, item, label);
+            });
+            box.appendChild(el);
+        });
+        box.style.display = 'block';
+    }
+
+    function applySuggestion(addr, item, label) {
+        if (!addr || !item) return;
+        const lat = parseFloat(item.lat);
+        const lng = parseFloat(item.lon);
+        if (label) addr.value = label;
+        hideSuggestions(addr);
+        if (!Number.isNaN(lat) && !Number.isNaN(lng) && map) {
+            pick(lat, lng, { skipReverse: true, label: label });
+            map.setView([lat, lng], 16);
+        }
     }
 
     /**
@@ -57,6 +152,11 @@ window.mapPicker = (function () {
      * @param {boolean} doReverse - Nếu true, sẽ gọi API để chuyển tọa độ thành địa chỉ văn bản.
      */
     function pick(lat, lng, doReverse = true) {
+        let options = {};
+        if (typeof doReverse === 'object' && doReverse !== null) {
+            options = doReverse;
+            doReverse = !options.skipReverse;
+        }
         if (!map) return;
         if (marker) map.removeLayer(marker);
         marker = L.marker([lat, lng]).addTo(map);
@@ -64,6 +164,12 @@ window.mapPicker = (function () {
 
         const { addr } = getEls();
         if (addr) {
+            if (!doReverse && options.label) {
+                addr.value = options.label;
+                addr.placeholder = 'Số nhà, tên đường, phường...';
+                if (marker) marker.bindPopup(`<small>${escapeHtml(options.label)}</small>`).openPopup();
+                return;
+            }
             if (doReverse) {
                 // Hiển thị trạng thái đang xử lý
                 addr.placeholder = 'Đang trích xuất địa chỉ...';
@@ -91,7 +197,7 @@ window.mapPicker = (function () {
                         
                         addr.value = fullAddr || `${lat}, ${lng}`;
                         addr.placeholder = 'Số nhà, tên đường, phường...';
-                        if (marker) marker.bindPopup(`<small>${fullAddr}</small>`).openPopup();
+                        if (marker) marker.bindPopup(`<small>${escapeHtml(fullAddr)}</small>`).openPopup();
                     })
                     .catch(e => {
                         console.warn('Không thể trích xuất địa chỉ từ tọa độ:', e);
@@ -114,25 +220,49 @@ window.mapPicker = (function () {
         const { addr } = getEls();
         if (!addr) return;
 
+        if (!addr.dataset.mapSuggestBound) {
+            addr.dataset.mapSuggestBound = '1';
+            addr.addEventListener('blur', () => setTimeout(() => hideSuggestions(addr), 150));
+            addr.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') hideSuggestions(addr);
+            });
+            document.addEventListener('click', (e) => {
+                const box = document.getElementById(getSuggestId(addr));
+                if (!box) return;
+                if (e.target === addr || box.contains(e.target)) return;
+                hideSuggestions(addr);
+            });
+        }
+
         addr.addEventListener('input', () => {
             clearTimeout(timer);
             const query = addr.value.trim();
-            if (query.length < 5) return;
+            if (query.length < 3) {
+                hideSuggestions(addr);
+                return;
+            }
 
             timer = setTimeout(() => {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=vn`;
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=3&countrycodes=vn&addressdetails=1`;
                 fetch(url, { headers: { 'User-Agent': 'DVQTApp/1.0' } })
                     .then(r => r.json())
                     .then(data => {
-                        if (data && data[0]) {
-                            const lat = parseFloat(data[0].lat);
-                            const lng = parseFloat(data[0].lon);
-                            pick(lat, lng, false); // false vì đã gõ địa chỉ rồi, không cần reverse geocode nữa
-                            if (map) map.setView([lat, lng], 16);
+                        const list = Array.isArray(data) ? data : [];
+                        renderSuggestions(addr, list);
+                        if (list[0] && map) {
+                            const lat = parseFloat(list[0].lat);
+                            const lng = parseFloat(list[0].lon);
+                            if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+                                pick(lat, lng, false);
+                                map.setView([lat, lng], 16);
+                            }
                         }
                     })
-                    .catch(e => console.warn('Lỗi tìm kiếm địa chỉ:', e));
-            }, 800);
+                    .catch(e => {
+                        console.warn('Lỗi tìm kiếm địa chỉ:', e);
+                        hideSuggestions(addr);
+                    });
+            }, 500);
         });
     }
 

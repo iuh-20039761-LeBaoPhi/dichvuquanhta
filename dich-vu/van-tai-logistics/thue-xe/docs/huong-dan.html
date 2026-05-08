@@ -82,6 +82,39 @@
             color: white;
         }
 
+        .doc-nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            z-index: 900;
+        }
+
+        .doc-nav-toggle {
+            position: fixed;
+            left: 12px;
+            top: 120px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 0;
+            background: var(--primary);
+            color: #fff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            z-index: 1101;
+        }
+
+        .doc-nav-toggle i {
+            font-size: 1.1rem;
+        }
+
+        body.nav-open {
+            overflow: hidden;
+        }
+
         .doc-section {
             background: white;
             padding: 40px;
@@ -364,15 +397,123 @@
 
         @media (max-width: 991px) {
             .doc-nav {
-                position: relative;
+                position: fixed;
                 top: 0;
-                margin-bottom: 30px;
+                left: 0;
+                height: 100vh;
+                width: 260px;
+                transform: translateX(-100%);
+                transition: transform 0.25s ease;
+                margin-bottom: 0;
+                z-index: 1001;
+            }
+
+            .doc-nav.open {
+                transform: translateX(0);
+            }
+
+            .doc-nav-toggle {
+                display: flex;
+            }
+
+            .doc-nav-overlay.show {
+                display: block;
+            }
+
+            .doc-header {
+                padding: 60px 0 80px;
+                clip-path: none;
+            }
+
+            .doc-header h1 {
+                font-size: 2.4rem;
+            }
+
+            .doc-section {
+                padding: 24px;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
+            .nav-pills {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .nav-pills .nav-link {
+                margin: 4px;
+                padding: 6px 16px;
+            }
+
+            .device-container {
+                padding: 1.5rem 1rem;
+                min-height: 420px;
+            }
+
+            .pc-monitor {
+                width: 100% !important;
+            }
+
+            .pc-screen {
+                height: 240px !important;
+            }
+
+            .tablet-body {
+                width: 100% !important;
+                max-width: 320px;
+                height: 420px !important;
+            }
+
+            .mobile-body {
+                width: 100% !important;
+                max-width: 220px;
+                height: 380px !important;
+            }
+
+            .mobile-notch {
+                width: 70px;
+                height: 16px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .doc-header {
+                padding: 50px 0 70px;
+            }
+
+            .doc-header h1 {
+                font-size: 2rem;
+            }
+
+            .device-container {
+                min-height: 360px;
+            }
+
+            .pc-screen {
+                height: 200px !important;
+            }
+
+            .tablet-body {
+                max-width: 280px;
+                height: 380px !important;
+            }
+
+            .mobile-body {
+                max-width: 200px;
+                height: 340px !important;
             }
         }
     </style>
 </head>
 
 <body data-bs-spy="scroll" data-bs-target="#sideNav" data-bs-offset="100">
+
+    <div class="doc-nav-overlay" id="docNavOverlay"></div>
+    <button class="doc-nav-toggle" id="docNavToggle" type="button" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
 
     <!-- Header -->
     <header class="doc-header">
@@ -799,6 +940,43 @@
                         </div>
                     </div>
                 `;
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const nav = document.getElementById('sideNav');
+            const toggle = document.getElementById('docNavToggle');
+            const overlay = document.getElementById('docNavOverlay');
+
+            if (!nav || !toggle || !overlay) return;
+
+            const closeNav = () => {
+                nav.classList.remove('open');
+                overlay.classList.remove('show');
+                document.body.classList.remove('nav-open');
+            };
+
+            const openNav = () => {
+                nav.classList.add('open');
+                overlay.classList.add('show');
+                document.body.classList.add('nav-open');
+            };
+
+            toggle.addEventListener('click', () => {
+                if (nav.classList.contains('open')) {
+                    closeNav();
+                } else {
+                    openNav();
+                }
+            });
+
+            overlay.addEventListener('click', closeNav);
+
+            nav.querySelectorAll('.nav-link').forEach((link) => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 991) closeNav();
+                });
             });
         });
     </script>

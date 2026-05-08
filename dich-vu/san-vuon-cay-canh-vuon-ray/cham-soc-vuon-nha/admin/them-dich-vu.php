@@ -12,72 +12,79 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
 ?>
 
 <style>
-    :root {
-        --admin-primary: #2563eb;
-        --admin-secondary: #64748b;
-        --admin-success: #1e40af;
-        --admin-warning: #3b82f6;
-        --admin-bg: #f8fafc;
-    }
-
     .admin-main,
     .admin-main>main {
-        background: var(--admin-bg) !important;
+        background: var(--white) !important;
     }
 
     .card {
-        border-radius: 14px;
-        border: 1px solid #e2e8f0 !important;
+        border-radius: 16px;
+        border: 1px solid var(--border) !important;
         transition: box-shadow 0.2s ease;
     }
-
     .card:hover {
-        box-shadow: 0 5px 15px rgba(37, 99, 235, 0.08) !important;
+        box-shadow: 0 4px 16px rgba(26,77,46,.08) !important;
     }
 
     .form-label {
         font-weight: 700;
-        color: #0f172a;
+        color: var(--pg);
         margin-bottom: 3px;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
     .form-control,
     .form-select {
-        border-radius: 8px;
-        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px;
+        border: 1px solid var(--border) !important;
         padding: 0.5rem 0.75rem;
         font-size: 0.95rem;
-        color: #1e293b;
+        color: var(--text);
         font-weight: 500;
+        background: #fff;
     }
-
-    .form-control:focus {
-        border-color: var(--admin-primary) !important;
-        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.1);
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 3px rgba(67,160,71,.15) !important;
     }
 
     .section-title {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 800;
-        color: var(--admin-primary);
-        border-left: 3px solid var(--admin-primary);
+        color: var(--pg);
+        border-left: 3px solid var(--accent);
         padding-left: 10px;
-        margin-bottom: 15px;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .page-header-bar {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(26,77,46,.04);
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-    <div class="d-flex align-items-center">
-        <div class="bg-success bg-opacity-10 p-2 rounded-2 me-3">
-            <i class="bi bi-plus-square text-success fs-5"></i>
+<div class="page-header-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-3">
+        <div style="width:40px;height:40px;border-radius:12px;background:var(--lime);display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-plus-square" style="color:var(--accent);font-size:1.1rem;"></i>
         </div>
-        <h2 class="h4 mb-0 fw-bold">Thêm dịch vụ mới</h2>
+        <div>
+            <h2 class="h5 mb-0 fw-bold" style="color:var(--pg);">Thêm dịch vụ mới</h2>
+            <p class="text-muted small mb-0">Điền đầy đủ thông tin để tạo dịch vụ</p>
+        </div>
     </div>
-    <a href="quan-ly-dich-vu.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Quay
-        lại</a>
+    <a href="quan-ly-dich-vu.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i>Quay lại
+    </a>
 </div>
 
 <?php if ($flashMsg !== ''): ?>
@@ -130,7 +137,7 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
                     <div class="section-title">Bảng giá chuyên sâu (Pricing)</div>
                     <div class="mb-3">
                         <label class="form-label">Loại hình tính phí</label>
-                        <select id="pricing_type_select" class="form-select border-primary fw-bold" style="border-width: 2px !important;">
+                        <select id="pricing_type_select" class="form-select fw-bold" style="border-width: 2px !important; border-color: var(--accent) !important;">
                             <option value="per_m2">Tính theo m2 (Diện tích)</option>
                             <option value="package">Tính theo Gói (Số phòng/đặc thù)</option>
                         </select>
@@ -228,8 +235,10 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
 
     <div class="card border-0 shadow-sm mt-3">
         <div class="card-body d-flex justify-content-end gap-2">
-            <a href="quan-ly-dich-vu.php" class="btn btn-light border px-4">Hủy</a>
-            <button type="submit" class="btn btn-success px-5 fw-bold"><i class="bi bi-check-circle me-1"></i>LƯU DỊCH VỤ</button>
+            <a href="quan-ly-dich-vu.php" class="btn btn-light border px-4 rounded-pill">Hủy</a>
+            <button type="submit" class="btn btn-success px-5 fw-bold rounded-pill shadow-sm">
+                <i class="bi bi-check-circle me-1"></i>LƯU DỊCH VỤ
+            </button>
         </div>
     </div>
 </form>

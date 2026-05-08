@@ -46,7 +46,7 @@ const ThoNhaOrderDetailRenderer = (() => {
             heroServiceName: order.fullService || order.service,
             heroBookingDate: utils.formatDateTime(order.dates.ordered),
             heroServiceFee: hasActual ? utils.formatCurrencyVn(order.actualCost) : utils.formatCurrencyVn(order.estimated_price),
-            heroTransportFee: utils.formatCurrencyVn(order._raw.phidichuyen || 0),
+            heroTransportFee: hasActual ? ('- ' + utils.formatCurrencyVn(order._raw.phidichuyen || 0)) : utils.formatCurrencyVn(order._raw.phidichuyen || 0),
             heroSurchargeFee: hasActual ? ('- ' + utils.formatCurrencyVn(order.subsidyAmount)) : utils.formatCurrencyVn(order._raw.phuphi || 0),
             heroPaymentStatus: hasActual ? 'Đã báo giá' : 'Chưa báo giá',
             heroPaymentSub: hasActual ? 'Chờ thanh toán' : 'Cập nhật theo thực tế',
@@ -384,11 +384,11 @@ const ThoNhaOrderDetailRenderer = (() => {
         const box = document.getElementById(boxId);
         if (!box) return;
         box.innerHTML = '';
-        
+
         if (input.files && input.files[0]) {
             const file = input.files[0];
             const url = URL.createObjectURL(file);
-            
+
             if (file.type.startsWith('image/')) {
                 box.innerHTML = `
                     <small class="text-muted d-block mb-1 fw-bold"><i class="fas fa-image me-1"></i> Hình ảnh đã chọn:</small>

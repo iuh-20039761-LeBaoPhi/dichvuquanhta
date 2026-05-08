@@ -30,8 +30,30 @@ window.initOrders = function() {
         refreshBtn: document.getElementById('refreshAdminBtn'),
         fromDate: document.getElementById('orderFromDate'),
         toDate: document.getElementById('orderToDate'),
-        searchQuery: document.getElementById('orderSearchQuery')
+        searchQuery: document.getElementById('orderSearchQuery'),
+        categorySelect: document.getElementById('orderCategoryFilter')
     };
+
+    async function loadCategories() {
+        if (!elements.categorySelect || elements.categorySelect.dataset.loaded) return;
+        if (!window.DVQTKrud) return;
+        try {
+            const cats = await window.DVQTKrud.listTable('danhmuc_thonha', { limit: 1000 });
+            const list = Array.isArray(cats) ? cats.slice() : [];
+            list.sort((a, b) => {
+                const aOrder = Number(a.thu_tu || 0);
+                const bOrder = Number(b.thu_tu || 0);
+                if (aOrder !== bOrder) return aOrder - bOrder;
+                return String(a.ten_danhmuc || '').localeCompare(String(b.ten_danhmuc || ''), 'vi');
+            });
+            const options = ['<option value="">Tất cả danh mục</option>']
+                .concat(list.map(cat => `<option value="${cat.id}">${cat.ten_danhmuc || ('Danh mục #' + cat.id)}</option>`));
+            elements.categorySelect.innerHTML = options.join('');
+            elements.categorySelect.dataset.loaded = '1';
+        } catch (err) {
+            console.error('[admin-order] Load categories failed:', err);
+        }
+    }
 
     async function loadData() {
         state.isLoading = true;
@@ -46,6 +68,7 @@ window.initOrders = function() {
             if (elements.fromDate && !elements.fromDate.value) elements.fromDate.value = today;
             if (elements.toDate && !elements.toDate.value) elements.toDate.value = today;
 
+            await loadCategories();
             applyFilter();
         } catch (err) {
             console.error('[admin-order] API Error:', err);
@@ -84,6 +107,15 @@ window.initOrders = function() {
                 const client = o.customer && o.customer.name ? String(o.customer.name).toLowerCase() : '';
                 const svc = String(o.service || '').toLowerCase();
                 return code.includes(q) || client.includes(q) || svc.includes(q);
+            });
+        }
+
+        // 2b. Lọc theo Danh mục
+        const catId = elements.categorySelect ? String(elements.categorySelect.value || '').trim() : '';
+        if (catId) {
+            list = list.filter(o => {
+                const rawCatId = o && o._raw ? String(o._raw.id_danhmuc || '') : '';
+                return rawCatId && rawCatId === catId;
             });
         }
         
@@ -222,6 +254,7 @@ window.initOrders = function() {
         if (elements.fromDate) elements.fromDate.addEventListener('change', applyFilter);
         if (elements.toDate) elements.toDate.addEventListener('change', applyFilter);
         if (elements.searchQuery) elements.searchQuery.addEventListener('keyup', applyFilter);
+        if (elements.categorySelect) elements.categorySelect.addEventListener('change', applyFilter);
         
         if (elements.refreshBtn) {
             elements.refreshBtn.addEventListener('click', loadData);

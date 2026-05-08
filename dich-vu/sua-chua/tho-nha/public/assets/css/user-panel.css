@@ -181,6 +181,40 @@
 .u-mobile-title { font-weight: 800; font-size: 15px; margin: 0; }
 .u-mobile-code { font-size: 12px; color: var(--u-text-muted); font-family: monospace; }
 
+.u-mobile-card .mobile-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.u-mobile-card .mobile-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.92rem;
+    line-height: 1.35;
+}
+
+.u-mobile-card .mobile-row:last-of-type { border-bottom: none; }
+
+.u-mobile-card .mobile-row span {
+    color: var(--u-text-muted);
+    font-weight: 600;
+}
+
+.u-mobile-card .mobile-row strong {
+    font-weight: 700;
+    text-align: right;
+    color: var(--u-text);
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Filter Buttons */
 .d-flex.bg-light .btn { color: var(--u-text-muted); border: none; background: transparent; }
 .d-flex.bg-light .btn.active { color: var(--u-primary); background: #fff; box-shadow: var(--u-shadow); }
