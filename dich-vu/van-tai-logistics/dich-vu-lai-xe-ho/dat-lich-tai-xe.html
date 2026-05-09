@@ -12,81 +12,113 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
       html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
-body { padding-top: 96px; font-family: 'Quicksand', sans-serif; }
-/* SỬA: navbar z-index */
-.navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; }
-.navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+      body { padding-top: 96px; font-family: 'Quicksand', sans-serif; }
+      .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; }
+      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
 
-.review-row { display: flex; align-items: flex-start; gap: 10px; }
-.review-label { width: 120px; min-width: 120px; font-weight: 700; color: #333; }
-.review-value { flex: 1; min-width: 0; text-align: left; word-break: break-word; }
-.review-shell { background: #f7f7f8; border: 1px solid #ececee; }
-.review-title { color: #007bff !important; font-size: 1.9rem; font-weight: 800 !important; }
-.review-alert { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; border-radius: 8px; font-weight: 600; }
-.review-panel { background: #f5f5f6 !important; border: 2px solid #7db8e8 !important; border-radius: 12px; }
-.review-section-title { color: #007bff !important; font-size: 1.3rem; font-weight: 800 !important; }
-.review-total-box { background: #f1f8ff !important; border: 2px solid #7db8e8 !important; border-radius: 10px; }
-.review-btn-edit { background: #64748b; border: none; color: #fff; font-weight: 700; }
-.review-btn-save { background: linear-gradient(135deg, #007bff, #00b4d8) !important; border: none !important; color: #fff; font-weight: 800; }
+      .review-row { display: flex; align-items: flex-start; gap: 10px; }
+      .review-label { width: 120px; min-width: 120px; font-weight: 700; color: #333; }
+      .review-value { flex: 1; min-width: 0; text-align: left; word-break: break-word; }
+      .review-shell { background: #f7f7f8; border: 1px solid #ececee; }
+      .review-title { color: #007bff !important; font-size: 1.9rem; font-weight: 800 !important; }
+      .review-alert { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; border-radius: 8px; font-weight: 600; }
+      .review-panel { background: #f5f5f6 !important; border: 1px solid #7db8e8 !important; border-radius: 12px; }
+      .review-panel .card-body { color: #2a2f36; }
+      .review-section-title { color: #007bff !important; font-size: 1.3rem; font-weight: 800 !important; }
+      .review-panel .review-label { color: #3a3a3a; font-weight: 700; }
+      .review-panel .review-value { color: #222; font-weight: 600; }
+      .review-total-box { background: #f1f8ff !important; border: 1px solid #7db8e8 !important; border-radius: 10px; }
+      .review-total-box .card-body { padding: 12px 0; }
+      .review-action-row { margin-top: 16px !important; }
+      .review-action-row .btn { padding-top: 5px !important; padding-bottom: 5px !important; }
+      .review-btn-edit { background: #64748b; border: none; color: #fff; font-weight: 700; }
+      .review-btn-edit:hover { background: #6b747c; color: #fff; }
+      .review-btn-save { background: linear-gradient(135deg, #007bff, #00b4d8) !important; border: none !important; color: #fff; font-weight: 800; }
+      .review-btn-save:hover { background: linear-gradient(135deg, #0056b3, #0096b8) !important; }
 
-/* SỬA: Giảm padding & margin xuống tối thiểu */
-.customer-info-box { border: 2px solid #007bff; border-radius: 8px; padding: 8px; margin-bottom: 8px; background: #f8fffa; }
-.customer-info-title { color: #007bff; font-weight: 700; font-size: 1.1rem; margin-bottom: 6px; }
+      .customer-info-box { border: 1px solid #007bff; border-radius: 16px; padding: 12px; margin-bottom: 16px; background: #f8fffa; transition: all 0.3s ease-in-out; }
+      .customer-info-title { color: #007bff; font-weight: 700; font-size: 1.35rem; line-height: 1; margin-bottom: 10px; }
+      .customer-info-box .form-label { font-weight: 700; color: #2f2f2f; margin-bottom: 4px; }
+      .customer-info-box .form-control, .customer-info-box .input-group-text { border-color: #bbdef5; background: #f7f9f7; }
+      .customer-info-box .input-group-text { color: #7a8281; }
 
-.service-work-box { border: 2px solid #007bff; border-radius: 8px; padding: 8px; margin-bottom: 8px; background: #fafdff; }
-.trip-info-box { border: 2px solid #e68a2e; border-radius: 8px; padding: 8px; margin-bottom: 8px; background: #fff8e7; }
-.trip-info-title { color: #e68a2e; font-weight: 700; font-size: 1.1rem; margin-bottom: 6px; }
+      .service-work-box { border: 1px solid #007bff; border-radius: 10px; padding: 10px; margin-bottom: 16px; background: #fafdff; }
+      .service-work-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
+      #serviceSelector { border-color: #b3c0ca; background: #f1f1f1; }
+      #serviceSelector option { white-space: normal; }
 
-.location-box { margin-bottom: 8px; padding: 6px; background: #fff; border-radius: 8px; border: 1px solid #ddd; }
-.location-box.active { border: 2px solid #007bff; background: #f0f8ff; }
+      .trip-info-box { border: 1px solid #e68a2e; border-radius: 10px; padding: 10px; margin-bottom: 16px; background: #fff8e7; }
+      .trip-info-title { color: #e68a2e; font-weight: 700; font-size: 1.2rem; margin-bottom: 6px; }
 
-.schedule-box { border: 2px solid #007bff; border-radius: 8px; background: #e3f2fd; padding: 8px; margin-bottom: 8px; }
-.price-detail-box { border: 2px solid #007bff !important; border-radius: 8px; background: #eaf4ff !important; }
-.price-detail-title { font-size: 1.1rem; font-weight: 800 !important; }
+      .schedule-box { border: 1px solid #007bff; border-radius: 16px; background: #e3f2fd; padding: 12px; margin-bottom: 10px; }
+      .schedule-box .form-label { font-weight: 700; color: #1f2a37; margin-bottom: 4px; }
+      .schedule-box .form-control, .schedule-box .form-select { background: #f4f4f4; border-color: #8ca2b5; color: #111; font-weight: 700; }
+      .schedule-box #servicePackages .list-group-item { background: transparent; border-color: #bbdef5; color: #111; }
+      .schedule-box #servicePackages .list-group-item span { color: #111; font-weight: 700; }
 
-.service-includes-box { background: #f8f9fa; border-radius: 8px; padding: 8px; margin-top: 6px; border-left: 4px solid #007bff; }
-.service-includes-box ul { margin-bottom: 0; padding-left: 20px; }
-.service-includes-box li { color: #555; font-size: 0.85rem; margin-bottom: 3px; }
+      .location-box { margin-bottom: 10px; padding: 8px; background: #fff; border-radius: 10px; border: 1px solid #ddd; }
+      .location-box.active { border: 2px solid #007bff; background: #f0f8ff; }
 
-.route-info-box { background: #e8f4fd; border-radius: 8px; padding: 8px; margin: 8px 0; }
-.route-info-item { display: flex; justify-content: space-between; margin-bottom: 4px; }
-.route-info-label { color: #555; font-size: 0.85rem; }
-.route-info-value { font-weight: 700; color: #007bff; }
+      .price-detail-box { border: 1px solid #007bff !important; border-radius: 12px; background: #eaf4ff !important; }
+      .price-detail-box .card-body { color: #1f2a37; font-weight: 700; }
+      .price-detail-title { font-size: 1.2rem; font-weight: 800 !important; }
+      .price-detail-box .text-muted { color: #4b5563 !important; font-weight: 600; }
+      .price-detail-box hr { border-color: rgba(0, 123, 255, 0.35); }
 
-/* SỬA: map z-index */
-#mapPickerBox { position: relative; z-index: 10; margin-top: 8px; }
-#mapPickerEl { height: 280px; border-radius: 8px; border: 1px solid #bcdcff; z-index: 10; position: relative; }
+      .service-includes-box { background: #f8f9fa; border-radius: 10px; padding: 10px; margin-top: 8px; border-left: 4px solid #007bff; }
+      .service-includes-box ul { margin-bottom: 0; padding-left: 20px; }
+      .service-includes-box li { color: #555; font-size: 0.9rem; margin-bottom: 3px; }
 
-.map-control-buttons { display: flex; gap: 6px; margin-top: 4px; }
+      .route-info-box { background: #e8f4fd; border-radius: 10px; padding: 10px; margin: 8px 0; }
+      .route-info-item { display: flex; justify-content: space-between; margin-bottom: 4px; }
+      .route-info-label { color: #555; font-size: 0.9rem; }
+      .route-info-value { font-weight: 700; color: #007bff; }
 
-.vehicle-photo-preview-img {
-  width: 120px; height: 90px; object-fit: cover;
-  border-radius: 8px; border: 1px solid #ddd;
-}
+      #mapPickerBox { margin-top: 8px; }
+      #mapPickerEl { height: 260px; border-radius: 12px; border: 1px solid #bcdcff; z-index: 10; position: relative; }
+      .map-control-buttons { display: flex; gap: 6px; margin-top: 4px; }
 
-/* SỬA: Giảm margin giữa các dòng trong form */
-form .mb-3 { margin-bottom: 8px !important; }
-form .mb-2 { margin-bottom: 4px !important; }
-form .form-label { margin-bottom: 2px !important; }
-form .form-text { margin-top: 2px !important; }
+      .vehicle-photo-preview-img { width: 120px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
 
-@media (max-width: 991.98px) {
-  body { padding-top: 86px; }
-  .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
-  .navbar-brand img { width: 56px !important; height: 42px !important; }
-  .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 9999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-  .navbar-collapse.show { display: block; }
-  .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
-  #mapPickerEl { height: 220px; }
-}
-@media (max-width: 575.98px) {
-  .review-label { width: 110px; min-width: 110px; }
-  #mapPickerEl { height: 200px; }
-}
-body.booking-embedded-mode nav, body.booking-embedded-mode footer { display: none !important; }
-body.booking-embedded-mode { padding-top: 0 !important; }
-body.booking-embedded-mode section.py-5 { padding-top: 0 !important; padding-bottom: 0 !important; background: #fff !important; }
-body.booking-embedded-mode .booking-page-heading { display: none !important; }
+      body.booking-embedded-mode nav, body.booking-embedded-mode footer { display: none !important; }
+      body.booking-embedded-mode { padding-top: 0 !important; }
+      body.booking-embedded-mode section.py-5 { padding: 0 !important; background: #fff !important; }
+      body.booking-embedded-mode section.py-5>.container { max-width: 100%; padding: 12px 12px 18px; }
+      body.booking-embedded-mode #bookingPageSection, body.booking-embedded-mode #reviewPageSection { max-width: 100% !important; }
+      body.booking-embedded-mode .booking-page-heading { display: none !important; }
+
+      @media (max-width: 991.98px) {
+        body { padding-top: 86px; }
+        .navbar { overflow-x: clip; }
+        .navbar .container>span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+        .navbar-brand img { width: 56px !important; height: 42px !important; }
+        .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 9999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .navbar-collapse.show { display: block; }
+        .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+        .navbar-collapse .nav-item { width: 100%; text-align: center; }
+        .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+        .navbar-collapse .btn { width: 80%; margin-top: 10px; }
+        #mapPickerEl { height: 220px; }
+      }
+
+      @media (max-width: 575.98px) {
+        section.py-5 { padding: 5px 1px !important; }
+        .container, #bookingPageSection, #bookingPageSection .card { padding: 0 !important; margin: 0 !important; border-radius: 0 !important; max-width: 100% !important; }
+        #bookingPageSection .card-body { padding: 8px 2px !important; }
+        .customer-info-box, .service-work-box, .trip-info-box, .schedule-box, .price-detail-box, .mb-3 { margin-bottom: 2px !important; }
+        .customer-info-box, .service-work-box, .trip-info-box, .schedule-box, .price-detail-box { padding: 10px 8px !important; border-radius: 8px !important; }
+        .customer-info-box .mb-2, .customer-info-box .row.mb-2, .service-work-box .mb-2, .trip-info-box .mb-2, .schedule-box .mb-2 { margin-bottom: 6px !important; }
+        .form-label { margin-bottom: 2px !important; }
+        #servicePackages .list-group-item { margin-bottom: 2px !important; padding: 8px 10px !important; }
+        .review-label { width: 110px; min-width: 110px; }
+        #mapPickerEl { height: 200px; }
+        #reviewPageSection { padding: 0 !important; margin: 0 !important; width: 100vw !important; max-width: 100vw !important; border-top: 0; position: relative; left: 0; right: 0; }
+        #reviewPageSection .card, #reviewPageSection .card-body, #reviewPageSection .review-shell, #reviewPageSection .review-panel, #reviewPageSection .review-total-box, #reviewPageSection .review-action-row, #reviewPageSection .review-section-title, #reviewPageSection .review-row { margin: 2px !important; padding-left: 2px !important; padding-right: 2px !important; border-radius: 6px; }
+        #reviewPageSection .row.g-2 { margin: 0 -2px !important; }
+        #reviewPageSection .col-12, #reviewPageSection .col-md-6 { padding: 0 2px !important; }
+        #reviewPageSection .review-title, #reviewPageSection .review-label, #reviewPageSection .review-value { margin: 2px 0 !important; padding: 2px 0 !important; }
+        #reviewPageSection .review-action-row button { margin: 2px !important; padding: 2px !important; }
+      }
     </style>
   </head>
   <body data-nav-active="booking">
@@ -100,12 +132,11 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
             <p class="lead">Lái xe an toàn, chuyên nghiệp, đúng giờ</p>
           </div>
 
-          <!-- SỬA: Form full width, không thừa không gian 2 bên -->
           <div id="bookingPageSection" class="mx-auto" style="max-width: 100%; padding: 0 15px;">
             <div class="card border-0 shadow rounded-4">
               <div class="card-body p-4">
                 <form id="bookingForm">
-                  <!-- Thông tin khách hàng -->
+
                   <div class="customer-info-box">
                     <div class="customer-info-title"><i class="fas fa-user me-2"></i>Thông tin khách hàng</div>
                     <div class="mb-2">
@@ -124,83 +155,51 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
                     </div>
                   </div>
 
-                  <!-- Thông tin chuyến đi -->
                   <div class="trip-info-box">
                     <div class="trip-info-title"><i class="fas fa-car me-2"></i>Thông tin chuyến đi</div>
-                    
                     <div class="row g-2">
                       <div class="col-md-6">
-                        <!-- Điểm đón -->
                         <div class="location-box" id="pickupBox">
-                          <label class="form-label fw-bold">
-                            <i class="fas fa-circle text-success me-1" style="font-size: 0.7rem;"></i>Điểm đón <span class="text-danger">*</span>
-                          </label>
+                          <label class="form-label fw-bold"><i class="fas fa-circle text-success me-1" style="font-size: 0.7rem;"></i>Điểm đón <span class="text-danger">*</span></label>
                           <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
                             <input type="text" id="tripPickup" class="form-control" placeholder="Nhập địa chỉ hoặc chọn trên bản đồ" />
                           </div>
                           <div class="map-control-buttons">
-                            <button type="button" class="btn btn-success btn-sm flex-fill" onclick="getCurrentLocation('pickup')">
-                              <i class="fas fa-location-dot me-1"></i>Lấy vị trí hiện tại
-                            </button>
-                            <button type="button" class="btn btn-warning btn-sm flex-fill" onclick="toggleMapPicker('pickup')">
-                              <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
-                            </button>
+                            <button type="button" class="btn btn-success btn-sm flex-fill" onclick="getCurrentLocation('pickup')"><i class="fas fa-location-dot me-1"></i>Lấy vị trí hiện tại</button>
+                            <button type="button" class="btn btn-warning btn-sm flex-fill" onclick="toggleMapPicker('pickup')"><i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ</button>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
-                        <!-- Điểm đến -->
                         <div class="location-box" id="destinationBox">
-                          <label class="form-label fw-bold">
-                            <i class="fas fa-flag-checkered text-danger me-1" style="font-size: 0.7rem;"></i>Điểm đến <span class="text-danger">*</span>
-                          </label>
+                          <label class="form-label fw-bold"><i class="fas fa-flag-checkered text-danger me-1" style="font-size: 0.7rem;"></i>Điểm đến <span class="text-danger">*</span></label>
                           <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-flag-checkered"></i></span>
                             <input type="text" id="tripDestination" class="form-control" placeholder="Nhập địa chỉ hoặc chọn trên bản đồ" />
                           </div>
                           <div class="map-control-buttons">
-                            <button type="button" class="btn btn-success btn-sm flex-fill" onclick="getCurrentLocation('destination')">
-                              <i class="fas fa-location-dot me-1"></i>Lấy vị trí hiện tại
-                            </button>
-                            <button type="button" class="btn btn-warning btn-sm flex-fill" onclick="toggleMapPicker('destination')">
-                              <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
-                            </button>
+                            <button type="button" class="btn btn-success btn-sm flex-fill" onclick="getCurrentLocation('destination')"><i class="fas fa-location-dot me-1"></i>Lấy vị trí hiện tại</button>
+                            <button type="button" class="btn btn-warning btn-sm flex-fill" onclick="toggleMapPicker('destination')"><i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ</button>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <!-- Bản đồ chung -->
                     <div id="mapPickerBox" class="d-none">
                       <div id="mapPickerEl"></div>
-                      <div class="form-text text-muted small mt-1">
-                        <span id="mapHint">Nhấn vào bản đồ để chọn <strong id="mapSelectingFor">điểm đón</strong></span>
-                      </div>
-                      <button type="button" class="btn btn-secondary btn-sm w-100 mt-2" onclick="closeMapPicker()">
-                        <i class="fas fa-check me-1"></i>Xác nhận vị trí đã chọn
-                      </button>
+                      <div class="form-text text-muted small mt-1"><span id="mapHint">Nhấn vào bản đồ để chọn <strong id="mapSelectingFor">điểm đón</strong></span></div>
+                      <button type="button" class="btn btn-secondary btn-sm w-100 mt-2" onclick="closeMapPicker()"><i class="fas fa-check me-1"></i>Xác nhận vị trí đã chọn</button>
                     </div>
 
-                    <!-- Nút tính quãng đường -->
-                    <button type="button" id="calculateRouteBtn" class="btn btn-outline-primary btn-sm mt-2 w-100">
-                      <i class="fas fa-calculator me-1"></i>Tính quãng đường
-                    </button>
+                    <button type="button" id="calculateRouteBtn" class="btn btn-outline-primary btn-sm mt-2 w-100"><i class="fas fa-calculator me-1"></i>Tính quãng đường</button>
 
-                    <!-- Hiển thị thông tin quãng đường -->
                     <div id="routeInfoBox" class="route-info-box d-none">
-                      <div class="route-info-item">
-                        <span class="route-info-label"><i class="fas fa-road me-2"></i>Quãng đường:</span>
-                        <span class="route-info-value" id="displayDistance">-- km</span>
-                      </div>
-                      <div class="route-info-item">
-                        <span class="route-info-label"><i class="fas fa-clock me-2"></i>Thời gian dự kiến:</span>
-                        <span class="route-info-value" id="displayDuration">-- phút</span>
-                      </div>
+                      <div class="route-info-item"><span class="route-info-label"><i class="fas fa-road me-2"></i>Quãng đường:</span><span class="route-info-value" id="displayDistance">-- km</span></div>
+                      <div class="route-info-item"><span class="route-info-label"><i class="fas fa-clock me-2"></i>Thời gian dự kiến:</span><span class="route-info-value" id="displayDuration">-- phút</span></div>
                     </div>
                   </div>
 
-                  <!-- Chọn dịch vụ -->
                   <div class="service-work-box">
                     <div class="mb-2">
                       <label class="form-label">Chọn loại dịch vụ tài xế</label>
@@ -212,7 +211,6 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
                     </div>
                   </div>
 
-                  <!-- Chọn gói dịch vụ + NGÀY/GIỜ CÙNG DÒNG -->
                   <div class="schedule-box">
                     <div class="mb-2">
                       <label class="form-label fw-bold"><i class="fas fa-box me-1"></i>Chọn gói dịch vụ</label>
@@ -222,30 +220,21 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
                       <div class="col-md-6 mb-2">
                         <label class="form-label fw-bold">Ngày bắt đầu & Giờ bắt đầu:</label>
                         <div class="row g-1">
-                          <div class="col-7">
-                            <input type="date" id="startDate" class="form-control" />
-                          </div>
-                          <div class="col-5">
-                            <input type="time" id="startTime" class="form-control" />
-                          </div>
+                          <div class="col-7"><input type="date" id="startDate" class="form-control" /></div>
+                          <div class="col-5"><input type="time" id="startTime" class="form-control" /></div>
                         </div>
                       </div>
                       <div class="col-md-6 mb-2">
                         <label class="form-label fw-bold">Ngày kết thúc & Giờ kết thúc:</label>
                         <div class="row g-1">
-                          <div class="col-7">
-                            <input type="date" id="endDate" class="form-control" />
-                          </div>
-                          <div class="col-5">
-                            <input type="time" id="endTime" class="form-control" />
-                          </div>
+                          <div class="col-7"><input type="date" id="endDate" class="form-control" /></div>
+                          <div class="col-5"><input type="time" id="endTime" class="form-control" /></div>
                         </div>
                         <div class="form-text">Để trống nếu thuê theo ngày trọn gói</div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Ảnh/chụp xe -->
                   <div class="mb-3">
                     <label class="form-label fw-bold"><i class="fas fa-camera me-1"></i>Hình ảnh về xe của bạn (nếu có):</label>
                     <input type="file" id="vehiclePhotos" class="form-control" accept="image/*,video/*" multiple />
@@ -253,49 +242,23 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
                     <div id="vehiclePhotoPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
                   </div>
 
-                  <!-- Yêu cầu khác -->
                   <div class="mb-3">
                     <label class="form-label fw-bold">Yêu cầu khác về tài xế:</label>
                     <textarea id="extraRequest" rows="2" class="form-control" placeholder="Ví dụ: cần tài xế biết đường khu vực, có xe riêng..."></textarea>
                   </div>
 
-                  <!-- Chi tiết tính tiền -->
                   <div class="card border-0 mb-3 price-detail-box">
                     <div class="card-body py-2 px-3">
                       <p class="price-detail-title mb-2"><i class="fas fa-receipt me-1"></i>Chi tiết tính tiền</p>
-                      <div class="d-flex justify-content-between small mb-1">
-                        <span>Giá gói dịch vụ</span>
-                        <span id="packagePriceDisplay" class="fw-bold">0 đ</span>
-                      </div>
-                      <div class="d-flex justify-content-between small mb-1">
-                        <span>Km trong gói: <span id="kmIncludedDisplay">0</span> km</span>
-                        <span>-</span>
-                      </div>
-                      <div class="d-flex justify-content-between small mb-1">
-                        <span>Km thực tế: <span id="actualKmDisplay">0</span> km</span>
-                        <span>-</span>
-                      </div>
-                      <div id="extraKmRow" class="d-none justify-content-between small mb-1 text-warning">
-                        <span>Phí km vượt (<span id="extraKmCount">0</span> km × <span id="extraKmFeeDisplay">0</span> đ)</span>
-                        <span id="extraKmFee" class="fw-bold">0 đ</span>
-                      </div>
-                      <div class="d-flex justify-content-between small mb-1">
-                        <span>Phí di chuyển tài xế</span>
-                        <span id="travelFee">0 đ</span>
-                      </div>
-                      <div id="nightRow" class="d-none justify-content-between small mb-1 text-danger">
-                        <span>Phụ thu ca đêm (+20%)</span>
-                        <span id="nightFee" class="fw-bold">0 đ</span>
-                      </div>
-                      <div id="holidayRow" class="d-none justify-content-between small mb-1 text-danger">
-                        <span>Phụ thu ngày lễ (+30%)</span>
-                        <span id="holidayFee" class="fw-bold">0 đ</span>
-                      </div>
+                      <div class="d-flex justify-content-between small mb-1"><span>Giá gói dịch vụ</span><span id="packagePriceDisplay" class="fw-bold">0 đ</span></div>
+                      <div class="d-flex justify-content-between small mb-1"><span>Km trong gói: <span id="kmIncludedDisplay">0</span> km</span><span>-</span></div>
+                      <div class="d-flex justify-content-between small mb-1"><span>Km thực tế: <span id="actualKmDisplay">0</span> km</span><span>-</span></div>
+                      <div id="extraKmRow" class="d-none justify-content-between small mb-1 text-warning"><span>Phí km vượt (<span id="extraKmCount">0</span> km × <span id="extraKmFeeDisplay">0</span> đ)</span><span id="extraKmFee" class="fw-bold">0 đ</span></div>
+                      <div class="d-flex justify-content-between small mb-1"><span>Phí di chuyển tài xế</span><span id="travelFee">0 đ</span></div>
+                      <div id="nightRow" class="d-none justify-content-between small mb-1 text-danger"><span>Phụ thu ca đêm (+20%)</span><span id="nightFee" class="fw-bold">0 đ</span></div>
+                      <div id="holidayRow" class="d-none justify-content-between small mb-1 text-danger"><span>Phụ thu ngày lễ (+30%)</span><span id="holidayFee" class="fw-bold">0 đ</span></div>
                       <hr class="my-2" />
-                      <div class="d-flex justify-content-between fw-bold">
-                        <span>Tổng tiền</span>
-                        <span id="totalPriceDisplay" class="fw-bold fs-5" style="color: #1565c0">0 đ</span>
-                      </div>
+                      <div class="d-flex justify-content-between fw-bold"><span>Tổng tiền</span><span id="totalPriceDisplay" class="fw-bold fs-5" style="color: #1565c0">0 đ</span></div>
                     </div>
                   </div>
 
@@ -306,9 +269,7 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
 
                   <div class="d-flex gap-2 mt-3">
                     <button type="button" id="btnResetBooking" class="btn btn-secondary rounded-pill flex-fill fw-bold">Làm lại</button>
-                    <button type="submit" class="btn text-white rounded-pill fw-bold" style="flex: 2; background-color: #007bff; border: none">
-                      <i class="fas fa-check me-1"></i>Xem Lại Thông Tin
-                    </button>
+                    <button type="submit" class="btn text-white rounded-pill fw-bold" style="flex: 2; background-color: #007bff; border: none"><i class="fas fa-check me-1"></i>Xem Lại Thông Tin</button>
                   </div>
                 </form>
 
@@ -321,13 +282,11 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
             </div>
           </div>
 
-          <!-- Review Section -->
           <div id="reviewPageSection" class="mx-auto d-none" style="max-width: 760px">
             <div class="card border-0 shadow rounded-4 review-shell">
               <div class="card-body p-4">
                 <h5 class="fw-bold mb-3 review-title"><i class="fas fa-clipboard-check me-2"></i>Kiểm Tra Thông Tin Đặt Lịch</h5>
                 <div class="alert alert-warning small review-alert"><i class="fas fa-circle-info me-1"></i>Vui lòng kiểm tra kỹ thông tin.</div>
-                
                 <div class="card border-0 bg-light mb-3 review-panel">
                   <div class="card-body py-3">
                     <h6 class="fw-bold mb-3 review-section-title">Thông tin khách hàng</h6>
@@ -338,7 +297,6 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
                     </div>
                   </div>
                 </div>
-
                 <div class="card border-0 bg-light mb-3 review-panel">
                   <div class="card-body py-3">
                     <h6 class="fw-bold mb-3 review-section-title">Chi tiết chuyến đi</h6>
@@ -355,14 +313,9 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
                     </div>
                   </div>
                 </div>
-
                 <div class="card border-0 review-total-box">
-                  <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <span class="fw-bold">Tổng tiền</span>
-                    <span id="reviewPrice" class="fw-bold fs-5" style="color: #1565c0">0 đ</span>
-                  </div>
+                  <div class="card-body py-3 d-flex justify-content-between align-items-center"><span class="fw-bold">Tổng tiền</span><span id="reviewPrice" class="fw-bold fs-5" style="color: #1565c0">0 đ</span></div>
                 </div>
-
                 <div class="d-flex gap-2 mt-4 review-action-row">
                   <button type="button" id="btnBackToEdit" class="btn rounded-pill flex-fill fw-bold review-btn-edit"><i class="fas fa-pen me-1"></i>Chỉnh Sửa Lại</button>
                   <button type="button" id="btnConfirmSave" class="btn text-white rounded-pill fw-bold review-btn-save" style="flex: 2;"><i class="fas fa-check me-1"></i>Xác Nhận Đặt Lịch</button>
@@ -377,28 +330,22 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
 
       <div id="site-footer"></div>
 
-      <!-- KRUD Helper -->
       <script src="dvqt-krud.js"></script>
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
       <script>
-        var mapPickerMap = null;
-        var mapPickerMarker = null;
-        var tempMarker = null;
-        var PICKUP_LOCATION = null;
-        var DESTINATION_LOCATION = null;
+        // ==========================================
+        // BIẾN TOÀN CỤC
+        // ==========================================
+        var mapPickerMap = null, mapPickerMarker = null, tempMarker = null;
+        var PICKUP_LOCATION = null, DESTINATION_LOCATION = null;
         var OFFICE_COORDS = { lat: 10.853880, lng: 106.629830 };
-        var ACTUAL_DISTANCE_KM = 0;
-        var ACTUAL_DURATION_MIN = 0;
+        var ACTUAL_DISTANCE_KM = 0, ACTUAL_DURATION_MIN = 0;
         var currentSelectingType = 'pickup';
-        
-        var SERVICES = [];
-        var CURRENT_SERVICE = null;
-        var PENDING_BOOKING_DATA = null;
-        var EMBEDDED_BOOKING_MODE = false;
-        var PRESELECT_SERVICE_ID = '';
+        var SERVICES = [], CURRENT_SERVICE = null, PENDING_BOOKING_DATA = null;
+        var EMBEDDED_BOOKING_MODE = false, PRESELECT_SERVICE_ID = '';
 
         (function() {
           var params = new URLSearchParams(window.location.search || '');
@@ -407,513 +354,222 @@ body.booking-embedded-mode .booking-page-heading { display: none !important; }
           if (EMBEDDED_BOOKING_MODE) document.body.classList.add('booking-embedded-mode');
         })();
 
-        function formatMoney(val) { 
-          if (val === "Liên hệ" || val === undefined || val === null) return "Liên hệ";
-          var num = Number(val);
-          if (isNaN(num)) return String(val);
-          return Math.round(num).toLocaleString('vi-VN') + ' đ'; 
-        }
+        function formatMoney(val) { if (val === "Liên hệ" || val === undefined || val === null) return "Liên hệ"; var num = Number(val); if (isNaN(num)) return String(val); return Math.round(num).toLocaleString('vi-VN') + ' đ'; }
+        function parsePriceValue(price) { if (price === "Liên hệ" || price === "Tính theo km" || price === "Theo thỏa thuận") return { isContact: true, value: 0 }; var num = Number(price); return { isContact: isNaN(num), value: isNaN(num) ? 0 : num }; }
 
-        function parsePriceValue(price) {
-          if (price === "Liên hệ" || price === "Tính theo km" || price === "Theo thỏa thuận") {
-            return { isContact: true, value: 0 };
-          }
-          var num = Number(price);
-          return { isContact: isNaN(num), value: isNaN(num) ? 0 : num };
-        }
+        // ==========================================
+        // LOAD DỊCH VỤ - GIỐNG TRANG MẸ VÀ BÉ
+        // ==========================================
+        async function fetchRows(table) { var res = await fetch('https://api.dvqt.vn/list/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ table: table }) }); return await res.json(); }
+        function normalizeRows(res) { if (Array.isArray(res)) return res; if (!res || typeof res !== 'object') return []; if (res.error) throw new Error(res.error); if (res.success === false) throw new Error(res.message || 'API trả về lỗi'); if (Array.isArray(res.data)) return res.data; if (Array.isArray(res.rows)) return res.rows; if (Array.isArray(res.items)) return res.items; if (Array.isArray(res.result)) return res.result; return []; }
 
-        async function geocodeAddress(address) {
+        async function loadServicesFromApi() {
           try {
-            var res = await fetch(
-              'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(address) + '&limit=1&accept-language=vi',
-              { headers: { 'Accept-Language': 'vi', 'User-Agent': 'keri-driver-booking' } }
-            );
-            var data = await res.json();
-            if (data && data.length > 0) {
-              return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-            }
-            return null;
-          } catch (e) {
-            return null;
-          }
+            var rawServices = await fetchRows('dichvu_taixe');
+            SERVICES = normalizeRows(rawServices).map(function(s) {
+              try { s.includes = typeof s.includes === 'string' ? JSON.parse(s.includes) : (s.includes || []); s.pricing = typeof s.pricing === 'string' ? JSON.parse(s.pricing) : (s.pricing || {}); } catch (e) { s.includes = []; s.pricing = { packages: [] }; }
+              return s;
+            });
+            if (SERVICES.length === 0) { await loadServicesFromJson(); return; }
+            renderServicesToUI();
+          } catch (error) { await loadServicesFromJson(); }
         }
 
-        async function reverseGeocode(lat, lng) {
+        async function loadServicesFromJson() {
           try {
-            var res = await fetch(
-              'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&addressdetails=1&accept-language=vi',
-              { headers: { 'Accept-Language': 'vi', 'User-Agent': 'keri-driver-booking' } }
-            );
-            var data = await res.json();
-            if (data && data.display_name) return data.display_name;
-            return lat.toFixed(6) + ', ' + lng.toFixed(6);
-          } catch (e) {
-            return lat.toFixed(6) + ', ' + lng.toFixed(6);
-          }
+            var response = await fetch('services.json');
+            SERVICES = await response.json();
+            if (!SERVICES || SERVICES.length === 0) { alert('Không thể tải danh sách dịch vụ.'); return; }
+            renderServicesToUI();
+          } catch (jsonError) { alert('Không thể tải danh sách dịch vụ.'); }
         }
 
-        async function calculateRouteDistance(from, to) {
-          if (!from || !to) return null;
-          try {
-            var url = 'https://router.project-osrm.org/route/v1/driving/' + from.lng + ',' + from.lat + ';' + to.lng + ',' + to.lat + '?overview=false';
-            var res = await fetch(url);
-            var data = await res.json();
-            if (data && data.routes && data.routes.length > 0) {
-              var route = data.routes[0];
-              return { distance_km: route.distance / 1000, duration_min: route.duration / 60 };
-            }
-            return null;
-          } catch (e) {
-            return null;
-          }
+        function renderServicesToUI() {
+          $('#serviceSelector').empty();
+          SERVICES.forEach(function(s) { $('#serviceSelector').append('<option value="' + s.id + '">' + s.name + '</option>'); });
+          var defaultService = SERVICES.find(function(s) { return s.id == PRESELECT_SERVICE_ID; }) || SERVICES[0];
+          if (defaultService) renderService(defaultService);
         }
 
-        function haversineKm(from, to) {
-          var R = 6371;
-          var dLat = (to.lat - from.lat) * Math.PI / 180;
-          var dLng = (to.lng - from.lng) * Math.PI / 180;
-          var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(from.lat * Math.PI/180) * Math.cos(to.lat * Math.PI/180) * Math.sin(dLng/2) * Math.sin(dLng/2);
-          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-          return R * c;
-        }
+        // ==========================================
+        // CÁC HÀM BẢN ĐỒ & TÍNH QUÃNG ĐƯỜNG
+        // ==========================================
+        async function geocodeAddress(address) { try { var res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(address) + '&limit=1&accept-language=vi', { headers: { 'Accept-Language': 'vi', 'User-Agent': 'keri-driver-booking' } }); var data = await res.json(); if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }; return null; } catch (e) { return null; } }
+        async function reverseGeocode(lat, lng) { try { var res = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&addressdetails=1&accept-language=vi', { headers: { 'Accept-Language': 'vi', 'User-Agent': 'keri-driver-booking' } }); var data = await res.json(); if (data && data.display_name) return data.display_name; return lat.toFixed(6) + ', ' + lng.toFixed(6); } catch (e) { return lat.toFixed(6) + ', ' + lng.toFixed(6); } }
+        async function calculateRouteDistance(from, to) { if (!from || !to) return null; try { var url = 'https://router.project-osrm.org/route/v1/driving/' + from.lng + ',' + from.lat + ';' + to.lng + ',' + to.lat + '?overview=false'; var res = await fetch(url); var data = await res.json(); if (data && data.routes && data.routes.length > 0) { var route = data.routes[0]; return { distance_km: route.distance / 1000, duration_min: route.duration / 60 }; } return null; } catch (e) { return null; } }
+        function haversineKm(from, to) { var R = 6371; var dLat = (to.lat - from.lat) * Math.PI / 180; var dLng = (to.lng - from.lng) * Math.PI / 180; var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(from.lat * Math.PI/180) * Math.cos(to.lat * Math.PI/180) * Math.sin(dLng/2) * Math.sin(dLng/2); var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c; }
 
         async function calculateAndUpdateRoute() {
-          if (!PICKUP_LOCATION) {
-            alert('Vui lòng chọn điểm đón trước');
-            return;
-          }
-          if (!DESTINATION_LOCATION) {
-            alert('Vui lòng chọn điểm đến trước');
-            return;
-          }
-
+          if (!PICKUP_LOCATION) { alert('Vui lòng chọn điểm đón trước'); return; }
+          if (!DESTINATION_LOCATION) { alert('Vui lòng chọn điểm đến trước'); return; }
           $('#calculateRouteBtn').html('<i class="fas fa-spinner fa-spin"></i> Đang tính...').prop('disabled', true);
-
           try {
             var routeInfo = await calculateRouteDistance(PICKUP_LOCATION, DESTINATION_LOCATION);
-            
-            if (routeInfo) {
-              ACTUAL_DISTANCE_KM = Math.round(routeInfo.distance_km * 10) / 10;
-              ACTUAL_DURATION_MIN = Math.round(routeInfo.duration_min);
-            } else {
-              ACTUAL_DISTANCE_KM = Math.round(haversineKm(PICKUP_LOCATION, DESTINATION_LOCATION) * 10) / 10;
-              ACTUAL_DURATION_MIN = Math.round(ACTUAL_DISTANCE_KM * 2);
-            }
-
-            $('#displayDistance').text(ACTUAL_DISTANCE_KM.toFixed(1) + ' km');
-            $('#displayDuration').text(ACTUAL_DURATION_MIN + ' phút');
-            $('#routeInfoBox').removeClass('d-none');
-            
+            if (routeInfo) { ACTUAL_DISTANCE_KM = Math.round(routeInfo.distance_km * 10) / 10; ACTUAL_DURATION_MIN = Math.round(routeInfo.duration_min); }
+            else { ACTUAL_DISTANCE_KM = Math.round(haversineKm(PICKUP_LOCATION, DESTINATION_LOCATION) * 10) / 10; ACTUAL_DURATION_MIN = Math.round(ACTUAL_DISTANCE_KM * 2); }
+            $('#displayDistance').text(ACTUAL_DISTANCE_KM.toFixed(1) + ' km'); $('#displayDuration').text(ACTUAL_DURATION_MIN + ' phút'); $('#routeInfoBox').removeClass('d-none');
             updateTotalPrice();
-          } catch (e) {
-            alert('Có lỗi khi tính quãng đường');
-          } finally {
-            $('#calculateRouteBtn').html('<i class="fas fa-calculator me-1"></i>Tính quãng đường').prop('disabled', false);
-          }
+          } catch (e) { alert('Có lỗi khi tính quãng đường'); }
+          finally { $('#calculateRouteBtn').html('<i class="fas fa-calculator me-1"></i>Tính quãng đường').prop('disabled', false); }
         }
 
         function getCurrentLocation(type) {
-          if (!navigator.geolocation) {
-            alert('Trình duyệt không hỗ trợ GPS');
-            return;
-          }
-          
-          navigator.geolocation.getCurrentPosition(
-            async function(pos) {
-              var lat = pos.coords.latitude;
-              var lng = pos.coords.longitude;
-              var address = await reverseGeocode(lat, lng);
-              
-              if (type === 'pickup') {
-                PICKUP_LOCATION = { lat: lat, lng: lng };
-                $('#tripPickup').val(address);
-                highlightBox('pickup');
-              } else {
-                DESTINATION_LOCATION = { lat: lat, lng: lng };
-                $('#tripDestination').val(address);
-                highlightBox('destination');
-              }
-              
-              if (mapPickerMap && !$('#mapPickerBox').hasClass('d-none')) {
-                updateMapMarker(lat, lng);
-              }
-            },
-            function(err) {
-              alert('Không thể lấy vị trí: ' + err.message + '. Vui lòng cấp quyền vị trí cho trình duyệt.');
-            }
-          );
+          if (!navigator.geolocation) { alert('Trình duyệt không hỗ trợ GPS'); return; }
+          navigator.geolocation.getCurrentPosition(async function(pos) {
+            var lat = pos.coords.latitude, lng = pos.coords.longitude, address = await reverseGeocode(lat, lng);
+            if (type === 'pickup') { PICKUP_LOCATION = { lat: lat, lng: lng }; $('#tripPickup').val(address); highlightBox('pickup'); }
+            else { DESTINATION_LOCATION = { lat: lat, lng: lng }; $('#tripDestination').val(address); highlightBox('destination'); }
+            if (mapPickerMap && !$('#mapPickerBox').hasClass('d-none')) updateMapMarker(lat, lng);
+          }, function(err) { alert('Không thể lấy vị trí: ' + err.message); });
         }
 
-        function highlightBox(type) {
-          $('.location-box').removeClass('active');
-          $('#' + type + 'Box').addClass('active');
-        }
+        function highlightBox(type) { $('.location-box').removeClass('active'); $('#' + type + 'Box').addClass('active'); }
 
         function initMap() {
-          if (typeof L === 'undefined') return false;
-          var el = document.getElementById('mapPickerEl');
-          if (!el) return false;
-          
-          if (!mapPickerMap) {
-            mapPickerMap = L.map('mapPickerEl').setView([10.7769, 106.7009], 13);
-            L.marker([OFFICE_COORDS.lat, OFFICE_COORDS.lng]).addTo(mapPickerMap).bindPopup("Văn phòng tài xế");
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '&copy; OpenStreetMap contributors',
-              maxZoom: 19
-            }).addTo(mapPickerMap);
-            
-            mapPickerMap.on('click', function(e) {
-              setTempLocation(e.latlng.lat, e.latlng.lng);
-            });
-          }
-          
-          setTimeout(function() { mapPickerMap.invalidateSize(); }, 100);
-          return true;
+          if (typeof L === 'undefined') return false; var el = document.getElementById('mapPickerEl'); if (!el) return false;
+          if (!mapPickerMap) { mapPickerMap = L.map('mapPickerEl').setView([10.7769, 106.7009], 13); L.marker([OFFICE_COORDS.lat, OFFICE_COORDS.lng]).addTo(mapPickerMap).bindPopup("Văn phòng tài xế"); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 19 }).addTo(mapPickerMap); mapPickerMap.on('click', function(e) { setTempLocation(e.latlng.lat, e.latlng.lng); }); }
+          setTimeout(function() { mapPickerMap.invalidateSize(); }, 100); return true;
         }
 
-        function setTempLocation(lat, lng) {
-          if (tempMarker) mapPickerMap.removeLayer(tempMarker);
-          tempMarker = L.marker([lat, lng]).addTo(mapPickerMap);
-          mapPickerMap.panTo([lat, lng]);
-        }
-
-        function updateMapMarker(lat, lng) {
-          if (tempMarker) mapPickerMap.removeLayer(tempMarker);
-          tempMarker = L.marker([lat, lng]).addTo(mapPickerMap);
-          mapPickerMap.panTo([lat, lng]);
-        }
+        function setTempLocation(lat, lng) { if (tempMarker) mapPickerMap.removeLayer(tempMarker); tempMarker = L.marker([lat, lng]).addTo(mapPickerMap); mapPickerMap.panTo([lat, lng]); }
+        function updateMapMarker(lat, lng) { if (tempMarker) mapPickerMap.removeLayer(tempMarker); tempMarker = L.marker([lat, lng]).addTo(mapPickerMap); mapPickerMap.panTo([lat, lng]); }
 
         function toggleMapPicker(type) {
-          currentSelectingType = type;
-          $('#mapSelectingFor').text(type === 'pickup' ? 'điểm đón' : 'điểm đến');
-          highlightBox(type);
-          
+          currentSelectingType = type; $('#mapSelectingFor').text(type === 'pickup' ? 'điểm đón' : 'điểm đến'); highlightBox(type);
           var box = $('#mapPickerBox');
-          if (box.hasClass('d-none')) {
-            box.removeClass('d-none');
-            initMap();
-            
-            var currentLoc = type === 'pickup' ? PICKUP_LOCATION : DESTINATION_LOCATION;
-            if (currentLoc) {
-              updateMapMarker(currentLoc.lat, currentLoc.lng);
-            }
-          } else {
-            box.addClass('d-none');
-          }
+          if (box.hasClass('d-none')) { box.removeClass('d-none'); initMap(); var currentLoc = type === 'pickup' ? PICKUP_LOCATION : DESTINATION_LOCATION; if (currentLoc) updateMapMarker(currentLoc.lat, currentLoc.lng); }
+          else { box.addClass('d-none'); }
         }
 
-        function closeMapPicker() {
-          if (tempMarker) {
-            var latlng = tempMarker.getLatLng();
-            reverseGeocode(latlng.lat, latlng.lng).then(function(address) {
-              if (currentSelectingType === 'pickup') {
-                PICKUP_LOCATION = { lat: latlng.lat, lng: latlng.lng };
-                $('#tripPickup').val(address);
-              } else {
-                DESTINATION_LOCATION = { lat: latlng.lat, lng: latlng.lng };
-                $('#tripDestination').val(address);
-              }
-            });
-          }
-          $('#mapPickerBox').addClass('d-none');
-        }
+        function closeMapPicker() { if (tempMarker) { var latlng = tempMarker.getLatLng(); reverseGeocode(latlng.lat, latlng.lng).then(function(address) { if (currentSelectingType === 'pickup') { PICKUP_LOCATION = { lat: latlng.lat, lng: latlng.lng }; $('#tripPickup').val(address); } else { DESTINATION_LOCATION = { lat: latlng.lat, lng: latlng.lng }; $('#tripDestination').val(address); } }); } $('#mapPickerBox').addClass('d-none'); }
 
+        // ==========================================
+        // RENDER DỊCH VỤ & TÍNH GIÁ
+        // ==========================================
         function renderService(service) {
-          CURRENT_SERVICE = service;
-          $('#serviceSelector').val(String(service.id));
-          
-          var includesContainer = $('#serviceIncludesContainer');
-          var includesList = $('#serviceIncludesList');
-          if (service.includes && service.includes.length > 0) {
-            includesList.empty();
-            service.includes.forEach(function(item) {
-              includesList.append('<li><i class="fas fa-check text-success me-2"></i>' + item + '</li>');
-            });
-            includesContainer.removeClass('d-none');
-          } else {
-            includesContainer.addClass('d-none');
-          }
-          
+          CURRENT_SERVICE = service; $('#serviceSelector').val(String(service.id));
+          var includesContainer = $('#serviceIncludesContainer'), includesList = $('#serviceIncludesList');
+          if (service.includes && service.includes.length > 0) { includesList.empty(); service.includes.forEach(function(item) { includesList.append('<li><i class="fas fa-check text-success me-2"></i>' + item + '</li>'); }); includesContainer.removeClass('d-none'); }
+          else { includesContainer.addClass('d-none'); }
           var pkgHtml = '<div class="list-group">';
           (service.pricing.packages || []).forEach(function(p, idx) {
-            var desc = p.hours ? p.hours + ' giờ' : (p.days ? p.days + ' ngày' : '');
-            var kmDesc = p.km_included ? ' - Bao gồm ' + p.km_included + 'km' : '';
-            var priceDisplay = formatMoney(p.price);
-            
-            pkgHtml += '<label class="list-group-item list-group-item-action d-flex align-items-center gap-3 rounded mb-2 border">' +
-              '<input type="radio" name="package" class="package-check form-check-input" value="' + idx + '" ' +
-              'data-price="' + p.price + '" data-label="' + p.name + '" data-hours="' + (p.hours || 0) + '" ' +
-              'data-km-included="' + (p.km_included || 0) + '" data-extra-km-fee="' + (p.extra_km_fee || 0) + '">' +
-              '<span class="fw-bold">' + p.name + (desc ? ' (' + desc + ')' : '') + '</span>' +
-              '<span class="ms-auto badge bg-primary">' + priceDisplay + kmDesc + '</span></label>';
-          });
-          pkgHtml += '</div>';
-          $('#servicePackages').html(pkgHtml);
-          updateTotalPrice();
+            var desc = p.hours ? p.hours + ' giờ' : (p.days ? p.days + ' ngày' : ''), kmDesc = p.km_included ? ' - Bao gồm ' + p.km_included + 'km' : '', priceDisplay = formatMoney(p.price);
+            pkgHtml += '<label class="list-group-item list-group-item-action d-flex align-items-center gap-3 rounded mb-2 border"><input type="radio" name="package" class="package-check form-check-input" value="' + idx + '" data-price="' + p.price + '" data-label="' + p.name + '" data-hours="' + (p.hours || 0) + '" data-km-included="' + (p.km_included || 0) + '" data-extra-km-fee="' + (p.extra_km_fee || 0) + '"><span class="fw-bold">' + p.name + (desc ? ' (' + desc + ')' : '') + '</span><span class="ms-auto badge bg-primary">' + priceDisplay + kmDesc + '</span></label>';
+          }); pkgHtml += '</div>'; $('#servicePackages').html(pkgHtml); updateTotalPrice();
         }
 
         function getSelectedPackage() { return $('.package-check:checked'); }
 
         function updateTotalPrice() {
-          if (!CURRENT_SERVICE) return;
-          
-          var pkg = getSelectedPackage();
-          if (!pkg.length) {
-            $('#totalPriceDisplay').text('0 đ');
-            return;
-          }
-          
-          var packagePriceRaw = pkg.data('price');
-          var priceInfo = parsePriceValue(packagePriceRaw);
-          
-          if (priceInfo.isContact) {
-            $('#packagePriceDisplay').text('Liên hệ');
-            $('#totalPriceDisplay').text('Liên hệ');
-            return;
-          }
-          
-          var packagePrice = priceInfo.value;
-          var kmIncluded = parseFloat(pkg.data('km-included')) || 0;
-          var extraKmFeeRate = parseFloat(pkg.data('extra-km-fee')) || 5000;
-          var actualKm = ACTUAL_DISTANCE_KM;
-          var extraKm = Math.max(0, actualKm - kmIncluded);
-          var extraKmFee = extraKm * extraKmFeeRate;
-          
+          if (!CURRENT_SERVICE) return; var pkg = getSelectedPackage(); if (!pkg.length) { $('#totalPriceDisplay').text('0 đ'); return; }
+          var packagePriceRaw = pkg.data('price'), priceInfo = parsePriceValue(packagePriceRaw);
+          if (priceInfo.isContact) { $('#packagePriceDisplay').text('Liên hệ'); $('#totalPriceDisplay').text('Liên hệ'); return; }
+          var packagePrice = priceInfo.value, kmIncluded = parseFloat(pkg.data('km-included')) || 0, extraKmFeeRate = parseFloat(pkg.data('extra-km-fee')) || 5000, actualKm = ACTUAL_DISTANCE_KM, extraKm = Math.max(0, actualKm - kmIncluded), extraKmFee = extraKm * extraKmFeeRate;
           var travelFee = (PICKUP_LOCATION ? haversineKm(OFFICE_COORDS, PICKUP_LOCATION) : 0) * 5000;
-          
-          var startDate = $('#startDate').val();
-          var dayFactor = 1;
-          if (startDate) {
-            var d = new Date(startDate);
-            var month = d.getMonth() + 1, day = d.getDate();
-            if ((day === 1 && month === 1) || (day === 30 && month === 4) || (day === 1 && month === 5) || (day === 2 && month === 9)) dayFactor = 1.3;
-            else if (d.getDay() === 0 || d.getDay() === 6) dayFactor = 1.1;
-          }
-          
-          var startTime = $('#startTime').val();
-          var nightFactor = 1;
-          if (startTime) {
-            var hour = parseInt(startTime.split(':')[0]);
-            if (hour >= 22 || hour < 6) nightFactor = 1.2;
-          }
-          
-          var basePrice = packagePrice + extraKmFee;
-          var finalPrice = (basePrice * dayFactor * nightFactor) + travelFee;
-          
-          $('#packagePriceDisplay').text(formatMoney(packagePrice));
-          $('#kmIncludedDisplay').text(kmIncluded);
-          $('#actualKmDisplay').text(actualKm.toFixed(1));
-          
-          if (extraKm > 0) {
-            $('#extraKmRow').removeClass('d-none');
-            $('#extraKmCount').text(extraKm.toFixed(1));
-            $('#extraKmFeeDisplay').text(formatMoney(extraKmFeeRate));
-            $('#extraKmFee').text(formatMoney(extraKmFee));
-          } else {
-            $('#extraKmRow').addClass('d-none');
-          }
-          
+          var startDate = $('#startDate').val(), dayFactor = 1;
+          if (startDate) { var d = new Date(startDate), month = d.getMonth() + 1, day = d.getDate(); if ((day === 1 && month === 1) || (day === 30 && month === 4) || (day === 1 && month === 5) || (day === 2 && month === 9)) dayFactor = 1.3; else if (d.getDay() === 0 || d.getDay() === 6) dayFactor = 1.1; }
+          var startTime = $('#startTime').val(), nightFactor = 1; if (startTime) { var hour = parseInt(startTime.split(':')[0]); if (hour >= 22 || hour < 6) nightFactor = 1.2; }
+          var basePrice = packagePrice + extraKmFee, finalPrice = (basePrice * dayFactor * nightFactor) + travelFee;
+          $('#packagePriceDisplay').text(formatMoney(packagePrice)); $('#kmIncludedDisplay').text(kmIncluded); $('#actualKmDisplay').text(actualKm.toFixed(1));
+          if (extraKm > 0) { $('#extraKmRow').removeClass('d-none'); $('#extraKmCount').text(extraKm.toFixed(1)); $('#extraKmFeeDisplay').text(formatMoney(extraKmFeeRate)); $('#extraKmFee').text(formatMoney(extraKmFee)); } else { $('#extraKmRow').addClass('d-none'); }
           $('#travelFee').text(formatMoney(travelFee));
-          
-          if (nightFactor > 1) {
-            $('#nightRow').removeClass('d-none');
-            $('#nightFee').text(formatMoney(basePrice * (nightFactor - 1) * dayFactor));
-          } else {
-            $('#nightRow').addClass('d-none');
-          }
-          
-          if (dayFactor > 1) {
-            $('#holidayRow').removeClass('d-none');
-            $('#holidayFee').text(formatMoney(basePrice * (dayFactor - 1) * nightFactor));
-          } else {
-            $('#holidayRow').addClass('d-none');
-          }
-          
+          if (nightFactor > 1) { $('#nightRow').removeClass('d-none'); $('#nightFee').text(formatMoney(basePrice * (nightFactor - 1) * dayFactor)); } else { $('#nightRow').addClass('d-none'); }
+          if (dayFactor > 1) { $('#holidayRow').removeClass('d-none'); $('#holidayFee').text(formatMoney(basePrice * (dayFactor - 1) * nightFactor)); } else { $('#holidayRow').addClass('d-none'); }
           $('#totalPriceDisplay').text(formatMoney(finalPrice));
         }
 
-        function collectBookingData() {
-          var pkg = getSelectedPackage();
-          return {
-            name: $('#customerName').val().trim(),
-            phone: $('#customerPhone').val().trim(),
-            email: $('#customerEmail').val().trim(),
-            service: $('#serviceSelector option:selected').text(),
-            packageName: pkg.length ? pkg.data('label') : '',
-            tripPickup: $('#tripPickup').val().trim(),
-            tripDestination: $('#tripDestination').val().trim(),
-            actualDistance: ACTUAL_DISTANCE_KM,
-            startDate: $('#startDate').val(),
-            endDate: $('#endDate').val(),
-            startTime: $('#startTime').val(),
-            endTime: $('#endTime').val(),
-            extraRequest: $('#extraRequest').val(),
-            note: $('#customerNote').val().trim(),
-            price: $('#totalPriceDisplay').text()
-          };
-        }
+        // ==========================================
+        // SUBMIT & REVIEW
+        // ==========================================
+        function collectBookingData() { var pkg = getSelectedPackage(); return { name: $('#customerName').val().trim(), phone: $('#customerPhone').val().trim(), email: $('#customerEmail').val().trim(), service: $('#serviceSelector option:selected').text(), packageName: pkg.length ? pkg.data('label') : '', tripPickup: $('#tripPickup').val().trim(), tripDestination: $('#tripDestination').val().trim(), actualDistance: ACTUAL_DISTANCE_KM, startDate: $('#startDate').val(), endDate: $('#endDate').val(), startTime: $('#startTime').val(), endTime: $('#endTime').val(), extraRequest: $('#extraRequest').val(), note: $('#customerNote').val().trim(), price: $('#totalPriceDisplay').text() }; }
 
-        function renderReviewData(data) {
-          $('#reviewName').text(data.name || '-');
-          $('#reviewPhone').text(data.phone || '-');
-          $('#reviewEmail').text(data.email || '-');
-          $('#reviewService').text(data.service || '-');
-          $('#reviewPackage').text(data.packageName || '-');
-          $('#reviewTripPickup').text(data.tripPickup || '-');
-          $('#reviewTripDestination').text(data.tripDestination || '-');
-          $('#reviewDistance').text(data.actualDistance ? data.actualDistance.toFixed(1) + ' km' : '-');
-          $('#reviewStartDateTime').text((data.startDate || '') + (data.startTime ? ' ' + data.startTime : ''));
-          $('#reviewEndDate').text(data.endDate || '-');
-          $('#reviewExtraRequest').text(data.extraRequest || '-');
-          $('#reviewNote').text(data.note || '-');
-          $('#reviewPrice').text(data.price || '0 đ');
-        }
+        function renderReviewData(data) { $('#reviewName').text(data.name || '-'); $('#reviewPhone').text(data.phone || '-'); $('#reviewEmail').text(data.email || '-'); $('#reviewService').text(data.service || '-'); $('#reviewPackage').text(data.packageName || '-'); $('#reviewTripPickup').text(data.tripPickup || '-'); $('#reviewTripDestination').text(data.tripDestination || '-'); $('#reviewDistance').text(data.actualDistance ? data.actualDistance.toFixed(1) + ' km' : '-'); $('#reviewStartDateTime').text((data.startDate || '') + (data.startTime ? ' ' + data.startTime : '')); $('#reviewEndDate').text(data.endDate || '-'); $('#reviewExtraRequest').text(data.extraRequest || '-'); $('#reviewNote').text(data.note || '-'); $('#reviewPrice').text(data.price || '0 đ'); }
 
         function submitBooking(data) {
-          var btn = $('#btnConfirmSave');
-          var originalHtml = btn.html();
-          btn.html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...').prop('disabled', true);
+  var btn = $('#btnConfirmSave');
+  var originalHtml = btn.html();
+  btn.html('<i class="fas fa-spinner fa-spin"></i> Đang lưu...').prop('disabled', true);
 
-          DVQTKrud.insertRow('datlich_taixe', {
-            tenkhachhang: data.name || '',
-            sdtkhachhang: data.phone || '',
-            emailkhachhang: data.email || '',
-            dich_vu: data.service || '',
-            goi_dich_vu: data.packageName || '',
-            diemdon: data.tripPickup || '',
-            diemden: data.tripDestination || '',
-            quangduong_dukien: data.actualDistance || 0,
-            ngay_bat_dau_kehoach: data.startDate || '',
-            ngay_ket_thuc_kehoach: data.endDate || '',
-            gio_bat_dau_kehoach: data.startTime || '',
-            gio_ket_thuc_kehoach: data.endTime || '',
-            yeu_cau_khac: data.extraRequest || '',
-            ghi_chu: data.note || '',
-            tong_tien: parseFloat((data.price || '0').replace(/[^0-9]/g, '')) || 0,
-            trangthai: 'Chờ xác nhận',
-            ngaydat: new Date().toISOString().slice(0, 19).replace('T', ' ')
-          })
-          .then(result => {
-            alert('✅ Đặt lịch thành công! Mã đơn: #' + result.id);
-            $('#reviewPageSection').addClass('d-none');
-            $('#bookingPageSection').removeClass('d-none');
-            $('#bookingForm').addClass('d-none');
-            $('#successMessage').removeClass('d-none');
-            setTimeout(() => { if (!EMBEDDED_BOOKING_MODE) window.location.href = 'index.html'; }, 2000);
-          })
-          .catch(err => {
-            console.error(err);
-            alert('❌ Lỗi: ' + (err.message || 'Không thể lưu dữ liệu'));
-          })
-          .finally(() => {
-            btn.html(originalHtml).prop('disabled', false);
-          });
-        }
+  // Đảm bảo bảng datlich_taixe tồn tại trước khi insert
+  DVQTKrud.ensureTable('datlich_taixe', {
+    tenkhachhang: 'text',
+    sdtkhachhang: 'text',
+    emailkhachhang: 'text',
+    dich_vu: 'text',
+    goi_dich_vu: 'text',
+    diemdon: 'text',
+    diemden: 'text',
+    quangduong_dukien: 'float',
+    ngay_bat_dau_kehoach: 'text',
+    ngay_ket_thuc_kehoach: 'text',
+    gio_bat_dau_kehoach: 'text',
+    gio_ket_thuc_kehoach: 'text',
+    yeu_cau_khac: 'text',
+    ghi_chu: 'text',
+    tong_tien: 'int',
+    trangthai: 'text',
+    ngaydat: 'datetime',
+    id_taixe: 'int',
+    ten_taixe: 'text',
+    sdt_taixe: 'text'
+  }).then(function() {
+    return DVQTKrud.insertRow('datlich_taixe', {
+      tenkhachhang: data.name || '',
+      sdtkhachhang: data.phone || '',
+      emailkhachhang: data.email || '',
+      dich_vu: data.service || '',
+      goi_dich_vu: data.packageName || '',
+      diemdon: data.tripPickup || '',
+      diemden: data.tripDestination || '',
+      quangduong_dukien: data.actualDistance || 0,
+      ngay_bat_dau_kehoach: data.startDate || '',
+      ngay_ket_thuc_kehoach: data.endDate || '',
+      gio_bat_dau_kehoach: data.startTime || '',
+      gio_ket_thuc_kehoach: data.endTime || '',
+      yeu_cau_khac: data.extraRequest || '',
+      ghi_chu: data.note || '',
+      tong_tien: parseFloat((data.price || '0').replace(/[^0-9]/g, '')) || 0,
+      trangthai: 'Chờ xác nhận',
+      ngaydat: new Date().toISOString().slice(0, 19).replace('T', ' ')
+    });
+  })
+  .then(result => {
+    alert('✅ Đặt lịch thành công! Mã đơn: #' + result.id);
+    $('#reviewPageSection').addClass('d-none');
+    $('#bookingPageSection').removeClass('d-none');
+    $('#bookingForm').addClass('d-none');
+    $('#successMessage').removeClass('d-none');
+    setTimeout(() => { if (!EMBEDDED_BOOKING_MODE) window.location.href = 'index.html'; }, 2000);
+  })
+  .catch(err => {
+    console.error(err);
+    alert('❌ Lỗi: ' + (err.message || 'Không thể lưu dữ liệu'));
+  })
+  .finally(() => {
+    btn.html(originalHtml).prop('disabled', false);
+  });
+}
 
-        async function loadServicesFromApi() {
-          try {
-            var rawServices = await DVQTKrud.listTable('dichvu_taixe');
-            SERVICES = rawServices.map(s => {
-              try {
-                s.includes = JSON.parse(s.includes || '[]');
-                s.pricing = JSON.parse(s.pricing || '{}');
-              } catch (e) {
-                s.includes = [];
-                s.pricing = { packages: [] };
-              }
-              return s;
-            });
-            
-            $('#serviceSelector').empty();
-            SERVICES.forEach(s => $('#serviceSelector').append(`<option value="${s.id}">${s.name}</option>`));
-            var defaultService = SERVICES.find(s => s.id == PRESELECT_SERVICE_ID) || SERVICES[0];
-            renderService(defaultService);
-          } catch (err) {
-            console.error(err);
-            alert('Không thể tải dịch vụ từ API. Vui lòng thử lại sau.');
-          }
-        }
-
-        document.getElementById('vehiclePhotos').addEventListener('change', function(e) {
-          var preview = document.getElementById('vehiclePhotoPreview');
-          preview.innerHTML = '';
-          var files = Array.from(e.target.files || []);
-          files.forEach(function(file) {
-            var url = URL.createObjectURL(file);
-            var isVideo = file.type.startsWith('video/');
-            if (isVideo) {
-              var vid = document.createElement('video');
-              vid.src = url;
-              vid.controls = true;
-              vid.className = 'vehicle-photo-preview-img';
-              vid.onloadeddata = function() { URL.revokeObjectURL(url); };
-              preview.appendChild(vid);
-            } else {
-              var img = document.createElement('img');
-              img.src = url;
-              img.className = 'vehicle-photo-preview-img';
-              img.onload = function() { URL.revokeObjectURL(url); };
-              preview.appendChild(img);
-            }
-          });
-        });
-
+        // ==========================================
+        // DOM READY
+        // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
           loadServicesFromApi();
-          
-          $('#serviceSelector').change(function() {
-            var service = SERVICES.find(s => s.id == $(this).val());
-            if (service) renderService(service);
-          });
-          
+          $('#serviceSelector').change(function() { var service = SERVICES.find(s => s.id == $(this).val()); if (service) renderService(service); });
           $('#calculateRouteBtn').click(calculateAndUpdateRoute);
           $(document).on('change', '.package-check, #startDate, #startTime', updateTotalPrice);
-          
-          $('#btnResetBooking').click(function() { 
-            $('#bookingForm')[0].reset(); 
-            PICKUP_LOCATION = null;
-            DESTINATION_LOCATION = null;
-            ACTUAL_DISTANCE_KM = 0;
-            $('#routeInfoBox').addClass('d-none');
-            $('#totalPriceDisplay').text('0 đ');
-            $('.location-box').removeClass('active');
-            if (CURRENT_SERVICE) renderService(CURRENT_SERVICE);
-          });
-          
-          $('#bookingForm').submit(function(e) {
-            e.preventDefault();
-            if (!getSelectedPackage().length) { alert('Vui lòng chọn gói dịch vụ'); return; }
-            if (!$('#tripPickup').val().trim()) { alert('Vui lòng nhập/chọn điểm đón'); return; }
-            if (!$('#tripDestination').val().trim()) { alert('Vui lòng nhập/chọn điểm đến'); return; }
-            if (ACTUAL_DISTANCE_KM === 0) { alert('Vui lòng nhập quãng đường'); return; }
-            
-            PENDING_BOOKING_DATA = collectBookingData();
-            renderReviewData(PENDING_BOOKING_DATA);
-            $('#bookingPageSection').addClass('d-none');
-            $('#reviewPageSection').removeClass('d-none');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          });
-          
-          $('#btnBackToEdit').click(function() { 
-            $('#reviewPageSection').addClass('d-none'); 
-            $('#bookingPageSection').removeClass('d-none'); 
-          });
-          
-          $('#btnConfirmSave').click(function() {
-            if (!PENDING_BOOKING_DATA) return;
-            submitBooking(PENDING_BOOKING_DATA);
-          });
-          
-          var today = new Date().toISOString().split('T')[0];
-          $('#startDate, #endDate').attr('min', today);
-          
-          window.getCurrentLocation = getCurrentLocation;
-          window.toggleMapPicker = toggleMapPicker;
-          window.closeMapPicker = closeMapPicker;
+          $('#btnResetBooking').click(function() { $('#bookingForm')[0].reset(); PICKUP_LOCATION = null; DESTINATION_LOCATION = null; ACTUAL_DISTANCE_KM = 0; $('#routeInfoBox').addClass('d-none'); $('#totalPriceDisplay').text('0 đ'); $('.location-box').removeClass('active'); if (CURRENT_SERVICE) renderService(CURRENT_SERVICE); });
+          $('#bookingForm').submit(function(e) { e.preventDefault(); if (!getSelectedPackage().length) { alert('Vui lòng chọn gói dịch vụ'); return; } if (!$('#tripPickup').val().trim()) { alert('Vui lòng nhập/chọn điểm đón'); return; } if (!$('#tripDestination').val().trim()) { alert('Vui lòng nhập/chọn điểm đến'); return; } if (ACTUAL_DISTANCE_KM === 0) { alert('Vui lòng nhập quãng đường'); return; } PENDING_BOOKING_DATA = collectBookingData(); renderReviewData(PENDING_BOOKING_DATA); $('#bookingPageSection').addClass('d-none'); $('#reviewPageSection').removeClass('d-none'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+          $('#btnBackToEdit').click(function() { $('#reviewPageSection').addClass('d-none'); $('#bookingPageSection').removeClass('d-none'); });
+          $('#btnConfirmSave').click(function() { if (!PENDING_BOOKING_DATA) return; submitBooking(PENDING_BOOKING_DATA); });
+          var today = new Date().toISOString().split('T')[0]; $('#startDate, #endDate').attr('min', today);
+          window.getCurrentLocation = getCurrentLocation; window.toggleMapPicker = toggleMapPicker; window.closeMapPicker = closeMapPicker;
         });
+
+        // Preview ảnh xe
+        document.getElementById('vehiclePhotos').addEventListener('change', function(e) { var preview = document.getElementById('vehiclePhotoPreview'); preview.innerHTML = ''; var files = Array.from(e.target.files || []); files.forEach(function(file) { var url = URL.createObjectURL(file); var isVideo = file.type.startsWith('video/'); if (isVideo) { var vid = document.createElement('video'); vid.src = url; vid.controls = true; vid.className = 'vehicle-photo-preview-img'; vid.onloadeddata = function() { URL.revokeObjectURL(url); }; preview.appendChild(vid); } else { var img = document.createElement('img'); img.src = url; img.className = 'vehicle-photo-preview-img'; img.onload = function() { URL.revokeObjectURL(url); }; preview.appendChild(img); } }); });
       </script>
     </div>
-    
     <script src="JS/shared-layout.js"></script>
     <script src="JS/user-nav-menu.js"></script>
   </body>

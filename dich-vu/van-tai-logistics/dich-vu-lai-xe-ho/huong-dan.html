@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng dẫn sử dụng - Dịch vụ Thuê Tài Xế Lái Xe Hộ</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Hide carousel indicators */
+        .carousel-indicators {
+            display: none;
+        }
+
+        :root {
+            --primary-color: #007bff;
+            --primary-light: #e3f2fd;
+            --primary-dark: #0056b3;
+            --bg-gradient: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-gradient);
+            color: #4a4a4a;
+        }
+
+        /* Hero Header */
+        .hero-section {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+                url('https://www.transparenttextures.com/patterns/cubes.png'),
+                linear-gradient(45deg, var(--primary-light), #ffffff);
+            padding: 15px 0;
+            border-bottom: 3px solid var(--primary-light);
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .hero-title {
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 0;
+        }
+
+        .hero-section p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-menu {
+            position: sticky;
+            top: 100px;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.15);
+            border: 1px solid var(--primary-light);
+        }
+
+        .sidebar-menu .nav-link {
+            color: #666;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-menu .nav-link i {
+            width: 30px;
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu .nav-link:hover,
+        .sidebar-menu .nav-link.active {
+            background-color: var(--primary-color);
+            color: white !important;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu .nav-link:hover i,
+        .sidebar-menu .nav-link.active i {
+            color: white;
+        }
+
+        /* Content Area */
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .section-header {
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .text-primary-custom {
+            color: var(--primary-color) !important;
+        }
+
+        .bg-primary-custom {
+            background-color: var(--primary-color) !important;
+            color: white;
+        }
+
+        /* Accordion Style */
+        .section-content {
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .content-card.active {
+            border-left: 5px solid var(--primary-dark);
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.1);
+        }
+
+        .content-card.active .section-content {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header[role="button"] {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header[role="button"]::after {
+            content: '\f078';
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            font-size: 1rem;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .content-card.active .section-header::after {
+            transform: rotate(180deg);
+            color: var(--primary-dark);
+        }
+
+        /* Gallery/Carousel Style */
+        .interface-img {
+            width: 100%;
+            height: 450px;
+            object-fit: contain;
+            background: #f0f0f0;
+            border-radius: 12px;
+        }
+
+        .inner-carousel-img {
+            height: 350px;
+            object-fit: contain;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .img-caption {
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            color: #666;
+            background: #fdfdfd;
+            border-top: 1px solid #eee;
+        }
+
+        /* Device Tabs */
+        .device-tabs .nav-link {
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-light);
+            margin: 0 5px;
+            border-radius: 25px;
+            font-weight: 600;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        .device-tabs .nav-link.active {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+        }
+
+        .device-mockup {
+            margin: 0 auto;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-mockup {
+            max-width: 350px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .ipad-mockup {
+            max-width: 600px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .desktop-mockup {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .interface-img {
+                height: 200px;
+            }
+            
+            .inner-carousel-img {
+                height: 200px;
+            }
+            
+            .device-tabs .nav-link {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                margin: 2px;
+            }
+            
+            .content-card {
+                padding: 15px 3px !important;
+            }
+            
+            .section-header {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar-menu {
+                position: relative;
+                top: 0 !important;
+            }
+            
+            .offcanvas-body .sidebar-menu {
+                margin-top: 20px;
+            }
+        }
+
+        /* Guide Accordion Styles */
+        .guide-large-header,
+        .guide-small-header {
+            cursor: pointer;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .guide-large-header {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .guide-small-header {
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .guide-large-header[aria-expanded="true"] {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .guide-large-header::after,
+        .guide-small-header::after {
+            content: '\f107';
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+
+        .guide-large-header[aria-expanded="true"]::after,
+        .guide-small-header[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+        
+        footer {
+            background: var(--primary-light);
+            padding: 30px 0;
+            margin-top: 50px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header Section -->
+    <header class="hero-section">
+        <div class="container-fluid d-flex align-items-center justify-content-between" style="padding-left: 3px; padding-right: 3px;">
+            <div class="d-lg-none" style="width: 32px"></div>
+            <div class="text-center flex-grow-1">
+                <h1 class="hero-title">Hướng dẫn sử dụng</h1>
+                <p class="text-muted d-none d-md-block mb-0">Dịch vụ Thuê Tài Xế Lái Xe Hộ chuyên nghiệp 24/7</p>
+            </div>
+            <button class="btn d-lg-none text-primary-custom p-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                <i class="fas fa-bars fs-3"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container-fluid my-4" style="padding-left: 3px; padding-right: 3px;">
+        <div class="row g-2">
+            <!-- Navigation Sidebar -->
+            <div class="col-lg-3">
+                <div class="offcanvas-lg offcanvas-end" id="sidebarMenu" tabindex="-1">
+                    <div class="offcanvas-header bg-primary-custom text-white">
+                        <h5 class="offcanvas-title fw-bold">Danh mục hướng dẫn</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <nav class="sidebar-menu shadow-sm">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#gioi-thieu">
+                                        <i class="fas fa-info-circle"></i> 1. Giới thiệu
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#giao-dien">
+                                        <i class="fas fa-desktop"></i> 2. Giao diện
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#huong-dan">
+                                        <i class="fas fa-book-open"></i> 3. Hướng dẫn chi tiết
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#lien-he">
+                                        <i class="fas fa-envelope"></i> 4. Liên hệ
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9 col-12">
+
+                <!-- 1. Giới thiệu -->
+                <section id="gioi-thieu" class="content-card active">
+                    <h2 class="section-header" role="button">1. Giới thiệu</h2>
+                    <div class="section-content">
+                        <div class="overview-content">
+                            <p class="lead mb-4">Hệ thống <strong>Thuê Tài Xế Lái Xe Hộ</strong> được thiết kế nhằm mang lại sự tiện lợi và chuyên nghiệp trong việc đặt tài xế lái xe thay, đưa đón an toàn.</p>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <h5 class="fw-bold text-primary-custom"><i class="fas fa-bullseye me-2"></i>Mục đích</h5>
+                                    <p>Cung cấp giải pháp đặt tài xế lái xe hộ nhanh chóng, giúp khách hàng an tâm di chuyển mà không phải tự lái.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5 class="fw-bold text-primary-custom"><i class="fas fa-users me-2"></i>Đối tượng</h5>
+                                    <p>Khách hàng cần lái xe thay sau bữa tiệc, đưa đón sân bay, đi công tác, hoặc cần tài xế riêng theo giờ/ngày.</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="fw-bold text-primary-custom"><i class="fas fa-star me-2"></i>Chức năng chính</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Đăng ký & Đăng nhập tài khoản</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Đặt lịch tài xế trực tuyến</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Xem bảng giá & Chi tiết gói dịch vụ</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Theo dõi lịch trình & Hóa đơn</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Đánh giá tài xế sau chuyến đi</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Quản trị hệ thống toàn diện</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="workflow-box p-3 border-start border-4 border-primary-custom bg-light">
+                                <h5 class="fw-bold text-primary-custom small text-uppercase">Quy trình hệ thống</h5>
+                                <p class="small mb-0"><strong>Khách hàng</strong> Đăng nhập → Chọn Gói dịch vụ → Đặt lịch → Hệ thống Xác nhận → Phân công tài xế → Theo dõi chuyến đi → Đánh giá & Thanh toán</p>
+                            </div>
+
+                            <hr class="my-4 opacity-25">
+
+                            <div class="admin-overview">
+                                <h5 class="fw-bold text-primary-custom mb-3"><i class="fas fa-user-shield me-2"></i>Quản trị hệ thống (Admin)</h5>
+                                <p class="small text-muted mb-4">Mô-đun quản trị giúp quản lý toàn bộ hoạt động đặt tài xế, đảm bảo dịch vụ vận hành trơn tru.</p>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-primary-custom">
+                                            <h6 class="fw-bold small mb-2"><i class="fas fa-concierge-bell text-primary-custom me-2"></i>Quản lý gói dịch vụ</h6>
+                                            <p class="small mb-0 text-secondary">Thêm, sửa, xóa các gói lái xe theo giờ/ngày/tháng.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-primary-custom">
+                                            <h6 class="fw-bold small mb-2"><i class="fas fa-file-invoice-dollar text-primary-custom me-2"></i>Quản lý đơn hàng</h6>
+                                            <p class="small mb-0 text-secondary">Xác nhận lịch, phân công tài xế, theo dõi trạng thái chuyến đi.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-primary-custom">
+                                            <h6 class="fw-bold small mb-2"><i class="fas fa-id-card-alt text-primary-custom me-2"></i>Quản lý tài xế</h6>
+                                            <p class="small mb-0 text-secondary">Quản lý hồ sơ, lịch làm việc và đánh giá tài xế.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-primary-custom">
+                                            <h6 class="fw-bold small mb-2"><i class="fas fa-user-graduate text-primary-custom me-2"></i>Quản lý khách hàng</h6>
+                                            <p class="small mb-0 text-secondary">Theo dõi lịch sử đặt xe và xử lý phản hồi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Giao diện -->
+                <section id="giao-dien" class="content-card">
+                    <h2 class="section-header" role="button">2. Giao diện</h2>
+                    <div class="section-content">
+                        <!-- Khách hàng -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold text-primary-custom mb-3"><i class="fas fa-user me-2"></i>2.1 Giao diện Khách hàng</h5>
+
+                            <ul class="nav nav-pills device-tabs mb-4 justify-content-center" id="pills-2-1-tab" role="tablist">
+                                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-desktop" type="button"><i class="fas fa-desktop me-2"></i>Máy tính</button></li>
+                                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-ipad" type="button"><i class="fas fa-tablet-alt me-2"></i>iPad</button></li>
+                                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-mobile" type="button"><i class="fas fa-mobile-alt me-2"></i>Mobile</button></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="pills-desktop">
+                                    <div class="device-mockup desktop-mockup">
+                                        <img src="img/driver/desktop-home.png" class="interface-img" alt="Desktop UI">
+                                        <p class="img-caption">Trang chủ dịch vụ thuê tài xế (Máy tính)</p>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pills-ipad">
+                                    <div class="device-mockup ipad-mockup">
+                                        <img src="img/driver/ipad-home.png" class="interface-img" alt="iPad UI">
+                                        <p class="img-caption">Trang chủ dịch vụ (iPad)</p>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pills-mobile">
+                                    <div class="device-mockup mobile-mockup">
+                                        <img src="img/driver/mobile-home.png" class="interface-img" alt="Mobile UI">
+                                        <p class="img-caption">Trang chủ dịch vụ (Điện thoại)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tài Xế -->
+                        <div>
+                            <h5 class="fw-bold text-primary-custom mb-3"><i class="fas fa-users me-2"></i>2.2 Giao diện Tài xế</h5>
+
+                            <ul class="nav nav-pills device-tabs mb-4 justify-content-center" id="pills-2-2-tab" role="tablist">
+                                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-driver-desktop" type="button"><i class="fas fa-desktop me-2"></i>Máy tính</button></li>
+                                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-driver-mobile" type="button"><i class="fas fa-mobile-alt me-2"></i>Mobile</button></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="pills-driver-desktop">
+                                    <div class="device-mockup desktop-mockup">
+                                        <img src="img/driver/driver-dashboard.png" class="interface-img" alt="Driver Dashboard">
+                                        <p class="img-caption">Bảng điều khiển của Tài xế (Máy tính)</p>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pills-driver-mobile">
+                                    <div class="device-mockup mobile-mockup">
+                                        <img src="img/driver/driver-mobile.png" class="interface-img" alt="Driver Mobile">
+                                        <p class="img-caption">Giao diện tài xế trên điện thoại</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Hướng dẫn chi tiết -->
+                <section id="huong-dan" class="content-card">
+                    <h2 class="section-header" role="button">3. Hướng dẫn chi tiết</h2>
+                    <div class="section-content">
+                        <div class="accordion" id="guideAccordionMain">
+
+                            <!-- KHÁCH HÀNG -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header" data-bs-toggle="collapse" data-bs-target="#guideCustomer" aria-expanded="true">
+                                    <span><i class="fas fa-user me-2"></i>I. KHÁCH HÀNG</span>
+                                </div>
+                                <div id="guideCustomer" class="collapse show" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subCustomer">
+                                        
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#cust1">
+                                                1.1 Hướng dẫn đặt lịch thuê tài xế
+                                            </div>
+                                            <div id="cust1" class="collapse show" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="text-center p-3">
+                                                                <i class="fas fa-car fa-3x text-primary-custom mb-2"></i>
+                                                                <h6>Bước 1</h6>
+                                                                <p class="small">Chọn gói dịch vụ phù hợp</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="text-center p-3">
+                                                                <i class="fas fa-map-marker-alt fa-3x text-primary-custom mb-2"></i>
+                                                                <h6>Bước 2</h6>
+                                                                <p class="small">Điền thông tin điểm đón - điểm đến</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="text-center p-3">
+                                                                <i class="fas fa-calendar-check fa-3x text-primary-custom mb-2"></i>
+                                                                <h6>Bước 3</h6>
+                                                                <p class="small">Chọn thời gian và xác nhận đặt lịch</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust2">
+                                                1.2 Hướng dẫn theo dõi chuyến đi & Hủy đơn
+                                            </div>
+                                            <div id="cust2" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <p>Sau khi đặt lịch thành công, bạn có thể:</p>
+                                                    <ul>
+                                                        <li>Theo dõi trạng thái chuyến đi trong mục "Đơn hàng của tôi"</li>
+                                                        <li>Hủy đơn trước 2 tiếng so với giờ bắt đầu</li>
+                                                        <li>Liên hệ hỗ trợ qua hotline nếu cần thay đổi lịch</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust3">
+                                                1.3 Hướng dẫn đánh giá tài xế
+                                            </div>
+                                            <div id="cust3" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light">
+                                                    <p>Sau khi chuyến đi kết thúc, bạn có thể đánh giá tài xế dựa trên các tiêu chí:</p>
+                                                    <ul>
+                                                        <li><i class="fas fa-clock text-primary-custom me-2"></i>Đúng giờ</li>
+                                                        <li><i class="fas fa-smile text-primary-custom me-2"></i>Thái độ phục vụ</li>
+                                                        <li><i class="fas fa-car text-primary-custom me-2"></i>Lái xe an toàn</li>
+                                                        <li><i class="fas fa-road text-primary-custom me-2"></i>Hiểu biết đường xá</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TÀI XẾ -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse" data-bs-target="#guideDriver">
+                                    <span><i class="fas fa-id-card me-2"></i>II. TÀI XẾ</span>
+                                </div>
+                                <div id="guideDriver" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subDriver">
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#driver1">
+                                                2.1 Hướng dẫn nhận việc & Bắt đầu chuyến đi
+                                            </div>
+                                            <div id="driver1" class="collapse" data-bs-parent="#subDriver">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="text-center p-2">
+                                                                <i class="fas fa-bell fa-2x text-primary-custom mb-2"></i>
+                                                                <p class="small mb-0">Nhận thông báo đơn mới</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="text-center p-2">
+                                                                <i class="fas fa-check-circle fa-2x text-primary-custom mb-2"></i>
+                                                                <p class="small mb-0">Xác nhận nhận việc</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="text-center p-2">
+                                                                <i class="fas fa-play-circle fa-2x text-primary-custom mb-2"></i>
+                                                                <p class="small mb-0">Bấm "Bắt đầu" khi đến điểm đón</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="text-center p-2">
+                                                                <i class="fas fa-stop-circle fa-2x text-primary-custom mb-2"></i>
+                                                                <p class="small mb-0">Bấm "Kết thúc" khi hoàn thành</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#driver2">
+                                                2.2 Hướng dẫn xem lịch sử & Báo cáo doanh thu
+                                            </div>
+                                            <div id="driver2" class="collapse" data-bs-parent="#subDriver">
+                                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light">
+                                                    <p>Tài xế có thể xem:</p>
+                                                    <ul>
+                                                        <li>Lịch sử các chuyến đi đã thực hiện</li>
+                                                        <li>Doanh thu theo ngày/tuần/tháng</li>
+                                                        <li>Đánh giá từ khách hàng</li>
+                                                        <li>Xuất báo cáo chi tiết</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ADMIN -->
+                            <div class="accordion-item border-0">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse" data-bs-target="#guideAdmin">
+                                    <span><i class="fas fa-user-shield me-2"></i>III. QUẢN TRỊ VIÊN (ADMIN)</span>
+                                </div>
+                                <div id="guideAdmin" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subAdmin">
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#admin1">
+                                                3.1 Quản lý đơn hàng
+                                            </div>
+                                            <div id="admin1" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <ul>
+                                                        <li>Xem danh sách đơn hàng theo trạng thái</li>
+                                                        <li>Xác nhận đơn hàng mới</li>
+                                                        <li>Phân công tài xế phù hợp</li>
+                                                        <li>Xử lý hủy đơn hoặc thay đổi lịch</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#admin2">
+                                                3.2 Quản lý gói dịch vụ
+                                            </div>
+                                            <div id="admin2" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white mb-3 rounded-4 shadow-sm border border-light">
+                                                    <ul>
+                                                        <li>Thêm gói dịch vụ mới (theo giờ/ngày/tháng)</li>
+                                                        <li>Cập nhật giá và km bao gồm</li>
+                                                        <li>Quản lý phụ phí (ca đêm, ngày lễ, km vượt)</li>
+                                                        <li>Bật/tắt các gói dịch vụ</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#admin3">
+                                                3.3 Quản lý tài xế
+                                            </div>
+                                            <div id="admin3" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-3 bg-white rounded-4 shadow-sm border border-light">
+                                                    <ul>
+                                                        <li>Thêm/sửa/xóa hồ sơ tài xế</li>
+                                                        <li>Xem lịch sử hoạt động của tài xế</li>
+                                                        <li>Đánh giá hiệu suất làm việc</li>
+                                                        <li>Quản lý lương thưởng</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Liên hệ -->
+                <section id="lien-he" class="content-card">
+                    <h2 class="section-header" role="button">4. Liên hệ</h2>
+                    <div class="section-content">
+                        <div class="p-4 bg-white rounded-4 shadow-sm border border-light">
+                            <h4 class="fw-bold text-primary-custom mb-3">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI</h4>
+                            <p class="mb-2"><strong>MST:</strong> 0315609853</p>
+                            <p class="mb-4 lh-lg">
+                                <i class="fas fa-map-marker-alt text-primary-custom me-2"></i><strong>Địa chỉ:</strong>
+                                Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp,
+                                Quận 12, Thành Phố Hồ Chí Minh, Việt Nam
+                            </p>
+
+                            <hr class="my-4 opacity-25">
+
+                            <h5 class="fw-bold mb-3"><i class="fas fa-headset text-primary-custom me-2"></i>Thông tin liên lạc</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-light">
+                                        <i class="fas fa-phone-alt fa-2x text-primary-custom me-3"></i>
+                                        <div>
+                                            <div class="small text-muted">Điện thoại (Tổng đài)</div>
+                                            <a href="tel:19001234" class="fw-bold text-dark text-decoration-none">1900 1234</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-light">
+                                        <i class="fab fa-zalo fa-2x text-primary-custom me-3"></i>
+                                        <div>
+                                            <div class="small text-muted">Zalo hỗ trợ</div>
+                                            <a href="#" class="fw-bold text-dark text-decoration-none">0775.472.347</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-light">
+                                        <i class="fas fa-envelope fa-2x text-primary-custom me-3"></i>
+                                        <div>
+                                            <div class="small text-muted">Email</div>
+                                            <a href="mailto:dichvuquanhta.vn@gmail.com" class="fw-bold text-dark text-decoration-none">dichvuquanhta.vn@gmail.com</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-light">
+                                        <i class="fab fa-facebook fa-2x text-primary-custom me-3"></i>
+                                        <div>
+                                            <div class="small text-muted">Fanpage</div>
+                                            <a href="#" class="fw-bold text-dark text-decoration-none">fb.com/dichvuquanhta</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container-fluid">
+            <p class="mb-0 text-muted">© 2024 Dịch vụ Thuê Tài Xế Lái Xe Hộ - Chuyên nghiệp - An toàn - Đúng giờ</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.content-card');
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu .nav-link');
+
+            function activateSection(id) {
+                if (!id) return;
+                const targetId = id.startsWith('#') ? id : `#${id}`;
+
+                sections.forEach(s => s.classList.remove('active'));
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+
+                const targetSection = document.querySelector(targetId);
+                const targetLink = document.querySelector(`.sidebar-menu .nav-link[href="${targetId}"]`);
+
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 110,
+                        behavior: 'smooth'
+                    });
+                }
+                if (targetLink) targetLink.classList.add('active');
+
+                const offcanvasElement = document.getElementById('sidebarMenu');
+                if (offcanvasElement && window.innerWidth < 992) {
+                    const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+                    bsOffcanvas.hide();
+                }
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const id = link.getAttribute('href');
+                    if (id && id.startsWith('#')) {
+                        e.preventDefault();
+                        activateSection(id);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const id = header.parentElement.id;
+                    if (id) activateSection(id);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
