@@ -241,50 +241,50 @@ include 'layout-header.php';
 <style>
     /* Theme color overrides */
     body {
-        background: linear-gradient(180deg, #f0fff4 0%, #e8f5e9 48%, #f8fff9 100%);
+        background: linear-gradient(180deg, #f7fdf8 0%, #f0f9f1 48%, #fafffe 100%);
         color: #1e293b;
     }
 
     .panel-soft {
-        border: 1px solid #c8e6c9;
+        border: 1px solid #daeeda;
         border-radius: 16px;
-        box-shadow: 0 14px 34px rgba(27, 94, 32, 0.12);
-        background: #f8fff9;
+        box-shadow: 0 14px 34px rgba(27, 94, 32, 0.07);
+        background: #fafffe;
     }
 
     .stat-card {
-        border-color: #c8e6c9;
-        background: linear-gradient(180deg, #f8fff9, #f0fff4);
-        box-shadow: 0 8px 20px rgba(27, 94, 32, 0.06);
+        border-color: #daeeda;
+        background: linear-gradient(180deg, #fafffe, #f5fbf5);
+        box-shadow: 0 8px 20px rgba(27, 94, 32, 0.04);
     }
 
     .filter-box {
-        border-color: #c8e6c9;
+        border-color: #daeeda;
         border-radius: 14px;
-        background: linear-gradient(180deg, #f8fff9, #f0fff4);
-        box-shadow: 0 8px 18px rgba(27, 94, 32, 0.05);
+        background: linear-gradient(180deg, #fafffe, #f5fbf5);
+        box-shadow: 0 8px 18px rgba(27, 94, 32, 0.04);
     }
 
     .table-wrap {
-        border-color: #c8e6c9;
+        border-color: #daeeda;
         border-radius: 14px;
         background: #fff;
-        box-shadow: 0 10px 22px rgba(27, 94, 32, 0.08);
+        box-shadow: 0 10px 22px rgba(27, 94, 32, 0.05);
     }
 
-    .jobs-table { --bs-table-hover-bg: #f0fff4; }
+    .jobs-table { --bs-table-hover-bg: #f5fbf5; }
 
     .jobs-table thead th {
-        background: linear-gradient(135deg, #e8f5e9 0%, #f0fff4 100%);
+        background: linear-gradient(135deg, #eef7ee 0%, #f5fbf5 100%);
         color: #1a4d2e;
-        border-bottom-color: #c8e6c9;
+        border-bottom-color: #daeeda;
     }
 
-    .jobs-table tbody td { border-color: #e8f5e9; }
+    .jobs-table tbody td { border-color: #eef7ee; }
 
     .id-badge {
-        background: #f1fff5 !important;
-        border-color: #c8e6c9 !important;
+        background: #f5fbf5 !important;
+        border-color: #daeeda !important;
         color: #1a4d2e !important;
     }
 
@@ -296,8 +296,8 @@ include 'layout-header.php';
     .badge.rounded-pill.text-bg-info,
     .badge.rounded-pill.text-bg-success,
     .badge.rounded-pill.text-bg-secondary {
-        border: 1px solid #c8e6c9;
-        background: #f1fff5 !important;
+        border: 1px solid #daeeda;
+        background: #f5fbf5 !important;
         color: #1a4d2e !important;
     }
 
@@ -314,8 +314,8 @@ include 'layout-header.php';
 
     .btn-outline-secondary {
         color: #1a4d2e;
-        border-color: #c8e6c9;
-        background: #f8fff9;
+        border-color: #daeeda;
+        background: #fafffe;
     }
 
     .btn-outline-secondary:hover, .btn-outline-secondary:focus {
@@ -401,7 +401,7 @@ include 'layout-header.php';
                         
                         <div class="filter-header">
                             <div class="header-title">
-                                <h1>Quản lý Đơn hàng</h1>
+                                <h1>Đơn hàng của tôi</h1>
                                 <p>Theo dõi mọi giao dịch hệ thống</p>
                             </div>
                             

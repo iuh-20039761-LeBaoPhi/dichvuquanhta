@@ -23,11 +23,11 @@
     
     /* --- HERO BANNER ĐỒNG NHẤT --- */
     .page-banner {
-      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-      padding: 50px 0 80px;
+      background: radial-gradient(circle at 80% 20%, #c8e6b0 0%, #eaf5e0 40%, #f5fbf0 70%, #ffffff 100%);
+      padding: 60px 0 90px;
       position: relative;
       overflow: hidden;
-      border-bottom: 1px solid rgba(26, 77, 46, 0.05);
+      text-align: center;
     }
 
     .page-banner::before {
@@ -36,10 +36,10 @@
       font-family: 'Playfair Display', serif;
       font-size: 18vw;
       font-weight: 900;
-      color: rgba(26, 77, 46, 0.03);
+      color: rgba(26, 77, 46, 0.06);
       top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      left: -2%;
+      transform: translateY(-50%);
       z-index: 0;
       pointer-events: none;
       white-space: nowrap;
@@ -49,9 +49,29 @@
       font-family: 'Playfair Display', serif;
       font-style: italic;
       color: var(--primary-green);
-      font-size: 3.5rem;
+      font-size: 3.8rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -1px;
+      margin-bottom: 0;
       position: relative;
       z-index: 1;
+    }
+
+    .page-banner .lead-sub {
+      font-size: 1.2rem;
+      color: #636e72;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-banner .custom-underline {
+      width: 120px;
+      height: 5px;
+      background: var(--primary-green);
+      margin: 20px auto 0;
+      border-radius: 50px;
     }
 
     /* Progress bar */
@@ -89,15 +109,17 @@
   <div id="site-header"></div>
 
   <section class="page-banner">
-    <div class="container position-relative">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-3">
-          <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-success">Trang chủ</a></li>
-          <li class="breadcrumb-item"><a href="bai-viet.html" class="text-decoration-none text-success">Bài viết</a></li>
-          <li class="breadcrumb-item active">Chi tiết</li>
+    <div class="container position-relative" style="z-index:1;">
+      <nav aria-label="breadcrumb" style="position:relative;z-index:1;">
+        <ol class="breadcrumb justify-content-center mb-3">
+          <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none fw-bold" style="color:var(--accent-green)">Trang chủ</a></li>
+          <li class="breadcrumb-item"><a href="bai-viet.html" class="text-decoration-none fw-bold" style="color:var(--accent-green)">Bài viết</a></li>
+          <li class="breadcrumb-item active fw-bold" style="color:var(--primary-green)">Chi tiết</li>
         </ol>
       </nav>
       <h2 class="fw-bold">Góc Chia Sẻ <span style="color: var(--accent-green)">Kiến Thức</span></h2>
+      <p class="lead-sub mt-3 mb-0">Kỹ thuật chăm sóc và bí quyết kiến tạo không gian xanh</p>
+      <div class="custom-underline"></div>
     </div>
   </section>
 

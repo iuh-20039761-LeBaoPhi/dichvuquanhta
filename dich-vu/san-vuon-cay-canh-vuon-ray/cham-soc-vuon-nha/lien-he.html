@@ -31,8 +31,8 @@
 
     /* --- HERO SECTION (ĐỒNG NHẤT VỚI DỊCH VỤ) --- */
     .hero-section {
-      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-      padding: 50px 0 80px;
+      background: radial-gradient(circle at 80% 20%, #c8e6b0 0%, #eaf5e0 40%, #f5fbf0 70%, #ffffff 100%);
+      padding: 60px 0 90px;
       position: relative;
       overflow: hidden;
     }
@@ -43,7 +43,7 @@
       font-family: 'Playfair Display';
       font-size: 15vw;
       font-weight: 900;
-      color: rgba(26, 77, 46, 0.03);
+      color: rgba(26, 77, 46, 0.06);
       top: 0; left: -2%;
       z-index: 0;
     }
@@ -261,10 +261,15 @@
       .contact-form-card, .contact-info-panel { padding: 22px; border-radius: 20px; }
       .contact-address-map { height: 140px; }
     }
+    /* ── PROGRESS BAR ── */
+    .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: transparent; z-index: 9999; }
+    .progress-bar-scroll { height: 5px; background: var(--primary-green); width: 0%; transition: width 0.1s; }
   </style>
 </head>
 
 <body data-nav-active="contact">
+  <div class="progress-container"><div class="progress-bar-scroll" id="scrollProgress"></div></div>
+
   <div id="site-header"></div>
 
   <section class="hero-section text-center">
@@ -467,5 +472,12 @@
   
   <script src="JS/shared-layout.js"></script>
   <script src="JS/user-nav-menu.js"></script>
+  <script>
+    window.addEventListener('scroll', function() {
+      var s = document.body.scrollTop || document.documentElement.scrollTop;
+      var h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      document.getElementById('scrollProgress').style.width = (s / h * 100) + '%';
+    });
+  </script>
 </body>
 </html>

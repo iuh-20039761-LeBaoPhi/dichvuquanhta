@@ -42,8 +42,8 @@
 
     /* --- HERO SECTION: ĐÃ CẬP NHẬT ĐỂ ĐỒNG NHẤT VỚI BLOG --- */
     .hero-section {
-      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-      padding: 60px 0 100px; /* body đã có padding-top từ navbar fixed */
+      background: radial-gradient(circle at 80% 20%, #c8e6b0 0%, #eaf5e0 40%, #f5fbf0 70%, #ffffff 100%);
+      padding: 60px 0 90px; /* body đã có padding-top từ navbar fixed */
       position: relative;
       overflow: hidden;
       text-align: center;
@@ -55,7 +55,7 @@
       font-family: 'Playfair Display';
       font-size: 15vw; /* Tăng kích thước chữ nền */
       font-weight: 900;
-      color: rgba(26, 77, 46, 0.03);
+      color: rgba(26, 77, 46, 0.06);
       top: 0; left: -2%;
       z-index: 0;
     }
@@ -64,7 +64,7 @@
       font-family: 'Playfair Display', serif;
       font-style: italic;
       color: var(--primary-green);
-      font-size: 4rem; /* Tăng size chữ lên 4rem đồng bộ Blog */
+      font-size: 3.8rem; /* Đồng bộ với các trang khác */
       font-weight: 700;
       line-height: 1.2;
       position: relative;
@@ -83,37 +83,78 @@
     .service-card {
       border: none;
       background: #ffffff;
-      border-radius: 35px;
+      border-radius: 28px;
       transition: var(--transition);
       overflow: hidden;
       height: 100%;
-      border: 1px solid rgba(26, 77, 46, 0.05);
-      padding: 12px;
+      border: 1px solid rgba(26, 77, 46, 0.07);
+      box-shadow: 0 4px 20px rgba(26, 77, 46, 0.06);
+      display: flex;
+      flex-direction: column;
     }
 
     .service-card:hover {
       transform: translateY(-10px);
-      box-shadow: 0 30px 60px rgba(26, 77, 46, 0.1) !important;
+      box-shadow: 0 24px 50px rgba(26, 77, 46, 0.13) !important;
     }
 
     .service-img-wrapper {
-      height: 220px;
+      height: 230px;
       overflow: hidden;
-      border-radius: 28px;
+      position: relative;
+      flex-shrink: 0;
     }
 
     .service-img-wrapper img {
       width: 100%; height: 100%;
       object-fit: cover;
-      transition: var(--transition);
+      transition: transform 0.5s ease;
     }
 
-    .card-body h4 {
+    .service-card:hover .service-img-wrapper img {
+      transform: scale(1.07);
+    }
+
+    .service-badge {
+      position: absolute;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+    }
+
+    .service-badge-rating {
+      top: 12px; left: 12px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(6px);
+      color: #1a4d2e;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .service-badge-time {
+      top: 12px; right: 12px;
+      background: rgba(26,77,46,0.82);
+      backdrop-filter: blur(6px);
+      color: #fff;
+    }
+
+    .service-card-body {
+      padding: 20px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .service-card-body h4 {
       font-family: 'Playfair Display', serif;
       color: var(--primary-green);
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 700;
       margin-bottom: 8px;
+      line-height: 1.35;
     }
 
     .description-trim {
@@ -122,35 +163,46 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       color: #636e72;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       line-height: 1.6;
-      margin-bottom: 15px;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .service-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid rgba(26,77,46,0.07);
     }
 
     .price-tag-box {
       background: var(--soft-lime);
-      padding: 8px 16px;
-      border-radius: 12px;
+      padding: 6px 14px;
+      border-radius: 10px;
       color: var(--primary-green);
       font-weight: 700;
-      font-size: 0.9rem;
-      display: inline-block;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .btn-view-detail {
-      background-color: var(--primary-green);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--primary-green);
       color: white;
-      border-radius: 50px;
-      padding: 10px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      text-decoration: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      font-size: 0.8rem;
+      text-decoration: none;
       border: 2px solid var(--primary-green);
       transition: var(--transition);
+      flex-shrink: 0;
     }
 
     .btn-view-detail:hover {
@@ -240,15 +292,19 @@
     }
 
     @media (max-width: 768px) {
-      .hero-section h1 { font-size: 2.6rem; }
-      .hero-section { padding: 120px 0 60px; }
+      .hero-section h1 { font-size: 2.4rem; }
+      .hero-section { padding: 100px 0 60px; }
       .other-service-item { width: calc((100% / 2) - 10px); min-width: 140px; }
       .other-service-grid { gap: 10px; }
     }
+    /* ── PROGRESS BAR ── */
+    .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: transparent; z-index: 9999; }
+    .progress-bar-scroll { height: 5px; background: var(--primary-green); width: 0%; transition: width 0.1s; }
   </style>
 </head>
 
 <body data-nav-active="services">
+  <div class="progress-container"><div class="progress-bar-scroll" id="scrollProgress"></div></div>
   <div id="site-header"></div>
 
   <section class="hero-section">
@@ -342,21 +398,28 @@
 
           $('#servicesGrid').append(`
             <div class="col-md-6 col-lg-4">
-              <div class="service-card d-flex flex-column">
+              <div class="service-card">
                 <div class="service-img-wrapper">
                   <img src="assets/images/${service.image}" alt="${service.name}" onerror="this.src='assets/vuon-nha-dep.png'">
+                  <div class="service-badge service-badge-rating">
+                    <i class="fas fa-star" style="color:#f59e0b;font-size:0.65rem;"></i> ${service.rating || '4.9'}
+                  </div>
+                  <div class="service-badge service-badge-time">
+                    <i class="fas fa-clock" style="font-size:0.65rem;"></i> ${service.duration_estimate || '2-4h'}
+                  </div>
                 </div>
-                <div class="card-body d-flex flex-column p-3">
+                <div class="service-card-body">
                   <h4>${service.name}</h4>
                   <p class="description-trim">${service.description}</p>
-                  <div class="d-flex justify-content-between align-items-center mt-auto">
+                  <div class="service-card-footer">
                     <div class="price-tag-box">
-                       ${priceStr} <small class="fw-normal">/${service.area_unit}</small>
+                      <i class="fas fa-tag" style="font-size:0.65rem;opacity:0.7;"></i>
+                      ${priceStr} <small class="fw-normal opacity-75">/${service.area_unit || 'm²'}</small>
                     </div>
+                    <a href="chi-tiet-dich-vu.html?id=${service.id}" class="btn-view-detail">
+                      <i class="fas fa-arrow-right"></i>
+                    </a>
                   </div>
-                  <a href="chi-tiet-dich-vu.html?id=${service.id}" class="btn-view-detail mt-3">
-                       XEM CHI TIẾT <i class="fas fa-arrow-right small"></i>
-                  </a>
                 </div>
               </div>
             </div>
@@ -369,5 +432,12 @@
   </script>
   <script src="JS/shared-layout.js"></script>
   <script src="JS/user-nav-menu.js"></script>
+  <script>
+    window.addEventListener('scroll', function() {
+      var s = document.body.scrollTop || document.documentElement.scrollTop;
+      var h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      document.getElementById('scrollProgress').style.width = (s / h * 100) + '%';
+    });
+  </script>
 </body>
 </html>

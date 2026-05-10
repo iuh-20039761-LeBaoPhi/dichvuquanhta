@@ -41,8 +41,8 @@
 
     /* ── HERO ── */
     .booking-hero {
-      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-      padding: 144px 0 130px;
+      background: radial-gradient(circle at 80% 20%, #c8e6b0 0%, #eaf5e0 40%, #f5fbf0 70%, #ffffff 100%);
+      padding: 144px 0 90px;
       position: relative;
       overflow: hidden;
       text-align: center;
@@ -53,7 +53,7 @@
       font-family: 'Playfair Display', serif;
       font-size: 18vw;
       font-weight: 900;
-      color: rgba(26,77,46,.03);
+      color: rgba(26,77,46,.06);
       top: -2%; left: -1%;
       z-index: 0;
       pointer-events: none;
@@ -63,7 +63,7 @@
       font-family: 'Playfair Display', serif;
       font-style: italic;
       color: var(--pg);
-      font-size: 3.2rem;
+      font-size: 3.8rem;
       font-weight: 700;
       line-height: 1.2;
       letter-spacing: -1px;
@@ -598,16 +598,16 @@
       .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
       .navbar-collapse .nav-item { width: 100%; text-align: center; }
       .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
-      .booking-hero { padding: 122px 0 100px; }
-      .booking-hero h1 { font-size: 2.2rem; }
+      .booking-hero { padding: 122px 0 80px; }
+      .booking-hero h1 { font-size: 2.4rem; }
       .booking-card-wrap { margin-top: -50px; }
       #bookingPageSection .card-body,
       #reviewPageSection .card-body { padding: 28px 24px; }
     }
 
     @media (max-width: 575.98px) {
-      .booking-hero { padding: 106px 0 80px; }
-      .booking-hero h1 { font-size: 1.8rem; }
+      .booking-hero { padding: 106px 0 70px; }
+      .booking-hero h1 { font-size: 2rem; }
       .booking-card-wrap { margin-top: -40px; padding: 0 8px; }
       .container,
       #bookingPageSection,
@@ -973,16 +973,20 @@
                   <div class="d-flex gap-2">
                     <button type="button" id="capturePhotoBtn" class="btn flex-fill fw-bold"
                       style="background:linear-gradient(135deg,#e8f5e9,#d0f0da);color:#1a4d2e;border:1.5px solid #a5d6b0;border-radius:8px"
-                      onclick="handleMediaClick('photo')">
-                      <i class="fas fa-camera me-1"></i>Chụp/Tải ảnh
+                      onclick="handleMediaClick('photo-capture')">
+                      <i class="fas fa-camera me-1"></i>Chụp ảnh
                     </button>
                     <button type="button" id="recordVideoBtn" class="btn flex-fill fw-bold"
                       style="background:linear-gradient(135deg,#e8f5e9,#d0f0da);color:#1a4d2e;border:1.5px solid #a5d6b0;border-radius:8px"
-                      onclick="handleMediaClick('video')">
-                      <i class="fas fa-video me-1"></i>Quay/Tải video
+                      onclick="handleMediaClick('video-capture')">
+                      <i class="fas fa-video me-1"></i>Quay phim
                     </button>
                   </div>
 
+                  <!-- Mobile: dùng capture để mở camera trực tiếp -->
+                  <input type="file" id="quickPhotoCaptureInput" accept="image/*" capture="environment" class="d-none" />
+                  <input type="file" id="quickVideoCaptureInput" accept="video/*" capture="environment" class="d-none" />
+                  <!-- PC: mở file picker thông thường -->
                   <input type="file" id="quickPhotoInput" accept="image/*" class="d-none" multiple />
                   <input type="file" id="quickVideoInput" accept="video/*" class="d-none" multiple />
 
@@ -3213,9 +3217,18 @@
           if (!files.length) return;
           appendQuickFiles(files, 'image');
           this.value = '';
-
           files.forEach(function (f) { window._pendingPhotoFiles.push(f); });
           $('#uploadStatusMsg').text('Đã thêm ' + files.length + ' ảnh (sẽ upload khi xác nhận).');
+        });
+
+        // Input chụp ảnh trực tiếp từ camera
+        $('#quickPhotoCaptureInput').on('change', function () {
+          var files = Array.from(this.files);
+          if (!files.length) return;
+          appendQuickFiles(files, 'image');
+          this.value = '';
+          files.forEach(function (f) { window._pendingPhotoFiles.push(f); });
+          $('#uploadStatusMsg').text('Đã chụp ' + files.length + ' ảnh (sẽ upload khi xác nhận).');
         });
 
         $('#quickVideoInput').on('change', function () {
@@ -3223,9 +3236,18 @@
           if (!files.length) return;
           appendQuickFiles(files, 'video');
           this.value = '';
-
           files.forEach(function (f) { window._pendingVideoFiles.push(f); });
           $('#uploadStatusMsg').text('Đã thêm ' + files.length + ' video (sẽ upload khi xác nhận).');
+        });
+
+        // Input quay phim trực tiếp từ camera
+        $('#quickVideoCaptureInput').on('change', function () {
+          var files = Array.from(this.files);
+          if (!files.length) return;
+          appendQuickFiles(files, 'video');
+          this.value = '';
+          files.forEach(function (f) { window._pendingVideoFiles.push(f); });
+          $('#uploadStatusMsg').text('Đã quay ' + files.length + ' video (sẽ upload khi xác nhận).');
         });
 
         // ==========================================
@@ -3234,10 +3256,12 @@
 
         window.handleMediaClick = function (type) {
           const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-          if (isMobile) {
-            document.getElementById(type === 'photo' ? 'quickPhotoInput' : 'quickVideoInput').click();
-          } else {
-            showMediaChoiceModal(type);
+          if (type === 'photo-capture') {
+            // Mobile: mở camera trực tiếp | PC: mở file picker ảnh
+            document.getElementById(isMobile ? 'quickPhotoCaptureInput' : 'quickPhotoInput').click();
+          } else if (type === 'video-capture') {
+            // Mobile: mở camera quay phim | PC: mở file picker video
+            document.getElementById(isMobile ? 'quickVideoCaptureInput' : 'quickVideoInput').click();
           }
         };
 

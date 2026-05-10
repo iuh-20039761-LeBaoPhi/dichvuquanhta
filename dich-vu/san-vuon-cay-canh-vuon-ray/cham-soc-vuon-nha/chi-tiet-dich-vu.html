@@ -31,43 +31,63 @@
 
         /* ── HERO BANNER ── */
         .page-banner {
-            background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
-            padding: 40px 0 55px;
+            background: radial-gradient(circle at 80% 20%, #c8e6b0 0%, #eaf5e0 40%, #f5fbf0 70%, #ffffff 100%);
+            padding: 60px 0 90px;
             position: relative;
             overflow: hidden;
-            border-bottom: 1px solid rgba(26, 77, 46, 0.06);
+            text-align: center;
         }
 
         .page-banner::before {
-            content: "Service";
+            content: "Details";
             position: absolute;
             font-family: 'Playfair Display', serif;
             font-size: 18vw;
             font-weight: 900;
-            color: rgba(26, 77, 46, 0.03);
+            color: rgba(26, 77, 46, 0.06);
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            left: -2%;
+            transform: translateY(-50%);
             z-index: 0;
             pointer-events: none;
             white-space: nowrap;
-            text-transform: uppercase;
         }
 
         .page-banner h2 {
             font-family: 'Playfair Display', serif;
             font-style: italic;
             color: var(--primary-green);
-            font-size: 3.2rem;
+            font-size: 3.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 0;
             position: relative;
             z-index: 1;
-            margin: 0;
+        }
+
+        .page-banner .lead-sub {
+            font-size: 1.2rem;
+            color: #636e72;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-banner .custom-underline {
+            width: 120px;
+            height: 5px;
+            background: var(--primary-green);
+            margin: 20px auto 0;
+            border-radius: 50px;
         }
 
         .breadcrumb-item a { color: var(--accent-green) !important; font-weight: 600; }
         .breadcrumb-item.active { color: var(--primary-green); font-weight: 700; }
 
-        /* ── ẢNH DỊCH VỤ ── */
+        /* ── PROGRESS BAR ── */
+        .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: transparent; z-index: 9999; }
+        .progress-bar-scroll { height: 5px; background: var(--primary-green); width: 0%; transition: width 0.1s; }
         .img-wrapper {
             position: relative;
             border-radius: 32px;
@@ -321,14 +341,14 @@
 
         /* ── RESPONSIVE ── */
         @media (max-width: 991.98px) {
-            .page-banner h2 { font-size: 2.2rem; }
-            .page-banner { padding: 30px 0 40px; }
+            .page-banner h2 { font-size: 2.4rem; }
+            .page-banner { padding: 40px 0 50px; }
             .info-card { position: static; border-radius: 24px; padding: 24px; }
             .service-header-img { height: 300px; }
         }
 
         @media (max-width: 575.98px) {
-            .page-banner h2 { font-size: 1.8rem; }
+            .page-banner h2 { font-size: 2rem; }
             .img-wrapper { border-radius: 20px; }
             .service-header-img { height: 240px; }
         }
@@ -336,29 +356,53 @@
 </head>
 
 <body>
+    <div class="progress-container"><div class="progress-bar-scroll" id="scrollProgress"></div></div>
+
     <div id="site-header"></div>
 
     <section class="page-banner">
-        <div class="container position-relative">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-3">
-                    <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-success fw-bold">Trang chủ</a></li>
-                    <li class="breadcrumb-item"><a href="dich-vu.html" class="text-decoration-none text-success fw-bold">Dịch vụ</a></li>
-                    <li class="breadcrumb-item active fw-bold">Chi tiết</li>
+        <div class="container position-relative" style="z-index:1;">
+            <nav aria-label="breadcrumb" style="position:relative;z-index:1;">
+                <ol class="breadcrumb justify-content-center mb-3">
+                    <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none fw-bold" style="color:var(--accent-green)">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="dich-vu.html" class="text-decoration-none fw-bold" style="color:var(--accent-green)">Dịch vụ</a></li>
+                    <li class="breadcrumb-item active fw-bold" style="color:var(--primary-green)">Chi tiết</li>
                 </ol>
             </nav>
-            <h2 class="fw-bold">Thông Tin <span style="color: var(--accent-green)">Dịch Vụ</span></h2>
+            <h2 class="fw-bold">Chi Tiết <span style="color: var(--accent-green)">Dịch Vụ</span></h2>
+            <p class="lead-sub mt-3 mb-0">Thông tin chi tiết và báo giá dịch vụ chăm sóc vườn nhà</p>
+            <div class="custom-underline"></div>
         </div>
     </section>
 
-    <main class="py-5">
-        <div class="container mb-5 pb-5" id="detailContainer">
+    <main class="py-4">
+        <div class="container mb-3 pb-3" id="detailContainer">
             <div class="text-center py-5">
                 <div class="spinner-grow" role="status"></div>
                 <p class="mt-4 text-muted fw-bold">Đang tải dữ liệu từ vườn nhà...</p>
             </div>
         </div>
     </main>
+
+    <!-- SECTION: CÁC DỊCH VỤ KHÁC -->
+    <section id="other-services-section" class="py-4" style="background: linear-gradient(180deg, #f9fbf9 0%, #ffffff 100%);">
+      <div class="container py-2">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+          <div>
+            <span style="font-size:0.8rem;font-weight:700;color:#4f6f52;text-transform:uppercase;letter-spacing:3px;">
+              <i class="fas fa-leaf me-2"></i>Cùng danh mục
+            </span>
+            <h2 class="fw-bold mb-0 mt-2" style="color:var(--primary-green);font-family:'Playfair Display',serif;font-size:2rem;">Dịch Vụ Khác</h2>
+            <div style="width:50px;height:3px;background:var(--accent-green);border-radius:10px;margin-top:10px;"></div>
+          </div>
+          <a href="dich-vu.html" class="btn rounded-pill fw-bold px-4 py-2 d-none d-md-inline-flex align-items-center gap-2"
+            style="background:var(--soft-lime);color:var(--primary-green);border:1px solid rgba(26,77,46,0.15);font-size:0.9rem;">
+            Xem tất cả <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="row g-4" id="other-services-grid"></div>
+      </div>
+    </section>
 
     <div id="site-footer"></div>
 
@@ -503,6 +547,80 @@
                 console.error("Lỗi tải dịch vụ:", error);
                 $('#detailContainer').html('<div class="text-center py-5"><h2 class="text-danger">Không thể kết nối máy chủ</h2><p>Vui lòng kiểm tra lại kết nối mạng.</p></div>');
             }
+
+            // ── RENDER CÁC DỊCH VỤ KHÁC ──
+            try {
+                const allServices = await API.getServices();
+                const others = allServices.filter(s => s.id != serviceId).slice(0, 4);
+                const grid = $('#other-services-grid');
+
+                if (others.length === 0) {
+                    $('#other-services-section').hide();
+                    return;
+                }
+
+                others.forEach(s => {
+                    let imgSrc = s.image;
+                    if (imgSrc && !imgSrc.startsWith('http')) {
+                        imgSrc = (imgSrc.indexOf('.') === -1)
+                            ? `https://drive.google.com/thumbnail?id=${imgSrc}&sz=w800`
+                            : `assets/images/${imgSrc}`;
+                    }
+                    const priceStr = s.price_m2_min
+                        ? s.price_m2_min.toLocaleString() + 'đ/' + (s.area_unit || 'm²')
+                        : 'Liên hệ';
+
+                    grid.append(`
+                        <div class="col-md-6 col-lg-3">
+                            <a href="chi-tiet-dich-vu.html?id=${s.id}" class="text-decoration-none h-100 d-block">
+                                <div class="h-100" style="
+                                    border-radius:24px;overflow:hidden;background:#fff;
+                                    border:1px solid rgba(26,77,46,0.07);
+                                    box-shadow:0 4px 20px rgba(26,77,46,0.07);
+                                    transition:all 0.4s cubic-bezier(0.165,0.84,0.44,1);
+                                    display:flex;flex-direction:column;
+                                " onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 20px 40px rgba(26,77,46,0.13)'"
+                                   onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(26,77,46,0.07)'">
+                                    <div style="position:relative;height:190px;overflow:hidden;flex-shrink:0;">
+                                        <img src="${imgSrc}" alt="${s.name}"
+                                            style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;"
+                                            onmouseover="this.style.transform='scale(1.07)'"
+                                            onmouseout="this.style.transform='scale(1)'"
+                                            onerror="this.src='assets/vuon-nha-dep.png'">
+                                        <div style="
+                                            position:absolute;top:10px;left:10px;
+                                            background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);
+                                            border-radius:50px;padding:3px 10px;
+                                            font-size:0.72rem;font-weight:700;color:#1a4d2e;
+                                            display:flex;align-items:center;gap:4px;
+                                        "><i class="fas fa-star" style="color:#f59e0b;font-size:0.65rem;"></i>${s.rating || '4.9'}</div>
+                                    </div>
+                                    <div style="padding:16px 18px 18px;display:flex;flex-direction:column;flex:1;">
+                                        <h3 style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#1a4d2e;margin:0 0 6px;line-height:1.35;">${s.name}</h3>
+                                        <p style="font-size:0.8rem;color:#636e72;line-height:1.55;margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1;">${s.description}</p>
+                                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;">
+                                            <span style="background:#e8f3d6;color:#1a4d2e;border-radius:8px;padding:4px 10px;font-size:0.75rem;font-weight:700;">${priceStr}</span>
+                                            <span style="width:28px;height:28px;border-radius:50%;background:#1a4d2e;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;flex-shrink:0;">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    `);
+                });
+            } catch(e) {
+                $('#other-services-section').hide();
+            }
+        });
+
+        // ── PROGRESS BAR KHI CUỘN ──
+        $(window).on('scroll', function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            $('#scrollProgress').css('width', scrolled + '%');
         });
     </script>
 </body>

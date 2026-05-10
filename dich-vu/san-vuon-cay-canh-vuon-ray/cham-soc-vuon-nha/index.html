@@ -94,14 +94,15 @@
     .hero-section {
       position: relative;
       padding: 40px 0;
-      background: radial-gradient(circle at 80% 20%, #e8f3d6 0%, #ffffff 60%);
+      background: radial-gradient(circle at 80% 20%, #c8e6b0 0%, #eaf5e0 40%, #f5fbf0 70%, #ffffff 100%);
       overflow: hidden;
     }
 
     .display-3 {
       font-family: 'Playfair Display', serif;
       color: var(--primary-green);
-      line-height: 1.1;
+      font-size: 3.4rem;
+      line-height: 1.2;
       position: relative;
       z-index: 1;
     }
@@ -234,10 +235,14 @@
         max-width: 300px;
       }
     }
+    /* ── PROGRESS BAR ── */
+    .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: transparent; z-index: 9999; }
+    .progress-bar-scroll { height: 5px; background: var(--primary-green); width: 0%; transition: width 0.1s; }
   </style>
 </head>
 
 <body data-nav-active="home">
+  <div class="progress-container"><div class="progress-bar-scroll" id="scrollProgress"></div></div>
 
   <div id="site-header"></div>
 
@@ -246,8 +251,8 @@
       <div class="row align-items-center">
         <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
           <h1 class="display-3 fw-bold mb-4">
-            Khơi Nguồn Đẳng Cấp <br /> Cho
-            <span style="color: var(--accent-green); font-style: italic;">Vườn Nhà Bạn</span>
+            Khơi Nguồn Đẳng Cấp <br />
+            Cho <span style="color: var(--accent-green); font-style: italic;">Vườn Nhà Bạn</span>
           </h1>
           <p class="lead text-muted mb-5 fs-5">Giải pháp chăm sóc và duy trì cảnh quan chuyên nghiệp, mang hơi thở thiên nhiên trọn vẹn vào không gian sống thượng lưu.</p>
 
@@ -265,9 +270,9 @@
     </div>
   </section>
 
-  <section class="py-5">
-    <div class="container py-5">
-      <div class="text-center mb-5">
+  <section class="py-4">
+    <div class="container py-3">
+      <div class="text-center mb-4">
         <h2 class="fw-bold display-5 mb-3" style="color: var(--primary-green)">Tại Sao Là Chúng Tôi?</h2>
         <div style="width: 60px; height: 4px; background: var(--accent-green); margin: 0 auto; border-radius: 10px;"></div>
       </div>
@@ -305,18 +310,25 @@
     </div>
   </section>
 
-  <section class="py-5 bg-white shadow-sm">
-    <div class="container py-5">
-      <div class="d-flex justify-content-between align-items-end mb-5">
+  <section class="py-4" style="background: linear-gradient(180deg, #f9fbf9 0%, #ffffff 100%);">
+    <div class="container py-3">
+      <div class="d-flex justify-content-between align-items-end mb-4">
         <div>
-          <h2 class="fw-bold display-6 mb-0" style="color: var(--primary-green)">Các Dịch Vụ Nổi Bật</h2>
-          <p class="text-muted mt-2">Được thiết kế riêng cho từng kiến trúc vườn</p>
+          <h2 class="fw-bold mb-0 mt-2" style="color:var(--primary-green);font-family:'Playfair Display',serif;font-size:2.2rem;">Các Dịch Vụ Nổi Bật</h2>
+          <div style="width:50px;height:3px;background:var(--accent-green);border-radius:10px;margin-top:10px;"></div>
         </div>
-        <a href="dich-vu.html" class="btn btn-link text-success fw-bold text-decoration-none">
-          Khám phá tất cả <i class="fas fa-arrow-right ms-2"></i>
+        <a href="dich-vu.html" class="btn rounded-pill fw-bold px-4 py-2 d-none d-md-inline-flex align-items-center gap-2"
+          style="background:var(--soft-lime);color:var(--primary-green);border:1px solid rgba(26,77,46,0.15);font-size:0.9rem;">
+          Xem tất cả <i class="fas fa-arrow-right"></i>
         </a>
       </div>
       <div class="row g-4" id="services-grid">
+      </div>
+      <div class="text-center mt-4 d-md-none">
+        <a href="dich-vu.html" class="btn rounded-pill fw-bold px-4 py-2"
+          style="background:var(--soft-lime);color:var(--primary-green);border:1px solid rgba(26,77,46,0.15);">
+          Xem tất cả dịch vụ <i class="fas fa-arrow-right ms-1"></i>
+        </a>
       </div>
     </div>
   </section>
@@ -403,15 +415,104 @@
 
           col.innerHTML = `
             <a href="chi-tiet-dich-vu.html?id=${service.id}" class="text-decoration-none h-100 d-block">
-                <div class="card border-0 shadow-sm h-100 hover-lift" style="border-radius: 30px; overflow: hidden;">
-                    <div class="overflow-hidden" style="height: 220px;">
-                       <img src="${imgSrc}" class="card-img-top h-100 w-100" alt="${imageAlt}" style="object-fit: cover; transition: 0.4s;" onerror="this.src='assets/vuon-nha-dep.png'">
-                    </div>
-                    <div class="card-body p-4">
-                        <h3 class="h5 fw-bold mb-2 text-dark">${service.name}</h3>
-                        <p class="card-text text-muted small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${service.description}</p>
-                    </div>
+              <div class="h-100 hover-lift" style="
+                border-radius: 28px;
+                overflow: hidden;
+                background: #fff;
+                border: 1px solid rgba(26,77,46,0.07);
+                box-shadow: 0 4px 20px rgba(26,77,46,0.07);
+                transition: all 0.4s cubic-bezier(0.165,0.84,0.44,1);
+                display: flex; flex-direction: column;
+              ">
+                <!-- Ảnh -->
+                <div style="position:relative; height:210px; overflow:hidden; flex-shrink:0;">
+                  <img src="${imgSrc}" alt="${imageAlt}"
+                    style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;"
+                    onmouseover="this.style.transform='scale(1.07)'"
+                    onmouseout="this.style.transform='scale(1)'"
+                    onerror="this.src='assets/vuon-nha-dep.png'">
+                  <!-- Badge rating -->
+                  <div style="
+                    position:absolute; top:12px; left:12px;
+                    background:rgba(255,255,255,0.92);
+                    backdrop-filter:blur(6px);
+                    border-radius:50px;
+                    padding:4px 10px;
+                    font-size:0.75rem;
+                    font-weight:700;
+                    color:#1a4d2e;
+                    display:flex; align-items:center; gap:4px;
+                    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+                  ">
+                    <i class="fas fa-star" style="color:#f59e0b;font-size:0.7rem;"></i>
+                    ${service.rating || '4.9'}
+                  </div>
+                  <!-- Badge thời gian -->
+                  <div style="
+                    position:absolute; top:12px; right:12px;
+                    background:rgba(26,77,46,0.85);
+                    backdrop-filter:blur(6px);
+                    border-radius:50px;
+                    padding:4px 10px;
+                    font-size:0.72rem;
+                    font-weight:700;
+                    color:#fff;
+                    display:flex; align-items:center; gap:4px;
+                  ">
+                    <i class="fas fa-clock" style="font-size:0.65rem;"></i>
+                    ${service.duration_estimate || '2-4h'}
+                  </div>
                 </div>
+
+                <!-- Nội dung -->
+                <div style="padding:18px 20px 20px; display:flex; flex-direction:column; flex:1;">
+                  <h3 style="
+                    font-family:'Playfair Display',serif;
+                    font-size:1.1rem;
+                    font-weight:700;
+                    color:#1a4d2e;
+                    margin:0 0 8px;
+                    line-height:1.35;
+                  ">${service.name}</h3>
+
+                  <p style="
+                    font-size:0.83rem;
+                    color:#636e72;
+                    line-height:1.6;
+                    margin:0 0 14px;
+                    display:-webkit-box;
+                    -webkit-line-clamp:2;
+                    -webkit-box-orient:vertical;
+                    overflow:hidden;
+                    flex:1;
+                  ">${service.description}</p>
+
+                  <!-- Footer card -->
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
+                    <div style="
+                      background:#e8f3d6;
+                      color:#1a4d2e;
+                      border-radius:10px;
+                      padding:5px 12px;
+                      font-size:0.78rem;
+                      font-weight:700;
+                    ">
+                      ${service.price_m2_min ? service.price_m2_min.toLocaleString() + 'đ/' + (service.area_unit || 'm²') : 'Liên hệ'}
+                    </div>
+                    <div style="
+                      width:32px; height:32px;
+                      border-radius:50%;
+                      background:#1a4d2e;
+                      display:flex; align-items:center; justify-content:center;
+                      color:#fff;
+                      font-size:0.75rem;
+                      flex-shrink:0;
+                    ">
+                      <i class="fas fa-arrow-right"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </a>
           `;
           servicesGrid.appendChild(col);
@@ -425,7 +526,12 @@
 
   <script src="JS/shared-layout.js"></script>
   <script src="JS/user-nav-menu.js"></script>
-
-</body>
+  <script>
+    window.addEventListener('scroll', function() {
+      var s = document.body.scrollTop || document.documentElement.scrollTop;
+      var h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      document.getElementById('scrollProgress').style.width = (s / h * 100) + '%';
+    });
+  </script></body>
 
 </html>
